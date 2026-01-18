@@ -256,7 +256,11 @@ export default function AdminGamesPage() {
                 {games.map((game) => {
                   const statusBadge = getStatusBadge(game.status)
                   return (
-                    <tr key={game.id} className="hover:bg-[#252540]/50 transition-colors">
+                    <tr
+                      key={game.id}
+                      className="hover:bg-[#252540]/50 transition-colors cursor-pointer"
+                      onClick={() => router.push(`/admin/games/${game.id}`)}
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 text-sm text-white">
                           <Calendar className="w-4 h-4 text-gray-400" />
@@ -289,7 +293,7 @@ export default function AdminGamesPage() {
                           {statusBadge.label}
                         </Badge>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="relative flex items-center justify-end gap-2">
                           <Link href={`/admin/games/${game.id}/edit`}>
                             <Button variant="ghost" size="sm" className="p-2">
