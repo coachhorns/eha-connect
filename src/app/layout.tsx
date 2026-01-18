@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Inter, JetBrains_Mono, Oswald } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { Navbar } from '@/components/layout/Navbar'
@@ -15,6 +15,12 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-stats',
+})
+
+const oswald = Oswald({
+  subsets: ['latin'],
+  weight: ['200', '300', '400', '500', '600', '700'],
+  variable: '--font-oswald',
 })
 
 export const metadata: Metadata = {
@@ -49,10 +55,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-dark-base text-white min-h-screen`}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} font-sans antialiased bg-eha-navy text-white min-h-screen`}>
         <SessionProvider>
           <Navbar />
-          <main className="pt-16 min-h-[calc(100vh-80px)]">{children}</main>
+          <main className="pt-16 min-h-[calc(100vh-80px)] bg-navy-gradient">{children}</main>
           <Footer />
         </SessionProvider>
       </body>

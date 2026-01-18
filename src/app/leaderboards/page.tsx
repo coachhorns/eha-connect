@@ -107,8 +107,8 @@ export default function LeaderboardsPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-          <Trophy className="w-8 h-8 text-[#FFD700]" />
+        <h1 className="text-3xl font-bold text-white flex items-center gap-3 uppercase tracking-wider">
+          <Trophy className="w-8 h-8 text-white" />
           Stat Leaderboards
         </h1>
         <p className="mt-2 text-gray-400">

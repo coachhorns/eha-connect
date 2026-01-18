@@ -96,7 +96,7 @@ export default function PlayersPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Player Directory</h1>
+        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Player Directory</h1>
         <p className="mt-2 text-gray-400">
           Browse and discover EHA Connect athletes
         </p>
@@ -113,7 +113,7 @@ export default function PlayersPage() {
               placeholder="Search by name or school..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-[#252540] border border-[#252540] rounded-lg text-white placeholder-gray-500 focus:border-[#FF6B00] focus:ring-2 focus:ring-[#FF6B00]/20 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-[#252540] border border-[#252540] rounded-lg text-white placeholder-gray-500 focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
             />
           </div>
 

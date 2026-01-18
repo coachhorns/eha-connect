@@ -74,7 +74,7 @@ export default function DashboardPage() {
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -83,7 +83,7 @@ export default function DashboardPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Dashboard</h1>
         <p className="mt-2 text-gray-400">
           Welcome back, {session?.user.name || session?.user.email}
         </p>
@@ -96,7 +96,7 @@ export default function DashboardPage() {
           <Card>
             <div className="p-4 border-b border-[#252540] flex items-center justify-between">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-[#FF6B00]" />
+                <User className="w-5 h-5 text-white" />
                 Player Profiles
               </h2>
               <Link href="/dashboard/players/new">
@@ -172,7 +172,7 @@ export default function DashboardPage() {
           <Card>
             <div className="p-4 border-b border-[#252540]">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#FF6B00]" />
+                <Calendar className="w-5 h-5 text-white" />
                 Recent Activity
               </h2>
             </div>
@@ -190,7 +190,7 @@ export default function DashboardPage() {
           <Card>
             <div className="p-4 border-b border-[#252540]">
               <h2 className="font-bold text-white flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-[#FF6B00]" />
+                <CreditCard className="w-5 h-5 text-white" />
                 Subscription
               </h2>
             </div>
@@ -238,7 +238,7 @@ export default function DashboardPage() {
           <Card>
             <div className="p-4 border-b border-[#252540]">
               <h2 className="font-bold text-white flex items-center gap-2">
-                <Settings className="w-5 h-5 text-[#FF6B00]" />
+                <Settings className="w-5 h-5 text-white" />
                 Quick Links
               </h2>
             </div>

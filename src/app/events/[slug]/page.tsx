@@ -124,7 +124,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -266,7 +266,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               <div className="flex items-center justify-between">
                 <span className="font-medium text-white truncate pr-2">{game.awayTeam.name}</span>
                 {(game.status === 'IN_PROGRESS' || game.status === 'FINAL' || game.status === 'HALFTIME') && (
-                  <span className={`text-xl font-bold ${game.status === 'FINAL' && game.awayScore > game.homeScore ? 'text-[#FF6B00]' : 'text-white'}`}>
+                  <span className={`text-xl font-bold ${game.status === 'FINAL' && game.awayScore > game.homeScore ? 'text-white' : 'text-white'}`}>
                     {game.awayScore}
                   </span>
                 )}
@@ -274,7 +274,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               <div className="flex items-center justify-between">
                 <span className="font-medium text-white truncate pr-2">{game.homeTeam.name}</span>
                 {(game.status === 'IN_PROGRESS' || game.status === 'FINAL' || game.status === 'HALFTIME') && (
-                  <span className={`text-xl font-bold ${game.status === 'FINAL' && game.homeScore > game.awayScore ? 'text-[#FF6B00]' : 'text-white'}`}>
+                  <span className={`text-xl font-bold ${game.status === 'FINAL' && game.homeScore > game.awayScore ? 'text-white' : 'text-white'}`}>
                     {game.homeScore}
                   </span>
                 )}
@@ -340,8 +340,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
         <Card className="mb-6">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#FF6B00]/10 rounded-lg flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-[#FF6B00]" />
+              <div className="w-10 h-10 bg-eha-red/10 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-white" />
               </div>
               <div>
                 <div className="text-xs text-gray-500">Dates</div>
@@ -353,8 +353,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
             {(event.venue || event.city) && (
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#FF6B00]/10 rounded-lg flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-[#FF6B00]" />
+                <div className="w-10 h-10 bg-eha-red/10 rounded-lg flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <div className="text-xs text-gray-500">Location</div>
@@ -366,8 +366,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             )}
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#FF6B00]/10 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-[#FF6B00]" />
+              <div className="w-10 h-10 bg-eha-red/10 rounded-lg flex items-center justify-center">
+                <Users className="w-5 h-5 text-white" />
               </div>
               <div>
                 <div className="text-xs text-gray-500">Teams</div>
@@ -376,8 +376,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#FF6B00]/10 rounded-lg flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-[#FF6B00]" />
+              <div className="w-10 h-10 bg-eha-red/10 rounded-lg flex items-center justify-center">
+                <Trophy className="w-5 h-5 text-white" />
               </div>
               <div>
                 <div className="text-xs text-gray-500">Games</div>
@@ -393,7 +393,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             onClick={() => setActiveTab('schedule')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'schedule'
-                ? 'bg-[#FF6B00] text-white'
+                ? 'bg-eha-red text-white'
                 : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
             }`}
           >
@@ -404,7 +404,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             onClick={() => setActiveTab('teams')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'teams'
-                ? 'bg-[#FF6B00] text-white'
+                ? 'bg-eha-red text-white'
                 : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
             }`}
           >
@@ -416,7 +416,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               onClick={() => setActiveTab('bracket')}
               className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'bracket'
-                  ? 'bg-[#FF6B00] text-white'
+                  ? 'bg-eha-red text-white'
                   : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
               }`}
             >
@@ -441,7 +441,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   <select
                     value={selectedAgeGroup}
                     onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                    className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                    className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                   >
                     <option value="">All Age Groups</option>
                     {event.ageGroups.map(ag => (
@@ -458,7 +458,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   <select
                     value={selectedDivision}
                     onChange={(e) => setSelectedDivision(e.target.value)}
-                    className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                    className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                   >
                     <option value="">All Divisions</option>
                     {event.divisions.map(div => (
@@ -497,7 +497,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                     onClick={() => setSelectedDate(date)}
                     className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
                       selectedDate === date
-                        ? 'bg-[#FF6B00] text-white'
+                        ? 'bg-eha-red text-white'
                         : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
                     }`}
                   >
@@ -677,7 +677,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
         {/* Registration CTA for upcoming events */}
         {isUpcoming && (
-          <Card className="mt-8 bg-gradient-to-br from-[#FF6B00]/20 to-transparent border-[#FF6B00]/30">
+          <Card className="mt-8 bg-gradient-to-br from-[#FF6B00]/20 to-transparent border-eha-red/30">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <h3 className="text-lg font-bold text-white">Register Your Team</h3>

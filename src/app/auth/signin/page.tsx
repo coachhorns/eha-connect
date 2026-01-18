@@ -82,7 +82,7 @@ export default function SignInPage() {
               <input type="checkbox" className="rounded border-gray-600" />
               Remember me
             </label>
-            <Link href="/auth/forgot-password" className="text-[#FF6B00] hover:underline">
+            <Link href="/auth/forgot-password" className="text-eha-red hover:underline">
               Forgot password?
             </Link>
           </div>
@@ -95,7 +95,7 @@ export default function SignInPage() {
         <div className="mt-6 text-center">
           <p className="text-gray-400 text-sm">
             Don&apos;t have an account?{' '}
-            <Link href="/auth/signup" className="text-[#FF6B00] hover:underline font-medium">
+            <Link href="/auth/signup" className="text-eha-red hover:underline font-medium">
               Sign up
             </Link>
           </p>

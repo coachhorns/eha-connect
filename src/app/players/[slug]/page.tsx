@@ -135,7 +135,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-b from-[#FF6B00]/20 to-transparent py-12">
+      <div className="relative bg-gradient-to-b from-eha-red/20 to-transparent py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Player Photo */}
@@ -184,7 +184,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                 )}
                 {player.weight && <span>{player.weight} lbs</span>}
                 {player.graduationYear && (
-                  <span className="text-[#FF6B00] font-semibold">
+                  <span className="text-eha-red font-semibold">
                     Class of {player.graduationYear}
                   </span>
                 )}
@@ -204,7 +204,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                   </span>
                 )}
                 {currentTeam && (
-                  <Link href={`/teams/${currentTeam.team.slug}`} className="flex items-center gap-1.5 hover:text-[#FF6B00]">
+                  <Link href={`/teams/${currentTeam.team.slug}`} className="flex items-center gap-1.5 hover:text-eha-red">
                     <Users className="w-4 h-4" />
                     {currentTeam.team.name}
                   </Link>
@@ -242,7 +242,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                     href={player.hudlUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 bg-[#252540] rounded-lg text-gray-400 hover:text-white hover:bg-[#FF6B00]/20 transition-colors"
+                    className="p-2 bg-[#252540] rounded-lg text-gray-400 hover:text-white hover:bg-eha-red/20 transition-colors"
                   >
                     <ExternalLink className="w-5 h-5" />
                   </a>
@@ -271,7 +271,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                 </div>
                 <div className="p-4 grid grid-cols-3 gap-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-[#FF6B00]">
+                    <p className="text-2xl font-bold text-eha-red">
                       {careerStats.averages.ppg.toFixed(1)}
                     </p>
                     <p className="text-xs text-gray-500">PPG</p>
@@ -381,7 +381,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
           <Card>
             <div className="p-4 border-b border-[#252540]">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#FF6B00]" />
+                <Calendar className="w-5 h-5 text-eha-red" />
                 Recent Games
               </h2>
             </div>
@@ -409,7 +409,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                       <td className="text-left text-sm">
                         {stat.game.event?.name || 'Exhibition'}
                       </td>
-                      <td className="font-semibold text-[#FF6B00]">{stat.points}</td>
+                      <td className="font-semibold text-eha-red">{stat.points}</td>
                       <td>{stat.rebounds}</td>
                       <td>{stat.assists}</td>
                       <td>{stat.steals}</td>

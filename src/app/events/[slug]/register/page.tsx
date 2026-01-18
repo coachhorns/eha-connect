@@ -141,7 +141,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -205,7 +205,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Registration Form */}
         <div className="lg:col-span-2">
-          <h1 className="text-3xl font-bold text-white mb-2">Team Registration</h1>
+          <h1 className="text-3xl font-bold text-white mb-2 uppercase tracking-wider">Team Registration</h1>
           <p className="text-gray-400 mb-8">Register your team for {event?.name}</p>
 
           {registrationClosed ? (
@@ -230,7 +230,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
               {/* Team Information */}
               <Card>
                 <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <Users className="w-5 h-5 text-[#FF6B00]" />
+                  <Users className="w-5 h-5 text-white" />
                   Team Information
                 </h2>
                 <div className="space-y-4">
@@ -387,7 +387,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
               {event?.entryFee && (
                 <div className="pt-4 border-t border-[#252540]">
                   <div className="text-sm text-gray-500">Entry Fee</div>
-                  <div className="text-2xl font-bold text-[#FF6B00]">
+                  <div className="text-2xl font-bold text-white">
                     ${parseFloat(event.entryFee.toString()).toFixed(0)}
                   </div>
                   <div className="text-xs text-gray-500">per team</div>

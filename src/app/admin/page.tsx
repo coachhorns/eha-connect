@@ -58,7 +58,7 @@ export default function AdminDashboard() {
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -102,7 +102,7 @@ export default function AdminDashboard() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Admin Dashboard</h1>
         <p className="mt-2 text-gray-400">
           Manage players, teams, events, and stats
         </p>
@@ -112,8 +112,8 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-blue-400" />
+            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <Users className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{stats?.totalPlayers || 0}</p>
@@ -124,8 +124,8 @@ export default function AdminDashboard() {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-              <UsersRound className="w-5 h-5 text-green-400" />
+            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <UsersRound className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{stats?.totalTeams || 0}</p>
@@ -136,8 +136,8 @@ export default function AdminDashboard() {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-purple-400" />
+            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{stats?.totalEvents || 0}</p>
@@ -148,8 +148,8 @@ export default function AdminDashboard() {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#FF6B00]/20 rounded-lg flex items-center justify-center">
-              <Trophy className="w-5 h-5 text-[#FF6B00]" />
+            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <Trophy className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{stats?.activeSubscriptions || 0}</p>
@@ -166,8 +166,8 @@ export default function AdminDashboard() {
             <Card variant="hover" className="p-6 h-full">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#FF6B00]/10 rounded-lg flex items-center justify-center">
-                    <link.icon className="w-6 h-6 text-[#FF6B00]" />
+                  <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
+                    <link.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-white">{link.label}</h3>

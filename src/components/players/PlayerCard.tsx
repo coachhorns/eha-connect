@@ -42,7 +42,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
     <Link href={`/players/${player.slug}`}>
       <div className="player-card group cursor-pointer">
         {/* Player Photo */}
-        <div className="relative h-48 bg-gradient-to-b from-[#FF6B00]/20 to-transparent">
+        <div className="relative h-48 bg-gradient-to-b from-eha-red/20 to-transparent">
           {player.profilePhoto ? (
             <Image
               src={player.profilePhoto}
@@ -71,7 +71,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
           {/* Position Badge */}
           {player.primaryPosition && (
             <div className="absolute top-3 left-3">
-              <Badge variant="orange" size="sm">
+              <Badge variant="default" size="sm" className="bg-dark-surface/80 text-white border-white/20">
                 {player.primaryPosition}
               </Badge>
             </div>
@@ -80,14 +80,14 @@ export function PlayerCard({ player }: PlayerCardProps) {
 
         {/* Player Info */}
         <div className="p-4">
-          <h3 className="text-lg font-bold text-white group-hover:text-[#FF6B00] transition-colors">
+          <h3 className="text-lg font-bold text-white group-hover:text-eha-red transition-colors">
             {player.firstName} {player.lastName}
           </h3>
 
           {/* Team & Age Group - Prominent Display */}
           <div className="mt-2 flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1.5 text-sm">
-              <Users className="w-3.5 h-3.5 text-[#FF6B00]" />
+              <Users className="w-3.5 h-3.5 text-white" />
               <span className={teamName ? 'text-white font-medium' : 'text-gray-500 italic'}>
                 {teamName || 'Unassigned'}
               </span>
@@ -119,7 +119,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
             )}
 
             {player.graduationYear && (
-              <p className="text-[#FF6B00] font-medium">
+              <p className="text-eha-red font-medium">
                 Class of {player.graduationYear}
               </p>
             )}

@@ -24,7 +24,7 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="bg-dark-surface border-t border-eha-silver/20">
+    <footer className="mt-16 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
@@ -33,9 +33,9 @@ export function Footer() {
               <Image
                 src="/images/overall.png"
                 alt="Elite Hoops Association"
-                width={160}
-                height={50}
-                className="w-auto h-12"
+                width={300}
+                height={96}
+                className="w-auto h-24"
               />
             </Link>
             <p className="mt-4 text-gray-500 text-sm">

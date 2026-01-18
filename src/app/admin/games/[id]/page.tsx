@@ -134,7 +134,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -150,7 +150,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
           <p className="text-red-400">{error}</p>
           <button
             onClick={() => router.push('/admin/games')}
-            className="mt-4 text-[#FF6B00] hover:underline"
+            className="mt-4 text-white hover:underline"
           >
             Back to Games
           </button>
@@ -251,7 +251,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
         {/* Game Info */}
         <Card className="p-6">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Gamepad2 className="w-5 h-5 text-[#FF6B00]" />
+            <Gamepad2 className="w-5 h-5 text-white" />
             Game Info
           </h2>
           <div className="space-y-4">
@@ -296,7 +296,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
         {/* Quick Stats */}
         <Card className="p-6 lg:col-span-2">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-[#FF6B00]" />
+            <Users className="w-5 h-5 text-white" />
             Team Stats
           </h2>
           <div className="grid grid-cols-2 gap-4">

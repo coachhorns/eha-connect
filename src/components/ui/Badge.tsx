@@ -16,7 +16,7 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       warning: 'bg-dark-surface text-yellow-400 border border-yellow-500/30',
       error: 'bg-dark-surface text-eha-red border border-eha-red/30',
       info: 'bg-dark-surface text-blue-400 border border-blue-500/30',
-      orange: 'bg-dark-surface text-[#FF6B00] border border-[#FF6B00]/30',
+      orange: 'bg-dark-surface text-eha-red border border-eha-red/30',
       gold: 'bg-dark-surface text-[#FFD700] border border-[#FFD700]/30',
     }
 

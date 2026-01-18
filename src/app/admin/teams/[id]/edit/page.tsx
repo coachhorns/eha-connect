@@ -154,7 +154,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -170,7 +170,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
           <p className="text-red-400">{error}</p>
           <button
             onClick={() => router.push('/admin/teams')}
-            className="mt-4 text-[#FF6B00] hover:underline"
+            className="mt-4 text-eha-red hover:underline"
           >
             Back to Teams
           </button>
@@ -190,7 +190,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
           <ArrowLeft className="w-4 h-4" />
           Back to Team
         </Link>
-        <h1 className="text-3xl font-bold text-white">Edit Team</h1>
+        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Edit Team</h1>
         <p className="mt-2 text-gray-400">
           Update team information
         </p>

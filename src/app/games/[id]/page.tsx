@@ -129,7 +129,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -216,7 +216,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
             {/* Away Team */}
             <div className={`text-center flex-1 max-w-xs ${awayWon ? 'opacity-100' : isFinal ? 'opacity-60' : ''}`}>
               <div className="text-lg font-semibold text-white mb-2">{game.awayTeam.name}</div>
-              <div className={`text-5xl md:text-6xl font-bold ${awayWon ? 'text-[#FF6B00]' : 'text-white'}`}>
+              <div className={`text-5xl md:text-6xl font-bold ${awayWon ? 'text-white' : 'text-white'}`}>
                 {game.homeScore > 0 || game.awayScore > 0 || isLive || isFinal ? game.awayScore : '-'}
               </div>
             </div>
@@ -229,7 +229,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
             {/* Home Team */}
             <div className={`text-center flex-1 max-w-xs ${homeWon ? 'opacity-100' : isFinal ? 'opacity-60' : ''}`}>
               <div className="text-lg font-semibold text-white mb-2">{game.homeTeam.name}</div>
-              <div className={`text-5xl md:text-6xl font-bold ${homeWon ? 'text-[#FF6B00]' : 'text-white'}`}>
+              <div className={`text-5xl md:text-6xl font-bold ${homeWon ? 'text-white' : 'text-white'}`}>
                 {game.homeScore > 0 || game.awayScore > 0 || isLive || isFinal ? game.homeScore : '-'}
               </div>
             </div>
@@ -261,7 +261,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedTeam('away')}
                 className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
                   selectedTeam === 'away'
-                    ? 'bg-[#FF6B00] text-white'
+                    ? 'bg-eha-red text-white'
                     : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
                 }`}
               >
@@ -272,7 +272,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedTeam('home')}
                 className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
                   selectedTeam === 'home'
-                    ? 'bg-[#FF6B00] text-white'
+                    ? 'bg-eha-red text-white'
                     : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
                 }`}
               >
@@ -312,7 +312,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                           <td className="py-3 px-4 sticky left-0 bg-[#1A1A2E]">
                             <Link
                               href={`/players/${stat.player.slug}`}
-                              className="flex items-center gap-2 hover:text-[#FF6B00] transition-colors"
+                              className="flex items-center gap-2 hover:text-white transition-colors"
                             >
                               {stat.player.profilePhoto ? (
                                 <Image
@@ -330,7 +330,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                               <div>
                                 <div className="font-medium text-white whitespace-nowrap">
                                   {stat.player.jerseyNumber && (
-                                    <span className="text-[#FF6B00] mr-1">#{stat.player.jerseyNumber}</span>
+                                    <span className="text-white mr-1">#{stat.player.jerseyNumber}</span>
                                   )}
                                   {stat.player.firstName[0]}. {stat.player.lastName}
                                 </div>
@@ -446,21 +446,21 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 return (
                   <div key={stat.label}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className={`font-medium ${stat.home > stat.away ? 'text-[#FF6B00]' : 'text-gray-400'}`}>
+                      <span className={`font-medium ${stat.home > stat.away ? 'text-white' : 'text-gray-400'}`}>
                         {stat.home}
                       </span>
                       <span className="text-gray-500">{stat.label}</span>
-                      <span className={`font-medium ${stat.away > stat.home ? 'text-[#FF6B00]' : 'text-gray-400'}`}>
+                      <span className={`font-medium ${stat.away > stat.home ? 'text-white' : 'text-gray-400'}`}>
                         {stat.away}
                       </span>
                     </div>
                     <div className="h-2 bg-[#252540] rounded-full overflow-hidden flex">
                       <div
-                        className={`h-full ${stat.home > stat.away ? 'bg-[#FF6B00]' : 'bg-gray-600'}`}
+                        className={`h-full ${stat.home > stat.away ? 'bg-eha-red' : 'bg-gray-600'}`}
                         style={{ width: `${homePercent}%` }}
                       />
                       <div
-                        className={`h-full ${stat.away > stat.home ? 'bg-[#FF6B00]' : 'bg-gray-600'}`}
+                        className={`h-full ${stat.away > stat.home ? 'bg-eha-red' : 'bg-gray-600'}`}
                         style={{ width: `${100 - homePercent}%` }}
                       />
                     </div>

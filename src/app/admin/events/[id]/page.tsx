@@ -151,7 +151,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -167,7 +167,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
           <p className="text-red-400">{error}</p>
           <button
             onClick={() => router.push('/admin/events')}
-            className="mt-4 text-[#FF6B00] hover:underline"
+            className="mt-4 text-white hover:underline"
           >
             Back to Events
           </button>
@@ -197,7 +197,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-white">{event.name}</h1>
+              <h1 className="text-3xl font-bold text-white uppercase tracking-wider">{event.name}</h1>
               <Badge variant={eventStatus.variant as any}>{eventStatus.label}</Badge>
               {!event.isPublished && (
                 <Badge variant="warning">Draft</Badge>
@@ -243,8 +243,8 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#FF6B00]/10 rounded-lg">
-              <Users className="w-5 h-5 text-[#FF6B00]" />
+            <div className="p-2 bg-white/10 rounded-lg">
+              <Users className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{teams.length}</p>
@@ -254,8 +254,8 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/10 rounded-lg">
-              <Gamepad2 className="w-5 h-5 text-blue-500" />
+            <div className="p-2 bg-white/10 rounded-lg">
+              <Gamepad2 className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{games.length}</p>
@@ -265,8 +265,8 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-500/10 rounded-lg">
-              <Gamepad2 className="w-5 h-5 text-green-500" />
+            <div className="p-2 bg-white/10 rounded-lg">
+              <Gamepad2 className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">
@@ -278,11 +278,11 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-500/10 rounded-lg">
+            <div className="p-2 bg-white/10 rounded-lg">
               {event.isPublished ? (
-                <Eye className="w-5 h-5 text-yellow-500" />
+                <Eye className="w-5 h-5 text-white" />
               ) : (
-                <EyeOff className="w-5 h-5 text-yellow-500" />
+                <EyeOff className="w-5 h-5 text-white" />
               )}
             </div>
             <div>

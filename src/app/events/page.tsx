@@ -84,8 +84,8 @@ export default function EventsPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-          <Calendar className="w-8 h-8 text-[#FF6B00]" />
+        <h1 className="text-3xl font-bold text-white flex items-center gap-3 uppercase tracking-wider">
+          <Calendar className="w-8 h-8 text-white" />
           Events
         </h1>
         <p className="mt-2 text-gray-400">
@@ -101,7 +101,7 @@ export default function EventsPage() {
               onClick={() => setShowUpcoming(true)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 showUpcoming
-                  ? 'bg-[#FF6B00] text-white'
+                  ? 'bg-eha-red text-white'
                   : 'bg-[#252540] text-gray-400 hover:text-white'
               }`}
             >
@@ -111,7 +111,7 @@ export default function EventsPage() {
               onClick={() => setShowUpcoming(false)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 !showUpcoming
-                  ? 'bg-[#FF6B00] text-white'
+                  ? 'bg-eha-red text-white'
                   : 'bg-[#252540] text-gray-400 hover:text-white'
               }`}
             >
@@ -160,8 +160,8 @@ export default function EventsPage() {
                 <div className="flex flex-col md:flex-row gap-6">
                   {/* Date Badge */}
                   <div className="flex-shrink-0 w-24 text-center">
-                    <div className="bg-[#FF6B00]/10 rounded-lg p-3">
-                      <p className="text-[#FF6B00] text-sm font-medium uppercase">
+                    <div className="bg-eha-red/10 rounded-lg p-3">
+                      <p className="text-white text-sm font-medium uppercase">
                         {new Date(event.startDate).toLocaleDateString('en-US', { month: 'short' })}
                       </p>
                       <p className="text-white text-3xl font-bold">

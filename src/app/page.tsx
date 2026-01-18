@@ -59,7 +59,7 @@ const stats = [
 
 export default function HomePage() {
   return (
-    <div className="relative bg-dark-base">
+    <div className="relative">
       {/* Hero Section */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
         {/* Background gradient */}
@@ -68,14 +68,14 @@ export default function HomePage() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-eha-red/10 border border-eha-red/30 rounded-full text-eha-red text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/30 rounded-full text-white text-sm font-medium mb-6">
               <Star className="w-4 h-4" />
               Official Stats Platform for EHA Events
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
               Your Basketball Journey,{' '}
-              <span className="text-gradient">Tracked & Showcased</span>
+              <span className="text-white">Tracked & Showcased</span>
             </h1>
 
             <p className="mt-6 text-xl text-gray-400 max-w-3xl mx-auto">
@@ -102,7 +102,7 @@ export default function HomePage() {
           <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-gradient">{stat.value}</div>
+                <div className="text-3xl lg:text-4xl font-bold text-white">{stat.value}</div>
                 <div className="mt-1 text-gray-400">{stat.label}</div>
               </div>
             ))}
@@ -111,7 +111,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-dark-surface/50">
+      <section className="py-20 bg-eha-navy/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-white">
@@ -126,8 +126,8 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature) => (
               <Card key={feature.title} variant="hover" className="p-6">
-                <div className="w-12 h-12 bg-eha-red/10 rounded-lg flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-eha-red" />
+                <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-4">
+                  <feature.icon className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
                 <p className="text-gray-400 text-sm">{feature.description}</p>
@@ -149,7 +149,7 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-eha-red rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-white">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#FF1F40] to-[#600010] rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-white">
                 1
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Get Your Pass</h3>
@@ -160,7 +160,7 @@ export default function HomePage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-eha-red rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-white">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#FF1F40] to-[#600010] rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-white">
                 2
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Play in EHA Events</h3>
@@ -171,7 +171,7 @@ export default function HomePage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-eha-red rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-white">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#FF1F40] to-[#600010] rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-white">
                 3
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Get Discovered</h3>
@@ -185,7 +185,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-eha-red/20 to-eha-navy/40">
+      <section className="py-20 bg-gradient-to-br from-[#FF1F40]/20 to-[#600010]/40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
             Ready to Start Your Journey?
@@ -270,11 +270,11 @@ export default function HomePage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-white">J. Smith (#23)</span>
-                      <span className="text-eha-red">18 PTS, 5 REB, 3 AST</span>
+                      <span className="text-white">18 PTS, 5 REB, 3 AST</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-white">M. Johnson (#11)</span>
-                      <span className="text-eha-red">14 PTS, 8 REB, 2 BLK</span>
+                      <span className="text-white">14 PTS, 8 REB, 2 BLK</span>
                     </div>
                   </div>
                 </div>

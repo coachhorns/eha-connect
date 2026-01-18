@@ -31,7 +31,7 @@
 }
 
 @theme inline {
-  --color-background: var(--background);
+  --color-background: #0D2B5B;
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -45,11 +45,14 @@
 
   /* Font Families */
   --font-stats: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-oswald), 'Oswald', system-ui, -apple-system, sans-serif;
+
+  /* Animations */
+  --animate-spin-slow: spin 8s linear infinite;
 }
 
 body {
-  background: var(--dark-base);
+  background: #0D2B5B;
   color: var(--foreground);
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -58,7 +61,7 @@ body {
 .glass-header {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  background: rgba(13, 43, 91, 0.8); /* eha-navy with opacity */
+  background: transparent;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -99,11 +102,48 @@ body {
   background-clip: text;
 }
 
+/* Background with gradient and noise */
+.bg-navy-gradient {
+  background: linear-gradient(180deg, #0D2B5B 0%, #071832 40%, #0A2245 70%, #0D2B5B 100%);
+  position: relative;
+}
+
+.bg-navy-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Liquid Glass Hover Effect */
+.liquid-hover {
+  transition: all 0.3s ease-out;
+}
+
+.liquid-hover:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 0 20px rgba(255,255,255,0.2), inset 0 0 10px rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+
 /* Card styling */
 .card {
-  background: var(--background-secondary);
-  border: 1px solid var(--background-tertiary);
-  border-radius: 0.75rem;
+  background: #153361;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transition: all 0.3s ease-out;
+}
+
+.card:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%), #153361;
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.2), inset 0 0 10px rgba(255,255,255,0.1);
+  transform: translateY(-2px);
 }
 
 .card-hover:hover {
@@ -193,9 +233,12 @@ body {
 
 /* Animation for live stats */
 @keyframes pulse-green {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
   }
+
   50% {
     box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
   }
@@ -216,7 +259,7 @@ body {
 
 .player-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 40px rgba(255, 107, 0, 0.15);
+  box-shadow: 0 10px 40px rgba(200, 16, 46, 0.25);
 }
 
 /* Focus states */

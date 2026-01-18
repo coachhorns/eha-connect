@@ -221,7 +221,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               name="isPublished"
               checked={formData.isPublished}
               onChange={handleChange}
-              className="w-4 h-4 rounded border-[#252540] bg-[#1A1A2E] text-[#FF6B00] focus:ring-[#FF6B00]"
+              className="w-4 h-4 rounded border-[#252540] bg-[#1A1A2E] text-eha-red focus:ring-eha-red"
             />
             Published
           </label>
@@ -362,7 +362,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   onClick={() => handleToggleAgeGroup(ageGroup)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     formData.ageGroups.includes(ageGroup)
-                      ? 'bg-[#FF6B00] text-white'
+                      ? 'bg-eha-red text-white'
                       : 'bg-[#252540] text-gray-400 hover:text-white'
                   }`}
                 >
@@ -387,7 +387,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   onClick={() => handleToggleDivision(division)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     formData.divisions.includes(division)
-                      ? 'bg-[#FF6B00] text-white'
+                      ? 'bg-eha-red text-white'
                       : 'bg-[#252540] text-gray-400 hover:text-white'
                   }`}
                 >

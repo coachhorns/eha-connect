@@ -100,7 +100,7 @@ export default function AdminPlayersPage() {
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -114,7 +114,7 @@ export default function AdminPlayersPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Manage Players</h1>
+          <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Manage Players</h1>
           <p className="mt-2 text-gray-400">
             Add, edit, and verify player profiles
           </p>
@@ -136,7 +136,7 @@ export default function AdminPlayersPage() {
             placeholder="Search players..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-[#252540] border border-[#252540] rounded-lg text-white placeholder-gray-500 focus:border-[#FF6B00] transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#252540] border border-[#252540] rounded-lg text-white placeholder-gray-500 focus:border-eha-red transition-all"
           />
         </div>
       </Card>
@@ -188,7 +188,7 @@ export default function AdminPlayersPage() {
                 {players.map((player) => (
                   <tr key={player.id} className="hover:bg-[#252540]/50 transition-colors">
                     <td className="px-4 py-4">
-                      <Link href={`/players/${player.slug}`} className="flex items-center gap-3 hover:text-[#FF6B00]">
+                      <Link href={`/players/${player.slug}`} className="flex items-center gap-3 hover:text-eha-red">
                         <Avatar
                           src={player.profilePhoto}
                           fallback={`${player.firstName} ${player.lastName}`}
@@ -237,9 +237,9 @@ export default function AdminPlayersPage() {
                           title={player.isVerified ? 'Remove verification' : 'Verify player'}
                         >
                           {player.isVerified ? (
-                            <ShieldOff className="w-4 h-4 text-yellow-500" />
+                            <ShieldOff className="w-4 h-4 text-white" />
                           ) : (
-                            <Shield className="w-4 h-4 text-green-500" />
+                            <Shield className="w-4 h-4 text-white" />
                           )}
                         </Button>
                         <Link href={`/admin/players/${player.id}/edit`}>

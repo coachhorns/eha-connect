@@ -108,7 +108,7 @@ export default function AdminTeamsPage() {
   if (status === 'loading' || (session?.user.role !== 'ADMIN')) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -118,7 +118,7 @@ export default function AdminTeamsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Manage Teams</h1>
+          <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Manage Teams</h1>
           <p className="mt-2 text-gray-400">
             View and manage all registered teams
           </p>
@@ -149,7 +149,7 @@ export default function AdminTeamsPage() {
       <Card className="overflow-hidden p-0">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
           </div>
         ) : teams.length === 0 ? (
           <div className="text-center py-12">

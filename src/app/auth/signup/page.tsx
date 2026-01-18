@@ -149,11 +149,11 @@ export default function SignUpPage() {
 
           <div className="text-sm text-gray-400">
             By creating an account, you agree to our{' '}
-            <Link href="/terms" className="text-[#FF6B00] hover:underline">
+            <Link href="/terms" className="text-eha-red hover:underline">
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link href="/privacy" className="text-[#FF6B00] hover:underline">
+            <Link href="/privacy" className="text-eha-red hover:underline">
               Privacy Policy
             </Link>
             .
@@ -167,7 +167,7 @@ export default function SignUpPage() {
         <div className="mt-6 text-center">
           <p className="text-gray-400 text-sm">
             Already have an account?{' '}
-            <Link href="/auth/signin" className="text-[#FF6B00] hover:underline font-medium">
+            <Link href="/auth/signin" className="text-eha-red hover:underline font-medium">
               Sign in
             </Link>
           </p>

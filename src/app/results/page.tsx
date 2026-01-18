@@ -131,13 +131,13 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F0F1A]">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-b from-[#1A1A2E] to-[#0F0F1A] border-b border-[#252540]">
+      <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center gap-3 mb-2">
-            <Trophy className="w-8 h-8 text-[#FF6B00]" />
-            <h1 className="text-3xl font-bold text-white">Results</h1>
+            <Trophy className="w-8 h-8 text-white" />
+            <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Results</h1>
           </div>
           <p className="text-gray-400">Recent game scores and results</p>
         </div>
@@ -158,7 +158,7 @@ export default function ResultsPage() {
                 <select
                   value={selectedEvent}
                   onChange={(e) => setSelectedEvent(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Events</option>
                   {filters.events.map(event => (
@@ -175,7 +175,7 @@ export default function ResultsPage() {
                 <select
                   value={selectedAgeGroup}
                   onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Age Groups</option>
                   {filters.ageGroups.map(ag => (
@@ -192,7 +192,7 @@ export default function ResultsPage() {
                 <select
                   value={selectedDivision}
                   onChange={(e) => setSelectedDivision(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Divisions</option>
                   {filters.divisions.map(div => (
@@ -209,7 +209,7 @@ export default function ResultsPage() {
                 <select
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Dates</option>
                   {filters.dates.map(date => (
@@ -242,7 +242,7 @@ export default function ResultsPage() {
         {/* Results */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
           </div>
         ) : games.length === 0 ? (
           <Card className="p-8 text-center">
@@ -255,7 +255,7 @@ export default function ResultsPage() {
             {sortedDates.map(date => (
               <div key={date}>
                 <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="w-5 h-5 text-[#FF6B00]" />
+                  <Calendar className="w-5 h-5 text-white" />
                   <h2 className="text-lg font-semibold text-white">
                     {formatDateHeader(date)}
                   </h2>
@@ -313,10 +313,10 @@ export default function ResultsPage() {
                                   {game.awayTeam.name}
                                 </span>
                                 {awayWon && (
-                                  <span className="text-[10px] text-[#FF6B00] font-bold ml-1">W</span>
+                                  <span className="text-[10px] text-white font-bold ml-1">W</span>
                                 )}
                               </div>
-                              <span className={`text-xl font-bold ml-4 ${awayWon ? 'text-[#FF6B00]' : 'text-white'}`}>
+                              <span className={`text-xl font-bold ml-4 ${awayWon ? 'text-white' : 'text-white'}`}>
                                 {game.awayScore}
                               </span>
                             </div>
@@ -342,10 +342,10 @@ export default function ResultsPage() {
                                   {game.homeTeam.name}
                                 </span>
                                 {homeWon && (
-                                  <span className="text-[10px] text-[#FF6B00] font-bold ml-1">W</span>
+                                  <span className="text-[10px] text-white font-bold ml-1">W</span>
                                 )}
                               </div>
-                              <span className={`text-xl font-bold ml-4 ${homeWon ? 'text-[#FF6B00]' : 'text-white'}`}>
+                              <span className={`text-xl font-bold ml-4 ${homeWon ? 'text-white' : 'text-white'}`}>
                                 {game.homeScore}
                               </span>
                             </div>

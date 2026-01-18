@@ -130,7 +130,7 @@ export default function ScorekeeperDashboard() {
   if (authStatus === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -179,7 +179,7 @@ export default function ScorekeeperDashboard() {
               <div className="flex items-center justify-between">
                 <span className="font-medium text-white truncate pr-2">{game.awayTeam.name}</span>
                 {(game.status === 'IN_PROGRESS' || game.status === 'FINAL' || game.status === 'HALFTIME') && (
-                  <span className={`text-xl font-bold ${game.status === 'FINAL' && game.awayScore > game.homeScore ? 'text-[#FF6B00]' : 'text-white'}`}>
+                  <span className={`text-xl font-bold ${game.status === 'FINAL' && game.awayScore > game.homeScore ? 'text-white' : 'text-white'}`}>
                     {game.awayScore}
                   </span>
                 )}
@@ -187,7 +187,7 @@ export default function ScorekeeperDashboard() {
               <div className="flex items-center justify-between">
                 <span className="font-medium text-white truncate pr-2">{game.homeTeam.name}</span>
                 {(game.status === 'IN_PROGRESS' || game.status === 'FINAL' || game.status === 'HALFTIME') && (
-                  <span className={`text-xl font-bold ${game.status === 'FINAL' && game.homeScore > game.awayScore ? 'text-[#FF6B00]' : 'text-white'}`}>
+                  <span className={`text-xl font-bold ${game.status === 'FINAL' && game.homeScore > game.awayScore ? 'text-white' : 'text-white'}`}>
                     {game.homeScore}
                   </span>
                 )}
@@ -273,7 +273,7 @@ export default function ScorekeeperDashboard() {
           onClick={() => setStatusFilter('')}
           className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
             statusFilter === ''
-              ? 'bg-[#FF6B00] text-white'
+              ? 'bg-eha-red text-white'
               : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
           }`}
         >
@@ -314,7 +314,7 @@ export default function ScorekeeperDashboard() {
       {/* Content */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+          <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
         </div>
       ) : games.length === 0 ? (
         <Card className="p-8 text-center">

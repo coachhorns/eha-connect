@@ -63,7 +63,7 @@ const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(
         className={cn(
           'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200',
           isActive
-            ? 'bg-[#FF6B00] text-white'
+            ? 'bg-eha-red text-white'
             : 'text-gray-400 hover:text-white hover:bg-[#252540]',
           className
         )}

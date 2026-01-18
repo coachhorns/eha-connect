@@ -225,7 +225,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -246,7 +246,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
             <ArrowLeft className="w-4 h-4" />
             Back to Event
           </Link>
-          <h1 className="text-3xl font-bold text-white">Manage Teams</h1>
+          <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Manage Teams</h1>
           {event && (
             <p className="mt-1 text-gray-400">{event.name}</p>
           )}
@@ -318,7 +318,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                       <div className="flex items-center gap-4">
                         {et.seed && (
                           <div className="w-8 h-8 bg-[#FF6B00]/20 rounded-full flex items-center justify-center">
-                            <span className="text-[#FF6B00] font-bold text-sm">#{et.seed}</span>
+                            <span className="text-white font-bold text-sm">#{et.seed}</span>
                           </div>
                         )}
                         <div>
@@ -421,7 +421,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                       value={team.id}
                       checked={addForm.teamId === team.id}
                       onChange={(e) => setAddForm({ ...addForm, teamId: e.target.value })}
-                      className="text-[#FF6B00] focus:ring-[#FF6B00]"
+                      className="text-white focus:ring-eha-red"
                     />
                     <div className="flex-1">
                       <div className="font-medium text-white">{team.name}</div>

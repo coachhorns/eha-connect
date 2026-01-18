@@ -69,7 +69,7 @@ export default function PricingPage() {
               {plan.features.map((feature) => (
                 <li key={feature} className="flex items-start gap-3">
                   <div className="w-5 h-5 bg-[#FF6B00]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Check className="w-3 h-3 text-[#FF6B00]" />
+                    <Check className="w-3 h-3 text-white" />
                   </div>
                   <span className="text-gray-300 text-sm">{feature}</span>
                 </li>
@@ -155,7 +155,7 @@ export default function PricingPage() {
       <div className="mt-16 text-center">
         <p className="text-gray-400 mb-4">
           Have questions? Contact us at{' '}
-          <a href="mailto:support@ehacircuit.com" className="text-[#FF6B00] hover:underline">
+          <a href="mailto:support@ehacircuit.com" className="text-white hover:underline">
             support@ehacircuit.com
           </a>
         </p>

@@ -90,13 +90,13 @@ export default function StandingsPage() {
   })
 
   return (
-    <div className="min-h-screen bg-[#0F0F1A]">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-b from-[#1A1A2E] to-[#0F0F1A] border-b border-[#252540]">
+      <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center gap-3 mb-2">
-            <Trophy className="w-8 h-8 text-[#FF6B00]" />
-            <h1 className="text-3xl font-bold text-white">Standings</h1>
+            <Trophy className="w-8 h-8 text-white" />
+            <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Standings</h1>
           </div>
           <p className="text-gray-400">Team rankings and records</p>
         </div>
@@ -123,7 +123,7 @@ export default function StandingsPage() {
                       setSelectedDivision('')
                     }
                   }}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Events (Overall)</option>
                   {filters.events.map(event => (
@@ -140,7 +140,7 @@ export default function StandingsPage() {
                 <select
                   value={selectedAgeGroup}
                   onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Age Groups</option>
                   {filters.ageGroups.map(ag => (
@@ -157,7 +157,7 @@ export default function StandingsPage() {
                 <select
                   value={selectedDivision}
                   onChange={(e) => setSelectedDivision(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Divisions</option>
                   {filters.divisions.map(d => (
@@ -187,7 +187,7 @@ export default function StandingsPage() {
         {/* Standings Tables */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
           </div>
         ) : sortedGroups.length === 0 ? (
           <Card className="p-8 text-center">
@@ -235,7 +235,7 @@ export default function StandingsPage() {
                         >
                           <td className="py-3 px-4">
                             <span className={`font-bold ${
-                              idx === 0 ? 'text-[#FF6B00]' :
+                              idx === 0 ? 'text-white' :
                               idx === 1 ? 'text-gray-300' :
                               idx === 2 ? 'text-amber-600' : 'text-gray-500'
                             }`}>

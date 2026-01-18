@@ -27,32 +27,32 @@ export function Navbar() {
   const isActive = (href: string) => pathname.startsWith(href)
 
   return (
-    <nav className="glass-header border-b border-eha-silver/20">
+    <nav className="glass-header border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-auto py-4">
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
               src="/images/main.png"
               alt="EHA Connect"
-              width={150}
-              height={40}
-              className="w-auto h-10"
+              width={300}
+              height={100}
+              className="w-auto h-28"
               priority
             />
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-3">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'font-heading font-bold uppercase tracking-[0.2em] text-sm py-1 transition-colors',
+                  'flex items-center justify-center px-6 py-2 rounded-full border text-xs font-bold uppercase tracking-widest shadow-md transition-all duration-300 ease-out',
                   isActive(link.href)
-                    ? 'text-eha-red border-b-2 border-eha-red'
-                    : 'text-gray-300 hover:text-white'
+                    ? 'bg-gradient-to-br from-[#FF1F40] to-[#600010] border-eha-red text-white shadow-lg shadow-eha-red/40'
+                    : 'border-white/20 text-gray-300 hover:bg-[linear-gradient(145deg,rgba(255,255,255,0.15)_0%,rgba(255,255,255,0.05)_100%)] hover:border-white/40 hover:shadow-[0_0_20px_rgba(255,255,255,0.2),inset_0_0_10px_rgba(255,255,255,0.1)] hover:-translate-y-0.5'
                 )}
               >
                 {link.label}

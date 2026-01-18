@@ -66,7 +66,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#FF6B00] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -82,7 +82,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
           <p className="text-red-400">{error}</p>
           <button
             onClick={() => router.push('/admin/events')}
-            className="mt-4 text-[#FF6B00] hover:underline"
+            className="mt-4 text-eha-red hover:underline"
           >
             Back to Events
           </button>
@@ -98,7 +98,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Edit Event</h1>
+        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Edit Event</h1>
         <p className="mt-2 text-gray-400">
           Update details for {event.name}
         </p>
