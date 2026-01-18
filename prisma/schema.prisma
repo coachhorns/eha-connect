@@ -1,0 +1,573 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  password      String?
+  name          String?
+  image         String?
+  role          UserRole  @default(PARENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  players       Player[]       // Players this user manages (parent/player)
+  subscription  Subscription?
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+enum UserRole {
+  PLAYER
+  PARENT
+  SCOREKEEPER
+  ADMIN
+}
+
+// ============================================
+// SUBSCRIPTION / PAYMENTS
+// ============================================
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String             @unique
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan                 SubscriptionPlan
+  status               SubscriptionStatus @default(ACTIVE)
+
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  stripePriceId        String?
+
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@map("subscriptions")
+}
+
+enum SubscriptionPlan {
+  ANNUAL      // $75/year
+  SEMI_ANNUAL // $50/6 months
+  MONTHLY     // $10/month
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
+  TRIALING
+}
+
+// ============================================
+// PLAYERS
+// ============================================
+
+model Player {
+  id              String    @id @default(cuid())
+  slug            String    @unique // URL-friendly name (firstname-lastname)
+
+  // Basic Info
+  firstName       String
+  lastName        String
+  email           String?
+  phone           String?
+
+  // Physical
+  heightFeet      Int?
+  heightInches    Int?
+  weight          Int?      // in pounds
+
+  // Basketball Info
+  primaryPosition Position?
+  secondaryPosition Position?
+  jerseyNumber    String?
+
+  // School & Location
+  school          String?
+  city            String?
+  state           String?
+  graduationYear  Int?      // e.g., 2027
+
+  // Profile
+  profilePhoto    String?   // URL
+  bio             String?   @db.Text
+
+  // Verification
+  isVerified      Boolean   @default(false)
+  verifiedAt      DateTime?
+  dateOfBirth     DateTime?
+  gradeLevel      Int?      // 6-12
+
+  // Social Links
+  twitterHandle   String?
+  instagramHandle String?
+  hudlUrl         String?
+
+  // Status
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  userId          String?   // User who manages this profile
+  user            User?     @relation(fields: [userId], references: [id])
+
+  teamRosters     TeamRoster[]
+  gameStats       GameStats[]
+  achievements    Achievement[]
+  media           Media[]
+
+  @@map("players")
+}
+
+enum Position {
+  PG  // Point Guard
+  SG  // Shooting Guard
+  SF  // Small Forward
+  PF  // Power Forward
+  C   // Center
+}
+
+// ============================================
+// TEAMS
+// ============================================
+
+model Team {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+
+  name        String
+  organization String? // Club/AAU organization name
+  logo        String?  // URL
+
+  // Location
+  city        String?
+  state       String?
+
+  // Division/Classification
+  ageGroup    String?  // e.g., "17U", "15U"
+  division    String?  // e.g., "Elite", "Select"
+
+  // Season Record
+  wins        Int      @default(0)
+  losses      Int      @default(0)
+
+  // Contact
+  coachName   String?
+  coachEmail  String?
+  coachPhone  String?
+
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  roster      TeamRoster[]
+  homeGames   Game[]       @relation("HomeTeam")
+  awayGames   Game[]       @relation("AwayTeam")
+  eventTeams  EventTeam[]
+
+  @@map("teams")
+}
+
+model TeamRoster {
+  id        String   @id @default(cuid())
+  teamId    String
+  playerId  String
+
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  jerseyNumber String?
+  isStarter    Boolean @default(false)
+  isCaptain    Boolean @default(false)
+
+  joinedAt  DateTime @default(now())
+  leftAt    DateTime?
+
+  @@unique([teamId, playerId])
+  @@map("team_rosters")
+}
+
+// ============================================
+// EVENTS (Tournaments, Leagues)
+// ============================================
+
+model Event {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+
+  name        String
+  type        EventType
+  description String?     @db.Text
+
+  // Location
+  venue       String?
+  address     String?
+  city        String?
+  state       String?
+
+  // Dates
+  startDate   DateTime
+  endDate     DateTime
+
+  // Details
+  ageGroups   String[]    // e.g., ["17U", "16U", "15U"]
+  divisions   String[]    // e.g., ["Elite", "Select"]
+  entryFee    Decimal?    @db.Decimal(10, 2)
+
+  // Media
+  bannerImage String?
+
+  isPublished Boolean     @default(false)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  games       Game[]
+  teams       EventTeam[]
+  awards      EventAward[]
+
+  @@map("events")
+}
+
+enum EventType {
+  TOURNAMENT
+  LEAGUE
+  SHOWCASE
+  CAMP
+}
+
+model EventTeam {
+  id        String   @id @default(cuid())
+  eventId   String
+  teamId    String
+
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  // Pool/Bracket placement
+  pool      String?  // e.g., "Pool A"
+  seed      Int?
+
+  // Event-specific record
+  eventWins   Int    @default(0)
+  eventLosses Int    @default(0)
+  pointsFor   Int    @default(0)
+  pointsAgainst Int  @default(0)
+
+  registeredAt DateTime @default(now())
+
+  @@unique([eventId, teamId])
+  @@map("event_teams")
+}
+
+model EventAward {
+  id        String     @id @default(cuid())
+  eventId   String
+  event     Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  type      AwardType
+  division  String?    // e.g., "17U Elite"
+
+  // Can be associated with player or team
+  playerId  String?
+  teamId    String?
+
+  createdAt DateTime   @default(now())
+
+  @@map("event_awards")
+}
+
+enum AwardType {
+  MVP
+  ALL_TOURNAMENT_FIRST
+  ALL_TOURNAMENT_SECOND
+  CHAMPION
+  RUNNER_UP
+  DEFENSIVE_MVP
+  SCORING_LEADER
+  ASSISTS_LEADER
+  REBOUNDS_LEADER
+}
+
+// ============================================
+// GAMES & STATS
+// ============================================
+
+model Game {
+  id          String     @id @default(cuid())
+
+  eventId     String?
+  event       Event?     @relation(fields: [eventId], references: [id])
+
+  homeTeamId  String
+  awayTeamId  String
+  homeTeam    Team       @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam    Team       @relation("AwayTeam", fields: [awayTeamId], references: [id])
+
+  // Scores
+  homeScore   Int        @default(0)
+  awayScore   Int        @default(0)
+
+  // Game Details
+  scheduledAt DateTime
+  startedAt   DateTime?
+  endedAt     DateTime?
+
+  court       String?    // e.g., "Court 1"
+  status      GameStatus @default(SCHEDULED)
+
+  // Period tracking
+  currentPeriod Int      @default(0)
+  periodScores  Json?    // Store period-by-period scores
+
+  // Division/Classification
+  ageGroup    String?
+  division    String?
+  gameType    GameType   @default(POOL)
+
+  // Bracket info (for tournament games)
+  bracketRound  String?  // e.g., "Quarterfinal", "Semifinal", "Championship"
+  bracketPosition Int?
+
+  isOfficial  Boolean    @default(false) // Stats are finalized
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  stats       GameStats[]
+  statLog     StatLog[]
+
+  @@map("games")
+}
+
+enum GameStatus {
+  SCHEDULED
+  WARMUP
+  IN_PROGRESS
+  HALFTIME
+  FINAL
+  POSTPONED
+  CANCELED
+}
+
+enum GameType {
+  POOL
+  BRACKET
+  CONSOLATION
+  CHAMPIONSHIP
+  EXHIBITION
+}
+
+model GameStats {
+  id        String   @id @default(cuid())
+  gameId    String
+  playerId  String
+
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  teamId    String   // Which team the player was on for this game
+
+  // Minutes
+  minutes   Int      @default(0)
+
+  // Scoring
+  points    Int      @default(0)
+  fgMade    Int      @default(0)  // Field goals made
+  fgAttempted Int    @default(0)  // Field goals attempted
+  fg3Made   Int      @default(0)  // 3-pointers made
+  fg3Attempted Int   @default(0)  // 3-pointers attempted
+  ftMade    Int      @default(0)  // Free throws made
+  ftAttempted Int    @default(0)  // Free throws attempted
+
+  // Rebounds
+  offRebounds Int    @default(0)
+  defRebounds Int    @default(0)
+  rebounds    Int    @default(0)  // Total (computed but stored for queries)
+
+  // Other stats
+  assists   Int      @default(0)
+  steals    Int      @default(0)
+  blocks    Int      @default(0)
+  turnovers Int      @default(0)
+  fouls     Int      @default(0)
+
+  // Plus/Minus
+  plusMinus Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([gameId, playerId])
+  @@map("game_stats")
+}
+
+// Live stat logging (for undo functionality and audit trail)
+model StatLog {
+  id        String    @id @default(cuid())
+  gameId    String
+  game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  playerId  String
+  teamId    String
+
+  statType  StatType
+  value     Int       @default(1)  // Usually 1, but can be 2 or 3 for points
+
+  period    Int       @default(1)
+  gameTime  String?   // e.g., "4:32" remaining in period
+
+  isUndone  Boolean   @default(false)
+
+  createdAt DateTime  @default(now())
+  createdBy String?   // Scorekeeper user ID
+
+  @@index([gameId, createdAt])
+  @@map("stat_logs")
+}
+
+enum StatType {
+  PTS_2      // 2-point field goal
+  PTS_3      // 3-point field goal
+  PTS_FT     // Free throw
+  FG_MISS    // Missed field goal
+  FG3_MISS   // Missed 3-pointer
+  FT_MISS    // Missed free throw
+  OREB       // Offensive rebound
+  DREB       // Defensive rebound
+  AST        // Assist
+  STL        // Steal
+  BLK        // Block
+  TO         // Turnover
+  FOUL       // Personal foul
+}
+
+// ============================================
+// ACHIEVEMENTS & BADGES
+// ============================================
+
+model Achievement {
+  id          String          @id @default(cuid())
+  playerId    String
+  player      Player          @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  type        AchievementType
+  title       String          // Display title
+  description String?
+
+  // Context
+  eventId     String?         // Which event this was earned at
+  eventName   String?
+  season      String?         // e.g., "2024-2025"
+
+  earnedAt    DateTime        @default(now())
+
+  @@map("achievements")
+}
+
+enum AchievementType {
+  MVP
+  ALL_TOURNAMENT
+  CHAMPION
+  STAT_LEADER
+  DEFENSIVE_PLAYER
+  MOST_IMPROVED
+  SPORTSMANSHIP
+  ALL_STAR
+  TRIPLE_DOUBLE
+  DOUBLE_DOUBLE
+}
+
+// ============================================
+// MEDIA
+// ============================================
+
+model Media {
+  id        String    @id @default(cuid())
+  playerId  String
+  player    Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  type      MediaType
+  url       String
+  thumbnail String?
+
+  title     String?
+  description String?
+
+  eventId   String?   // If from a specific event
+  gameId    String?   // If from a specific game
+
+  isPublic  Boolean   @default(true)
+  isFeatured Boolean  @default(false)
+
+  uploadedAt DateTime @default(now())
+
+  @@map("media")
+}
+
+enum MediaType {
+  PHOTO
+  VIDEO
+  HIGHLIGHT
+}

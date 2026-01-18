@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --yes)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --yes --no-git)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma init)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx next lint)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(more:*)",
+      "Bash(npx prisma db seed)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker compose:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsx:*)",
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git config:*)"
+    ]
+  }
+}
