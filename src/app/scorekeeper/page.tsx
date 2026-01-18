@@ -274,7 +274,7 @@ export default function ScorekeeperDashboard() {
           className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
             statusFilter === ''
               ? 'bg-eha-red text-white'
-              : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+              : 'bg-white/5 text-gray-400 hover:text-white'
           }`}
         >
           All Games
@@ -284,7 +284,7 @@ export default function ScorekeeperDashboard() {
           className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
             statusFilter === 'IN_PROGRESS'
               ? 'bg-green-600 text-white'
-              : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+              : 'bg-white/5 text-gray-400 hover:text-white'
           }`}
         >
           Live
@@ -294,7 +294,7 @@ export default function ScorekeeperDashboard() {
           className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
             statusFilter === 'SCHEDULED'
               ? 'bg-blue-600 text-white'
-              : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+              : 'bg-white/5 text-gray-400 hover:text-white'
           }`}
         >
           Upcoming
@@ -304,7 +304,7 @@ export default function ScorekeeperDashboard() {
           className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
             statusFilter === 'FINAL'
               ? 'bg-gray-600 text-white'
-              : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+              : 'bg-white/5 text-gray-400 hover:text-white'
           }`}
         >
           Completed

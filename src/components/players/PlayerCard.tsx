@@ -52,7 +52,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-24 h-24 rounded-full bg-[#252540] flex items-center justify-center text-3xl font-bold text-gray-500">
+              <div className="w-24 h-24 rounded-full bg-[#1a3a6e] flex items-center justify-center text-3xl font-bold text-gray-500">
                 {player.firstName[0]}{player.lastName[0]}
               </div>
             </div>
@@ -71,7 +71,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
           {/* Position Badge */}
           {player.primaryPosition && (
             <div className="absolute top-3 left-3">
-              <Badge variant="default" size="sm" className="bg-dark-surface/80 text-white border-white/20">
+              <Badge variant="default" size="sm" className="bg-[#153361]/90 text-white border-white/20">
                 {player.primaryPosition}
               </Badge>
             </div>
@@ -127,7 +127,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
 
           {/* Stats Preview */}
           {player.careerStats && player.careerStats.gamesPlayed > 0 && (
-            <div className="mt-4 pt-4 border-t border-[#252540]">
+            <div className="mt-4 pt-4 border-t border-[#1a3a6e]">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
                   <p className="text-lg font-bold text-white">

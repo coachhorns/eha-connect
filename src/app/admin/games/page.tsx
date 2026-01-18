@@ -227,7 +227,7 @@ export default function AdminGamesPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#252540]">
+              <thead className="bg-[#1a3a6e]">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Date
@@ -252,13 +252,13 @@ export default function AdminGamesPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#252540]">
+              <tbody className="divide-y divide-[#1a3a6e]">
                 {games.map((game) => {
                   const statusBadge = getStatusBadge(game.status)
                   return (
                     <tr
                       key={game.id}
-                      className="hover:bg-[#252540]/50 transition-colors cursor-pointer"
+                      className="hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer"
                       onClick={() => router.push(`/admin/games/${game.id}`)}
                     >
                       <td className="px-6 py-4">
@@ -310,13 +310,13 @@ export default function AdminGamesPage() {
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                             {openDropdown === game.id && (
-                              <div className="absolute right-0 top-full mt-1 w-48 bg-[#1A1A2E] border border-[#252540] rounded-lg shadow-xl z-10">
+                              <div className="absolute right-0 top-full mt-1 w-48 bg-dark-surface border border-[#1a3a6e] rounded-lg shadow-xl z-10">
                                 <button
                                   onClick={() => {
                                     setDeleteModal({ isOpen: true, game })
                                     setOpenDropdown(null)
                                   }}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-[#252540] transition-colors"
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-[#1a3a6e] transition-colors"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                   Delete
@@ -336,7 +336,7 @@ export default function AdminGamesPage() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-[#252540]">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-[#1a3a6e]">
             <p className="text-sm text-gray-500">
               Showing {((page - 1) * pagination.limit) + 1} to{' '}
               {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} games

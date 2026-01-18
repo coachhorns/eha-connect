@@ -281,7 +281,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
             )}
-            <div className="pt-2 border-t border-[#252540]">
+            <div className="pt-2 border-t border-[#1a3a6e]">
               {game.ageGroup && (
                 <Badge variant="info" size="sm" className="mr-2">{game.ageGroup}</Badge>
               )}
@@ -364,7 +364,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-gray-500 border-b border-[#252540]">
+                  <tr className="text-gray-500 border-b border-[#1a3a6e]">
                     <th className="text-left py-2 px-2">Player</th>
                     <th className="text-center py-2 px-1">PTS</th>
                     <th className="text-center py-2 px-1">REB</th>
@@ -379,7 +379,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
                 </thead>
                 <tbody>
                   {awayStats.map(stat => (
-                    <tr key={stat.id} className="border-b border-[#252540]/50">
+                    <tr key={stat.id} className="border-b border-[#1a3a6e]/50">
                       <td className="py-2 px-2 text-white">
                         #{stat.player.jerseyNumber || '?'} {stat.player.firstName[0]}. {stat.player.lastName}
                       </td>
@@ -405,7 +405,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-gray-500 border-b border-[#252540]">
+                  <tr className="text-gray-500 border-b border-[#1a3a6e]">
                     <th className="text-left py-2 px-2">Player</th>
                     <th className="text-center py-2 px-1">PTS</th>
                     <th className="text-center py-2 px-1">REB</th>
@@ -420,7 +420,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
                 </thead>
                 <tbody>
                   {homeStats.map(stat => (
-                    <tr key={stat.id} className="border-b border-[#252540]/50">
+                    <tr key={stat.id} className="border-b border-[#1a3a6e]/50">
                       <td className="py-2 px-2 text-white">
                         #{stat.player.jerseyNumber || '?'} {stat.player.firstName[0]}. {stat.player.lastName}
                       </td>

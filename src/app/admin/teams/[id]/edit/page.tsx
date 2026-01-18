@@ -282,7 +282,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
             </div>
           </div>
 
-          <hr className="border-[#252540]" />
+          <hr className="border-[#1a3a6e]" />
 
           {/* Coach Information */}
           <div>

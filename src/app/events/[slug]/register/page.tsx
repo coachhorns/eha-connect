@@ -385,7 +385,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
               )}
 
               {event?.entryFee && (
-                <div className="pt-4 border-t border-[#252540]">
+                <div className="pt-4 border-t border-[#1a3a6e]">
                   <div className="text-sm text-gray-500">Entry Fee</div>
                   <div className="text-2xl font-bold text-white">
                     ${parseFloat(event.entryFee.toString()).toFixed(0)}

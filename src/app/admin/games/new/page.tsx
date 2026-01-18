@@ -246,7 +246,7 @@ export default function NewGamePage() {
                   type="checkbox"
                   checked={showAllTeams}
                   onChange={(e) => setShowAllTeams(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-600 bg-[#252540] text-eha-red focus:ring-eha-red focus:ring-offset-0"
+                  className="w-4 h-4 rounded border-gray-600 bg-[#1a3a6e] text-eha-red focus:ring-eha-red focus:ring-offset-0"
                 />
                 <span className="text-sm text-gray-300">
                   Show All Teams

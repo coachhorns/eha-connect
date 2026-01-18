@@ -97,7 +97,7 @@ export default function TeamsPage() {
               placeholder="Search teams..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-[#252540] border border-[#252540] rounded-lg text-white placeholder-gray-500 focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-[#1a3a6e] border border-[#1a3a6e] rounded-lg text-white placeholder-gray-500 focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
             />
           </div>
 
@@ -131,12 +131,12 @@ export default function TeamsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="bg-[#1A1A2E] rounded-xl p-6">
+              <div className="bg-white/5 rounded-xl p-6">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-[#252540] rounded-lg" />
+                  <div className="w-16 h-16 bg-[#1a3a6e] rounded-lg" />
                   <div className="flex-1">
-                    <div className="h-5 bg-[#252540] rounded w-3/4 mb-2" />
-                    <div className="h-4 bg-[#252540] rounded w-1/2" />
+                    <div className="h-5 bg-[#1a3a6e] rounded w-3/4 mb-2" />
+                    <div className="h-4 bg-[#1a3a6e] rounded w-1/2" />
                   </div>
                 </div>
               </div>
@@ -159,7 +159,7 @@ export default function TeamsPage() {
               <Link key={team.id} href={`/teams/${team.slug}`}>
                 <Card variant="hover" className="p-6 h-full">
                   <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 bg-[#252540] rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-16 h-16 bg-[#1a3a6e] rounded-lg flex items-center justify-center flex-shrink-0">
                       {team.logo ? (
                         <img
                           src={team.logo}
@@ -186,7 +186,7 @@ export default function TeamsPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-[#252540] flex items-center justify-between text-sm">
+                  <div className="mt-4 pt-4 border-t border-[#1a3a6e] flex items-center justify-between text-sm">
                     <div className="flex items-center gap-4">
                       {(team.city || team.state) && (
                         <span className="flex items-center gap-1 text-gray-400">

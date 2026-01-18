@@ -295,7 +295,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
         <div className="space-y-6">
           {sortedPools.map(pool => (
             <Card key={pool} className="overflow-hidden p-0">
-              <div className="bg-[#252540] px-6 py-3 flex items-center justify-between">
+              <div className="bg-[#1a3a6e] px-6 py-3 flex items-center justify-between">
                 <h3 className="font-semibold text-white flex items-center gap-2">
                   {pool === 'Unassigned' ? (
                     <Badge variant="warning">{pool}</Badge>
@@ -307,13 +307,13 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                   </span>
                 </h3>
               </div>
-              <div className="divide-y divide-[#252540]">
+              <div className="divide-y divide-[#1a3a6e]">
                 {groupedTeams[pool]
                   .sort((a, b) => (a.seed || 999) - (b.seed || 999))
                   .map((et) => (
                     <div
                       key={et.id}
-                      className="px-6 py-4 flex items-center justify-between hover:bg-[#252540]/30 transition-colors"
+                      className="px-6 py-4 flex items-center justify-between hover:bg-[#1a3a6e]/30 transition-colors"
                     >
                       <div className="flex items-center gap-4">
                         {et.seed && (
@@ -402,7 +402,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                 className="pl-10"
               />
             </div>
-            <div className="max-h-48 overflow-y-auto border border-[#252540] rounded-lg">
+            <div className="max-h-48 overflow-y-auto border border-[#1a3a6e] rounded-lg">
               {filteredAvailableTeams.length === 0 ? (
                 <div className="p-4 text-center text-gray-500">
                   {searchTeam ? 'No teams found' : 'No available teams'}
@@ -411,8 +411,8 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                 filteredAvailableTeams.map((team) => (
                   <label
                     key={team.id}
-                    className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#252540] transition-colors ${
-                      addForm.teamId === team.id ? 'bg-[#252540]' : ''
+                    className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#1a3a6e] transition-colors ${
+                      addForm.teamId === team.id ? 'bg-[#1a3a6e]' : ''
                     }`}
                   >
                     <input
@@ -482,7 +482,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
       >
         {selectedTeam && (
           <form onSubmit={handleUpdateTeam} className="space-y-4">
-            <div className="bg-[#252540] rounded-lg p-4 mb-4">
+            <div className="bg-[#1a3a6e] rounded-lg p-4 mb-4">
               <div className="font-medium text-white">{selectedTeam.team.name}</div>
               {selectedTeam.team.organization && (
                 <div className="text-sm text-gray-500">{selectedTeam.team.organization}</div>

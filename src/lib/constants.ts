@@ -5,7 +5,7 @@ export const colors = {
   accent: '#FFD700', // Gold
   background: '#0F0F1A', // Dark background
   surface: '#1A1A2E', // Surface/card background
-  surfaceLight: '#252540', // Lighter surface
+  surfaceLight: '#1a3a6e', // Lighter surface
   text: '#FFFFFF',
   textMuted: '#9CA3AF',
   success: '#10B981',

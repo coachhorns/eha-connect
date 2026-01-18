@@ -102,7 +102,7 @@ export default function EventsPage() {
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 showUpcoming
                   ? 'bg-eha-red text-white'
-                  : 'bg-[#252540] text-gray-400 hover:text-white'
+                  : 'bg-[#1a3a6e] text-gray-400 hover:text-white'
               }`}
             >
               Upcoming
@@ -112,7 +112,7 @@ export default function EventsPage() {
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 !showUpcoming
                   ? 'bg-eha-red text-white'
-                  : 'bg-[#252540] text-gray-400 hover:text-white'
+                  : 'bg-[#1a3a6e] text-gray-400 hover:text-white'
               }`}
             >
               All Events
@@ -135,11 +135,11 @@ export default function EventsPage() {
             <div key={i} className="animate-pulse">
               <Card className="p-6">
                 <div className="flex gap-4">
-                  <div className="w-32 h-20 bg-[#252540] rounded-lg" />
+                  <div className="w-32 h-20 bg-[#1a3a6e] rounded-lg" />
                   <div className="flex-1">
-                    <div className="h-5 bg-[#252540] rounded w-1/3 mb-2" />
-                    <div className="h-4 bg-[#252540] rounded w-1/2 mb-4" />
-                    <div className="h-4 bg-[#252540] rounded w-1/4" />
+                    <div className="h-5 bg-[#1a3a6e] rounded w-1/3 mb-2" />
+                    <div className="h-4 bg-[#1a3a6e] rounded w-1/2 mb-4" />
+                    <div className="h-4 bg-[#1a3a6e] rounded w-1/4" />
                   </div>
                 </div>
               </Card>

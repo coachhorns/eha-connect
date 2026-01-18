@@ -273,7 +273,7 @@ export default function AdminEventsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#252540]">
+              <thead className="bg-[#1a3a6e]">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Event
@@ -301,13 +301,13 @@ export default function AdminEventsPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#252540]">
+              <tbody className="divide-y divide-[#1a3a6e]">
                 {events.map((event) => {
                   const eventStatus = getEventStatus(event)
                   return (
                     <tr
                       key={event.id}
-                      className="hover:bg-[#252540]/50 transition-colors cursor-pointer"
+                      className="hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer"
                       onClick={() => router.push(`/admin/events/${event.id}`)}
                     >
                       <td className="px-6 py-4">
@@ -384,10 +384,10 @@ export default function AdminEventsPage() {
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                             {openDropdown === event.id && (
-                              <div className="absolute right-0 top-full mt-1 w-48 bg-[#1A1A2E] border border-[#252540] rounded-lg shadow-xl z-10">
+                              <div className="absolute right-0 top-full mt-1 w-48 bg-dark-surface border border-[#1a3a6e] rounded-lg shadow-xl z-10">
                                 <Link
                                   href={`/admin/events/${event.id}`}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-[#252540] transition-colors"
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-[#1a3a6e] transition-colors"
                                   onClick={() => setOpenDropdown(null)}
                                 >
                                   <Gamepad2 className="w-4 h-4" />
@@ -395,7 +395,7 @@ export default function AdminEventsPage() {
                                 </Link>
                                 <button
                                   onClick={() => handleTogglePublish(event)}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-[#252540] transition-colors"
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-[#1a3a6e] transition-colors"
                                 >
                                   {event.isPublished ? (
                                     <>
@@ -411,7 +411,7 @@ export default function AdminEventsPage() {
                                 </button>
                                 <Link
                                   href={`/events/${event.slug}`}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-[#252540] transition-colors"
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-[#1a3a6e] transition-colors"
                                   onClick={() => setOpenDropdown(null)}
                                 >
                                   <Eye className="w-4 h-4" />
@@ -422,7 +422,7 @@ export default function AdminEventsPage() {
                                     setDeleteModal({ isOpen: true, event })
                                     setOpenDropdown(null)
                                   }}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-[#252540] transition-colors"
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-[#1a3a6e] transition-colors"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                   Delete
@@ -442,7 +442,7 @@ export default function AdminEventsPage() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-[#252540]">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-[#1a3a6e]">
             <p className="text-sm text-gray-500">
               Showing {((page - 1) * pagination.limit) + 1} to{' '}
               {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} events

@@ -34,18 +34,18 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
           className={cn(
-            'w-full bg-[#1A1A2E] border border-[#252540] rounded-xl shadow-2xl',
+            'w-full bg-[#1A1A2E] border border-[#1a3a6e] rounded-xl shadow-2xl',
             sizes[size]
           )}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           {title && (
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#252540]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#1a3a6e]">
               <h2 className="text-xl font-bold text-white">{title}</h2>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white hover:bg-[#252540] rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-white hover:bg-[#1a3a6e] rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

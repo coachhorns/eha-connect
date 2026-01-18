@@ -13,13 +13,13 @@
   --color-accent: #FFD700;
 
   /* Dark Theme - Athletic Professional */
-  --dark-base: #050B14;
-  --dark-surface: #111827;
+  --dark-base: #0D2B5B;
+  --dark-surface: #153361;
 
   /* Legacy Dark Theme */
   --background: #0F0F1A;
   --background-secondary: #1A1A2E;
-  --background-tertiary: #252540;
+  --background-tertiary: #1a3a6e;
   --foreground: #FFFFFF;
   --foreground-muted: #9CA3AF;
 
@@ -40,8 +40,8 @@
   --color-eha-navy: #0D2B5B;
   --color-eha-red: #C8102E;
   --color-eha-silver: #A2AAAD;
-  --color-dark-base: #050B14;
-  --color-dark-surface: #111827;
+  --color-dark-base: #0D2B5B;
+  --color-dark-surface: #153361;
 
   /* Font Families */
   --font-stats: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;

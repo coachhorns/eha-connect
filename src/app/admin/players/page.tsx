@@ -136,7 +136,7 @@ export default function AdminPlayersPage() {
             placeholder="Search players..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-[#252540] border border-[#252540] rounded-lg text-white placeholder-gray-500 focus:border-eha-red transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#1a3a6e] border border-[#1a3a6e] rounded-lg text-white placeholder-gray-500 focus:border-eha-red transition-all"
           />
         </div>
       </Card>
@@ -146,11 +146,11 @@ export default function AdminPlayersPage() {
         {isLoading ? (
           <div className="p-8">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="animate-pulse flex items-center gap-4 py-4 border-b border-[#252540]">
-                <div className="w-10 h-10 bg-[#252540] rounded-full" />
+              <div key={i} className="animate-pulse flex items-center gap-4 py-4 border-b border-[#1a3a6e]">
+                <div className="w-10 h-10 bg-[#1a3a6e] rounded-full" />
                 <div className="flex-1">
-                  <div className="h-4 bg-[#252540] rounded w-1/4 mb-2" />
-                  <div className="h-3 bg-[#252540] rounded w-1/3" />
+                  <div className="h-4 bg-[#1a3a6e] rounded w-1/4 mb-2" />
+                  <div className="h-3 bg-[#1a3a6e] rounded w-1/3" />
                 </div>
               </div>
             ))}
@@ -163,7 +163,7 @@ export default function AdminPlayersPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#252540]">
+                <tr className="border-b border-[#1a3a6e]">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
                     Player
                   </th>
@@ -184,9 +184,9 @@ export default function AdminPlayersPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#252540]">
+              <tbody className="divide-y divide-[#1a3a6e]">
                 {players.map((player) => (
-                  <tr key={player.id} className="hover:bg-[#252540]/50 transition-colors">
+                  <tr key={player.id} className="hover:bg-[#1a3a6e]/50 transition-colors">
                     <td className="px-4 py-4">
                       <Link href={`/players/${player.slug}`} className="flex items-center gap-3 hover:text-eha-red">
                         <Avatar

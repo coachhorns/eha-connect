@@ -707,7 +707,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
 
   if (authStatus === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-dark-base">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-10 h-10 border-3 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
@@ -715,7 +715,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
 
   if (!game) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-dark-base">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-gray-600 mx-auto mb-4" />
           <p className="text-gray-400 text-lg mb-4">Game not found</p>
@@ -771,9 +771,9 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   }
 
   return (
-    <div className="min-h-screen bg-dark-base select-none">
+    <div className="min-h-screen select-none">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-dark-base/95 backdrop-blur-md border-b border-eha-silver/20">
+      <div className="sticky top-0 z-50 bg-eha-navy/95 backdrop-blur-md border-b border-white/10">
         <div className="max-w-[1600px] mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

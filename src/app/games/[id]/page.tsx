@@ -189,9 +189,9 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
   const currentTeam = selectedTeam === 'home' ? game.homeTeam : game.awayTeam
 
   return (
-    <div className="min-h-screen bg-[#0F0F1A]">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-b from-[#1A1A2E] to-[#0F0F1A] border-b border-[#252540]">
+      <div className="bg-transparent border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Back Link */}
           {game.event && (
@@ -262,7 +262,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
                   selectedTeam === 'away'
                     ? 'bg-eha-red text-white'
-                    : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+                    : 'bg-white/5 text-gray-400 hover:text-white'
                 }`}
               >
                 {game.awayTeam.name}
@@ -273,7 +273,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
                   selectedTeam === 'home'
                     ? 'bg-eha-red text-white'
-                    : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+                    : 'bg-white/5 text-gray-400 hover:text-white'
                 }`}
               >
                 {game.homeTeam.name}
@@ -283,16 +283,16 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
 
             {/* Box Score Table */}
             <Card className="overflow-hidden p-0 mb-6">
-              <div className="bg-[#252540] px-4 py-3 border-b border-[#1A1A2E]">
+              <div className="bg-[#1a3a6e] px-4 py-3 border-b border-[#1A1A2E]">
                 <h2 className="font-semibold text-white">{currentTeam.name} Box Score</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-[#252540] text-xs text-gray-500 uppercase">
-                      <th className="text-left py-3 px-4 sticky left-0 bg-[#1A1A2E]">Player</th>
+                    <tr className="border-b border-[#1a3a6e] text-xs text-gray-500 uppercase">
+                      <th className="text-left py-3 px-4 sticky left-0 bg-dark-surface">Player</th>
                       <th className="text-center py-3 px-2 min-w-[40px]">MIN</th>
-                      <th className="text-center py-3 px-2 min-w-[40px] bg-[#252540]/30">PTS</th>
+                      <th className="text-center py-3 px-2 min-w-[40px] bg-[#1a3a6e]/30">PTS</th>
                       <th className="text-center py-3 px-2 min-w-[40px]">REB</th>
                       <th className="text-center py-3 px-2 min-w-[40px]">AST</th>
                       <th className="text-center py-3 px-2 min-w-[40px]">STL</th>
@@ -308,8 +308,8 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                     {currentStats
                       .sort((a, b) => b.points - a.points)
                       .map(stat => (
-                        <tr key={stat.id} className="border-b border-[#252540]/50 hover:bg-[#252540]/30">
-                          <td className="py-3 px-4 sticky left-0 bg-[#1A1A2E]">
+                        <tr key={stat.id} className="border-b border-[#1a3a6e]/50 hover:bg-[#1a3a6e]/30">
+                          <td className="py-3 px-4 sticky left-0 bg-dark-surface">
                             <Link
                               href={`/players/${stat.player.slug}`}
                               className="flex items-center gap-2 hover:text-white transition-colors"
@@ -323,7 +323,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                                   className="w-8 h-8 rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="w-8 h-8 bg-[#252540] rounded-full flex items-center justify-center">
+                                <div className="w-8 h-8 bg-[#1a3a6e] rounded-full flex items-center justify-center">
                                   <User className="w-4 h-4 text-gray-400" />
                                 </div>
                               )}
@@ -338,7 +338,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                             </Link>
                           </td>
                           <td className="text-center py-3 px-2 text-gray-400">{stat.minutes || '-'}</td>
-                          <td className="text-center py-3 px-2 text-white font-bold bg-[#252540]/30">{stat.points}</td>
+                          <td className="text-center py-3 px-2 text-white font-bold bg-[#1a3a6e]/30">{stat.points}</td>
                           <td className="text-center py-3 px-2 text-gray-300">{stat.rebounds}</td>
                           <td className="text-center py-3 px-2 text-gray-300">{stat.assists}</td>
                           <td className="text-center py-3 px-2 text-gray-300">{stat.steals}</td>
@@ -357,8 +357,8 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                         </tr>
                       ))}
                     {/* Totals Row */}
-                    <tr className="bg-[#252540] font-semibold">
-                      <td className="py-3 px-4 sticky left-0 bg-[#252540] text-white">TOTALS</td>
+                    <tr className="bg-[#1a3a6e] font-semibold">
+                      <td className="py-3 px-4 sticky left-0 bg-[#1a3a6e] text-white">TOTALS</td>
                       <td className="text-center py-3 px-2 text-gray-400">-</td>
                       <td className="text-center py-3 px-2 text-white">{currentTotals.points}</td>
                       <td className="text-center py-3 px-2 text-gray-300">{currentTotals.rebounds}</td>
@@ -454,7 +454,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                         {stat.away}
                       </span>
                     </div>
-                    <div className="h-2 bg-[#252540] rounded-full overflow-hidden flex">
+                    <div className="h-2 bg-[#1a3a6e] rounded-full overflow-hidden flex">
                       <div
                         className={`h-full ${stat.home > stat.away ? 'bg-eha-red' : 'bg-gray-600'}`}
                         style={{ width: `${homePercent}%` }}

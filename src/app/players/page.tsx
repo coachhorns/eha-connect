@@ -113,14 +113,14 @@ export default function PlayersPage() {
               placeholder="Search by name or school..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-[#252540] border border-[#252540] rounded-lg text-white placeholder-gray-500 focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-[#1a3a6e] border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
             />
           </div>
 
           {/* Filter Toggle (Mobile) */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="md:hidden flex items-center justify-center gap-2 px-4 py-2.5 bg-[#252540] rounded-lg text-gray-300"
+            className="md:hidden flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1a3a6e] border border-white/10 rounded-lg text-gray-300"
           >
             <Filter className="w-5 h-5" />
             Filters
@@ -157,7 +157,7 @@ export default function PlayersPage() {
 
         {/* Mobile Filters */}
         {showFilters && (
-          <div className="md:hidden mt-4 pt-4 border-t border-[#252540] grid grid-cols-2 gap-3">
+          <div className="md:hidden mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-3">
             <Select
               label="Position"
               options={[{ value: '', label: 'All Positions' }, ...positions]}
@@ -190,12 +190,12 @@ export default function PlayersPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="bg-[#1A1A2E] rounded-xl overflow-hidden">
-                <div className="h-48 bg-[#252540]" />
+              <div className="bg-white/5 rounded-xl overflow-hidden">
+                <div className="h-48 bg-[#1a3a6e]" />
                 <div className="p-4 space-y-3">
-                  <div className="h-5 bg-[#252540] rounded w-3/4" />
-                  <div className="h-4 bg-[#252540] rounded w-1/2" />
-                  <div className="h-4 bg-[#252540] rounded w-2/3" />
+                  <div className="h-5 bg-[#1a3a6e] rounded w-3/4" />
+                  <div className="h-4 bg-[#1a3a6e] rounded w-1/2" />
+                  <div className="h-4 bg-[#1a3a6e] rounded w-2/3" />
                 </div>
               </div>
             </div>

@@ -221,7 +221,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               name="isPublished"
               checked={formData.isPublished}
               onChange={handleChange}
-              className="w-4 h-4 rounded border-[#252540] bg-[#1A1A2E] text-eha-red focus:ring-eha-red"
+              className="w-4 h-4 rounded border-[#1a3a6e] bg-[#1A1A2E] text-eha-red focus:ring-eha-red"
             />
             Published
           </label>
@@ -284,7 +284,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   value={formData.description}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-4 py-2.5 bg-[#1A1A2E] border border-[#252540] rounded-lg text-white placeholder-gray-500 transition-colors duration-200 resize-none"
+                  className="w-full px-4 py-2.5 bg-[#1A1A2E] border border-[#1a3a6e] rounded-lg text-white placeholder-gray-500 transition-colors duration-200 resize-none"
                   placeholder="Describe the event..."
                 />
               </div>
@@ -363,7 +363,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     formData.ageGroups.includes(ageGroup)
                       ? 'bg-eha-red text-white'
-                      : 'bg-[#252540] text-gray-400 hover:text-white'
+                      : 'bg-[#1a3a6e] text-gray-400 hover:text-white'
                   }`}
                 >
                   {ageGroup}
@@ -388,7 +388,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     formData.divisions.includes(division)
                       ? 'bg-eha-red text-white'
-                      : 'bg-[#252540] text-gray-400 hover:text-white'
+                      : 'bg-[#1a3a6e] text-gray-400 hover:text-white'
                   }`}
                 >
                   {division}

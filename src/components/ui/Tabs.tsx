@@ -64,7 +64,7 @@ const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(
           'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200',
           isActive
             ? 'bg-eha-red text-white'
-            : 'text-gray-400 hover:text-white hover:bg-[#252540]',
+            : 'text-gray-400 hover:text-white hover:bg-[#1a3a6e]',
           className
         )}
         onClick={() => context.setActiveTab(value)}

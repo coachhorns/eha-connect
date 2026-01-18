@@ -123,7 +123,7 @@ export default function StandingsPage() {
                       setSelectedDivision('')
                     }
                   }}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Events (Overall)</option>
                   {filters.events.map(event => (
@@ -140,7 +140,7 @@ export default function StandingsPage() {
                 <select
                   value={selectedAgeGroup}
                   onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Age Groups</option>
                   {filters.ageGroups.map(ag => (
@@ -157,7 +157,7 @@ export default function StandingsPage() {
                 <select
                   value={selectedDivision}
                   onChange={(e) => setSelectedDivision(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Divisions</option>
                   {filters.divisions.map(d => (
@@ -199,7 +199,7 @@ export default function StandingsPage() {
           <div className="space-y-6">
             {sortedGroups.map(group => (
               <Card key={group} className="overflow-hidden p-0">
-                <div className="bg-[#252540] px-4 py-3 border-b border-[#1A1A2E]">
+                <div className="bg-[#1a3a6e] px-4 py-3 border-b border-[#1A1A2E]">
                   <h2 className="font-semibold text-white flex items-center gap-2">
                     <Badge variant={standingsType === 'event' ? 'info' : 'orange'}>{group}</Badge>
                     <span className="text-gray-500 text-sm font-normal">
@@ -210,7 +210,7 @@ export default function StandingsPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-[#252540] text-xs text-gray-500 uppercase">
+                      <tr className="border-b border-[#1a3a6e] text-xs text-gray-500 uppercase">
                         <th className="text-left py-3 px-4 w-12">#</th>
                         <th className="text-left py-3 px-4">Team</th>
                         <th className="text-center py-3 px-3">W</th>
@@ -231,7 +231,7 @@ export default function StandingsPage() {
                       {standings[group].map((team, idx) => (
                         <tr
                           key={team.teamId}
-                          className="border-b border-[#252540]/50 hover:bg-[#252540]/30 transition-colors"
+                          className="border-b border-[#1a3a6e]/50 hover:bg-[#1a3a6e]/30 transition-colors"
                         >
                           <td className="py-3 px-4">
                             <span className={`font-bold ${
@@ -253,7 +253,7 @@ export default function StandingsPage() {
                                   className="w-8 h-8 rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="w-8 h-8 bg-[#252540] rounded-full flex items-center justify-center">
+                                <div className="w-8 h-8 bg-[#1a3a6e] rounded-full flex items-center justify-center">
                                   <span className="text-xs font-bold text-gray-400">
                                     {team.teamName.charAt(0)}
                                   </span>

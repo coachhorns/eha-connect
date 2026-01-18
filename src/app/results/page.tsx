@@ -158,7 +158,7 @@ export default function ResultsPage() {
                 <select
                   value={selectedEvent}
                   onChange={(e) => setSelectedEvent(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Events</option>
                   {filters.events.map(event => (
@@ -175,7 +175,7 @@ export default function ResultsPage() {
                 <select
                   value={selectedAgeGroup}
                   onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Age Groups</option>
                   {filters.ageGroups.map(ag => (
@@ -192,7 +192,7 @@ export default function ResultsPage() {
                 <select
                   value={selectedDivision}
                   onChange={(e) => setSelectedDivision(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Divisions</option>
                   {filters.divisions.map(div => (
@@ -209,7 +209,7 @@ export default function ResultsPage() {
                 <select
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 >
                   <option value="">All Dates</option>
                   {filters.dates.map(date => (
@@ -303,7 +303,7 @@ export default function ResultsPage() {
                                     className="w-6 h-6 rounded-full object-cover"
                                   />
                                 ) : (
-                                  <div className="w-6 h-6 bg-[#252540] rounded-full flex items-center justify-center">
+                                  <div className="w-6 h-6 bg-[#1a3a6e] rounded-full flex items-center justify-center">
                                     <span className="text-[10px] font-bold text-gray-400">
                                       {game.awayTeam.name.charAt(0)}
                                     </span>
@@ -332,7 +332,7 @@ export default function ResultsPage() {
                                     className="w-6 h-6 rounded-full object-cover"
                                   />
                                 ) : (
-                                  <div className="w-6 h-6 bg-[#252540] rounded-full flex items-center justify-center">
+                                  <div className="w-6 h-6 bg-[#1a3a6e] rounded-full flex items-center justify-center">
                                     <span className="text-[10px] font-bold text-gray-400">
                                       {game.homeTeam.name.charAt(0)}
                                     </span>
@@ -352,7 +352,7 @@ export default function ResultsPage() {
                           </div>
 
                           {/* Footer */}
-                          <div className="flex items-center justify-between pt-2 border-t border-[#252540]">
+                          <div className="flex items-center justify-between pt-2 border-t border-[#1a3a6e]">
                             <div className="flex items-center gap-2 text-xs text-gray-500">
                               {game.event && (
                                 <span className="truncate max-w-[200px]">{game.event.name}</span>

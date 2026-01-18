@@ -94,7 +94,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Player Profiles */}
           <Card>
-            <div className="p-4 border-b border-[#252540] flex items-center justify-between">
+            <div className="p-4 border-b border-[#1a3a6e] flex items-center justify-between">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <User className="w-5 h-5 text-white" />
                 Player Profiles
@@ -116,7 +116,7 @@ export default function DashboardPage() {
                 </Link>
               </div>
             ) : (
-              <div className="divide-y divide-[#252540]">
+              <div className="divide-y divide-[#1a3a6e]">
                 {profiles.map((profile) => (
                   <div key={profile.id} className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -170,7 +170,7 @@ export default function DashboardPage() {
 
           {/* Recent Activity */}
           <Card>
-            <div className="p-4 border-b border-[#252540]">
+            <div className="p-4 border-b border-[#1a3a6e]">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-white" />
                 Recent Activity
@@ -188,7 +188,7 @@ export default function DashboardPage() {
         <div className="space-y-6">
           {/* Subscription Status */}
           <Card>
-            <div className="p-4 border-b border-[#252540]">
+            <div className="p-4 border-b border-[#1a3a6e]">
               <h2 className="font-bold text-white flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-white" />
                 Subscription
@@ -236,7 +236,7 @@ export default function DashboardPage() {
 
           {/* Quick Links */}
           <Card>
-            <div className="p-4 border-b border-[#252540]">
+            <div className="p-4 border-b border-[#1a3a6e]">
               <h2 className="font-bold text-white flex items-center gap-2">
                 <Settings className="w-5 h-5 text-white" />
                 Quick Links
@@ -245,21 +245,21 @@ export default function DashboardPage() {
             <div className="p-2">
               <Link
                 href="/dashboard/settings"
-                className="flex items-center gap-3 p-3 rounded-lg text-gray-400 hover:bg-[#252540] hover:text-white transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg text-gray-400 hover:bg-[#1a3a6e] hover:text-white transition-colors"
               >
                 <Settings className="w-5 h-5" />
                 Account Settings
               </Link>
               <Link
                 href="/leaderboards"
-                className="flex items-center gap-3 p-3 rounded-lg text-gray-400 hover:bg-[#252540] hover:text-white transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg text-gray-400 hover:bg-[#1a3a6e] hover:text-white transition-colors"
               >
                 <BarChart3 className="w-5 h-5" />
                 Stat Leaderboards
               </Link>
               <Link
                 href="/events"
-                className="flex items-center gap-3 p-3 rounded-lg text-gray-400 hover:bg-[#252540] hover:text-white transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg text-gray-400 hover:bg-[#1a3a6e] hover:text-white transition-colors"
               >
                 <Calendar className="w-5 h-5" />
                 Upcoming Events

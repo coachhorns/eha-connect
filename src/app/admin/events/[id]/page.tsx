@@ -320,7 +320,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#252540]">
+                  <thead className="bg-[#1a3a6e]">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                         Team Name
@@ -336,9 +336,9 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#252540]">
+                  <tbody className="divide-y divide-[#1a3a6e]">
                     {teams.map((team) => (
-                      <tr key={team.id} className="hover:bg-[#252540]/50 transition-colors">
+                      <tr key={team.id} className="hover:bg-[#1a3a6e]/50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="font-medium text-white">{team.name}</div>
                         </td>
@@ -383,7 +383,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#252540]">
+                  <thead className="bg-[#1a3a6e]">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                         Matchup
@@ -405,11 +405,11 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#252540]">
+                  <tbody className="divide-y divide-[#1a3a6e]">
                     {games.map((game) => (
                       <tr
                         key={game.id}
-                        className="hover:bg-[#252540]/50 transition-colors cursor-pointer"
+                        className="hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer"
                         onClick={() => router.push(`/admin/games/${game.id}`)}
                       >
                         <td className="px-6 py-4">

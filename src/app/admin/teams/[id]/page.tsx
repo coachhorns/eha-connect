@@ -286,7 +286,7 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#252540]">
+                  <tr className="border-b border-[#1a3a6e]">
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">#</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Player</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Pos</th>
@@ -294,11 +294,11 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Class</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#252540]">
+                <tbody className="divide-y divide-[#1a3a6e]">
                   {team.roster.map((entry) => (
                     <tr
                       key={entry.id}
-                      className="hover:bg-[#252540]/50 transition-colors cursor-pointer"
+                      className="hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer"
                       onClick={() => router.push(`/players/${entry.player.slug}`)}
                     >
                       <td className="px-3 py-3 text-white font-bold">
@@ -337,7 +337,7 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
             {team.eventTeams.map((et) => (
               <div
                 key={et.id}
-                className="flex items-center justify-between p-3 bg-[#252540] rounded-lg hover:bg-[#252540]/70 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-3 bg-[#1a3a6e] rounded-lg hover:bg-[#1a3a6e]/70 transition-colors cursor-pointer"
                 onClick={() => router.push(`/admin/events/${et.event.id}`)}
               >
                 <div>

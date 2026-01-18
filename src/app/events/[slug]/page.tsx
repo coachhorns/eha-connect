@@ -299,7 +299,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
         className="relative h-64 md:h-80"
         style={{
           background: !event.bannerImage
-            ? 'linear-gradient(135deg, #1A1A2E 0%, #252540 100%)'
+            ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)'
             : undefined,
         }}
       >
@@ -312,7 +312,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             className="object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F1A] via-[#0F0F1A]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-base via-dark-base/60 to-transparent" />
         <div className="absolute inset-0 flex items-end">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 w-full">
             <Link
@@ -388,13 +388,13 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
         </Card>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4 border-b border-[#252540] pb-4">
+        <div className="flex gap-2 mb-4 border-b border-[#1a3a6e] pb-4">
           <button
             onClick={() => setActiveTab('schedule')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'schedule'
                 ? 'bg-eha-red text-white'
-                : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+                : 'bg-white/5 text-gray-400 hover:text-white'
             }`}
           >
             <Clock className="w-4 h-4" />
@@ -405,7 +405,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
               activeTab === 'teams'
                 ? 'bg-eha-red text-white'
-                : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+                : 'bg-white/5 text-gray-400 hover:text-white'
             }`}
           >
             <List className="w-4 h-4" />
@@ -417,7 +417,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'bracket'
                   ? 'bg-eha-red text-white'
-                  : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+                  : 'bg-white/5 text-gray-400 hover:text-white'
               }`}
             >
               <Grid3X3 className="w-4 h-4" />
@@ -441,7 +441,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   <select
                     value={selectedAgeGroup}
                     onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                    className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                    className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                   >
                     <option value="">All Age Groups</option>
                     {event.ageGroups.map(ag => (
@@ -458,7 +458,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   <select
                     value={selectedDivision}
                     onChange={(e) => setSelectedDivision(e.target.value)}
-                    className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                    className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                   >
                     <option value="">All Divisions</option>
                     {event.divisions.map(div => (
@@ -498,7 +498,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                     className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
                       selectedDate === date
                         ? 'bg-eha-red text-white'
-                        : 'bg-[#1A1A2E] text-gray-400 hover:text-white'
+                        : 'bg-white/5 text-gray-400 hover:text-white'
                     }`}
                   >
                     {format(new Date(date), 'EEE, MMM d')}
@@ -563,7 +563,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             ) : (
               filteredSortedPools.map(pool => (
                 <Card key={pool} className="overflow-hidden p-0">
-                  <div className="bg-[#252540] px-4 py-3">
+                  <div className="bg-[#1a3a6e] px-4 py-3">
                     <h3 className="font-semibold text-white flex items-center gap-2">
                       {pool === 'Unassigned' ? (
                         <span className="text-gray-400">{pool}</span>
@@ -578,7 +578,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-[#252540] text-xs text-gray-500 uppercase">
+                        <tr className="border-b border-[#1a3a6e] text-xs text-gray-500 uppercase">
                           <th className="text-left py-3 px-4">Team</th>
                           <th className="text-center py-3 px-2">W</th>
                           <th className="text-center py-3 px-2">L</th>
@@ -595,7 +595,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                             return (b.pointsFor - b.pointsAgainst) - (a.pointsFor - a.pointsAgainst)
                           })
                           .map((et, idx) => (
-                            <tr key={et.id} className="border-b border-[#252540]/50 hover:bg-[#252540]/30">
+                            <tr key={et.id} className="border-b border-[#1a3a6e]/50 hover:bg-[#1a3a6e]/30">
                               <td className="py-3 px-4">
                                 <div className="flex items-center gap-3">
                                   <span className="text-gray-500 text-sm w-4">{idx + 1}</span>
