@@ -7,6 +7,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const eventId = searchParams.get('eventId')
     const ageGroup = searchParams.get('ageGroup')
+    const division = searchParams.get('division')
     const date = searchParams.get('date')
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
@@ -21,6 +22,10 @@ export async function GET(request: Request) {
 
     if (ageGroup) {
       whereClause.ageGroup = ageGroup
+    }
+
+    if (division) {
+      whereClause.division = division
     }
 
     if (date) {
@@ -71,7 +76,7 @@ export async function GET(request: Request) {
     ])
 
     // Get available filters
-    const [events, ageGroups, gameDates] = await Promise.all([
+    const [events, ageGroups, divisions, gameDates] = await Promise.all([
       prisma.event.findMany({
         where: { isPublished: true },
         select: { id: true, name: true, slug: true },
@@ -82,6 +87,11 @@ export async function GET(request: Request) {
         where: { status: { in: ['FINAL', 'IN_PROGRESS', 'HALFTIME'] }, ageGroup: { not: null } },
         select: { ageGroup: true },
         distinct: ['ageGroup'],
+      }),
+      prisma.game.findMany({
+        where: { status: { in: ['FINAL', 'IN_PROGRESS', 'HALFTIME'] }, division: { not: null } },
+        select: { division: true },
+        distinct: ['division'],
       }),
       prisma.game.findMany({
         where: { status: { in: ['FINAL', 'IN_PROGRESS', 'HALFTIME'] } },
@@ -106,6 +116,7 @@ export async function GET(request: Request) {
       filters: {
         events,
         ageGroups: ageGroups.map(a => a.ageGroup).filter(Boolean),
+        divisions: divisions.map(d => d.division).filter(Boolean),
         dates: uniqueDates,
       },
     })

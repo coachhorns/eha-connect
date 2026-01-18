@@ -54,6 +54,7 @@ interface EventFilter {
 interface Filters {
   events: EventFilter[]
   ageGroups: string[]
+  divisions: string[]
   dates: string[]
 }
 
@@ -63,6 +64,7 @@ export default function ResultsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedEvent, setSelectedEvent] = useState<string>('')
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>('')
+  const [selectedDivision, setSelectedDivision] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<string>('')
 
   useEffect(() => {
@@ -72,6 +74,7 @@ export default function ResultsPage() {
         const params = new URLSearchParams()
         if (selectedEvent) params.append('eventId', selectedEvent)
         if (selectedAgeGroup) params.append('ageGroup', selectedAgeGroup)
+        if (selectedDivision) params.append('division', selectedDivision)
         if (selectedDate) params.append('date', selectedDate)
 
         const res = await fetch(`/api/public/results?${params}`)
@@ -90,7 +93,7 @@ export default function ResultsPage() {
     }
 
     fetchResults()
-  }, [selectedEvent, selectedAgeGroup, selectedDate])
+  }, [selectedEvent, selectedAgeGroup, selectedDivision, selectedDate])
 
   // Group games by date
   const gamesByDate = games.reduce((acc, game) => {
@@ -183,6 +186,23 @@ export default function ResultsPage() {
               </div>
             )}
 
+            {/* Division Filter */}
+            {filters?.divisions && filters.divisions.length > 0 && (
+              <div className="relative">
+                <select
+                  value={selectedDivision}
+                  onChange={(e) => setSelectedDivision(e.target.value)}
+                  className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                >
+                  <option value="">All Divisions</option>
+                  {filters.divisions.map(div => (
+                    <option key={div} value={div}>{div}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              </div>
+            )}
+
             {/* Date Filter */}
             {filters?.dates && filters.dates.length > 0 && (
               <div className="relative">
@@ -202,13 +222,14 @@ export default function ResultsPage() {
               </div>
             )}
 
-            {(selectedEvent || selectedAgeGroup || selectedDate) && (
+            {(selectedEvent || selectedAgeGroup || selectedDivision || selectedDate) && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
                   setSelectedEvent('')
                   setSelectedAgeGroup('')
+                  setSelectedDivision('')
                   setSelectedDate('')
                 }}
               >
@@ -254,7 +275,11 @@ export default function ResultsPage() {
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-2 flex-wrap">
                               {getStatusBadge(game)}
-                              {game.ageGroup && <Badge size="sm">{game.ageGroup}</Badge>}
+                              {(game.ageGroup || game.division) && (
+                                <Badge size="sm">
+                                  {[game.ageGroup, game.division].filter(Boolean).join(' ')}
+                                </Badge>
+                              )}
                               {game.bracketRound && (
                                 <Badge size="sm" variant="gold">{game.bracketRound}</Badge>
                               )}

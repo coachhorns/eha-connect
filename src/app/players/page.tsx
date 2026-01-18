@@ -21,7 +21,8 @@ interface Player {
   graduationYear?: number | null
   isVerified: boolean
   achievements?: { type: string }[]
-  teamRosters?: { team: { name: string } }[]
+  ageGroup?: string | null
+  teamRosters?: { team: { name: string; ageGroup?: string | null } }[]
   careerStats?: {
     gamesPlayed: number
     ppg: number

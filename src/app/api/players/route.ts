@@ -53,7 +53,7 @@ export async function GET(request: Request) {
             where: { leftAt: null },
             include: {
               team: {
-                select: { name: true, slug: true },
+                select: { name: true, slug: true, ageGroup: true },
               },
             },
           },

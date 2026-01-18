@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, GraduationCap, Trophy, Shield } from 'lucide-react'
+import { MapPin, GraduationCap, Trophy, Shield, Users } from 'lucide-react'
 import { Badge } from '@/components/ui'
 import { formatHeight, formatPosition } from '@/lib/utils'
 
@@ -20,9 +20,10 @@ interface PlayerCardProps {
     city?: string | null
     state?: string | null
     graduationYear?: number | null
+    ageGroup?: string | null
     isVerified: boolean
     achievements?: { type: string }[]
-    teamRosters?: { team: { name: string } }[]
+    teamRosters?: { team: { name: string; ageGroup?: string | null } }[]
     careerStats?: {
       gamesPlayed: number
       ppg: number
@@ -33,7 +34,9 @@ interface PlayerCardProps {
 }
 
 export function PlayerCard({ player }: PlayerCardProps) {
-  const currentTeam = player.teamRosters?.[0]?.team.name
+  const currentTeam = player.teamRosters?.[0]?.team
+  const teamName = currentTeam?.name
+  const ageGroup = player.ageGroup || currentTeam?.ageGroup
 
   return (
     <Link href={`/players/${player.slug}`}>
@@ -80,6 +83,19 @@ export function PlayerCard({ player }: PlayerCardProps) {
           <h3 className="text-lg font-bold text-white group-hover:text-[#FF6B00] transition-colors">
             {player.firstName} {player.lastName}
           </h3>
+
+          {/* Team & Age Group - Prominent Display */}
+          <div className="mt-2 flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 text-sm">
+              <Users className="w-3.5 h-3.5 text-[#FF6B00]" />
+              <span className={teamName ? 'text-white font-medium' : 'text-gray-500 italic'}>
+                {teamName || 'Unassigned'}
+              </span>
+            </div>
+            {ageGroup && (
+              <Badge variant="info" size="sm">{ageGroup}</Badge>
+            )}
+          </div>
 
           <div className="mt-2 space-y-1.5 text-sm text-gray-400">
             {player.heightFeet && (

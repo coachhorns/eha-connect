@@ -11,9 +11,11 @@ import {
   Trophy,
   ArrowLeft,
   ChevronRight,
+  ChevronDown,
   Clock,
   Grid3X3,
   List,
+  Filter,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 
@@ -92,6 +94,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<'schedule' | 'teams' | 'bracket'>('schedule')
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>('')
+  const [selectedDivision, setSelectedDivision] = useState<string>('')
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -169,14 +173,48 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   // Get unique game dates
   const gameDates = [...new Set(event.games.map(g => format(new Date(g.scheduledAt), 'yyyy-MM-dd')))]
 
-  // Filter games by selected date
-  const filteredGames = selectedDate
-    ? event.games.filter(g => format(new Date(g.scheduledAt), 'yyyy-MM-dd') === selectedDate)
-    : event.games
+  // Apply global filters to games
+  const applyGameFilters = (games: Game[]) => {
+    return games.filter(g => {
+      if (selectedAgeGroup && g.ageGroup !== selectedAgeGroup) return false
+      if (selectedDivision && g.division !== selectedDivision) return false
+      return true
+    })
+  }
 
-  // Group bracket games by round
-  const bracketGames = event.games.filter(g => g.gameType === 'BRACKET' || g.bracketRound)
+  // Filter games by selected date and global filters
+  const filteredGames = applyGameFilters(
+    selectedDate
+      ? event.games.filter(g => format(new Date(g.scheduledAt), 'yyyy-MM-dd') === selectedDate)
+      : event.games
+  )
+
+  // Filter teams by global filters
+  const filteredTeams = event.teams.filter(et => {
+    if (selectedAgeGroup && et.team.ageGroup !== selectedAgeGroup) return false
+    // Division filtering could be applied if teams have division field
+    return true
+  })
+
+  // Group filtered teams by pool
+  const filteredTeamsByPool = filteredTeams.reduce((acc, et) => {
+    const pool = et.pool || 'Unassigned'
+    if (!acc[pool]) acc[pool] = []
+    acc[pool].push(et)
+    return acc
+  }, {} as Record<string, EventTeam[]>)
+
+  const filteredSortedPools = Object.keys(filteredTeamsByPool).sort((a, b) => {
+    if (a === 'Unassigned') return 1
+    if (b === 'Unassigned') return -1
+    return a.localeCompare(b)
+  })
+
+  // Group bracket games by round (with filters applied)
+  const bracketGames = applyGameFilters(event.games.filter(g => g.gameType === 'BRACKET' || g.bracketRound))
   const bracketRounds = [...new Set(bracketGames.map(g => g.bracketRound).filter(Boolean))]
+
+  const hasActiveFilters = selectedAgeGroup || selectedDivision
 
   const getStatusBadge = (game: Game) => {
     switch (game.status) {
@@ -350,7 +388,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
         </Card>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 border-b border-[#252540] pb-4">
+        <div className="flex gap-2 mb-4 border-b border-[#252540] pb-4">
           <button
             onClick={() => setActiveTab('schedule')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
@@ -373,7 +411,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             <List className="w-4 h-4" />
             Teams & Standings
           </button>
-          {bracketGames.length > 0 && (
+          {event.games.some(g => g.gameType === 'BRACKET' || g.bracketRound) && (
             <button
               onClick={() => setActiveTab('bracket')}
               className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
@@ -387,6 +425,65 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             </button>
           )}
         </div>
+
+        {/* Filter Bar */}
+        {(event.ageGroups.length > 0 || event.divisions.length > 0) && (
+          <Card className="mb-6">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2 text-gray-400">
+                <Filter className="w-4 h-4" />
+                <span className="text-sm font-medium">Filter:</span>
+              </div>
+
+              {/* Age Group Filter */}
+              {event.ageGroups.length > 0 && (
+                <div className="relative">
+                  <select
+                    value={selectedAgeGroup}
+                    onChange={(e) => setSelectedAgeGroup(e.target.value)}
+                    className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  >
+                    <option value="">All Age Groups</option>
+                    {event.ageGroups.map(ag => (
+                      <option key={ag} value={ag}>{ag}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
+              )}
+
+              {/* Division Filter */}
+              {event.divisions.length > 0 && (
+                <div className="relative">
+                  <select
+                    value={selectedDivision}
+                    onChange={(e) => setSelectedDivision(e.target.value)}
+                    className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+                  >
+                    <option value="">All Divisions</option>
+                    {event.divisions.map(div => (
+                      <option key={div} value={div}>{div}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
+              )}
+
+              {hasActiveFilters && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedAgeGroup('')
+                    setSelectedDivision('')
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              )}
+            </div>
+          </Card>
+        )}
 
         {/* Schedule Tab */}
         {activeTab === 'schedule' && (
@@ -413,7 +510,22 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             {filteredGames.length === 0 ? (
               <Card className="p-8 text-center">
                 <Clock className="w-10 h-10 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-500">No games scheduled</p>
+                <p className="text-gray-500">
+                  {hasActiveFilters ? 'No games match the selected filters' : 'No games scheduled'}
+                </p>
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => {
+                      setSelectedAgeGroup('')
+                      setSelectedDivision('')
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
+                )}
               </Card>
             ) : (
               <div className="space-y-3">
@@ -428,13 +540,28 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
         {/* Teams & Standings Tab */}
         {activeTab === 'teams' && (
           <div className="space-y-6">
-            {event.teams.length === 0 ? (
+            {filteredTeams.length === 0 ? (
               <Card className="p-8 text-center">
                 <Users className="w-10 h-10 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-500">No teams registered yet</p>
+                <p className="text-gray-500">
+                  {hasActiveFilters ? 'No teams match the selected filters' : 'No teams registered yet'}
+                </p>
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => {
+                      setSelectedAgeGroup('')
+                      setSelectedDivision('')
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
+                )}
               </Card>
             ) : (
-              sortedPools.map(pool => (
+              filteredSortedPools.map(pool => (
                 <Card key={pool} className="overflow-hidden p-0">
                   <div className="bg-[#252540] px-4 py-3">
                     <h3 className="font-semibold text-white flex items-center gap-2">
@@ -444,7 +571,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                         <Badge variant="info">{pool}</Badge>
                       )}
                       <span className="text-gray-500 text-sm font-normal">
-                        ({teamsByPool[pool].length} teams)
+                        ({filteredTeamsByPool[pool].length} teams)
                       </span>
                     </h3>
                   </div>
@@ -461,7 +588,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                         </tr>
                       </thead>
                       <tbody>
-                        {teamsByPool[pool]
+                        {filteredTeamsByPool[pool]
                           .sort((a, b) => {
                             // Sort by wins, then by point differential
                             if (b.eventWins !== a.eventWins) return b.eventWins - a.eventWins
@@ -510,7 +637,22 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             {bracketRounds.length === 0 ? (
               <Card className="p-8 text-center">
                 <Grid3X3 className="w-10 h-10 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-500">Bracket games not yet scheduled</p>
+                <p className="text-gray-500">
+                  {hasActiveFilters ? 'No bracket games match the selected filters' : 'Bracket games not yet scheduled'}
+                </p>
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => {
+                      setSelectedAgeGroup('')
+                      setSelectedDivision('')
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
+                )}
               </Card>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

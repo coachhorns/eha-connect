@@ -2,9 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Trophy, TrendingUp } from 'lucide-react'
-import { Card, Badge, Select, Avatar } from '@/components/ui'
+import { Trophy, TrendingUp, Filter, ChevronDown } from 'lucide-react'
+import { Card, Badge, Select, Avatar, Button } from '@/components/ui'
 import { formatPosition } from '@/lib/utils'
+import { ageGroups, divisions } from '@/lib/constants'
+
+interface EventOption {
+  id: string
+  name: string
+}
 
 interface LeaderboardEntry {
   player: {
@@ -16,7 +22,7 @@ interface LeaderboardEntry {
     primaryPosition?: string | null
     school?: string | null
     graduationYear?: number | null
-    currentTeam?: { name: string; slug: string } | null
+    currentTeam?: { name: string; slug: string; ageGroup?: string | null } | null
   }
   gamesPlayed: number
   totals: {
@@ -48,13 +54,38 @@ const statCategories = [
 
 export default function LeaderboardsPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [events, setEvents] = useState<EventOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedStat, setSelectedStat] = useState('points')
+  const [selectedEvent, setSelectedEvent] = useState('')
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState('')
+  const [selectedDivision, setSelectedDivision] = useState('')
+
+  // Fetch events list on mount
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch('/api/events?limit=50')
+        const data = await res.json()
+        setEvents(data.events?.map((e: any) => ({ id: e.id, name: e.name })) || [])
+      } catch (error) {
+        console.error('Error fetching events:', error)
+      }
+    }
+    fetchEvents()
+  }, [])
 
   const fetchLeaderboard = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch(`/api/leaderboards?stat=${selectedStat}&limit=25`)
+      const params = new URLSearchParams()
+      params.set('stat', selectedStat)
+      params.set('limit', '25')
+      if (selectedEvent) params.set('eventId', selectedEvent)
+      if (selectedAgeGroup) params.set('ageGroup', selectedAgeGroup)
+      if (selectedDivision) params.set('division', selectedDivision)
+
+      const res = await fetch(`/api/leaderboards?${params}`)
       const data = await res.json()
       setLeaderboard(data.leaderboard || [])
     } catch (error) {
@@ -66,7 +97,9 @@ export default function LeaderboardsPage() {
 
   useEffect(() => {
     fetchLeaderboard()
-  }, [selectedStat])
+  }, [selectedStat, selectedEvent, selectedAgeGroup, selectedDivision])
+
+  const hasActiveFilters = selectedEvent || selectedAgeGroup || selectedDivision
 
   const currentCategory = statCategories.find((c) => c.value === selectedStat)
 
@@ -82,6 +115,77 @@ export default function LeaderboardsPage() {
           Top performers across all EHA events
         </p>
       </div>
+
+      {/* Filter Bar */}
+      <Card className="mb-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2 text-gray-400">
+            <Filter className="w-4 h-4" />
+            <span className="text-sm font-medium">Filter by:</span>
+          </div>
+
+          {/* Event Filter */}
+          {events.length > 0 && (
+            <div className="relative">
+              <select
+                value={selectedEvent}
+                onChange={(e) => setSelectedEvent(e.target.value)}
+                className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00] max-w-[200px]"
+              >
+                <option value="">All Events</option>
+                {events.map(event => (
+                  <option key={event.id} value={event.id}>{event.name}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
+          )}
+
+          {/* Age Group Filter */}
+          <div className="relative">
+            <select
+              value={selectedAgeGroup}
+              onChange={(e) => setSelectedAgeGroup(e.target.value)}
+              className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+            >
+              <option value="">All Age Groups</option>
+              {ageGroups.map(ag => (
+                <option key={ag} value={ag}>{ag}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+
+          {/* Division Filter */}
+          <div className="relative">
+            <select
+              value={selectedDivision}
+              onChange={(e) => setSelectedDivision(e.target.value)}
+              className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+            >
+              <option value="">All Divisions</option>
+              {divisions.map(div => (
+                <option key={div} value={div}>{div}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSelectedEvent('')
+                setSelectedAgeGroup('')
+                setSelectedDivision('')
+              }}
+            >
+              Clear Filters
+            </Button>
+          )}
+        </div>
+      </Card>
 
       {/* Category Tabs */}
       <div className="mb-6 flex flex-wrap gap-2">
@@ -119,7 +223,23 @@ export default function LeaderboardsPage() {
         ) : leaderboard.length === 0 ? (
           <div className="p-12 text-center">
             <TrendingUp className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">No stats recorded yet</p>
+            <p className="text-gray-400">
+              {hasActiveFilters ? 'No stats match the selected filters' : 'No stats recorded yet'}
+            </p>
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-3"
+                onClick={() => {
+                  setSelectedEvent('')
+                  setSelectedAgeGroup('')
+                  setSelectedDivision('')
+                }}
+              >
+                Clear Filters
+              </Button>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -171,6 +291,11 @@ export default function LeaderboardsPage() {
                         <div>
                           <p className="font-semibold text-white">
                             {entry.player.firstName} {entry.player.lastName}
+                            {entry.player.currentTeam?.ageGroup && (
+                              <span className="ml-2 text-sm font-normal text-gray-400">
+                                ({entry.player.currentTeam.ageGroup})
+                              </span>
+                            )}
                           </p>
                           <div className="flex items-center gap-2 text-sm text-gray-500">
                             {entry.player.primaryPosition && (

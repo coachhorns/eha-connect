@@ -7,6 +7,7 @@ export async function GET(request: Request) {
     const stat = searchParams.get('stat') || 'points'
     const eventId = searchParams.get('eventId')
     const ageGroup = searchParams.get('ageGroup')
+    const division = searchParams.get('division')
     const limit = parseInt(searchParams.get('limit') || '25')
 
     // Build the where clause for games
@@ -20,6 +21,10 @@ export async function GET(request: Request) {
 
     if (ageGroup) {
       gameWhere.ageGroup = ageGroup
+    }
+
+    if (division) {
+      gameWhere.division = division
     }
 
     // Get all game IDs that match the filter
@@ -67,7 +72,7 @@ export async function GET(request: Request) {
             teamRosters: {
               where: { leftAt: null },
               include: {
-                team: { select: { name: true, slug: true } },
+                team: { select: { name: true, slug: true, ageGroup: true } },
               },
               take: 1,
             },
