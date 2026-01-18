@@ -305,7 +305,11 @@ export default function AdminEventsPage() {
                 {events.map((event) => {
                   const eventStatus = getEventStatus(event)
                   return (
-                    <tr key={event.id} className="hover:bg-[#252540]/50 transition-colors">
+                    <tr
+                      key={event.id}
+                      className="hover:bg-[#252540]/50 transition-colors cursor-pointer"
+                      onClick={() => router.push(`/admin/events/${event.id}`)}
+                    >
                       <td className="px-6 py-4">
                         <div>
                           <div className="font-medium text-white">{event.name}</div>
@@ -363,7 +367,7 @@ export default function AdminEventsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="relative flex items-center justify-end gap-2">
                           <Link href={`/admin/events/${event.id}/edit`}>
                             <Button variant="ghost" size="sm" className="p-2">

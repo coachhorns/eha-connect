@@ -40,6 +40,8 @@ export default function NewGamePage() {
   const [teams, setTeams] = useState<Team[]>([])
   const [filteredTeams, setFilteredTeams] = useState<Team[]>([])
 
+  const [showAllTeams, setShowAllTeams] = useState(false)
+
   const [formData, setFormData] = useState({
     eventId: '',
     homeTeamId: '',
@@ -89,7 +91,10 @@ export default function NewGamePage() {
   }, [session])
 
   useEffect(() => {
-    if (formData.eventId) {
+    if (showAllTeams) {
+      // Show all teams when toggle is checked
+      setFilteredTeams(teams)
+    } else if (formData.eventId) {
       // Filter teams by event
       const eventTeams = teams.filter((team: any) =>
         team.events?.some((e: any) => e.eventId === formData.eventId) ||
@@ -99,9 +104,13 @@ export default function NewGamePage() {
     } else {
       setFilteredTeams(teams)
     }
-    // Reset team selections when event changes
+    // Reset team selections when event changes (but not when toggling showAllTeams)
+  }, [formData.eventId, teams, showAllTeams])
+
+  // Reset team selections when event changes
+  useEffect(() => {
     setFormData(prev => ({ ...prev, homeTeamId: '', awayTeamId: '' }))
-  }, [formData.eventId, teams])
+  }, [formData.eventId])
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -229,28 +238,48 @@ export default function NewGamePage() {
           </div>
 
           {/* Teams */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                <Users className="w-4 h-4 inline mr-2" />
-                Home Team *
+          <div className="space-y-4">
+            {/* Show All Teams Toggle */}
+            {formData.eventId && (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showAllTeams}
+                  onChange={(e) => setShowAllTeams(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-600 bg-[#252540] text-[#FF6B00] focus:ring-[#FF6B00] focus:ring-offset-0"
+                />
+                <span className="text-sm text-gray-300">
+                  Show All Teams
+                </span>
+                <span className="text-xs text-gray-500">
+                  (ignore event filter)
+                </span>
               </label>
-              <Select
-                options={teamOptions}
-                value={formData.homeTeamId}
-                onChange={(e) => handleChange('homeTeamId', e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                <Users className="w-4 h-4 inline mr-2" />
-                Away Team *
-              </label>
-              <Select
-                options={awayTeamOptions}
-                value={formData.awayTeamId}
-                onChange={(e) => handleChange('awayTeamId', e.target.value)}
-              />
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <Users className="w-4 h-4 inline mr-2" />
+                  Home Team *
+                </label>
+                <Select
+                  options={teamOptions}
+                  value={formData.homeTeamId}
+                  onChange={(e) => handleChange('homeTeamId', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <Users className="w-4 h-4 inline mr-2" />
+                  Away Team *
+                </label>
+                <Select
+                  options={awayTeamOptions}
+                  value={formData.awayTeamId}
+                  onChange={(e) => handleChange('awayTeamId', e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
