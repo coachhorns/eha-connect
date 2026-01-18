@@ -11,14 +11,14 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0F0F1A] disabled:opacity-50 disabled:cursor-not-allowed'
+    const baseStyles = 'inline-flex items-center justify-center font-bold rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-base disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-100'
 
     const variants = {
-      primary: 'bg-[#FF6B00] text-white hover:bg-[#FF8533] focus:ring-[#FF6B00]',
-      secondary: 'bg-[#252540] text-white hover:bg-[#3a3a5c] focus:ring-[#252540]',
-      outline: 'border-2 border-[#FF6B00] text-[#FF6B00] hover:bg-[#FF6B00] hover:text-white focus:ring-[#FF6B00]',
-      ghost: 'text-gray-400 hover:text-white hover:bg-[#252540] focus:ring-[#252540]',
-      danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-600',
+      primary: 'bg-eha-red text-white uppercase tracking-wider hover:brightness-110 focus:ring-eha-red',
+      secondary: 'bg-transparent border-2 border-eha-silver text-white hover:bg-eha-silver/10 focus:ring-eha-silver',
+      outline: 'border-2 border-eha-red text-eha-red hover:bg-eha-red hover:text-white focus:ring-eha-red',
+      ghost: 'text-gray-400 hover:text-white hover:bg-dark-surface focus:ring-eha-silver',
+      danger: 'bg-red-600 text-white uppercase tracking-wider hover:brightness-110 focus:ring-red-600',
     }
 
     const sizes = {

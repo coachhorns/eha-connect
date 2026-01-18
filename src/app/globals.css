@@ -1,13 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  /* EHA Brand Colors */
+  /* EHA Brand Colors - Athletic Professional */
+  --color-eha-navy: #0D2B5B;
+  --color-eha-red: #C8102E;
+  --color-eha-silver: #A2AAAD;
+
+  /* Legacy Brand Colors */
   --color-primary: #FF6B00;
   --color-primary-hover: #FF8533;
   --color-secondary: #1A1A2E;
   --color-accent: #FFD700;
 
-  /* Dark Theme */
+  /* Dark Theme - Athletic Professional */
+  --dark-base: #050B14;
+  --dark-surface: #111827;
+
+  /* Legacy Dark Theme */
   --background: #0F0F1A;
   --background-secondary: #1A1A2E;
   --background-tertiary: #252540;
@@ -26,12 +35,33 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Athletic Professional Colors */
+  --color-eha-navy: #0D2B5B;
+  --color-eha-red: #C8102E;
+  --color-eha-silver: #A2AAAD;
+  --color-dark-base: #050B14;
+  --color-dark-surface: #111827;
+
+  /* Font Families */
+  --font-stats: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 body {
-  background: var(--background);
+  background: var(--dark-base);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Athletic Professional - Glass Header */
+.glass-header {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(13, 43, 91, 0.8); /* eha-navy with opacity */
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
 /* Custom scrollbar */

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { Menu, X, User, LogOut, Settings, ChevronDown } from 'lucide-react'
@@ -26,28 +27,32 @@ export function Navbar() {
   const isActive = (href: string) => pathname.startsWith(href)
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0F0F1A]/95 backdrop-blur-md border-b border-[#252540]">
+    <nav className="glass-header border-b border-eha-silver/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#FF6B00] to-[#FFD700] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">EHA</span>
-            </div>
-            <span className="hidden sm:block text-white font-bold text-xl">Connect</span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/images/main.png"
+              alt="EHA Connect"
+              width={150}
+              height={40}
+              className="w-auto h-10"
+              priority
+            />
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'font-heading font-bold uppercase tracking-[0.2em] text-sm py-1 transition-colors',
                   isActive(link.href)
-                    ? 'bg-[#FF6B00] text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-[#252540]'
+                    ? 'text-eha-red border-b-2 border-eha-red'
+                    : 'text-gray-300 hover:text-white'
                 )}
               >
                 {link.label}
@@ -58,12 +63,12 @@ export function Navbar() {
           {/* Right Side */}
           <div className="flex items-center gap-3">
             {status === 'loading' ? (
-              <div className="w-8 h-8 rounded-full bg-[#252540] animate-pulse" />
+              <div className="w-8 h-8 rounded-full bg-dark-surface animate-pulse" />
             ) : session ? (
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-[#252540] transition-colors"
+                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-dark-surface transition-colors"
                 >
                   <Avatar
                     src={session.user.image}
@@ -83,8 +88,8 @@ export function Navbar() {
                       className="fixed inset-0 z-10"
                       onClick={() => setUserMenuOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-56 bg-[#1A1A2E] border border-[#252540] rounded-xl shadow-xl z-20 py-2">
-                      <div className="px-4 py-2 border-b border-[#252540]">
+                    <div className="absolute right-0 mt-2 w-56 bg-dark-surface border border-eha-silver/20 rounded-xl shadow-xl z-20 py-2">
+                      <div className="px-4 py-2 border-b border-eha-silver/20">
                         <p className="text-sm font-medium text-white truncate">
                           {session.user.name || 'User'}
                         </p>
@@ -95,7 +100,7 @@ export function Navbar() {
 
                       <Link
                         href="/dashboard"
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-[#252540] transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-eha-navy/50 transition-colors"
                         onClick={() => setUserMenuOpen(false)}
                       >
                         <User className="w-4 h-4" />
@@ -104,7 +109,7 @@ export function Navbar() {
 
                       <Link
                         href="/dashboard/settings"
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-[#252540] transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-eha-navy/50 transition-colors"
                         onClick={() => setUserMenuOpen(false)}
                       >
                         <Settings className="w-4 h-4" />
@@ -114,7 +119,7 @@ export function Navbar() {
                       {session.user.role === 'ADMIN' && (
                         <Link
                           href="/admin"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#FF6B00] hover:bg-[#252540] transition-colors"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-eha-red hover:bg-eha-navy/50 transition-colors"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           <Settings className="w-4 h-4" />
@@ -125,7 +130,7 @@ export function Navbar() {
                       {session.user.role === 'SCOREKEEPER' && (
                         <Link
                           href="/scorekeeper"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#FF6B00] hover:bg-[#252540] transition-colors"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-eha-red hover:bg-eha-navy/50 transition-colors"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           <Settings className="w-4 h-4" />
@@ -133,13 +138,13 @@ export function Navbar() {
                         </Link>
                       )}
 
-                      <div className="border-t border-[#252540] mt-2 pt-2">
+                      <div className="border-t border-eha-silver/20 mt-2 pt-2">
                         <button
                           onClick={() => {
                             setUserMenuOpen(false)
                             signOut()
                           }}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-[#252540] transition-colors w-full"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-eha-navy/50 transition-colors w-full"
                         >
                           <LogOut className="w-4 h-4" />
                           Sign Out
@@ -179,23 +184,34 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#0F0F1A] border-t border-[#252540]">
-          <div className="px-4 py-4 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  'block px-4 py-3 rounded-lg text-base font-medium transition-colors',
-                  isActive(link.href)
-                    ? 'bg-[#FF6B00] text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-[#252540]'
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+        <div className="md:hidden bg-eha-navy/95 backdrop-blur-xl border-t border-eha-silver/20">
+          <div className="px-4 py-4">
+            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block mb-4">
+              <Image
+                src="/images/main.png"
+                alt="EHA Connect"
+                width={120}
+                height={32}
+                className="w-auto h-8"
+              />
+            </Link>
+            <div className="space-y-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    'block px-4 py-3 font-heading font-bold uppercase tracking-[0.15em] text-sm transition-colors',
+                    isActive(link.href)
+                      ? 'text-eha-red border-l-2 border-eha-red bg-eha-red/10'
+                      : 'text-gray-300 hover:text-white hover:bg-dark-surface'
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       )}

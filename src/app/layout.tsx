@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { Navbar } from '@/components/layout/Navbar'
@@ -7,7 +7,14 @@ import { Footer } from '@/components/layout/Footer'
 
 const inter = Inter({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-inter',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-stats',
 })
 
 export const metadata: Metadata = {
@@ -42,7 +49,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-[#0F0F1A] text-white min-h-screen`}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-dark-base text-white min-h-screen`}>
         <SessionProvider>
           <Navbar />
           <main className="pt-16 min-h-[calc(100vh-80px)]">{children}</main>

@@ -9,16 +9,18 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', children, ...props }, ref) => {
+    const baseStyles = 'bg-dark-surface border border-eha-silver/20 shadow-[0_0_15px_rgba(13,43,91,0.5)]'
+
     const variants = {
-      default: 'bg-[#1A1A2E] border border-[#252540]',
-      hover: 'bg-[#1A1A2E] border border-[#252540] hover:border-[#FF6B00] transition-colors duration-200',
-      highlight: 'bg-[#1A1A2E] border-2 border-[#FF6B00]',
+      default: '',
+      hover: 'hover:border-eha-red/50 hover:shadow-[0_0_20px_rgba(200,16,46,0.3)] transition-all duration-200',
+      highlight: 'border-2 border-eha-red shadow-[0_0_20px_rgba(200,16,46,0.4)]',
     }
 
     return (
       <div
         ref={ref}
-        className={cn('rounded-xl p-6', variants[variant], className)}
+        className={cn('rounded-xl p-6', baseStyles, variants[variant], className)}
         {...props}
       >
         {children}
@@ -59,7 +61,7 @@ CardContent.displayName = 'CardContent'
 
 const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('mt-4 pt-4 border-t border-[#252540]', className)} {...props} />
+    <div ref={ref} className={cn('mt-4 pt-4 border-t border-eha-silver/20', className)} {...props} />
   )
 )
 CardFooter.displayName = 'CardFooter'

@@ -27,9 +27,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         <select
           ref={ref}
           className={cn(
-            'w-full px-4 py-2.5 bg-[#1A1A2E] border border-[#252540] rounded-lg text-white transition-colors duration-200 appearance-none cursor-pointer',
-            'bg-[url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 20 20%27%3e%3cpath stroke=%27%239CA3AF%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%271.5%27 d=%27M6 8l4 4 4-4%27/%3e%3c/svg%3e")] bg-[length:1.5em_1.5em] bg-[right_0.5rem_center] bg-no-repeat pr-10',
-            error && 'border-red-500',
+            'w-full px-4 py-2.5 bg-dark-surface border border-eha-silver/20 rounded-lg text-white transition-all duration-200 appearance-none cursor-pointer focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20',
+            'bg-[url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 20 20%27%3e%3cpath stroke=%27%23A2AAAD%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%271.5%27 d=%27M6 8l4 4 4-4%27/%3e%3c/svg%3e")] bg-[length:1.5em_1.5em] bg-[right_0.5rem_center] bg-no-repeat pr-10',
+            error && 'border-eha-red',
             className
           )}
           {...props}
@@ -40,7 +40,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           )}
           {options.map((option) => (
-            <option key={option.value} value={option.value} className="bg-[#1A1A2E]">
+            <option key={option.value} value={option.value} className="bg-dark-surface">
               {option.label}
             </option>
           ))}

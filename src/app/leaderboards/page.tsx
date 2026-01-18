@@ -130,7 +130,7 @@ export default function LeaderboardsPage() {
               <select
                 value={selectedEvent}
                 onChange={(e) => setSelectedEvent(e.target.value)}
-                className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00] max-w-[200px]"
+                className="appearance-none bg-dark-surface border border-eha-silver/20 text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red max-w-[200px]"
               >
                 <option value="">All Events</option>
                 {events.map(event => (
@@ -146,7 +146,7 @@ export default function LeaderboardsPage() {
             <select
               value={selectedAgeGroup}
               onChange={(e) => setSelectedAgeGroup(e.target.value)}
-              className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+              className="appearance-none bg-dark-surface border border-eha-silver/20 text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
             >
               <option value="">All Age Groups</option>
               {ageGroups.map(ag => (
@@ -161,7 +161,7 @@ export default function LeaderboardsPage() {
             <select
               value={selectedDivision}
               onChange={(e) => setSelectedDivision(e.target.value)}
-              className="appearance-none bg-[#252540] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B00]"
+              className="appearance-none bg-dark-surface border border-eha-silver/20 text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
             >
               <option value="">All Divisions</option>
               {divisions.map(div => (
@@ -195,8 +195,8 @@ export default function LeaderboardsPage() {
             onClick={() => setSelectedStat(cat.value)}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               selectedStat === cat.value
-                ? 'bg-[#FF6B00] text-white'
-                : 'bg-[#1A1A2E] text-gray-400 hover:bg-[#252540] hover:text-white'
+                ? 'bg-eha-red text-white'
+                : 'bg-dark-surface text-gray-400 hover:bg-eha-navy/50 hover:text-white'
             }`}
           >
             {cat.label}
@@ -210,13 +210,13 @@ export default function LeaderboardsPage() {
           <div className="p-8 space-y-4">
             {Array.from({ length: 10 }).map((_, i) => (
               <div key={i} className="animate-pulse flex items-center gap-4">
-                <div className="w-8 h-8 bg-[#252540] rounded-full" />
-                <div className="w-10 h-10 bg-[#252540] rounded-full" />
+                <div className="w-8 h-8 bg-eha-navy/50 rounded-full" />
+                <div className="w-10 h-10 bg-eha-navy/50 rounded-full" />
                 <div className="flex-1">
-                  <div className="h-4 bg-[#252540] rounded w-1/3 mb-2" />
-                  <div className="h-3 bg-[#252540] rounded w-1/4" />
+                  <div className="h-4 bg-eha-navy/50 rounded w-1/3 mb-2" />
+                  <div className="h-3 bg-eha-navy/50 rounded w-1/4" />
                 </div>
-                <div className="w-16 h-6 bg-[#252540] rounded" />
+                <div className="w-16 h-6 bg-eha-navy/50 rounded" />
               </div>
             ))}
           </div>
@@ -245,44 +245,44 @@ export default function LeaderboardsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#252540]">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <tr className="bg-eha-navy">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
                     Rank
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
                     Player
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider">
                     GP
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider">
                     Total
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider">
                     Per Game
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#252540]">
+              <tbody>
                 {leaderboard.map((entry, index) => (
-                  <tr key={entry.player.id} className="hover:bg-[#252540]/50 transition-colors">
+                  <tr key={entry.player.id} className={`hover:bg-eha-navy/30 transition-colors ${index % 2 === 0 ? 'bg-dark-surface' : 'bg-eha-navy/5'}`}>
                     <td className="px-4 py-4">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold font-stats text-sm ${
                           index === 0
                             ? 'bg-[#FFD700]/20 text-[#FFD700]'
                             : index === 1
                             ? 'bg-gray-400/20 text-gray-400'
                             : index === 2
                             ? 'bg-orange-600/20 text-orange-500'
-                            : 'bg-[#252540] text-gray-500'
+                            : 'bg-eha-silver/20 text-gray-500'
                         }`}
                       >
                         {index + 1}
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <Link href={`/players/${entry.player.slug}`} className="flex items-center gap-3 hover:text-[#FF6B00]">
+                      <Link href={`/players/${entry.player.slug}`} className="flex items-center gap-3 hover:text-eha-red">
                         <Avatar
                           src={entry.player.profilePhoto}
                           fallback={`${entry.player.firstName} ${entry.player.lastName}`}
@@ -317,16 +317,16 @@ export default function LeaderboardsPage() {
                         </div>
                       </Link>
                     </td>
-                    <td className="px-4 py-4 text-center text-gray-400">
+                    <td className="px-4 py-4 text-center text-gray-400 font-stats">
                       {entry.gamesPlayed}
                     </td>
-                    <td className="px-4 py-4 text-center text-white font-medium">
+                    <td className="px-4 py-4 text-center text-white font-medium font-stats">
                       {currentCategory
                         ? entry.totals[currentCategory.totalKey as keyof typeof entry.totals]
                         : '-'}
                     </td>
                     <td className="px-4 py-4 text-center">
-                      <span className="text-xl font-bold text-[#FF6B00]">
+                      <span className="text-xl font-bold font-stats text-eha-red">
                         {currentCategory
                           ? entry.averages[currentCategory.avgKey as keyof typeof entry.averages].toFixed(1)
                           : '-'}
