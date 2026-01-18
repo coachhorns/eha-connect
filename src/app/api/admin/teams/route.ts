@@ -26,12 +26,12 @@ export async function GET(request: NextRequest) {
     }
 
     if (eventId) {
-      where.events = {
+      where.eventTeams = {
         some: { eventId },
       }
     }
 
-    const [teams, total] = await Promise.all([
+    const [teamsRaw, total] = await Promise.all([
       prisma.team.findMany({
         where,
         select: {
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
           coachName: true,
           ageGroup: true,
           division: true,
-          events: {
+          eventTeams: {
             select: {
               eventId: true,
             },
@@ -52,6 +52,13 @@ export async function GET(request: NextRequest) {
       }),
       prisma.team.count({ where }),
     ])
+
+    // Map eventTeams to events for frontend compatibility
+    const teams = teamsRaw.map(team => ({
+      ...team,
+      events: team.eventTeams,
+      eventTeams: undefined,
+    }))
 
     return NextResponse.json({
       teams,

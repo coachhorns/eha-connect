@@ -135,6 +135,15 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   const [retryQueue, setRetryQueue] = useState<QueuedStat[]>([])
   const [isSyncing, setIsSyncing] = useState(false)
 
+  // Stat-first workflow state
+  const [pendingStat, setPendingStat] = useState<{
+    statType: string
+    value: number
+    teamId: string
+    teamSide: 'home' | 'away'
+  } | null>(null)
+  const [showPlayerSelectModal, setShowPlayerSelectModal] = useState(false)
+
   // Check online status
   useEffect(() => {
     const handleOnline = () => setIsOnline(true)
@@ -330,8 +339,141 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
     })
   }
 
+  // Handle stat-first workflow: record stat with optimistic score update
+  const handleStatFirstClick = useCallback((statType: string, value: number) => {
+    if (!selectedTeam || !game) return
+
+    const teamId = selectedTeam === 'home' ? game.homeTeam.id : game.awayTeam.id
+
+    // Optimistically update score for point-based stats
+    if (statType === 'PTS_2') {
+      if (selectedTeam === 'home') setHomeScore(prev => prev + 2)
+      else setAwayScore(prev => prev + 2)
+    } else if (statType === 'PTS_3') {
+      if (selectedTeam === 'home') setHomeScore(prev => prev + 3)
+      else setAwayScore(prev => prev + 3)
+    } else if (statType === 'PTS_FT') {
+      if (selectedTeam === 'home') setHomeScore(prev => prev + 1)
+      else setAwayScore(prev => prev + 1)
+    }
+
+    // Store pending stat and show player selection modal
+    setPendingStat({
+      statType,
+      value,
+      teamId,
+      teamSide: selectedTeam,
+    })
+    setShowPlayerSelectModal(true)
+  }, [selectedTeam, game])
+
+  // Confirm stat with selected player (or null for team stat)
+  const confirmStatWithPlayer = useCallback(async (playerId: string | null) => {
+    if (!pendingStat || !game) return
+
+    const teamName = pendingStat.teamSide === 'home' ? game.homeTeam.name : game.awayTeam.name
+    const team = pendingStat.teamSide === 'home' ? game.homeTeam : game.awayTeam
+    const player = playerId ? team.players.find(p => p.id === playerId) : null
+
+    // Update local player stats if player selected
+    if (playerId) {
+      updatePlayerStats(playerId, pendingStat.statType)
+    }
+
+    // Create local action
+    const action: StatAction = {
+      id: `local-${Date.now()}`,
+      playerId: playerId || 'team',
+      playerName: player ? `${player.firstName} ${player.lastName}` : 'Team Stat',
+      playerNumber: player?.jerseyNumber || '-',
+      teamId: pendingStat.teamId,
+      teamName,
+      statType: pendingStat.statType,
+      value: pendingStat.value,
+      timestamp: new Date(),
+      synced: false,
+    }
+
+    setActionLog(prev => [action, ...prev])
+
+    // Close modal and clear pending stat
+    setShowPlayerSelectModal(false)
+    setPendingStat(null)
+
+    // Create queued stat object
+    const queuedStat: QueuedStat = {
+      localId: action.id,
+      gameId,
+      playerId: playerId || '',
+      teamId: pendingStat.teamId,
+      statType: pendingStat.statType,
+      value: pendingStat.value,
+      period: currentPeriod,
+    }
+
+    // If offline, add to retry queue
+    if (!isOnline) {
+      setRetryQueue(prev => [...prev, queuedStat])
+      return
+    }
+
+    // Sync to server
+    try {
+      const res = await fetch('/api/scorekeeper/stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gameId,
+          playerId: playerId || null,
+          teamId: pendingStat.teamId,
+          statType: pendingStat.statType,
+          value: pendingStat.value,
+          period: currentPeriod,
+        }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setActionLog(prev =>
+          prev.map(a => a.id === action.id ? { ...a, synced: true, statLogId: data.statLog?.id } : a)
+        )
+      } else {
+        setRetryQueue(prev => [...prev, queuedStat])
+      }
+    } catch (error) {
+      console.error('Error syncing stat:', error)
+      setRetryQueue(prev => [...prev, queuedStat])
+    }
+  }, [pendingStat, game, gameId, isOnline, currentPeriod])
+
+  // Cancel pending stat and revert score
+  const cancelPendingStat = useCallback(() => {
+    if (!pendingStat) return
+
+    // Revert the optimistic score update
+    if (pendingStat.statType === 'PTS_2') {
+      if (pendingStat.teamSide === 'home') setHomeScore(prev => Math.max(0, prev - 2))
+      else setAwayScore(prev => Math.max(0, prev - 2))
+    } else if (pendingStat.statType === 'PTS_3') {
+      if (pendingStat.teamSide === 'home') setHomeScore(prev => Math.max(0, prev - 3))
+      else setAwayScore(prev => Math.max(0, prev - 3))
+    } else if (pendingStat.statType === 'PTS_FT') {
+      if (pendingStat.teamSide === 'home') setHomeScore(prev => Math.max(0, prev - 1))
+      else setAwayScore(prev => Math.max(0, prev - 1))
+    }
+
+    setShowPlayerSelectModal(false)
+    setPendingStat(null)
+  }, [pendingStat])
+
   const recordStat = useCallback(async (statType: string, value: number) => {
-    if (!selectedPlayer || !selectedTeam || !game) return
+    if (!selectedTeam || !game) return
+
+    // If no player selected, use stat-first workflow
+    if (!selectedPlayer) {
+      handleStatFirstClick(statType, value)
+      return
+    }
 
     const teamId = selectedTeam === 'home' ? game.homeTeam.id : game.awayTeam.id
     const teamName = selectedTeam === 'home' ? game.homeTeam.name : game.awayTeam.name
@@ -413,7 +555,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
       // Network error - add to retry queue
       setRetryQueue(prev => [...prev, queuedStat])
     }
-  }, [selectedPlayer, selectedTeam, game, gameId, isOnline, currentPeriod])
+  }, [selectedPlayer, selectedTeam, game, gameId, isOnline, currentPeriod, handleStatFirstClick])
 
   const reversePlayerStats = (playerId: string, statType: string) => {
     setPlayerStats(prev => {
@@ -793,8 +935,17 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                       ({selectedTeam === 'home' ? game.homeTeam.name : game.awayTeam.name})
                     </span>
                   </div>
+                ) : selectedTeam ? (
+                  <div className="bg-[#252540] rounded-lg py-2 px-4 inline-block">
+                    <span className="text-gray-300 font-medium">
+                      {selectedTeam === 'home' ? game.homeTeam.name : game.awayTeam.name}
+                    </span>
+                    <span className="text-gray-500 ml-2 text-sm">
+                      (tap stat to assign player)
+                    </span>
+                  </div>
                 ) : (
-                  <p className="text-gray-500">Select a player to record stats</p>
+                  <p className="text-gray-500">Select a team to record stats</p>
                 )}
               </div>
 
@@ -829,7 +980,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                     <button
                       key={btn.type}
                       onClick={() => recordStat(btn.type, btn.value)}
-                      disabled={!selectedPlayer || gameStatus !== 'IN_PROGRESS'}
+                      disabled={!selectedTeam || gameStatus !== 'IN_PROGRESS'}
                       className={`${btn.color} text-white rounded-xl p-4 transition-all touch-manipulation disabled:opacity-30 disabled:cursor-not-allowed active:scale-95`}
                     >
                       <div className="text-2xl font-bold">{btn.label}</div>
@@ -843,7 +994,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                     <button
                       key={btn.type}
                       onClick={() => recordStat(btn.type, btn.value)}
-                      disabled={!selectedPlayer || gameStatus !== 'IN_PROGRESS'}
+                      disabled={!selectedTeam || gameStatus !== 'IN_PROGRESS'}
                       className={`${btn.color} text-white rounded-xl p-4 transition-all touch-manipulation disabled:opacity-30 disabled:cursor-not-allowed active:scale-95`}
                     >
                       <div className="text-xl font-bold">{btn.label}</div>
@@ -1033,6 +1184,57 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
             </Button>
             <Button onClick={endGame}>
               Confirm Final Score
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Player Selection Modal (Stat-First Workflow) */}
+      <Modal
+        isOpen={showPlayerSelectModal}
+        onClose={cancelPendingStat}
+        title={`Assign ${pendingStat ? getStatLabel(pendingStat.statType) : 'Stat'}`}
+      >
+        <div className="space-y-4">
+          <p className="text-gray-400 text-sm">
+            Select the player who made this play, or choose &quot;Team Stat&quot; if unknown.
+          </p>
+
+          {/* Roster Grid */}
+          <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
+            {pendingStat && (pendingStat.teamSide === 'home' ? game.homeTeam : game.awayTeam).players.map(player => (
+              <button
+                key={player.id}
+                onClick={() => confirmStatWithPlayer(player.id)}
+                className="p-3 bg-[#252540] hover:bg-[#FF6B00]/20 rounded-lg text-left transition-colors border border-transparent hover:border-[#FF6B00]"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-[#FF6B00] font-bold">
+                    #{player.jerseyNumber || '?'}
+                  </span>
+                  <span className="text-white font-medium truncate">
+                    {player.firstName[0]}. {player.lastName}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2 border-t border-[#252540]">
+            <Button
+              variant="secondary"
+              onClick={() => confirmStatWithPlayer(null)}
+              className="flex-1"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Team Stat / Unknown
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={cancelPendingStat}
+            >
+              Cancel
             </Button>
           </div>
         </div>

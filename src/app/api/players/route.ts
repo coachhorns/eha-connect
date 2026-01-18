@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 export async function GET(request: Request) {
@@ -110,6 +112,66 @@ export async function GET(request: Request) {
     console.error('Error fetching players:', error)
     return NextResponse.json(
       { error: 'Failed to fetch players' },
+      { status: 500 }
+    )
+  }
+}
+
+// Helper to generate slug
+function generateSlug(firstName: string, lastName: string): string {
+  const base = `${firstName}-${lastName}`.toLowerCase().replace(/[^a-z0-9-]/g, '-')
+  const random = Math.random().toString(36).substring(2, 6)
+  return `${base}-${random}`
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'SCOREKEEPER')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { firstName, lastName, teamId, jerseyNumber, primaryPosition } = await request.json()
+
+    if (!firstName || !lastName) {
+      return NextResponse.json({ error: 'First name and last name are required' }, { status: 400 })
+    }
+
+    // Create player with optional roster entry in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the player
+      const player = await tx.player.create({
+        data: {
+          firstName,
+          lastName,
+          slug: generateSlug(firstName, lastName),
+          jerseyNumber: jerseyNumber || null,
+          primaryPosition: primaryPosition || null,
+          isActive: true,
+          isVerified: false,
+        },
+      })
+
+      // If teamId is provided, add to team roster
+      if (teamId) {
+        await tx.teamRoster.create({
+          data: {
+            teamId,
+            playerId: player.id,
+            jerseyNumber: jerseyNumber || null,
+          },
+        })
+      }
+
+      return player
+    })
+
+    return NextResponse.json({ player: result }, { status: 201 })
+  } catch (error) {
+    console.error('Error creating player:', error)
+    return NextResponse.json(
+      { error: 'Failed to create player' },
       { status: 500 }
     )
   }

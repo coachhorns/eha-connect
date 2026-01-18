@@ -469,7 +469,7 @@ model StatLog {
   gameId    String
   game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
-  playerId  String
+  playerId  String?   // Optional - null for team-only stats
   teamId    String
 
   statType  StatType

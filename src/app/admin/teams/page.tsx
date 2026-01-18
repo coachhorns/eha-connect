@@ -181,7 +181,11 @@ export default function AdminTeamsPage() {
               </thead>
               <tbody className="divide-y divide-[#252540]">
                 {teams.map((team) => (
-                  <tr key={team.id} className="hover:bg-[#252540]/50 transition-colors">
+                  <tr
+                    key={team.id}
+                    className="hover:bg-[#252540]/50 transition-colors cursor-pointer"
+                    onClick={() => router.push(`/admin/teams/${team.id}`)}
+                  >
                     <td className="px-6 py-4">
                       <div className="font-medium text-white">{team.name}</div>
                     </td>
@@ -206,7 +210,7 @@ export default function AdminTeamsPage() {
                         <span className="text-gray-600">-</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-2">
                         <Button
                           variant="ghost"
