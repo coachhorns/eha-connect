@@ -107,18 +107,20 @@ export async function POST(request: Request) {
       // 3. Get stat decrements
       const statDecrements = getStatDecrements(statLog.statType)
 
-      // 4. Update game stats for the player
-      const existingStats = await tx.gameStats.findUnique({
-        where: {
-          gameId_playerId: { gameId, playerId: statLog.playerId },
-        },
-      })
-
-      if (existingStats) {
-        await tx.gameStats.update({
-          where: { id: existingStats.id },
-          data: statDecrements,
+      // 4. Update game stats for the player if one exists
+      if (statLog.playerId) {
+        const existingStats = await tx.gameStats.findUnique({
+          where: {
+            gameId_playerId: { gameId, playerId: statLog.playerId },
+          },
         })
+
+        if (existingStats) {
+          await tx.gameStats.update({
+            where: { id: existingStats.id },
+            data: statDecrements,
+          })
+        }
       }
 
       // 5. Reverse game score if points were undone

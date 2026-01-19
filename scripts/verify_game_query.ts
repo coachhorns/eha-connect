@@ -66,7 +66,7 @@ async function main() {
                     },
                     orderBy: { points: 'desc' },
                 },
-                statLogs: {
+                statLog: {
                     where: { isUndone: false },
                     orderBy: { createdAt: 'desc' },
                     take: 20,

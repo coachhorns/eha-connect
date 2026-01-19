@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { stripe, SUBSCRIPTION_PRICES } from '@/lib/stripe'
+import { getStripeServer, getSubscriptionPrices } from '@/lib/stripe-dynamic'
 import prisma from '@/lib/prisma'
 
 export async function POST(request: Request) {
@@ -17,6 +17,10 @@ export async function POST(request: Request) {
     if (!plan || !['ANNUAL', 'SEMI_ANNUAL', 'MONTHLY'].includes(plan)) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
     }
+
+    // Get Stripe client from database settings
+    const stripe = await getStripeServer()
+    const subscriptionPrices = await getSubscriptionPrices()
 
     // Check if user already has an active subscription
     const existingSubscription = await prisma.subscription.findUnique({
@@ -44,9 +48,17 @@ export async function POST(request: Request) {
       stripeCustomerId = customer.id
     }
 
-    // Create Stripe checkout session
-    const priceId = SUBSCRIPTION_PRICES[plan as keyof typeof SUBSCRIPTION_PRICES]
+    // Get price ID for the selected plan
+    const priceId = subscriptionPrices[plan as keyof typeof subscriptionPrices]
 
+    if (!priceId) {
+      return NextResponse.json(
+        { error: `Price not configured for plan: ${plan}. Please contact support.` },
+        { status: 400 }
+      )
+    }
+
+    // Create Stripe checkout session
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       mode: 'subscription',

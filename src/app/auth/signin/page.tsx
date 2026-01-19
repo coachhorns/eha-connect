@@ -6,7 +6,9 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button, Input, Card } from '@/components/ui'
 
-export default function SignInPage() {
+import { Suspense } from 'react'
+
+function SignInForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
@@ -102,5 +104,17 @@ export default function SignInPage() {
         </div>
       </Card>
     </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
+      </div>
+    }>
+      <SignInForm />
+    </Suspense>
   )
 }

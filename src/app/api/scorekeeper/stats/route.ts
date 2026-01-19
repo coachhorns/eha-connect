@@ -124,7 +124,7 @@ export async function POST(request: Request) {
           })
         } else {
           // Create new game stats entry with initial values
-          const initialStats: Record<string, number | string> = {
+          const initialStats: any = {
             gameId,
             playerId,
             teamId,

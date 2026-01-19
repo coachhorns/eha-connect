@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
-import { stripe } from '@/lib/stripe'
+import { getStripeServer, getStripeWebhookSecret } from '@/lib/stripe-dynamic'
 import prisma from '@/lib/prisma'
 import Stripe from 'stripe'
 
@@ -13,13 +13,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
   }
 
+  // Get Stripe client and webhook secret from database settings
+  const stripe = await getStripeServer()
+  const webhookSecret = await getStripeWebhookSecret()
+
+  if (!webhookSecret) {
+    console.error('Stripe webhook secret is not configured')
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 })
+  }
+
   let event: Stripe.Event
 
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      webhookSecret
     )
   } catch (error) {
     console.error('Webhook signature verification failed:', error)

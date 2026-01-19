@@ -22,7 +22,9 @@ const positionOptions = [
   { value: 'C', label: 'Center (C)' },
 ]
 
-export default function NewPlayerPage() {
+import { Suspense } from 'react'
+
+function NewPlayerForm() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -258,5 +260,17 @@ export default function NewPlayerPage() {
         </form>
       </Card>
     </div>
+  )
+}
+
+export default function NewPlayerPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
+      </div>
+    }>
+      <NewPlayerForm />
+    </Suspense>
   )
 }

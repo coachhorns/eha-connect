@@ -7,6 +7,19 @@ datasource db {
 }
 
 // ============================================
+// SYSTEM SETTINGS
+// ============================================
+
+model SystemSetting {
+  key       String   @id
+  value     String   @db.Text
+  isPrivate Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// ============================================
 // USER & AUTHENTICATION
 // ============================================
 

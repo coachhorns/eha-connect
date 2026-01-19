@@ -55,7 +55,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} font-sans antialiased bg-navy-gradient text-white min-h-screen`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} font-sans antialiased bg-navy-gradient text-white min-h-screen`}>
         <SessionProvider>
           <Navbar />
           <main className="pt-16 min-h-[calc(100vh-80px)]">{children}</main>

@@ -8,14 +8,12 @@ import {
   User,
   Trophy,
   BarChart3,
-  CreditCard,
   Settings,
   Plus,
   ExternalLink,
   Calendar,
 } from 'lucide-react'
 import { Card, Button, Badge, Avatar } from '@/components/ui'
-import { formatDate } from '@/lib/utils'
 
 interface PlayerProfile {
   id: string
@@ -37,7 +35,6 @@ export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [profiles, setProfiles] = useState<PlayerProfile[]>([])
-  const [subscription, setSubscription] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -54,16 +51,9 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const [profilesRes, subRes] = await Promise.all([
-        fetch('/api/user/players'),
-        fetch('/api/user/subscription'),
-      ])
-
+      const profilesRes = await fetch('/api/user/players')
       const profilesData = await profilesRes.json()
-      const subData = await subRes.json()
-
       setProfiles(profilesData.players || [])
-      setSubscription(subData.subscription)
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -186,54 +176,6 @@ export default function DashboardPage() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Subscription Status */}
-          <Card>
-            <div className="p-4 border-b border-[#1a3a6e]">
-              <h2 className="font-bold text-white flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-white" />
-                Subscription
-              </h2>
-            </div>
-            <div className="p-4">
-              {subscription ? (
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-gray-400">Status</span>
-                    <Badge
-                      variant={subscription.status === 'ACTIVE' ? 'success' : 'warning'}
-                    >
-                      {subscription.status}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-gray-400">Plan</span>
-                    <span className="text-white font-medium">
-                      {subscription.plan.replace('_', ' ')}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-gray-400">Renews</span>
-                    <span className="text-white">
-                      {formatDate(subscription.currentPeriodEnd)}
-                    </span>
-                  </div>
-                  <Link href="/dashboard/subscription">
-                    <Button variant="outline" className="w-full">
-                      Manage Subscription
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <p className="text-gray-400 mb-4">No active subscription</p>
-                  <Link href="/pricing">
-                    <Button className="w-full">Get EHA Connect</Button>
-                  </Link>
-                </div>
-              )}
-            </div>
-          </Card>
-
           {/* Quick Links */}
           <Card>
             <div className="p-4 border-b border-[#1a3a6e]">
