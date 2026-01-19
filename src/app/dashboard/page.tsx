@@ -12,8 +12,10 @@ import {
   Plus,
   ExternalLink,
   Calendar,
+  CreditCard,
 } from 'lucide-react'
 import { Card, Button, Badge, Avatar } from '@/components/ui'
+import { formatDate } from '@/lib/utils'
 
 interface PlayerProfile {
   id: string
@@ -31,10 +33,18 @@ interface PlayerProfile {
   }
 }
 
+interface Subscription {
+  id: string
+  status: string
+  plan: string
+  currentPeriodEnd: string
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [profiles, setProfiles] = useState<PlayerProfile[]>([])
+  const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -51,9 +61,17 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const profilesRes = await fetch('/api/user/players')
+      const [profilesRes, subscriptionRes] = await Promise.all([
+        fetch('/api/user/players'),
+        fetch('/api/user/subscription'),
+      ])
       const profilesData = await profilesRes.json()
       setProfiles(profilesData.players || [])
+
+      if (subscriptionRes.ok) {
+        const subscriptionData = await subscriptionRes.json()
+        setSubscription(subscriptionData.subscription || null)
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -176,6 +194,59 @@ export default function DashboardPage() {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Subscription - only for non-admin users */}
+          {session?.user.role !== 'ADMIN' && (
+            <Card>
+              <div className="p-4 border-b border-[#1a3a6e]">
+                <h2 className="font-bold text-white flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-white" />
+                  Subscription
+                </h2>
+              </div>
+              <div className="p-4">
+                {subscription ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-400">Status</span>
+                      <Badge
+                        variant={subscription.status === 'active' ? 'success' : 'warning'}
+                        size="sm"
+                      >
+                        {subscription.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-400">Plan</span>
+                      <span className="text-sm text-white">
+                        {subscription.plan.replace('_', ' ')}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-400">Renewal Date</span>
+                      <span className="text-sm text-white">
+                        {formatDate(subscription.currentPeriodEnd)}
+                      </span>
+                    </div>
+                    <Link href="/dashboard/subscription" className="block mt-4">
+                      <Button variant="outline" size="sm" className="w-full">
+                        Manage Subscription
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-gray-400 text-sm mb-4">No active subscription</p>
+                    <Link href="/pricing">
+                      <Button size="sm" className="w-full">
+                        Get EHA Connect
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
           {/* Quick Links */}
           <Card>
             <div className="p-4 border-b border-[#1a3a6e]">
