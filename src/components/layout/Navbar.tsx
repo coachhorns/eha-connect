@@ -27,7 +27,7 @@ export function Navbar() {
   const isActive = (href: string) => pathname.startsWith(href)
 
   return (
-    <nav className="glass-header border-b border-white/5">
+    <nav className="glass-header border-b border-white/5 pt-[env(safe-area-inset-top)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-auto py-4">
           {/* Logo */}
