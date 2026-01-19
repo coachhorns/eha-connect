@@ -154,7 +154,7 @@ export function TeamTabs({ roster, games, teamId }: TeamTabsProps) {
                       {isFinal ? (
                         <div className="flex items-center gap-3">
                           <Badge
-                            variant={didWin ? 'success' : 'secondary'}
+                            variant={didWin ? 'success' : 'error'}
                             size="sm"
                           >
                             {didWin ? 'W' : 'L'}
