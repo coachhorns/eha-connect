@@ -98,14 +98,16 @@ export function Navbar() {
                         </p>
                       </div>
 
-                      <Link
-                        href="/dashboard"
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-eha-navy/50 transition-colors"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <User className="w-4 h-4" />
-                        Dashboard
-                      </Link>
+                      {session.user.role !== 'ADMIN' && (
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-eha-navy/50 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <User className="w-4 h-4" />
+                          Dashboard
+                        </Link>
+                      )}
 
                       <Link
                         href="/dashboard/settings"

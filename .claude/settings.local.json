@@ -28,7 +28,9 @@
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
       "Bash(find:*)",
-      "Bash(npx next lint:*)"
+      "Bash(npx next lint:*)",
+      "Bash(git stash:*)",
+      "Bash(npx kill-port:*)"
     ]
   }
 }
