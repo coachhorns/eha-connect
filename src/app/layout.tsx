@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono, Oswald } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
+import { QueryProvider } from '@/components/providers/QueryProvider'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 
@@ -75,9 +76,11 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} font-sans antialiased bg-navy-gradient text-white min-h-screen`}>
         <SessionProvider>
-          <Navbar />
-          <main className="pt-16 min-h-[calc(100vh-80px)]">{children}</main>
-          <Footer />
+          <QueryProvider>
+            <Navbar />
+            <main className="pt-16 min-h-[calc(100vh-80px)]">{children}</main>
+            <Footer />
+          </QueryProvider>
         </SessionProvider>
       </body>
     </html>

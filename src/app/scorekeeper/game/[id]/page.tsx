@@ -14,6 +14,7 @@ import {
   ClipboardList,
 } from 'lucide-react'
 import { Button, Badge, Modal } from '@/components/ui'
+import { useGameSync } from '@/hooks/useGameSync'
 
 interface Player {
   id: string
@@ -118,13 +119,22 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   const { status: authStatus } = useSession()
   const router = useRouter()
 
+  const {
+    game: syncedGame,
+    stats: syncedStats,
+    statLogs: syncedLogs,
+    mutateStat,
+    isOnline,
+    isSyncing,
+    isLoading: syncLoading
+  } = useGameSync(gameId)
+
+  // Keep local state for optimistic UI, but initialize from sync
   const [game, setGame] = useState<Game | null>(null)
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
   const [selectedTeam, setSelectedTeam] = useState<'home' | 'away' | null>(null)
   const [actionLog, setActionLog] = useState<StatAction[]>([])
   const [playerStats, setPlayerStats] = useState<Record<string, PlayerGameStats>>({})
-  const [isLoading, setIsLoading] = useState(true)
-  const [isOnline, setIsOnline] = useState(true)
   const [homeScore, setHomeScore] = useState(0)
   const [awayScore, setAwayScore] = useState(0)
   const [currentPeriod, setCurrentPeriod] = useState(1)
@@ -132,8 +142,45 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   const [showBoxScore, setShowBoxScore] = useState(false)
   const [showEndGameModal, setShowEndGameModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'scoring' | 'stats'>('scoring')
-  const [retryQueue, setRetryQueue] = useState<QueuedStat[]>([])
-  const [isSyncing, setIsSyncing] = useState(false)
+
+  // Initialize/Update local state when hook data loads
+  useEffect(() => {
+    if (syncedGame) {
+       setGame(syncedGame)
+       setHomeScore(syncedGame.homeScore)
+       setAwayScore(syncedGame.awayScore)
+       setCurrentPeriod(syncedGame.currentPeriod || 1)
+       setGameStatus(syncedGame.status)
+    }
+  }, [syncedGame])
+
+  useEffect(() => {
+    if (syncedStats) setPlayerStats(syncedStats)
+  }, [syncedStats])
+
+  useEffect(() => {
+      if (syncedLogs && syncedGame) {
+          // Convert stat logs to action log format
+          const actions: StatAction[] = syncedLogs.map((log: any) => {
+            const team = log.teamId === syncedGame.homeTeam.id ? syncedGame.homeTeam : syncedGame.awayTeam
+            const player = team.players.find((p: Player) => p.id === log.playerId)
+            return {
+                id: `server-${log.id}`,
+                statLogId: log.id,
+                playerId: log.playerId,
+                playerName: player ? `${player.firstName} ${player.lastName}` : 'Unknown',
+                playerNumber: player?.jerseyNumber || '?',
+                teamId: log.teamId,
+                teamName: team.name,
+                statType: log.statType,
+                value: log.value,
+                timestamp: new Date(log.createdAt),
+                synced: true,
+            }
+          })
+          setActionLog(actions)
+      }
+  }, [syncedLogs, syncedGame])
 
   // Stat-first workflow state
   const [pendingStat, setPendingStat] = useState<{
@@ -144,129 +191,11 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   } | null>(null)
   const [showPlayerSelectModal, setShowPlayerSelectModal] = useState(false)
 
-  // Check online status
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true)
-    const handleOffline = () => setIsOnline(false)
-    setIsOnline(navigator.onLine)
-
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  }, [])
-
-  // Process retry queue when coming back online
-  useEffect(() => {
-    if (!isOnline || retryQueue.length === 0 || isSyncing) return
-
-    const processQueue = async () => {
-      setIsSyncing(true)
-      const queue = [...retryQueue]
-      const successfulIds: string[] = []
-
-      for (const stat of queue) {
-        try {
-          const res = await fetch('/api/scorekeeper/stats', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              gameId: stat.gameId,
-              playerId: stat.playerId,
-              teamId: stat.teamId,
-              statType: stat.statType,
-              value: stat.value,
-              period: stat.period,
-            }),
-          })
-
-          if (res.ok) {
-            const data = await res.json()
-            successfulIds.push(stat.localId)
-            // Update action log to mark as synced
-            setActionLog(prev =>
-              prev.map(a => a.id === stat.localId ? { ...a, synced: true, statLogId: data.statLog?.id } : a)
-            )
-          }
-        } catch (error) {
-          console.error('Error syncing queued stat:', error)
-          // Stop processing on error, will retry when online again
-          break
-        }
-      }
-
-      // Remove successfully synced items from queue
-      if (successfulIds.length > 0) {
-        setRetryQueue(prev => prev.filter(s => !successfulIds.includes(s.localId)))
-      }
-      setIsSyncing(false)
-    }
-
-    processQueue()
-  }, [isOnline, retryQueue, isSyncing])
-
   useEffect(() => {
     if (authStatus === 'unauthenticated') {
       router.push('/auth/signin?callbackUrl=/scorekeeper')
     }
   }, [authStatus, router])
-
-  const fetchGame = useCallback(async () => {
-    try {
-      const [gameRes, statsRes] = await Promise.all([
-        fetch(`/api/scorekeeper/games/${gameId}`),
-        fetch(`/api/scorekeeper/games/${gameId}/stats`),
-      ])
-
-      const gameData = await gameRes.json()
-      if (gameData.game) {
-        setGame(gameData.game)
-        setHomeScore(gameData.game.homeScore)
-        setAwayScore(gameData.game.awayScore)
-        setCurrentPeriod(gameData.game.currentPeriod || 1)
-        setGameStatus(gameData.game.status)
-      }
-
-      const statsData = await statsRes.json()
-      if (statsData.stats) {
-        setPlayerStats(statsData.stats)
-      }
-      if (statsData.statLogs && gameData.game) {
-        // Convert stat logs to action log format
-        const actions: StatAction[] = statsData.statLogs.map((log: StatLogEntry) => {
-          const team = log.teamId === gameData.game.homeTeam.id ? gameData.game.homeTeam : gameData.game.awayTeam
-          const player = team.players.find((p: Player) => p.id === log.playerId)
-          return {
-            id: `server-${log.id}`,
-            statLogId: log.id,
-            playerId: log.playerId,
-            playerName: player ? `${player.firstName} ${player.lastName}` : 'Unknown',
-            playerNumber: player?.jerseyNumber || '?',
-            teamId: log.teamId,
-            teamName: team.name,
-            statType: log.statType,
-            value: log.value,
-            timestamp: new Date(log.createdAt),
-            synced: true,
-          }
-        })
-        setActionLog(actions)
-      }
-    } catch (error) {
-      console.error('Error fetching game:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [gameId])
-
-  useEffect(() => {
-    if (gameId) {
-      fetchGame()
-    }
-  }, [gameId, fetchGame])
 
   const getPlayerStats = (playerId: string): PlayerGameStats => {
     return playerStats[playerId] || {
@@ -400,51 +329,16 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
     setShowPlayerSelectModal(false)
     setPendingStat(null)
 
-    // Create queued stat object
-    const queuedStat: QueuedStat = {
-      localId: action.id,
+    // Use the hook's mutateStat for offline-first sync
+    await mutateStat(pendingStat.statType, {
       gameId,
-      playerId: playerId || '',
+      playerId: playerId || null,
       teamId: pendingStat.teamId,
       statType: pendingStat.statType,
       value: pendingStat.value,
       period: currentPeriod,
-    }
-
-    // If offline, add to retry queue
-    if (!isOnline) {
-      setRetryQueue(prev => [...prev, queuedStat])
-      return
-    }
-
-    // Sync to server
-    try {
-      const res = await fetch('/api/scorekeeper/stats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameId,
-          playerId: playerId || null,
-          teamId: pendingStat.teamId,
-          statType: pendingStat.statType,
-          value: pendingStat.value,
-          period: currentPeriod,
-        }),
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        setActionLog(prev =>
-          prev.map(a => a.id === action.id ? { ...a, synced: true, statLogId: data.statLog?.id } : a)
-        )
-      } else {
-        setRetryQueue(prev => [...prev, queuedStat])
-      }
-    } catch (error) {
-      console.error('Error syncing stat:', error)
-      setRetryQueue(prev => [...prev, queuedStat])
-    }
-  }, [pendingStat, game, gameId, isOnline, currentPeriod])
+    })
+  }, [pendingStat, game, gameId, currentPeriod, mutateStat])
 
   // Cancel pending stat and revert score
   const cancelPendingStat = useCallback(() => {
@@ -509,53 +403,16 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
 
     setActionLog(prev => [action, ...prev])
 
-    // Create queued stat object
-    const queuedStat: QueuedStat = {
-      localId: action.id,
+    // Use the hook's mutateStat for offline-first sync
+    await mutateStat(statType, {
       gameId,
       playerId: selectedPlayer.id,
       teamId,
       statType,
       value,
       period: currentPeriod,
-    }
-
-    // If offline, add to retry queue immediately
-    if (!isOnline) {
-      setRetryQueue(prev => [...prev, queuedStat])
-      return
-    }
-
-    // Sync to server if online
-    try {
-      const res = await fetch('/api/scorekeeper/stats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameId,
-          playerId: selectedPlayer.id,
-          teamId,
-          statType,
-          value,
-          period: currentPeriod,
-        }),
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        setActionLog(prev =>
-          prev.map(a => a.id === action.id ? { ...a, synced: true, statLogId: data.statLog?.id } : a)
-        )
-      } else {
-        // Server error - add to retry queue
-        setRetryQueue(prev => [...prev, queuedStat])
-      }
-    } catch (error) {
-      console.error('Error syncing stat:', error)
-      // Network error - add to retry queue
-      setRetryQueue(prev => [...prev, queuedStat])
-    }
-  }, [selectedPlayer, selectedTeam, game, gameId, isOnline, currentPeriod, handleStatFirstClick])
+    })
+  }, [selectedPlayer, selectedTeam, game, gameId, currentPeriod, handleStatFirstClick, mutateStat])
 
   const reversePlayerStats = (playerId: string, statType: string) => {
     setPlayerStats(prev => {
@@ -705,7 +562,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
     return labels[type] || type
   }
 
-  if (authStatus === 'loading' || isLoading) {
+  if (authStatus === 'loading' || syncLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-10 h-10 border-3 border-eha-red border-t-transparent rounded-full" />
@@ -807,11 +664,6 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                     <Badge variant="warning" className="flex items-center gap-1">
                       <div className="w-3 h-3 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
                       SYNCING...
-                    </Badge>
-                  )}
-                  {retryQueue.length > 0 && !isSyncing && isOnline && (
-                    <Badge variant="warning" className="flex items-center gap-1">
-                      {retryQueue.length} PENDING
                     </Badge>
                   )}
                 </div>
