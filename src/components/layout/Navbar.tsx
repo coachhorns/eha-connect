@@ -31,13 +31,13 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-auto py-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center shrink-0">
             <Image
               src="/images/main.png"
               alt="EHA Connect"
               width={300}
               height={100}
-              className="w-auto h-28"
+              className="w-auto h-28 object-contain"
               priority
             />
           </Link>
