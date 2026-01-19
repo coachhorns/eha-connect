@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono, Oswald } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
@@ -39,6 +39,12 @@ export const metadata: Metadata = {
     'Elite Hoops Association',
     'college recruiting',
   ],
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'EHA Connect',
+  },
   openGraph: {
     title: 'EHA Connect',
     description: 'Player Profiles & Stats for Elite Hoops Association',
@@ -46,6 +52,14 @@ export const metadata: Metadata = {
     siteName: 'EHA Connect',
     type: 'website',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#0D2B5B',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({
