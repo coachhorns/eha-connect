@@ -595,17 +595,17 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
           setSelectedPlayer(player)
           setSelectedTeam(team)
         }}
-        className={`relative p-3 rounded-xl text-left transition-all touch-manipulation ${
+        className={`relative p-4 min-h-20 rounded-xl text-left transition-all touch-manipulation ${
           isSelected
             ? 'bg-eha-red text-white ring-2 ring-eha-red ring-offset-2 ring-offset-dark-base'
             : 'bg-dark-surface border border-eha-silver/20 text-gray-300 hover:border-eha-silver/40 active:bg-eha-navy/30'
         }`}
       >
-        <div className="flex items-center gap-2">
-          <span className={`text-xl font-bold ${isSelected ? 'text-white' : 'text-eha-red'}`}>
+        <div className="flex items-center gap-3">
+          <span className={`text-2xl font-bold ${isSelected ? 'text-white' : 'text-eha-red'}`}>
             #{player.jerseyNumber || '?'}
           </span>
-          <span className="font-medium truncate">
+          <span className="font-medium text-lg truncate">
             {player.firstName[0]}. {player.lastName}
           </span>
         </div>
@@ -728,8 +728,8 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                 : 'bg-dark-surface border border-eha-silver/20 hover:border-eha-silver/40'
             }`}
           >
-            <p className="text-sm font-medium text-gray-400 text-center truncate">{game.awayTeam.name}</p>
-            <p className="text-6xl font-bold font-stats text-white text-center mt-2">{awayScore}</p>
+            <p className="text-base font-medium text-gray-400 text-center truncate">{game.awayTeam.name}</p>
+            <p className="text-8xl font-bold font-stats text-white text-center mt-2">{awayScore}</p>
           </div>
 
           {/* VS / Period */}
@@ -750,8 +750,8 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                 : 'bg-dark-surface border border-eha-silver/20 hover:border-eha-silver/40'
             }`}
           >
-            <p className="text-sm font-medium text-gray-400 text-center truncate">{game.homeTeam.name}</p>
-            <p className="text-6xl font-bold font-stats text-white text-center mt-2">{homeScore}</p>
+            <p className="text-base font-medium text-gray-400 text-center truncate">{game.homeTeam.name}</p>
+            <p className="text-8xl font-bold font-stats text-white text-center mt-2">{homeScore}</p>
           </div>
         </div>
 
@@ -825,7 +825,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                 </button>
               </div>
 
-              {/* Stat Buttons - min 64x64px touch targets */}
+              {/* Stat Buttons - Large touch targets for tablet */}
               {activeTab === 'scoring' ? (
                 <div className="grid grid-cols-3 gap-3">
                   {scoringButtons.map(btn => (
@@ -833,10 +833,10 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                       key={btn.type}
                       onClick={() => recordStat(btn.type, btn.value)}
                       disabled={!selectedTeam || gameStatus !== 'IN_PROGRESS'}
-                      className={`${btn.color} text-white rounded-xl min-h-[64px] p-4 transition-all touch-manipulation disabled:opacity-30 disabled:cursor-not-allowed active:scale-95`}
+                      className={`${btn.color} text-white rounded-xl min-h-24 p-4 transition-all touch-manipulation disabled:opacity-30 disabled:cursor-not-allowed active:scale-95`}
                     >
-                      <div className="text-2xl font-bold">{btn.label}</div>
-                      <div className="text-sm opacity-80">{btn.subLabel}</div>
+                      <div className="text-3xl font-bold">{btn.label}</div>
+                      <div className="text-base opacity-80">{btn.subLabel}</div>
                     </button>
                   ))}
                 </div>
@@ -847,9 +847,9 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                       key={btn.type}
                       onClick={() => recordStat(btn.type, btn.value)}
                       disabled={!selectedTeam || gameStatus !== 'IN_PROGRESS'}
-                      className={`${btn.color} text-white rounded-xl min-h-[64px] min-w-[64px] p-4 transition-all touch-manipulation disabled:opacity-30 disabled:cursor-not-allowed active:scale-95`}
+                      className={`${btn.color} text-white rounded-xl min-h-20 min-w-[72px] p-4 transition-all touch-manipulation disabled:opacity-30 disabled:cursor-not-allowed active:scale-95`}
                     >
-                      <div className="text-xl font-bold">{btn.label}</div>
+                      <div className="text-2xl font-bold">{btn.label}</div>
                     </button>
                   ))}
                 </div>

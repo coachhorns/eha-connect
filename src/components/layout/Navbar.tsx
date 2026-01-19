@@ -25,6 +25,7 @@ export function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   const isActive = (href: string) => pathname.startsWith(href)
+  const isScorekeeperMode = pathname.startsWith('/scorekeeper')
 
   return (
     <nav className="glass-header border-b border-white/5 pt-[env(safe-area-inset-top)]">
@@ -42,23 +43,25 @@ export function Navbar() {
             />
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  'flex items-center justify-center px-6 py-2 rounded-full border text-xs font-bold uppercase tracking-widest shadow-md transition-all duration-300 ease-out',
-                  isActive(link.href)
-                    ? 'bg-gradient-to-br from-[#FF1F40] to-[#600010] border-eha-red text-white shadow-lg shadow-eha-red/40'
-                    : 'border-white/20 text-gray-300 hover:bg-[linear-gradient(145deg,rgba(255,255,255,0.15)_0%,rgba(255,255,255,0.05)_100%)] hover:border-white/40 hover:shadow-[0_0_20px_rgba(255,255,255,0.2),inset_0_0_10px_rgba(255,255,255,0.1)] hover:-translate-y-0.5'
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          {/* Desktop Nav - Hidden in Scorekeeper Mode */}
+          {!isScorekeeperMode && (
+            <div className="hidden md:flex items-center gap-3">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    'flex items-center justify-center px-6 py-2 rounded-full border text-xs font-bold uppercase tracking-widest shadow-md transition-all duration-300 ease-out',
+                    isActive(link.href)
+                      ? 'bg-gradient-to-br from-[#FF1F40] to-[#600010] border-eha-red text-white shadow-lg shadow-eha-red/40'
+                      : 'border-white/20 text-gray-300 hover:bg-[linear-gradient(145deg,rgba(255,255,255,0.15)_0%,rgba(255,255,255,0.05)_100%)] hover:border-white/40 hover:shadow-[0_0_20px_rgba(255,255,255,0.2),inset_0_0_10px_rgba(255,255,255,0.1)] hover:-translate-y-0.5'
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Right Side */}
           <div className="flex items-center gap-3">
@@ -169,23 +172,25 @@ export function Navbar() {
               </div>
             )}
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-400 hover:text-white"
-            >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
+            {/* Mobile Menu Button - Hidden in Scorekeeper Mode */}
+            {!isScorekeeperMode && (
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 text-gray-400 hover:text-white"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
+      {/* Mobile Menu - Hidden in Scorekeeper Mode */}
+      {mobileMenuOpen && !isScorekeeperMode && (
         <div className="md:hidden bg-eha-navy/95 backdrop-blur-xl border-t border-eha-silver/20">
           <div className="px-4 py-4">
             <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block mb-4">
