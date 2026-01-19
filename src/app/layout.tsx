@@ -45,6 +45,10 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'EHA Connect',
   },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/icons/icon-192x192.png',
+  },
   openGraph: {
     title: 'EHA Connect',
     description: 'Player Profiles & Stats for Elite Hoops Association',
