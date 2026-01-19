@@ -110,53 +110,61 @@ export default function AdminDashboard() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-white" />
+        <Link href="/admin/players">
+          <Card className="p-4 hover:bg-white/5 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                <Users className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{stats?.totalPlayers || 0}</p>
+                <p className="text-sm text-gray-500">Players</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{stats?.totalPlayers || 0}</p>
-              <p className="text-sm text-gray-500">Players</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </Link>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-              <UsersRound className="w-5 h-5 text-white" />
+        <Link href="/admin/teams">
+          <Card className="p-4 hover:bg-white/5 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                <UsersRound className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{stats?.totalTeams || 0}</p>
+                <p className="text-sm text-gray-500">Teams</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{stats?.totalTeams || 0}</p>
-              <p className="text-sm text-gray-500">Teams</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </Link>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-white" />
+        <Link href="/admin/events">
+          <Card className="p-4 hover:bg-white/5 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{stats?.totalEvents || 0}</p>
+                <p className="text-sm text-gray-500">Events</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{stats?.totalEvents || 0}</p>
-              <p className="text-sm text-gray-500">Events</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </Link>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-              <Trophy className="w-5 h-5 text-white" />
+        <Link href="/admin/settings/payments">
+          <Card className="p-4 hover:bg-white/5 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                <Trophy className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{stats?.activeSubscriptions || 0}</p>
+                <p className="text-sm text-gray-500">Subscribers</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{stats?.activeSubscriptions || 0}</p>
-              <p className="text-sm text-gray-500">Subscribers</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </Link>
       </div>
 
       {/* Quick Links */}

@@ -67,6 +67,7 @@ function SignInForm() {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
             required
           />
 
@@ -76,6 +77,7 @@ function SignInForm() {
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
             required
           />
 

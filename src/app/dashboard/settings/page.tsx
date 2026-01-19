@@ -97,9 +97,9 @@ export default function SettingsPage() {
                 <div className="space-y-6">
                     {session.user.role === 'ADMIN' && (
                         <Card className="p-6 border-eha-red/30">
-                            <h3 className="text-lg font-bold text-white uppercase tracking-wide mb-4">Admin Area</h3>
+                            <h3 className="text-lg font-bold text-white uppercase tracking-wide mb-4">Stripe Configuration</h3>
                             <p className="text-sm text-gray-400 mb-4">
-                                Access system-wide settings, payments, and configurations.
+                                Configure API keys and pricing for subscriptions.
                             </p>
                             <Button
                                 variant="outline"
@@ -107,7 +107,7 @@ export default function SettingsPage() {
                                 onClick={() => router.push('/admin/settings/payments')}
                             >
                                 <SettingsIcon className="w-4 h-4 mr-2" />
-                                System Settings
+                                Manage Payment Keys
                             </Button>
                         </Card>
                     )}

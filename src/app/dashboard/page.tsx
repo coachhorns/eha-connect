@@ -51,7 +51,10 @@ export default function DashboardPage() {
     if (status === 'unauthenticated') {
       router.push('/auth/signin?callbackUrl=/dashboard')
     }
-  }, [status, router])
+    if (session?.user?.role === 'ADMIN') {
+      router.push('/admin')
+    }
+  }, [status, session, router])
 
   useEffect(() => {
     if (session?.user.id) {
