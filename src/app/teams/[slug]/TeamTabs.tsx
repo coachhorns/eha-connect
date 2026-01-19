@@ -165,7 +165,7 @@ export function TeamTabs({ roster, games, teamId }: TeamTabsProps) {
                         </div>
                       ) : (
                         <Badge
-                          variant={game.status === 'IN_PROGRESS' ? 'warning' : 'secondary'}
+                          variant={game.status === 'IN_PROGRESS' ? 'warning' : 'default'}
                           size="sm"
                         >
                           {game.status === 'IN_PROGRESS'
