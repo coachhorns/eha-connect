@@ -15,6 +15,7 @@ import {
   Plus,
   ChevronRight,
   MapPin,
+  GitBranch,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 
@@ -111,6 +112,13 @@ export default function AdminDashboard() {
       icon: CalendarRange,
       label: 'Scheduling Grid',
       description: 'Drag-and-drop game scheduling',
+      count: null,
+    },
+    {
+      href: '/admin/brackets',
+      icon: GitBranch,
+      label: 'Brackets & Pools',
+      description: 'Generate tournament matchups',
       count: null,
     },
   ]
