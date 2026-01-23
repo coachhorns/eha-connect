@@ -78,9 +78,7 @@ export async function GET(request: NextRequest) {
       // All venues with courts
       prisma.venue.findMany({
         include: {
-          courts: {
-            orderBy: { name: 'asc' },
-          },
+          courts: true, // Fetch all, we'll sort manually for natural order
         },
         orderBy: { name: 'asc' },
       }),
@@ -97,6 +95,12 @@ export async function GET(request: NextRequest) {
       where: { division: { not: null } },
       select: { division: true },
       distinct: ['division'],
+    })
+
+    // Sort courts alphanumerically (e.g., Court 1, Court 2, Court 10)
+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
+    venues.forEach(venue => {
+      venue.courts.sort((a, b) => collator.compare(a.name, b.name))
     })
 
     return NextResponse.json({

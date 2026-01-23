@@ -82,9 +82,8 @@ function DraggableGameCard({
 }) {
   return (
     <div
-      className={`p-3 bg-dark-surface border border-eha-silver/20 rounded-lg cursor-grab active:cursor-grabbing transition-all ${
-        isDragging ? 'opacity-50 ring-2 ring-eha-red' : 'hover:border-eha-red/50'
-      }`}
+      className={`p-3 bg-dark-surface border border-eha-silver/20 rounded-lg cursor-grab active:cursor-grabbing transition-all ${isDragging ? 'opacity-50 ring-2 ring-eha-red' : 'hover:border-eha-red/50'
+        }`}
     >
       <div className="flex items-start gap-2">
         <GripVertical className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
@@ -132,9 +131,8 @@ function DroppableCell({
 }) {
   return (
     <div
-      className={`min-h-[60px] border-b border-r border-eha-silver/10 p-1 transition-colors ${
-        isOver ? 'bg-eha-red/20' : game ? 'bg-eha-navy/50' : 'hover:bg-white/5'
-      }`}
+      className={`min-h-[60px] border-b border-r border-eha-silver/10 p-1 transition-colors ${isOver ? 'bg-eha-red/20' : game ? 'bg-eha-navy/50' : 'hover:bg-white/5'
+        }`}
     >
       {game && (
         <div className="relative group p-2 bg-gradient-to-r from-eha-red/20 to-eha-red/10 border border-eha-red/30 rounded text-xs h-full">
@@ -430,6 +428,15 @@ export default function SchedulingGridPage() {
                     className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
                   />
                 </Button>
+
+                <div className="h-6 w-px bg-white/10 mx-2" />
+
+                <Link href="/admin/brackets">
+                  <Button variant="outline" size="sm" className="flex gap-2">
+                    <span className="text-eha-red">Brackets & Pools</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -507,7 +514,7 @@ export default function SchedulingGridPage() {
           </div>
 
           {/* Main Grid */}
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto min-w-0">
             {allCourts.length === 0 ? (
               <div className="flex items-center justify-center h-full">
                 <Card className="p-8 text-center max-w-md">
@@ -608,8 +615,8 @@ function DraggableItem({
 
   const style = transform
     ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
+      transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    }
     : undefined
 
   return (
