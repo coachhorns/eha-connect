@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback, use } from 'react'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -113,11 +112,13 @@ const otherStatButtons = [
   { type: 'FOUL', label: 'FOUL', value: 1, color: 'bg-red-700 hover:bg-red-600 active:bg-red-800' },
 ]
 
+const AUTH_KEY = 'scorekeeper_auth'
+
 export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const gameId = resolvedParams.id
-  const { status: authStatus } = useSession()
   const router = useRouter()
+  const [isAuthChecked, setIsAuthChecked] = useState(false)
 
   const {
     game: syncedGame,
@@ -191,11 +192,15 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   } | null>(null)
   const [showPlayerSelectModal, setShowPlayerSelectModal] = useState(false)
 
+  // Check localStorage auth and redirect if not authenticated
   useEffect(() => {
-    if (authStatus === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/scorekeeper')
+    const storedAuth = localStorage.getItem(AUTH_KEY)
+    if (storedAuth !== 'true') {
+      router.push('/scorekeeper')
+    } else {
+      setIsAuthChecked(true)
     }
-  }, [authStatus, router])
+  }, [router])
 
   const getPlayerStats = (playerId: string): PlayerGameStats => {
     return playerStats[playerId] || {
@@ -562,7 +567,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
     return labels[type] || type
   }
 
-  if (authStatus === 'loading' || syncLoading) {
+  if (!isAuthChecked || syncLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-10 h-10 border-3 border-eha-red border-t-transparent rounded-full" />

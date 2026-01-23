@@ -2,7 +2,7 @@
   "name": "EHA Connect Scorekeeper",
   "short_name": "EHA Scorekeeper",
   "description": "Offline-capable scorekeeping app for Elite Basketball Association.",
-  "start_url": "/",
+  "start_url": "/scorekeeper",
   "display": "standalone",
   "background_color": "#0D2B5B",
   "theme_color": "#0D2B5B",
