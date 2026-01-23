@@ -8,6 +8,7 @@ import {
   Users,
   UsersRound,
   Calendar,
+  CalendarRange,
   BarChart3,
   Trophy,
   Activity,
@@ -105,6 +106,13 @@ export default function AdminDashboard() {
       description: 'Configure courts and locations',
       count: stats?.totalVenues || 0,
     },
+    {
+      href: '/admin/schedule',
+      icon: CalendarRange,
+      label: 'Scheduling Grid',
+      description: 'Drag-and-drop game scheduling',
+      count: null,
+    },
   ]
 
   return (
@@ -192,7 +200,9 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="default">{link.count}</Badge>
+                  {link.count !== null && (
+                    <Badge variant="default">{link.count}</Badge>
+                  )}
                   <ChevronRight className="w-5 h-5 text-gray-500" />
                 </div>
               </div>
