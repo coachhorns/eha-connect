@@ -107,23 +107,35 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
   const [selectedTeam, setSelectedTeam] = useState<'away' | 'home'>('away')
 
   useEffect(() => {
+    let mounted = true
+
     const fetchGame = async () => {
       try {
         const res = await fetch(`/api/public/games/${resolvedParams.id}`)
         if (res.ok) {
           const data = await res.json()
-          setGame(data.game)
+          if (mounted) {
+            setGame(data.game)
+          }
         } else {
-          setError('Game not found')
+          if (mounted) setError('Game not found')
         }
       } catch (err) {
-        setError('Failed to load game')
+        if (mounted) setError('Failed to load game')
       } finally {
-        setIsLoading(false)
+        if (mounted) setIsLoading(false)
       }
     }
 
     fetchGame()
+
+    // Poll every 5 seconds for live updates
+    const intervalId = setInterval(fetchGame, 5000)
+
+    return () => {
+      mounted = false
+      clearInterval(intervalId)
+    }
   }, [resolvedParams.id])
 
   if (isLoading) {
@@ -259,22 +271,20 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
             <div className="flex gap-2 mb-6">
               <button
                 onClick={() => setSelectedTeam('away')}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
-                  selectedTeam === 'away'
+                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${selectedTeam === 'away'
                     ? 'bg-eha-red text-white'
                     : 'bg-white/5 text-gray-400 hover:text-white'
-                }`}
+                  }`}
               >
                 {game.awayTeam.name}
                 {awayWon && <span className="ml-2 text-xs">(W)</span>}
               </button>
               <button
                 onClick={() => setSelectedTeam('home')}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
-                  selectedTeam === 'home'
+                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${selectedTeam === 'home'
                     ? 'bg-eha-red text-white'
                     : 'bg-white/5 text-gray-400 hover:text-white'
-                }`}
+                  }`}
               >
                 {game.homeTeam.name}
                 {homeWon && <span className="ml-2 text-xs">(W)</span>}
