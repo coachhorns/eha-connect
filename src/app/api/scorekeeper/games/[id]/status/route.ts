@@ -8,11 +8,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-
-    if (!session || (session.user.role !== 'SCOREKEEPER' && session.user.role !== 'ADMIN')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    // Public endpoint for Scorekeeper Hub (PIN protected on client side)
+    // const session = await getServerSession(authOptions)
 
     const { id } = await params
     const { status, homeScore, awayScore, currentPeriod } = await request.json()

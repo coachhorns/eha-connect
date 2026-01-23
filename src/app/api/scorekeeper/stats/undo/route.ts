@@ -75,11 +75,9 @@ function getPointValue(statType: string): number {
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    // Public endpoint for Scorekeeper Hub (PIN protected on client side)
+    // const session = await getServerSession(authOptions)
 
-    if (!session || (session.user.role !== 'SCOREKEEPER' && session.user.role !== 'ADMIN')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
 
     const { statLogId, gameId } = await request.json()
 
