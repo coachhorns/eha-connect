@@ -5,12 +5,7 @@ import prisma from '@/lib/prisma'
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
-
-    if (!session || (session.user.role !== 'SCOREKEEPER' && session.user.role !== 'ADMIN')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    // Public endpoint for Scorekeeper Hub (PIN protected on client side)
     const { searchParams } = new URL(request.url)
     const dateParam = searchParams.get('date')
     const status = searchParams.get('status')

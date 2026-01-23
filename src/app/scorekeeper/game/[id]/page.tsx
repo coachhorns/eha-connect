@@ -112,7 +112,9 @@ const otherStatButtons = [
   { type: 'FOUL', label: 'FOUL', value: 1, color: 'bg-red-700 hover:bg-red-600 active:bg-red-800' },
 ]
 
+
 const AUTH_KEY = 'scorekeeper_auth'
+
 
 export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
@@ -147,11 +149,11 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   // Initialize/Update local state when hook data loads
   useEffect(() => {
     if (syncedGame) {
-       setGame(syncedGame)
-       setHomeScore(syncedGame.homeScore)
-       setAwayScore(syncedGame.awayScore)
-       setCurrentPeriod(syncedGame.currentPeriod || 1)
-       setGameStatus(syncedGame.status)
+      setGame(syncedGame)
+      setHomeScore(syncedGame.homeScore)
+      setAwayScore(syncedGame.awayScore)
+      setCurrentPeriod(syncedGame.currentPeriod || 1)
+      setGameStatus(syncedGame.status)
     }
   }, [syncedGame])
 
@@ -160,27 +162,27 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   }, [syncedStats])
 
   useEffect(() => {
-      if (syncedLogs && syncedGame) {
-          // Convert stat logs to action log format
-          const actions: StatAction[] = syncedLogs.map((log: any) => {
-            const team = log.teamId === syncedGame.homeTeam.id ? syncedGame.homeTeam : syncedGame.awayTeam
-            const player = team.players.find((p: Player) => p.id === log.playerId)
-            return {
-                id: `server-${log.id}`,
-                statLogId: log.id,
-                playerId: log.playerId,
-                playerName: player ? `${player.firstName} ${player.lastName}` : 'Unknown',
-                playerNumber: player?.jerseyNumber || '?',
-                teamId: log.teamId,
-                teamName: team.name,
-                statType: log.statType,
-                value: log.value,
-                timestamp: new Date(log.createdAt),
-                synced: true,
-            }
-          })
-          setActionLog(actions)
-      }
+    if (syncedLogs && syncedGame) {
+      // Convert stat logs to action log format
+      const actions: StatAction[] = syncedLogs.map((log: any) => {
+        const team = log.teamId === syncedGame.homeTeam.id ? syncedGame.homeTeam : syncedGame.awayTeam
+        const player = team.players.find((p: Player) => p.id === log.playerId)
+        return {
+          id: `server-${log.id}`,
+          statLogId: log.id,
+          playerId: log.playerId,
+          playerName: player ? `${player.firstName} ${player.lastName}` : 'Unknown',
+          playerNumber: player?.jerseyNumber || '?',
+          teamId: log.teamId,
+          teamName: team.name,
+          statType: log.statType,
+          value: log.value,
+          timestamp: new Date(log.createdAt),
+          synced: true,
+        }
+      })
+      setActionLog(actions)
+    }
   }, [syncedLogs, syncedGame])
 
   // Stat-first workflow state
@@ -192,9 +194,9 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   } | null>(null)
   const [showPlayerSelectModal, setShowPlayerSelectModal] = useState(false)
 
-  // Check localStorage auth and redirect if not authenticated
+  // Check sessionStorage auth and redirect if not authenticated
   useEffect(() => {
-    const storedAuth = localStorage.getItem(AUTH_KEY)
+    const storedAuth = sessionStorage.getItem(AUTH_KEY)
     if (storedAuth !== 'true') {
       router.push('/scorekeeper')
     } else {
@@ -600,11 +602,10 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
           setSelectedPlayer(player)
           setSelectedTeam(team)
         }}
-        className={`relative p-4 min-h-20 rounded-xl text-left transition-all touch-manipulation ${
-          isSelected
+        className={`relative p-4 min-h-20 rounded-xl text-left transition-all touch-manipulation ${isSelected
             ? 'bg-eha-red text-white ring-2 ring-eha-red ring-offset-2 ring-offset-dark-base'
             : 'bg-dark-surface border border-eha-silver/20 text-gray-300 hover:border-eha-silver/40 active:bg-eha-navy/30'
-        }`}
+          }`}
       >
         <div className="flex items-center gap-3">
           <span className={`text-2xl font-bold ${isSelected ? 'text-white' : 'text-eha-red'}`}>
@@ -622,9 +623,8 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
           </div>
         )}
         {stats.fouls > 0 && (
-          <div className={`absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
-            stats.fouls >= 5 ? 'bg-red-600 text-white' : 'bg-yellow-600 text-white'
-          }`}>
+          <div className={`absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${stats.fouls >= 5 ? 'bg-red-600 text-white' : 'bg-yellow-600 text-white'
+            }`}>
             {stats.fouls}
           </div>
         )}
@@ -727,11 +727,10 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
               setSelectedTeam('away')
               setSelectedPlayer(null)
             }}
-            className={`flex-1 max-w-xs cursor-pointer rounded-2xl p-4 transition-all ${
-              selectedTeam === 'away'
+            className={`flex-1 max-w-xs cursor-pointer rounded-2xl p-4 transition-all ${selectedTeam === 'away'
                 ? 'bg-gradient-to-br from-eha-red/30 to-eha-red/10 ring-2 ring-eha-red'
                 : 'bg-dark-surface border border-eha-silver/20 hover:border-eha-silver/40'
-            }`}
+              }`}
           >
             <p className="text-base font-medium text-gray-400 text-center truncate">{game.awayTeam.name}</p>
             <p className="text-8xl font-bold font-stats text-white text-center mt-2">{awayScore}</p>
@@ -749,11 +748,10 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
               setSelectedTeam('home')
               setSelectedPlayer(null)
             }}
-            className={`flex-1 max-w-xs cursor-pointer rounded-2xl p-4 transition-all ${
-              selectedTeam === 'home'
+            className={`flex-1 max-w-xs cursor-pointer rounded-2xl p-4 transition-all ${selectedTeam === 'home'
                 ? 'bg-gradient-to-br from-eha-red/30 to-eha-red/10 ring-2 ring-eha-red'
                 : 'bg-dark-surface border border-eha-silver/20 hover:border-eha-silver/40'
-            }`}
+              }`}
           >
             <p className="text-base font-medium text-gray-400 text-center truncate">{game.homeTeam.name}</p>
             <p className="text-8xl font-bold font-stats text-white text-center mt-2">{homeScore}</p>
@@ -810,21 +808,19 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
               <div className="flex gap-2 mb-4">
                 <button
                   onClick={() => setActiveTab('scoring')}
-                  className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-                    activeTab === 'scoring'
+                  className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${activeTab === 'scoring'
                       ? 'bg-eha-red text-white'
                       : 'bg-eha-navy/50 text-gray-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   Scoring
                 </button>
                 <button
                   onClick={() => setActiveTab('stats')}
-                  className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-                    activeTab === 'stats'
+                  className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${activeTab === 'stats'
                       ? 'bg-eha-red text-white'
                       : 'bg-eha-navy/50 text-gray-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   Other Stats
                 </button>

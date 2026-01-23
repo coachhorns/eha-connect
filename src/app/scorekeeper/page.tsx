@@ -50,9 +50,9 @@ export default function ScorekeeperHub() {
   const [statusFilter, setStatusFilter] = useState<string>('')
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // Check localStorage for existing auth on mount
+  // Check sessionStorage for existing auth on mount
   useEffect(() => {
-    const storedAuth = localStorage.getItem(AUTH_KEY)
+    const storedAuth = sessionStorage.getItem(AUTH_KEY)
     if (storedAuth === 'true') {
       setAuth(true)
     }
@@ -62,7 +62,7 @@ export default function ScorekeeperHub() {
   const handlePinSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (pin === VALID_PIN) {
-      localStorage.setItem(AUTH_KEY, 'true')
+      sessionStorage.setItem(AUTH_KEY, 'true')
       setAuth(true)
       setPinError('')
     } else {
@@ -72,7 +72,7 @@ export default function ScorekeeperHub() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem(AUTH_KEY)
+    sessionStorage.removeItem(AUTH_KEY)
     setAuth(false)
     setPin('')
   }
@@ -362,41 +362,37 @@ export default function ScorekeeperHub() {
           <Filter className="w-4 h-4 text-gray-500 flex-shrink-0" />
           <button
             onClick={() => setStatusFilter('')}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${
-              statusFilter === ''
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${statusFilter === ''
                 ? 'bg-eha-red text-white'
                 : 'bg-white/5 text-gray-400 hover:text-white'
-            }`}
+              }`}
           >
             All Games
           </button>
           <button
             onClick={() => setStatusFilter('IN_PROGRESS')}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${
-              statusFilter === 'IN_PROGRESS'
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${statusFilter === 'IN_PROGRESS'
                 ? 'bg-green-600 text-white'
                 : 'bg-white/5 text-gray-400 hover:text-white'
-            }`}
+              }`}
           >
             Live
           </button>
           <button
             onClick={() => setStatusFilter('SCHEDULED')}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${
-              statusFilter === 'SCHEDULED'
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${statusFilter === 'SCHEDULED'
                 ? 'bg-blue-600 text-white'
                 : 'bg-white/5 text-gray-400 hover:text-white'
-            }`}
+              }`}
           >
             Upcoming
           </button>
           <button
             onClick={() => setStatusFilter('FINAL')}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${
-              statusFilter === 'FINAL'
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${statusFilter === 'FINAL'
                 ? 'bg-gray-600 text-white'
                 : 'bg-white/5 text-gray-400 hover:text-white'
-            }`}
+              }`}
           >
             Completed
           </button>
