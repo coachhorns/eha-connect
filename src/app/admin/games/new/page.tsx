@@ -145,7 +145,7 @@ export default function NewGamePage() {
           eventId: formData.eventId || null,
           homeTeamId: formData.homeTeamId,
           awayTeamId: formData.awayTeamId,
-          scheduledAt: formData.scheduledAt,
+          scheduledAt: new Date(formData.scheduledAt).toISOString(),
           court: formData.court || null,
           gameType: formData.gameType,
         }),
