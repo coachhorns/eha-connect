@@ -299,6 +299,9 @@ model Event {
   games       Game[]
   teams       EventTeam[]
   awards      EventAward[]
+  venues      Venue[]
+  brackets    Bracket[]
+  constraints ScheduleConstraint[]
 
   @@map("events")
 }
@@ -308,6 +311,19 @@ enum EventType {
   LEAGUE
   SHOWCASE
   CAMP
+}
+
+enum BracketType {
+  SINGLE_ELIM
+  DOUBLE_ELIM
+  POOL_PLAY
+  ROUND_ROBIN
+}
+
+enum ConstraintType {
+  NO_CONFLICT
+  MIN_REST
+  VENUE_BLOCK
 }
 
 model EventTeam {
@@ -364,6 +380,106 @@ enum AwardType {
 }
 
 // ============================================
+// VENUES & COURTS
+// ============================================
+
+model Venue {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  city      String?
+  state     String?
+  zip       String?
+  timezone  String   @default("America/Chicago")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  courts    Court[]
+  events    Event[]
+
+  @@map("venues")
+}
+
+model Court {
+  id        String   @id @default(cuid())
+  name      String   // e.g., "Court 1", "Main Gym"
+  venueId   String
+
+  venue     Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  games     Game[]   @relation("AssignedCourt")
+
+  @@unique([venueId, name])
+  @@map("courts")
+}
+
+// ============================================
+// BRACKETS & SCHEDULING
+// ============================================
+
+model Bracket {
+  id        String      @id @default(cuid())
+  eventId   String
+  name      String      // e.g., "17U Gold", "15U Silver Championship"
+  type      BracketType
+
+  settings  Json?       // Flexible rules: { "gamesPerRound": 2, "seedingMethod": "record" }
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Relations
+  event     Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  games     Game[]
+  slots     BracketSlot[]
+
+  @@map("brackets")
+}
+
+model BracketSlot {
+  id          String   @id @default(cuid())
+  bracketId   String
+  round       Int      // 1 = first round, 2 = second round, etc.
+  position    Int      // Position within the round (for visual tree placement)
+
+  gameId      String?  @unique // Optional link to actual game once scheduled
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bracket     Bracket  @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+  game        Game?    @relation(fields: [gameId], references: [id])
+
+  @@unique([bracketId, round, position])
+  @@map("bracket_slots")
+}
+
+model ScheduleConstraint {
+  id          String         @id @default(cuid())
+  eventId     String
+  type        ConstraintType
+  entityType  String         // "TEAM", "COURT", "VENUE"
+  entityId    String?        // ID of the team, court, etc.
+
+  params      Json?          // Flexible: { "minMinutes": 60 }, { "blockedTimes": [...] }
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  event       Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("schedule_constraints")
+}
+
+// ============================================
 // GAMES & STATS
 // ============================================
 
@@ -387,7 +503,10 @@ model Game {
   startedAt   DateTime?
   endedAt     DateTime?
 
-  court       String?    // e.g., "Court 1"
+  // Court assignment
+  courtId     String?
+  assignedCourt Court?   @relation("AssignedCourt", fields: [courtId], references: [id])
+  court       String?    // Legacy field - e.g., "Court 1"
   status      GameStatus @default(SCHEDULED)
 
   // Period tracking
@@ -398,9 +517,12 @@ model Game {
   ageGroup    String?
   division    String?
   gameType    GameType   @default(POOL)
+  poolCode    String?    // e.g., "A", "B" for pool play
 
   // Bracket info (for tournament games)
-  bracketRound  String?  // e.g., "Quarterfinal", "Semifinal", "Championship"
+  bracketId     String?
+  bracket       Bracket?   @relation(fields: [bracketId], references: [id])
+  bracketRound  String?    // e.g., "Quarterfinal", "Semifinal", "Championship"
   bracketPosition Int?
 
   isOfficial  Boolean    @default(false) // Stats are finalized
@@ -410,6 +532,7 @@ model Game {
   // Relations
   stats       GameStats[]
   statLog     StatLog[]
+  bracketSlot BracketSlot?
 
   @@map("games")
 }

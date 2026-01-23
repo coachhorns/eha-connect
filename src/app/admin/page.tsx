@@ -13,6 +13,7 @@ import {
   Activity,
   Plus,
   ChevronRight,
+  MapPin,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 
@@ -22,6 +23,7 @@ interface Stats {
   totalEvents: number
   totalGames: number
   activeSubscriptions: number
+  totalVenues: number
   recentGames: any[]
 }
 
@@ -95,6 +97,13 @@ export default function AdminDashboard() {
       label: 'Manage Games',
       description: 'Schedule and manage games',
       count: stats?.totalGames || 0,
+    },
+    {
+      href: '/admin/venues',
+      icon: MapPin,
+      label: 'Manage Venues',
+      description: 'Configure courts and locations',
+      count: stats?.totalVenues || 0,
     },
   ]
 
