@@ -109,25 +109,11 @@ export default function AdminDashboard() {
       count: stats?.totalVenues || 0,
     },
     {
-      href: '/admin/schedule',
-      icon: CalendarRange,
-      label: 'Scheduling Grid',
-      description: 'Drag-and-drop game scheduling',
-      count: null,
-    },
-    {
-      href: '/admin/brackets',
-      icon: GitBranch,
-      label: 'Brackets & Pools',
-      description: 'Generate tournament matchups',
-      count: null,
-    },
-    {
-      href: '/admin/scheduler/auto',
-      icon: Wand2,
-      label: 'Auto-Scheduler',
-      description: 'Automatically assign courts and times',
-      count: null,
+      href: '/admin/venues',
+      icon: MapPin,
+      label: 'Manage Venues',
+      description: 'Configure courts and locations',
+      count: stats?.totalVenues || 0,
     },
   ]
 
