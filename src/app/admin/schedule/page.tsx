@@ -24,6 +24,7 @@ import {
   GripVertical,
   AlertCircle,
   X,
+  Wand2,
 } from 'lucide-react'
 import { Card, Button, Badge, Select } from '@/components/ui'
 
@@ -430,6 +431,13 @@ export default function SchedulingGridPage() {
                 </Button>
 
                 <div className="h-6 w-px bg-white/10 mx-2" />
+
+                <Link href="/admin/scheduler/auto">
+                  <Button size="sm" className="flex gap-2">
+                    <Wand2 className="w-4 h-4" />
+                    Auto-Schedule
+                  </Button>
+                </Link>
 
                 <Link href="/admin/brackets">
                   <Button variant="outline" size="sm" className="flex gap-2">

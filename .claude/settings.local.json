@@ -30,7 +30,8 @@
       "Bash(find:*)",
       "Bash(npx next lint:*)",
       "Bash(git stash:*)",
-      "Bash(npx kill-port:*)"
+      "Bash(npx kill-port:*)",
+      "Bash(if not exist \"C:\\\\Users\\\\Hornsby\\\\eha-connect\\\\src\\\\app\\\\admin\\\\scheduler\\\\auto\" mkdir \"C:\\\\Users\\\\Hornsby\\\\eha-connect\\\\src\\\\app\\\\admin\\\\scheduler\\\\auto\")"
     ]
   }
 }

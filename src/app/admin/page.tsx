@@ -16,6 +16,7 @@ import {
   ChevronRight,
   MapPin,
   GitBranch,
+  Wand2,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 
@@ -119,6 +120,13 @@ export default function AdminDashboard() {
       icon: GitBranch,
       label: 'Brackets & Pools',
       description: 'Generate tournament matchups',
+      count: null,
+    },
+    {
+      href: '/admin/scheduler/auto',
+      icon: Wand2,
+      label: 'Auto-Scheduler',
+      description: 'Automatically assign courts and times',
       count: null,
     },
   ]
