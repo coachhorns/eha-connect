@@ -19,6 +19,13 @@ export async function GET(
     const team = await prisma.team.findUnique({
       where: { id },
       include: {
+        program: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
         roster: {
           where: { leftAt: null },
           include: {
@@ -91,13 +98,12 @@ export async function PUT(
     const { id } = await params
     const body = await request.json()
 
-    const { name, organization, coachName, coachEmail, coachPhone, ageGroup, division, city, state } = body
+    const { name, coachName, coachEmail, coachPhone, ageGroup, division, city, state, programId } = body
 
     const team = await prisma.team.update({
       where: { id },
       data: {
         ...(name && { name }),
-        ...(organization !== undefined && { organization }),
         ...(coachName !== undefined && { coachName }),
         ...(coachEmail !== undefined && { coachEmail }),
         ...(coachPhone !== undefined && { coachPhone }),
@@ -105,6 +111,7 @@ export async function PUT(
         ...(division !== undefined && { division }),
         ...(city !== undefined && { city }),
         ...(state !== undefined && { state }),
+        ...(programId !== undefined && { programId }),
       },
     })
 

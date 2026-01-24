@@ -26,7 +26,12 @@ export async function GET(
             name: true,
             ageGroup: true,
             division: true,
-            organization: true,
+            program: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },

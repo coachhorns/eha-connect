@@ -20,7 +20,6 @@ export async function POST(
     const {
       // Team details (for new team or verification)
       teamName,
-      organization,
       ageGroup,
       division,
       city,
@@ -122,7 +121,6 @@ export async function POST(
         data: {
           name: teamName,
           slug,
-          organization: organization || null,
           ageGroup: ageGroup || null,
           division: division || null,
           city: city || null,

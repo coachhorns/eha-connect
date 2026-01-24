@@ -45,7 +45,7 @@ interface Team {
   name: string
   ageGroup: string | null
   division: string | null
-  organization: string | null
+  program?: { id: string; name: string } | null
   seed: number | null
 }
 
@@ -96,8 +96,8 @@ function SortableTeamItem({ team, index }: { team: Team; index: number }) {
       </div>
       <div className="flex-1">
         <p className="font-medium text-white">{team.name}</p>
-        {team.organization && (
-          <p className="text-xs text-gray-500">{team.organization}</p>
+        {team.program?.name && (
+          <p className="text-xs text-gray-500">{team.program?.name}</p>
         )}
       </div>
       {(team.ageGroup || team.division) && (
@@ -536,9 +536,9 @@ export default function NewBracketWizardPage() {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium text-white">{team.name}</p>
-                        {team.organization && (
+                        {team.program?.name && (
                           <p className="text-xs text-gray-500">
-                            {team.organization}
+                            {team.program?.name}
                           </p>
                         )}
                       </div>

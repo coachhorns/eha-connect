@@ -44,7 +44,6 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
 
   const [formData, setFormData] = useState({
     teamName: '',
-    organization: '',
     ageGroup: '',
     division: '',
     city: '',
@@ -241,13 +240,6 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                     onChange={handleChange}
                     error={formErrors.teamName}
                     placeholder="e.g., Dallas Elite 17U"
-                  />
-                  <Input
-                    label="Organization/Club (Optional)"
-                    name="organization"
-                    value={formData.organization}
-                    onChange={handleChange}
-                    placeholder="e.g., Dallas Youth Basketball"
                   />
                   <div className="grid sm:grid-cols-2 gap-4">
                     <Select

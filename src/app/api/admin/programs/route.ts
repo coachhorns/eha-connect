@@ -19,10 +19,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, division, coachName, gender, ageGroup, programId } = body
+    const { name, directorName, directorEmail, directorPhone, logo, city, state } = body
 
     if (!name || typeof name !== 'string' || !name.trim()) {
-      return NextResponse.json({ error: 'Team name is required' }, { status: 400 })
+      return NextResponse.json({ error: 'Program name is required' }, { status: 400 })
     }
 
     // Generate a unique slug
@@ -30,28 +30,29 @@ export async function POST(request: NextRequest) {
     let slug = baseSlug
     let counter = 1
 
-    while (await prisma.team.findUnique({ where: { slug } })) {
+    while (await prisma.program.findUnique({ where: { slug } })) {
       slug = `${baseSlug}-${counter}`
       counter++
     }
 
-    const team = await prisma.team.create({
+    const program = await prisma.program.create({
       data: {
         name: name.trim(),
         slug,
-        division: division?.trim() || null,
-        ageGroup: ageGroup?.trim() || null,
-        coachName: coachName?.trim() || null,
-        gender: gender || 'Boys', // Default to Boys if not provided
-        programId: programId || null,
+        directorName: directorName?.trim() || null,
+        directorEmail: directorEmail?.trim() || null,
+        directorPhone: directorPhone?.trim() || null,
+        logo: logo?.trim() || null,
+        city: city?.trim() || null,
+        state: state?.trim() || null,
       },
     })
 
-    return NextResponse.json({ team }, { status: 201 })
+    return NextResponse.json({ program }, { status: 201 })
   } catch (error) {
-    console.error('Error creating team:', error)
+    console.error('Error creating program:', error)
     return NextResponse.json(
-      { error: 'Failed to create team' },
+      { error: 'Failed to create program' },
       { status: 500 }
     )
   }
@@ -69,42 +70,32 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '50')
     const search = searchParams.get('search') || ''
-    const eventId = searchParams.get('eventId') || ''
 
     const skip = (page - 1) * limit
 
-    const where: any = {}
+    const where: any = {
+      isActive: true,
+    }
 
     if (search) {
       where.name = { contains: search, mode: 'insensitive' }
     }
 
-    if (eventId) {
-      where.eventTeams = {
-        some: { eventId },
-      }
-    }
-
-    const [teamsRaw, total] = await Promise.all([
-      prisma.team.findMany({
+    const [programsRaw, total] = await Promise.all([
+      prisma.program.findMany({
         where,
         select: {
           id: true,
+          slug: true,
           name: true,
-          coachName: true,
-          ageGroup: true,
-          division: true,
-          programId: true,
-          program: {
+          directorName: true,
+          directorEmail: true,
+          city: true,
+          state: true,
+          logo: true,
+          _count: {
             select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-          eventTeams: {
-            select: {
-              eventId: true,
+              teams: true,
             },
           },
         },
@@ -112,18 +103,18 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
       }),
-      prisma.team.count({ where }),
+      prisma.program.count({ where }),
     ])
 
-    // Map eventTeams to events for frontend compatibility
-    const teams = teamsRaw.map(team => ({
-      ...team,
-      events: team.eventTeams,
-      eventTeams: undefined,
+    // Flatten the _count for easier frontend use
+    const programs = programsRaw.map(program => ({
+      ...program,
+      teamsCount: program._count.teams,
+      _count: undefined,
     }))
 
     return NextResponse.json({
-      teams,
+      programs,
       pagination: {
         page,
         limit,
@@ -132,9 +123,9 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error fetching teams:', error)
+    console.error('Error fetching programs:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch teams' },
+      { error: 'Failed to fetch programs' },
       { status: 500 }
     )
   }

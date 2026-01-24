@@ -25,11 +25,17 @@ export async function GET(
                 id: true,
                 slug: true,
                 name: true,
-                organization: true,
                 city: true,
                 state: true,
                 ageGroup: true,
                 logo: true,
+                program: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                  },
+                },
               },
             },
           },

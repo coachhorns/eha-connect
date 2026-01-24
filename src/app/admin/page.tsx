@@ -17,6 +17,7 @@ import {
   MapPin,
   GitBranch,
   Wand2,
+  Building2,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 
@@ -27,6 +28,7 @@ interface Stats {
   totalGames: number
   activeSubscriptions: number
   totalVenues: number
+  totalPrograms: number
   recentGames: any[]
 }
 
@@ -76,18 +78,18 @@ export default function AdminDashboard() {
 
   const quickLinks = [
     {
+      href: '/admin/programs',
+      icon: Building2,
+      label: 'Manage Programs',
+      description: 'Manage clubs and their teams',
+      count: stats?.totalPrograms || 0,
+    },
+    {
       href: '/admin/players',
       icon: Users,
       label: 'Manage Players',
       description: 'Add, edit, or verify players',
       count: stats?.totalPlayers || 0,
-    },
-    {
-      href: '/admin/teams',
-      icon: UsersRound,
-      label: 'Manage Teams',
-      description: 'Manage team rosters and info',
-      count: stats?.totalTeams || 0,
     },
     {
       href: '/admin/events',
@@ -123,7 +125,21 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <Link href="/admin/programs">
+          <Card className="p-4 hover:bg-white/5 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{stats?.totalPrograms || 0}</p>
+                <p className="text-sm text-gray-500">Programs</p>
+              </div>
+            </div>
+          </Card>
+        </Link>
+
         <Link href="/admin/players">
           <Card className="p-4 hover:bg-white/5 transition-colors">
             <div className="flex items-center gap-3">
@@ -212,6 +228,12 @@ export default function AdminDashboard() {
       <Card className="p-6">
         <h2 className="text-xl font-bold text-white mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
+          <Link href="/admin/programs/new">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Add Program
+            </Button>
+          </Link>
           <Link href="/admin/players/new">
             <Button variant="outline" className="flex items-center gap-2">
               <Plus className="w-4 h-4" />

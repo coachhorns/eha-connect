@@ -200,6 +200,30 @@ enum Position {
 }
 
 // ============================================
+// PROGRAMS (Clubs)
+// ============================================
+
+model Program {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String   // e.g., "Cali Rebels"
+  directorName  String?
+  directorEmail String?
+  directorPhone String?
+  logo          String?  // URL
+  city          String?
+  state         String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  teams         Team[]
+
+  @@map("programs")
+}
+
+// ============================================
 // TEAMS
 // ============================================
 
@@ -208,7 +232,6 @@ model Team {
   slug        String   @unique
 
   name        String
-  organization String? // Club/AAU organization name
   logo        String?  // URL
 
   // Location
@@ -232,6 +255,10 @@ model Team {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Program relation
+  programId   String?
+  program     Program? @relation(fields: [programId], references: [id], onDelete: SetNull)
 
   // Relations
   roster      TeamRoster[]

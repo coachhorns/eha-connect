@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { Users, MapPin, Trophy } from 'lucide-react'
+import Link from 'next/link'
+import { Users, MapPin, Trophy, Building2 } from 'lucide-react'
 import prisma from '@/lib/prisma'
 import { Badge } from '@/components/ui'
 import { TeamTabs } from './TeamTabs'
@@ -13,6 +14,13 @@ async function getTeam(slug: string) {
   const team = await prisma.team.findUnique({
     where: { slug },
     include: {
+      program: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
       roster: {
         include: {
           player: {
@@ -121,8 +129,14 @@ export default async function TeamPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {team.organization && (
-                <p className="text-lg text-gray-400 mb-2">{team.organization}</p>
+              {team.program && (
+                <Link
+                  href={`/programs/${team.program.slug}`}
+                  className="inline-flex items-center gap-2 text-lg text-gray-400 hover:text-eha-red transition-colors mb-2"
+                >
+                  <Building2 className="w-5 h-5" />
+                  {team.program.name}
+                </Link>
               )}
 
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-gray-400">

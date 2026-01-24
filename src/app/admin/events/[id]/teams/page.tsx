@@ -22,13 +22,16 @@ interface Team {
   id: string
   name: string
   slug: string
-  organization: string | null
   ageGroup: string | null
   division: string | null
   city: string | null
   state: string | null
   coachName: string | null
   coachEmail: string | null
+  program?: {
+    id: string
+    name: string
+  } | null
   _count: {
     roster: number
   }
@@ -219,7 +222,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
 
   const filteredAvailableTeams = availableTeams.filter(t =>
     t.name.toLowerCase().includes(searchTeam.toLowerCase()) ||
-    (t.organization?.toLowerCase().includes(searchTeam.toLowerCase()))
+    (t.program?.name?.toLowerCase().includes(searchTeam.toLowerCase()))
   )
 
   if (status === 'loading' || isLoading) {
@@ -324,8 +327,8 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                         <div>
                           <div className="font-medium text-white">{et.team.name}</div>
                           <div className="flex items-center gap-3 text-sm text-gray-500">
-                            {et.team.organization && (
-                              <span>{et.team.organization}</span>
+                            {et.team.program && (
+                              <span>{et.team.program.name}</span>
                             )}
                             {et.team.ageGroup && (
                               <Badge size="sm" variant="default">{et.team.ageGroup}</Badge>
@@ -396,7 +399,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
             <div className="relative mb-3">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <Input
-                placeholder="Search by name or organization..."
+                placeholder="Search by name or program..."
                 value={searchTeam}
                 onChange={(e) => setSearchTeam(e.target.value)}
                 className="pl-10"
@@ -426,7 +429,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                     <div className="flex-1">
                       <div className="font-medium text-white">{team.name}</div>
                       <div className="flex items-center gap-2 text-sm text-gray-500">
-                        {team.organization && <span>{team.organization}</span>}
+                        {team.program && <span>{team.program.name}</span>}
                         {team.ageGroup && <Badge size="sm">{team.ageGroup}</Badge>}
                       </div>
                     </div>
@@ -484,8 +487,8 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
           <form onSubmit={handleUpdateTeam} className="space-y-4">
             <div className="bg-[#1a3a6e] rounded-lg p-4 mb-4">
               <div className="font-medium text-white">{selectedTeam.team.name}</div>
-              {selectedTeam.team.organization && (
-                <div className="text-sm text-gray-500">{selectedTeam.team.organization}</div>
+              {selectedTeam.team.program && (
+                <div className="text-sm text-gray-500">{selectedTeam.team.program.name}</div>
               )}
             </div>
 

@@ -10,7 +10,6 @@ interface Team {
   id: string
   slug: string
   name: string
-  organization?: string | null
   logo?: string | null
   city?: string | null
   state?: string | null
@@ -18,6 +17,11 @@ interface Team {
   division?: string | null
   wins: number
   losses: number
+  program?: {
+    id: string
+    name: string
+    slug: string
+  } | null
   _count: {
     roster: number
   }
@@ -172,8 +176,8 @@ export default function TeamsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-white truncate">{team.name}</h3>
-                      {team.organization && (
-                        <p className="text-sm text-gray-500 truncate">{team.organization}</p>
+                      {team.program && (
+                        <p className="text-sm text-gray-500 truncate">{team.program.name}</p>
                       )}
                       <div className="flex items-center gap-2 mt-2">
                         {team.ageGroup && (

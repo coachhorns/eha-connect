@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
-        { organization: { contains: search, mode: 'insensitive' } },
+        { program: { name: { contains: search, mode: 'insensitive' } } },
       ]
     }
 
@@ -37,6 +37,13 @@ export async function GET(request: Request) {
         take: limit,
         orderBy: [{ wins: 'desc' }, { name: 'asc' }],
         include: {
+          program: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
           _count: {
             select: { roster: true },
           },

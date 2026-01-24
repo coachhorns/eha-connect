@@ -54,11 +54,15 @@ interface EventTeam {
     id: string
     slug: string
     name: string
-    organization: string | null
     city: string | null
     state: string | null
     ageGroup: string | null
     logo: string | null
+    program?: {
+      id: string
+      name: string
+      slug: string
+    } | null
   }
 }
 

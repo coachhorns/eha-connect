@@ -18,6 +18,7 @@ export async function GET() {
       totalGames,
       activeSubscriptions,
       totalVenues,
+      totalPrograms,
     ] = await Promise.all([
       prisma.player.count({ where: { isActive: true } }),
       prisma.team.count({ where: { isActive: true } }),
@@ -25,6 +26,7 @@ export async function GET() {
       prisma.game.count(),
       prisma.subscription.count({ where: { status: 'ACTIVE' } }),
       prisma.venue.count(),
+      prisma.program.count({ where: { isActive: true } }),
     ])
 
     // Get recent games
@@ -45,6 +47,7 @@ export async function GET() {
       totalGames,
       activeSubscriptions,
       totalVenues,
+      totalPrograms,
       recentGames,
     })
   } catch (error) {

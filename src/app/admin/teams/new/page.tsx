@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
-import { Card, Button, Input, Select } from '@/components/ui'
+import { ArrowLeft, Building2 } from 'lucide-react'
+import { Card, Button, Input, Select, Badge } from '@/components/ui'
 
 const ageGroupOptions = [
   { value: '', label: 'Select Age Group' },
@@ -28,11 +28,19 @@ const divisionOptions = [
   { value: 'Silver', label: 'Silver' },
 ]
 
+interface Program {
+  id: string
+  name: string
+}
+
 export default function NewTeamPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const programId = searchParams.get('programId')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [program, setProgram] = useState<Program | null>(null)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -48,6 +56,24 @@ export default function NewTeamPage() {
       router.push('/')
     }
   }, [status, session, router])
+
+  useEffect(() => {
+    const fetchProgram = async () => {
+      if (!programId) return
+      try {
+        const res = await fetch(`/api/admin/programs/${programId}`)
+        if (res.ok) {
+          const data = await res.json()
+          setProgram({ id: data.program.id, name: data.program.name })
+        }
+      } catch (err) {
+        console.error('Error fetching program:', err)
+      }
+    }
+    if (session?.user.role === 'ADMIN') {
+      fetchProgram()
+    }
+  }, [programId, session])
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -73,11 +99,18 @@ export default function NewTeamPage() {
           ageGroup: formData.ageGroup || null,
           division: formData.division || null,
           coachName: formData.coachName.trim() || null,
+          programId: programId || null,
         }),
       })
 
       if (res.ok) {
-        router.push('/admin/teams')
+        const data = await res.json()
+        // Redirect back to program if we came from one
+        if (programId) {
+          router.push(`/admin/programs/${programId}`)
+        } else {
+          router.push(`/admin/teams/${data.team.id}`)
+        }
       } else {
         const data = await res.json()
         setError(data.error || 'Failed to create team')
@@ -107,16 +140,24 @@ export default function NewTeamPage() {
       {/* Header */}
       <div className="mb-8">
         <Link
-          href="/admin/teams"
+          href={programId ? `/admin/programs/${programId}` : '/admin/teams'}
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Teams
+          {programId ? 'Back to Program' : 'Back to Teams'}
         </Link>
         <h1 className="text-3xl font-bold text-white uppercase tracking-wider">New Team</h1>
-        <p className="mt-2 text-gray-400">
-          Add a new team to the system
-        </p>
+        {program ? (
+          <div className="mt-2 flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-400">Adding team to:</span>
+            <Badge variant="info">{program.name}</Badge>
+          </div>
+        ) : (
+          <p className="mt-2 text-gray-400">
+            Add a new team to the system
+          </p>
+        )}
       </div>
 
       <Card className="p-6">
@@ -180,7 +221,7 @@ export default function NewTeamPage() {
 
           {/* Submit */}
           <div className="flex gap-4 pt-4">
-            <Link href="/admin/teams">
+            <Link href={programId ? `/admin/programs/${programId}` : '/admin/teams'}>
               <Button type="button" variant="ghost">
                 Cancel
               </Button>

@@ -14,6 +14,7 @@ import {
   Mail,
   Gamepad2,
   Calendar,
+  Building2,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 import { formatPosition, formatHeight } from '@/lib/utils'
@@ -48,11 +49,17 @@ interface EventTeam {
   }
 }
 
+interface Program {
+  id: string
+  name: string
+  slug: string
+}
+
 interface Team {
   id: string
   name: string
   slug: string
-  organization: string | null
+  program: Program | null
   coachName: string | null
   coachEmail: string | null
   coachPhone: string | null
@@ -162,8 +169,14 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
               {team.ageGroup && <Badge variant="info">{team.ageGroup}</Badge>}
               {team.division && <Badge variant="default">{team.division}</Badge>}
             </div>
-            {team.organization && (
-              <p className="text-gray-400">{team.organization}</p>
+            {team.program && (
+              <Link
+                href={`/admin/programs/${team.program.id}`}
+                className="flex items-center gap-2 text-gray-400 hover:text-eha-red transition-colors"
+              >
+                <Building2 className="w-4 h-4" />
+                <span>{team.program.name}</span>
+              </Link>
             )}
             {(team.city || team.state) && (
               <div className="flex items-center gap-1 text-gray-500 mt-1">

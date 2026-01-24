@@ -10,7 +10,6 @@ import { Card, Button, Input, Select } from '@/components/ui'
 interface Team {
   id: string
   name: string
-  organization: string | null
   coachName: string | null
   coachEmail: string | null
   coachPhone: string | null
@@ -18,6 +17,7 @@ interface Team {
   division: string | null
   city: string | null
   state: string | null
+  programId: string | null
 }
 
 const ageGroupOptions = [
@@ -37,10 +37,9 @@ const ageGroupOptions = [
 
 const divisionOptions = [
   { value: '', label: 'Select Division' },
-  { value: 'Elite', label: 'Elite' },
-  { value: 'Select', label: 'Select' },
-  { value: 'Competitive', label: 'Competitive' },
-  { value: 'Recreational', label: 'Recreational' },
+  { value: 'EPL', label: 'EHA Premier League (EPL)' },
+  { value: 'Gold', label: 'Gold' },
+  { value: 'Silver', label: 'Silver' },
 ]
 
 export default function EditTeamPage({ params }: { params: Promise<{ id: string }> }) {
@@ -53,7 +52,6 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
 
   const [formData, setFormData] = useState({
     name: '',
-    organization: '',
     coachName: '',
     coachEmail: '',
     coachPhone: '',
@@ -80,7 +78,6 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
           const team: Team = data.team
           setFormData({
             name: team.name || '',
-            organization: team.organization || '',
             coachName: team.coachName || '',
             coachEmail: team.coachEmail || '',
             coachPhone: team.coachPhone || '',
@@ -126,7 +123,6 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name.trim(),
-          organization: formData.organization.trim() || null,
           coachName: formData.coachName.trim() || null,
           coachEmail: formData.coachEmail.trim() || null,
           coachPhone: formData.coachPhone.trim() || null,
@@ -215,19 +211,6 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
               required
-            />
-          </div>
-
-          {/* Organization */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Organization / Club
-            </label>
-            <Input
-              type="text"
-              placeholder="e.g., Houston Elite Basketball"
-              value={formData.organization}
-              onChange={(e) => handleChange('organization', e.target.value)}
             />
           </div>
 
