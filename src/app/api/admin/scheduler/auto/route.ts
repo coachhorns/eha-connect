@@ -23,11 +23,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Date is required' }, { status: 400 })
     }
 
-    // Parse the date
-    const scheduleDate = new Date(date)
-    if (isNaN(scheduleDate.getTime())) {
-      return NextResponse.json({ error: 'Invalid date format' }, { status: 400 })
+    // Validate date format (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+    if (!dateRegex.test(date)) {
+      return NextResponse.json({ error: 'Invalid date format. Use YYYY-MM-DD' }, { status: 400 })
     }
+
+    // The date string will be passed directly to the engine for Pacific timezone handling
+    const dateStr: string = date
 
     // Verify the event exists
     const event = await prisma.event.findUnique({
@@ -123,19 +126,20 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Parse scheduler settings
+    // Parse scheduler settings - dateStr is required for Pacific timezone handling
     const schedulerSettings: Partial<SchedulerSettings> = {
       startTime: settings?.startTime || '08:00',
       endTime: settings?.endTime || '22:00',
       gameDuration: settings?.gameDuration || 60,
       minRestMinutes: settings?.minRestMinutes || 60,
+      dateStr: dateStr,
     }
 
-    // Run the scheduler
+    // Run the scheduler - pass the date string for Pacific timezone handling
     const engine = new SchedulerEngine(
       unscheduledGames,
       courts,
-      scheduleDate,
+      dateStr,
       schedulerSettings
     )
 

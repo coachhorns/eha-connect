@@ -3,6 +3,9 @@
  * Implements a greedy first-fit algorithm for scheduling games to courts and time slots
  */
 
+import { fromZonedTime } from 'date-fns-tz'
+import { PACIFIC_TIMEZONE } from '@/lib/timezone'
+
 export interface UnscheduledGame {
   id: string
   homeTeamId: string
@@ -28,6 +31,7 @@ export interface SchedulerSettings {
   endTime: string   // "22:00" format (HH:mm)
   gameDuration: number // minutes (default 60)
   minRestMinutes: number // minimum rest between games for same team (default 60)
+  dateStr: string // "YYYY-MM-DD" format - the date to schedule for
 }
 
 export interface ProposedUpdate {
@@ -78,29 +82,29 @@ export class SchedulerEngine {
   private games: UnscheduledGame[]
   private courts: Court[]
   private settings: SchedulerSettings
-  private date: Date
   private teamSchedule: Map<string, Date[]> // Track when teams are playing
 
   constructor(
     games: UnscheduledGame[],
     courts: Court[],
-    date: Date,
+    dateStr: string, // YYYY-MM-DD format
     settings: Partial<SchedulerSettings> = {}
   ) {
     this.games = games
     this.courts = courts
-    this.date = date
     this.settings = {
       startTime: settings.startTime || '08:00',
       endTime: settings.endTime || '22:00',
       gameDuration: settings.gameDuration || 60,
       minRestMinutes: settings.minRestMinutes || 60,
+      dateStr: dateStr,
     }
     this.teamSchedule = new Map()
   }
 
   /**
-   * Generate all available time slots for the given date
+   * Generate all available time slots for the given date in Pacific timezone
+   * All times are stored as UTC but represent Pacific local time
    */
   private generateTimeSlots(): TimeSlot[] {
     const slots: TimeSlot[] = []
@@ -111,15 +115,20 @@ export class SchedulerEngine {
     const endMinutes = endHour * 60 + endMin
     const slotDuration = this.settings.gameDuration
 
+    // Parse the date string
+    const [year, month, day] = this.settings.dateStr.split('-').map(Number)
+
     for (let minutes = startMinutes; minutes + slotDuration <= endMinutes; minutes += slotDuration) {
       const hour = Math.floor(minutes / 60)
       const min = minutes % 60
 
-      const start = new Date(this.date)
-      start.setHours(hour, min, 0, 0)
+      // Create a date representing this time in Pacific timezone
+      // The Date constructor creates local time, then fromZonedTime converts Pacific -> UTC
+      const pacificLocalDate = new Date(year, month - 1, day, hour, min, 0, 0)
+      const start = fromZonedTime(pacificLocalDate, PACIFIC_TIMEZONE)
 
-      const end = new Date(start)
-      end.setMinutes(end.getMinutes() + slotDuration)
+      const pacificLocalEndDate = new Date(year, month - 1, day, hour, min + slotDuration, 0, 0)
+      const end = fromZonedTime(pacificLocalEndDate, PACIFIC_TIMEZONE)
 
       const label = this.formatTime(hour, min)
       slots.push({ start, end, label })
