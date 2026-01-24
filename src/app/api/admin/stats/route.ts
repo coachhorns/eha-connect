@@ -44,6 +44,7 @@ export async function GET() {
       totalEvents,
       totalGames,
       activeSubscriptions,
+      totalVenues,
       recentGames,
     })
   } catch (error) {
