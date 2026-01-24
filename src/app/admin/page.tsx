@@ -109,11 +109,25 @@ export default function AdminDashboard() {
       count: stats?.totalVenues || 0,
     },
     {
-      href: '/admin/venues',
-      icon: MapPin,
-      label: 'Manage Venues',
-      description: 'Configure courts and locations',
-      count: stats?.totalVenues || 0,
+      href: '/admin/schedule',
+      icon: CalendarRange,
+      label: 'Scheduling Grid',
+      description: 'Drag-and-drop game scheduling',
+      count: null,
+    },
+    {
+      href: '/admin/brackets',
+      icon: GitBranch,
+      label: 'Brackets & Pools',
+      description: 'Generate tournament matchups',
+      count: null,
+    },
+    {
+      href: '/admin/scheduler/auto',
+      icon: Wand2,
+      label: 'Auto-Scheduler',
+      description: 'Automatically assign courts and times',
+      count: null,
     },
   ]
 
@@ -188,8 +202,8 @@ export default function AdminDashboard() {
 
       {/* Quick Links */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        {quickLinks.map((link) => (
-          <Link key={link.href} href={link.href}>
+        {quickLinks.map((link, index) => (
+          <Link key={`${link.href}-${index}`} href={link.href}>
             <Card variant="hover" className="p-6 h-full">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
