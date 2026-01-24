@@ -24,17 +24,9 @@ const ageGroupOptions = [
 
 const divisionOptions = [
   { value: '', label: 'Select Division' },
-  { value: 'Elite', label: 'Elite' },
+  { value: 'EPL', label: 'EHA Premier League (EPL)' },
   { value: 'Gold', label: 'Gold' },
-  { value: 'Select', label: 'Select' },
-  { value: 'Competitive', label: 'Competitive' },
-  { value: 'Recreational', label: 'Recreational' },
-]
-
-const genderOptions = [
-  { value: '', label: 'Select Gender' },
-  { value: 'Boys', label: 'Boys' },
-  { value: 'Girls', label: 'Girls' },
+  { value: 'Silver', label: 'Silver' },
 ]
 
 export default function NewTeamPage() {
@@ -48,7 +40,6 @@ export default function NewTeamPage() {
     ageGroup: '',
     division: '',
     coachName: '',
-    gender: '',
   })
 
   useEffect(() => {
@@ -83,7 +74,6 @@ export default function NewTeamPage() {
           ageGroup: formData.ageGroup || null,
           division: formData.division || null,
           coachName: formData.coachName.trim() || null,
-          gender: formData.gender || null,
         }),
       })
 
@@ -174,18 +164,6 @@ export default function NewTeamPage() {
                 onChange={(e) => handleChange('division', e.target.value)}
               />
             </div>
-          </div>
-
-          {/* Gender */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Gender
-            </label>
-            <Select
-              options={genderOptions}
-              value={formData.gender}
-              onChange={(e) => handleChange('gender', e.target.value)}
-            />
           </div>
 
           {/* Coach Name */}

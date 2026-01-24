@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         division: division?.trim() || null,
         ageGroup: ageGroup?.trim() || null,
         coachName: coachName?.trim() || null,
-        gender: gender || null,
+        gender: gender || 'Boys', // Default to Boys if not provided
       },
     })
 
