@@ -37,6 +37,8 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    if (status === 'loading') return
+
     if (status === 'unauthenticated') {
       router.push('/auth/signin?callbackUrl=/admin')
     } else if (session?.user.role !== 'ADMIN') {

@@ -19,7 +19,6 @@ const ageGroupOptions = [
   { value: '15U', label: '15U' },
   { value: '16U', label: '16U' },
   { value: '17U', label: '17U' },
-  { value: '18U', label: '18U' },
 ]
 
 const divisionOptions = [
