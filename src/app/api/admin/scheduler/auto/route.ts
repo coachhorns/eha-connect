@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { eventId, date, settings, mode = 'PREVIEW' } = body
+    const { eventId, date, venueIds, settings, mode = 'PREVIEW' } = body
 
     if (!eventId) {
       return NextResponse.json({ error: 'Event ID is required' }, { status: 400 })
@@ -29,16 +29,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid date format' }, { status: 400 })
     }
 
-    // Fetch the event with its venues
+    // Verify the event exists
     const event = await prisma.event.findUnique({
       where: { id: eventId },
-      include: {
-        venues: {
-          include: {
-            courts: true,
-          },
-        },
-      },
     })
 
     if (!event) {
@@ -77,19 +70,50 @@ export async function POST(request: NextRequest) {
       bracketPosition: game.bracketPosition,
     }))
 
-    // Get all courts from event venues
-    const courts: Court[] = event.venues.flatMap((venue) =>
-      venue.courts.map((court) => ({
-        id: court.id,
-        name: court.name,
-        venueId: court.venueId,
-        venue: { id: venue.id, name: venue.name },
-      }))
-    )
+    // Get courts from specified venues (or fall back to event venues if not provided)
+    let courts: Court[] = []
+
+    if (venueIds && Array.isArray(venueIds) && venueIds.length > 0) {
+      // Fetch the specified venues with their courts
+      const selectedVenues = await prisma.venue.findMany({
+        where: { id: { in: venueIds } },
+        include: { courts: true },
+      })
+
+      courts = selectedVenues.flatMap((venue) =>
+        venue.courts.map((court) => ({
+          id: court.id,
+          name: court.name,
+          venueId: court.venueId,
+          venue: { id: venue.id, name: venue.name },
+        }))
+      )
+    } else {
+      // Fallback: try to get courts from event-linked venues
+      const eventWithVenues = await prisma.event.findUnique({
+        where: { id: eventId },
+        include: {
+          venues: {
+            include: { courts: true },
+          },
+        },
+      })
+
+      if (eventWithVenues?.venues) {
+        courts = eventWithVenues.venues.flatMap((venue) =>
+          venue.courts.map((court) => ({
+            id: court.id,
+            name: court.name,
+            venueId: court.venueId,
+            venue: { id: venue.id, name: venue.name },
+          }))
+        )
+      }
+    }
 
     if (courts.length === 0) {
       return NextResponse.json({
-        error: 'No courts available for this event. Please add venues with courts first.',
+        error: 'No courts available. Please select at least one venue with courts.',
       }, { status: 400 })
     }
 

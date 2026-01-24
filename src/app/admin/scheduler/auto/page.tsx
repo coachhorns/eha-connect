@@ -23,6 +23,17 @@ interface Event {
   endDate: string
 }
 
+interface Court {
+  id: string
+  name: string
+}
+
+interface Venue {
+  id: string
+  name: string
+  courts: Court[]
+}
+
 interface ScheduledGame {
   gameId: string
   courtId: string
@@ -101,6 +112,11 @@ export default function AutoSchedulerPage() {
   const [events, setEvents] = useState<Event[]>([])
   const [isLoadingEvents, setIsLoadingEvents] = useState(true)
 
+  // Venues list
+  const [venues, setVenues] = useState<Venue[]>([])
+  const [isLoadingVenues, setIsLoadingVenues] = useState(true)
+  const [selectedVenueIds, setSelectedVenueIds] = useState<string[]>([])
+
   // Configuration
   const [selectedEventId, setSelectedEventId] = useState('')
   const [selectedDate, setSelectedDate] = useState('')
@@ -141,6 +157,27 @@ export default function AutoSchedulerPage() {
     }
   }, [session])
 
+  // Fetch venues with courts
+  useEffect(() => {
+    const fetchVenues = async () => {
+      try {
+        const res = await fetch('/api/admin/venues?withCourts=true')
+        if (res.ok) {
+          const data = await res.json()
+          setVenues(data.venues || [])
+        }
+      } catch (err) {
+        console.error('Error fetching venues:', err)
+      } finally {
+        setIsLoadingVenues(false)
+      }
+    }
+
+    if (session?.user.role === 'ADMIN') {
+      fetchVenues()
+    }
+  }, [session])
+
   // Set default date when event is selected
   useEffect(() => {
     if (selectedEventId) {
@@ -158,6 +195,11 @@ export default function AutoSchedulerPage() {
       return
     }
 
+    if (selectedVenueIds.length === 0) {
+      setError('Please select at least one venue')
+      return
+    }
+
     setIsLoading(true)
     setError('')
 
@@ -168,6 +210,7 @@ export default function AutoSchedulerPage() {
         body: JSON.stringify({
           eventId: selectedEventId,
           date: selectedDate,
+          venueIds: selectedVenueIds,
           mode: 'PREVIEW',
           settings: {
             startTime,
@@ -200,7 +243,7 @@ export default function AutoSchedulerPage() {
   }
 
   const handleApplySchedule = async () => {
-    if (!selectedEventId || !selectedDate) {
+    if (!selectedEventId || !selectedDate || selectedVenueIds.length === 0) {
       return
     }
 
@@ -214,6 +257,7 @@ export default function AutoSchedulerPage() {
         body: JSON.stringify({
           eventId: selectedEventId,
           date: selectedDate,
+          venueIds: selectedVenueIds,
           mode: 'APPLY',
           settings: {
             startTime,
@@ -240,7 +284,7 @@ export default function AutoSchedulerPage() {
     }
   }
 
-  if (status === 'loading' || isLoadingEvents) {
+  if (status === 'loading' || isLoadingEvents || isLoadingVenues) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
@@ -358,6 +402,64 @@ export default function AutoSchedulerPage() {
               </div>
             </div>
 
+            {/* Venue Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Select Venues to Use *
+              </label>
+              <p className="text-sm text-gray-500 mb-3">
+                Choose which venues and courts to schedule games on
+              </p>
+              <div className="space-y-2 max-h-48 overflow-y-auto bg-[#0a1628] border border-[#1a3a6e] rounded-lg p-3">
+                {venues.length === 0 ? (
+                  <p className="text-gray-500 text-sm">No venues available. Please create venues first.</p>
+                ) : (
+                  venues.map((venue) => (
+                    <label
+                      key={venue.id}
+                      className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                        selectedVenueIds.includes(venue.id)
+                          ? 'bg-eha-red/20 border border-eha-red/50'
+                          : 'bg-[#0d1f3c] border border-transparent hover:border-[#1a3a6e]'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedVenueIds.includes(venue.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedVenueIds([...selectedVenueIds, venue.id])
+                          } else {
+                            setSelectedVenueIds(selectedVenueIds.filter((id) => id !== venue.id))
+                          }
+                        }}
+                        className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-700 text-eha-red focus:ring-eha-red focus:ring-offset-0"
+                      />
+                      <div className="flex-1">
+                        <p className="text-white font-medium">{venue.name}</p>
+                        <p className="text-sm text-gray-400">
+                          {venue.courts.length} court{venue.courts.length !== 1 ? 's' : ''}
+                          {venue.courts.length > 0 && (
+                            <span className="text-gray-500">
+                              {' '}({venue.courts.map((c) => c.name).join(', ')})
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </label>
+                  ))
+                )}
+              </div>
+              {selectedVenueIds.length > 0 && (
+                <p className="text-sm text-gray-400 mt-2">
+                  {selectedVenueIds.length} venue{selectedVenueIds.length !== 1 ? 's' : ''} selected
+                  {' '}({venues
+                    .filter((v) => selectedVenueIds.includes(v.id))
+                    .reduce((sum, v) => sum + v.courts.length, 0)} total courts)
+                </p>
+              )}
+            </div>
+
             {/* Time Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -416,7 +518,7 @@ export default function AutoSchedulerPage() {
               <Button
                 onClick={handleGeneratePreview}
                 isLoading={isLoading}
-                disabled={!selectedEventId || !selectedDate}
+                disabled={!selectedEventId || !selectedDate || selectedVenueIds.length === 0}
               >
                 <Wand2 className="w-4 h-4 mr-2" />
                 Generate Preview
