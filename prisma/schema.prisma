@@ -218,6 +218,7 @@ model Team {
   // Division/Classification
   ageGroup    String?  // e.g., "17U", "15U"
   division    String?  // e.g., "Elite", "Select"
+  gender      String?  // "Boys" or "Girls"
 
   // Season Record
   wins        Int      @default(0)
