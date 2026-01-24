@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
   Search,
   Users,
@@ -123,6 +124,12 @@ export default function AdminTeamsPage() {
             View and manage all registered teams
           </p>
         </div>
+        <Link href="/admin/teams/new">
+          <Button className="mt-4 sm:mt-0 flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            Add Team
+          </Button>
+        </Link>
       </div>
 
       {/* Search */}
