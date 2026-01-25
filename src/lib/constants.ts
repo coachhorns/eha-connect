@@ -72,7 +72,7 @@ export const positions = [
 export const ageGroups = ['17U', '16U', '15U', '14U', '13U', '12U', '11U', '10U', '9U', '8U']
 
 // Divisions
-export const divisions = ['Elite', 'Select', 'Premier', 'Classic']
+export const divisions = ['EPL', 'Gold', 'Silver']
 
 // States
 export const states = [

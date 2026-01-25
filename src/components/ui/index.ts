@@ -19,3 +19,5 @@ export type { AvatarProps } from './Avatar'
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs'
 
 export { Modal } from './Modal'
+
+export { default as ImageUpload } from './ImageUpload'

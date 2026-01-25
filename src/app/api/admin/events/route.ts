@@ -99,6 +99,7 @@ export async function POST(request: Request) {
       divisions,
       entryFee,
       bannerImage,
+      flyerImage,
       isPublished,
     } = body
 
@@ -136,6 +137,7 @@ export async function POST(request: Request) {
         divisions: divisions || [],
         entryFee: entryFee ? parseFloat(entryFee) : null,
         bannerImage: bannerImage || null,
+        flyerImage: flyerImage || null,
         isPublished: isPublished ?? false,
         isActive: true,
       },

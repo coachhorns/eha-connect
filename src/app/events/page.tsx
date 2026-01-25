@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Calendar, MapPin, Users, Trophy, ChevronRight } from 'lucide-react'
+import { Calendar, MapPin, Users, Trophy } from 'lucide-react'
 import { Card, Badge, Button, Select } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
 
@@ -128,19 +128,17 @@ export default function EventsPage() {
         </div>
       </Card>
 
-      {/* Events List */}
+      {/* Events Grid */}
       {isLoading ? (
-        <div className="space-y-4">
-          {Array.from({ length: 3 }).map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="animate-pulse">
-              <Card className="p-6">
-                <div className="flex gap-4">
-                  <div className="w-32 h-20 bg-[#1a3a6e] rounded-lg" />
-                  <div className="flex-1">
-                    <div className="h-5 bg-[#1a3a6e] rounded w-1/3 mb-2" />
-                    <div className="h-4 bg-[#1a3a6e] rounded w-1/2 mb-4" />
-                    <div className="h-4 bg-[#1a3a6e] rounded w-1/4" />
-                  </div>
+              <Card className="overflow-hidden">
+                <div className="aspect-[16/9] bg-[#1a3a6e]" />
+                <div className="p-5">
+                  <div className="h-5 bg-[#1a3a6e] rounded w-3/4 mb-3" />
+                  <div className="h-4 bg-[#1a3a6e] rounded w-1/2 mb-2" />
+                  <div className="h-4 bg-[#1a3a6e] rounded w-2/3" />
                 </div>
               </Card>
             </div>
@@ -153,72 +151,97 @@ export default function EventsPage() {
           <p className="text-gray-500 mt-2">Check back later for upcoming events</p>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((event) => (
             <Link key={event.id} href={`/events/${event.slug}`}>
-              <Card variant="hover" className="p-6">
-                <div className="flex flex-col md:flex-row gap-6">
-                  {/* Date Badge */}
-                  <div className="flex-shrink-0 w-24 text-center">
-                    <div className="bg-eha-red/10 rounded-lg p-3">
-                      <p className="text-white text-sm font-medium uppercase">
-                        {new Date(event.startDate).toLocaleDateString('en-US', { month: 'short' })}
-                      </p>
-                      <p className="text-white text-3xl font-bold">
-                        {new Date(event.startDate).getDate()}
-                      </p>
-                      <p className="text-gray-500 text-sm">
-                        {new Date(event.startDate).getFullYear()}
-                      </p>
+              <Card variant="hover" className="overflow-hidden h-full flex flex-col group">
+                {/* Top Section - Image or Placeholder */}
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  {event.bannerImage ? (
+                    <div className="w-full h-full p-2 flex items-center justify-center">
+                      <img
+                        src={event.bannerImage}
+                        alt={event.name}
+                        className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      />
                     </div>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-eha-red/20 via-[#1a3a6e] to-[#0F0F1A] flex items-center justify-center">
+                      <div className="text-center">
+                        <p className="text-white/80 text-sm font-medium uppercase tracking-wider">
+                          {new Date(event.startDate).toLocaleDateString('en-US', { month: 'short' })}
+                        </p>
+                        <p className="text-white text-4xl font-bold">
+                          {new Date(event.startDate).getDate()}
+                        </p>
+                        <p className="text-white/60 text-sm">
+                          {new Date(event.startDate).getFullYear()}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {/* Event Type Badge Overlay */}
+                  <div className="absolute top-3 left-3">
+                    <Badge variant={getEventTypeBadgeVariant(event.type) as any} size="sm">
+                      {getEventTypeLabel(event.type)}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Bottom Section - Info */}
+                <div className="p-5 flex-1 flex flex-col">
+                  {/* Event Name */}
+                  <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-eha-red transition-colors">
+                    {event.name}
+                  </h3>
+
+                  {/* Age Group Badges */}
+                  {event.ageGroups.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {event.ageGroups.slice(0, 4).map((ag) => (
+                        <Badge key={ag} variant="default" size="sm">
+                          {ag}
+                        </Badge>
+                      ))}
+                      {event.ageGroups.length > 4 && (
+                        <Badge variant="default" size="sm">
+                          +{event.ageGroups.length - 4}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Date & Location */}
+                  <div className="space-y-1.5 text-sm text-gray-400 mt-auto">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-eha-red flex-shrink-0" />
+                      <span>
+                        {formatDate(event.startDate)}
+                        {event.endDate !== event.startDate && (
+                          <> - {formatDate(event.endDate)}</>
+                        )}
+                      </span>
+                    </div>
+                    {(event.city || event.state || event.venue) && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-eha-red flex-shrink-0" />
+                        <span className="truncate">
+                          {[event.venue, event.city, event.state].filter(Boolean).join(', ')}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Event Info */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant={getEventTypeBadgeVariant(event.type) as any} size="sm">
-                            {getEventTypeLabel(event.type)}
-                          </Badge>
-                          {event.ageGroups.slice(0, 3).map((ag) => (
-                            <Badge key={ag} variant="default" size="sm">
-                              {ag}
-                            </Badge>
-                          ))}
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-2">{event.name}</h3>
-
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            {formatDate(event.startDate)}
-                            {event.endDate !== event.startDate && (
-                              <> - {formatDate(event.endDate)}</>
-                            )}
-                          </span>
-                          {(event.city || event.state || event.venue) && (
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-4 h-4" />
-                              {[event.venue, event.city, event.state].filter(Boolean).join(', ')}
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-4 mt-3 text-sm">
-                          <span className="flex items-center gap-1 text-gray-400">
-                            <Users className="w-4 h-4" />
-                            {event._count.teams} Teams
-                          </span>
-                          <span className="flex items-center gap-1 text-gray-400">
-                            <Trophy className="w-4 h-4" />
-                            {event._count.games} Games
-                          </span>
-                        </div>
-                      </div>
-
-                      <ChevronRight className="w-6 h-6 text-gray-500 hidden md:block" />
-                    </div>
+                  {/* Stats Footer */}
+                  <div className="flex items-center gap-4 mt-4 pt-4 border-t border-[#1a3a6e]">
+                    <span className="flex items-center gap-1.5 text-sm text-gray-400">
+                      <Users className="w-4 h-4" />
+                      {event._count.teams} Teams
+                    </span>
+                    <span className="flex items-center gap-1.5 text-sm text-gray-400">
+                      <Trophy className="w-4 h-4" />
+                      {event._count.games} Games
+                    </span>
                   </div>
                 </div>
               </Card>

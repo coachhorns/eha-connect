@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -23,12 +23,30 @@ export function Navbar() {
   const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10)
+    }
+
+    // Check initial scroll position
+    handleScroll()
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const isActive = (href: string) => pathname.startsWith(href)
   const isScorekeeperMode = pathname.startsWith('/scorekeeper')
 
   return (
-    <nav className="glass-header border-b border-white/5 pt-[env(safe-area-inset-top)]">
+    <nav className={cn(
+      "fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 pt-[env(safe-area-inset-top)]",
+      isScrolled
+        ? "bg-[#0F0F1A]/80 backdrop-blur-md border-white/5 shadow-lg"
+        : "bg-transparent border-transparent"
+    )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-auto py-4">
           {/* Logo */}

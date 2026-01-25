@@ -48,7 +48,12 @@ export async function GET(
       return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ event })
+    // Also fetch venues for dropdown population
+    const venues = await prisma.venue.findMany({
+      orderBy: { name: 'asc' },
+    })
+
+    return NextResponse.json({ event, venues })
   } catch (error) {
     console.error('Error fetching event:', error)
     return NextResponse.json({ error: 'Failed to fetch event' }, { status: 500 })
@@ -82,6 +87,7 @@ export async function PUT(
       divisions,
       entryFee,
       bannerImage,
+      flyerImage,
       isPublished,
       isActive,
     } = body
@@ -126,6 +132,7 @@ export async function PUT(
         ...(divisions !== undefined && { divisions }),
         ...(entryFee !== undefined && { entryFee: entryFee ? parseFloat(entryFee) : null }),
         ...(bannerImage !== undefined && { bannerImage }),
+        ...(flyerImage !== undefined && { flyerImage }),
         ...(isPublished !== undefined && { isPublished }),
         ...(isActive !== undefined && { isActive }),
       },

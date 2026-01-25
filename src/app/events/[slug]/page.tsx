@@ -299,24 +299,25 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <div
-        className="relative h-64 md:h-80"
-        style={{
-          background: !event.bannerImage
-            ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)'
-            : undefined,
-        }}
-      >
+      <div className="relative h-72 md:h-96 bg-gradient-to-br from-[#1a1a2e] via-[#0F0F1A] to-[#1a3a6e]/30">
+        {/* Background gradient pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,107,0,0.1),transparent_50%)]" />
+
+        {/* Logo/Banner Image - Centered and contained */}
         {event.bannerImage && (
-          <Image
-            src={event.bannerImage}
-            alt={`${event.name} banner`}
-            fill
-            priority
-            className="object-cover"
-          />
+          <div className="absolute inset-0 flex items-center justify-center p-8 pb-24">
+            <img
+              src={event.bannerImage}
+              alt={`${event.name} banner`}
+              className="max-w-full max-h-full object-contain drop-shadow-2xl"
+            />
+          </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-dark-base via-dark-base/60 to-transparent" />
+
+        {/* Bottom gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-base via-dark-base/80 to-transparent" />
+
+        {/* Content */}
         <div className="absolute inset-0 flex items-end">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 w-full">
             <Link

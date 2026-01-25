@@ -21,6 +21,7 @@ interface Event {
   divisions: string[]
   entryFee: number | null
   bannerImage: string | null
+  flyerImage: string | null
   isPublished: boolean
   isActive: boolean
 }

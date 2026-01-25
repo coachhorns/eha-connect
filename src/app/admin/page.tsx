@@ -18,6 +18,7 @@ import {
   GitBranch,
   Wand2,
   Building2,
+  UserCog,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 
@@ -29,6 +30,7 @@ interface Stats {
   activeSubscriptions: number
   totalVenues: number
   totalPrograms: number
+  totalUsers: number
   recentGames: any[]
 }
 
@@ -77,6 +79,13 @@ export default function AdminDashboard() {
   }
 
   const quickLinks = [
+    {
+      href: '/admin/users',
+      icon: UserCog,
+      label: 'Manage Users',
+      description: 'View and manage registered users',
+      count: stats?.totalUsers || 0,
+    },
     {
       href: '/admin/programs',
       icon: Building2,
