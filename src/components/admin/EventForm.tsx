@@ -5,13 +5,22 @@ import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { X, Plus, Save, ArrowLeft, Users } from 'lucide-react'
-import { Card, Button, Input, Select, Badge } from '@/components/ui'
+import { Card, Button, Input, Select, Badge, ImageUpload } from '@/components/ui'
 import { states, ageGroups as ageGroupOptions, divisions as divisionOptions } from '@/lib/constants'
+
+interface Venue {
+  id: string
+  name: string
+  address: string | null
+  city: string | null
+  state: string | null
+}
 
 interface EventFormData {
   name: string
   type: string
   description: string
+  venueId: string
   venue: string
   address: string
   city: string
@@ -22,6 +31,7 @@ interface EventFormData {
   divisions: string[]
   entryFee: string
   bannerImage: string
+  flyerImage: string
   isPublished: boolean
 }
 
@@ -40,6 +50,7 @@ interface EventInput {
   divisions?: string[]
   entryFee?: number | string | null
   bannerImage?: string | null
+  flyerImage?: string | null
   isPublished?: boolean
 }
 
@@ -59,10 +70,13 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [venues, setVenues] = useState<Venue[]>([])
+  const [isLoadingVenues, setIsLoadingVenues] = useState(true)
   const [formData, setFormData] = useState<EventFormData>({
     name: '',
     type: 'TOURNAMENT',
     description: '',
+    venueId: '',
     venue: '',
     address: '',
     city: '',
@@ -73,8 +87,27 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
     divisions: [],
     entryFee: '',
     bannerImage: '',
+    flyerImage: '',
     isPublished: false,
   })
+
+  // Fetch venues on mount
+  useEffect(() => {
+    const fetchVenues = async () => {
+      try {
+        const res = await fetch('/api/admin/venues')
+        if (res.ok) {
+          const data = await res.json()
+          setVenues(data.venues || [])
+        }
+      } catch (err) {
+        console.error('Failed to fetch venues:', err)
+      } finally {
+        setIsLoadingVenues(false)
+      }
+    }
+    fetchVenues()
+  }, [])
 
   useEffect(() => {
     if (initialData) {
@@ -82,20 +115,22 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
         name: initialData.name || '',
         type: initialData.type || 'TOURNAMENT',
         description: initialData.description || '',
+        venueId: '',
         venue: initialData.venue || '',
         address: initialData.address || '',
         city: initialData.city || '',
         state: initialData.state || '',
         startDate: initialData.startDate
-          ? format(new Date(initialData.startDate), "yyyy-MM-dd'T'HH:mm")
+          ? format(new Date(initialData.startDate), 'yyyy-MM-dd')
           : '',
         endDate: initialData.endDate
-          ? format(new Date(initialData.endDate), "yyyy-MM-dd'T'HH:mm")
+          ? format(new Date(initialData.endDate), 'yyyy-MM-dd')
           : '',
         ageGroups: initialData.ageGroups || [],
-        divisions: initialData.divisions || [],
+        divisions: (initialData.divisions || []).filter(d => divisionOptions.includes(d)),
         entryFee: initialData.entryFee?.toString() || '',
         bannerImage: initialData.bannerImage || '',
+        flyerImage: initialData.flyerImage || '',
         isPublished: initialData.isPublished || false,
       })
     }
@@ -131,6 +166,27 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
         ? prev.divisions.filter((d) => d !== division)
         : [...prev.divisions, division],
     }))
+  }
+
+  const handleVenueSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const venueId = e.target.value
+    const selectedVenue = venues.find((v) => v.id === venueId)
+
+    if (selectedVenue) {
+      setFormData((prev) => ({
+        ...prev,
+        venueId,
+        venue: selectedVenue.name,
+        address: selectedVenue.address || '',
+        city: selectedVenue.city || '',
+        state: selectedVenue.state || '',
+      }))
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        venueId: '',
+      }))
+    }
   }
 
   const validate = (): boolean => {
@@ -292,20 +348,20 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
           </Card>
 
           <Card>
-            <h2 className="text-lg font-semibold text-white mb-4">Date & Time</h2>
+            <h2 className="text-lg font-semibold text-white mb-4">Dates</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <Input
-                label="Start Date & Time"
+                label="Start Date"
                 name="startDate"
-                type="datetime-local"
+                type="date"
                 value={formData.startDate}
                 onChange={handleChange}
                 error={errors.startDate}
               />
               <Input
-                label="End Date & Time"
+                label="End Date"
                 name="endDate"
-                type="datetime-local"
+                type="date"
                 value={formData.endDate}
                 onChange={handleChange}
                 error={errors.endDate}
@@ -316,36 +372,30 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
           <Card>
             <h2 className="text-lg font-semibold text-white mb-4">Location</h2>
             <div className="space-y-4">
-              <Input
-                label="Venue Name"
-                name="venue"
-                value={formData.venue}
-                onChange={handleChange}
-                placeholder="e.g., Main Street Sports Complex"
+              <Select
+                label="Venue"
+                name="venueId"
+                options={[
+                  { value: '', label: isLoadingVenues ? 'Loading venues...' : 'Select a venue' },
+                  ...venues.map((v) => ({ value: v.id, label: v.name })),
+                ]}
+                value={formData.venueId}
+                onChange={handleVenueSelect}
+                disabled={isLoadingVenues}
               />
-              <Input
-                label="Address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="123 Main Street"
-              />
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Input
-                  label="City"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  placeholder="City"
-                />
-                <Select
-                  label="State"
-                  name="state"
-                  options={stateOptions}
-                  value={formData.state}
-                  onChange={handleChange}
-                />
-              </div>
+              {formData.venueId && (
+                <div className="text-sm text-gray-400 bg-[#1a3a6e]/30 rounded-lg p-3">
+                  <p className="font-medium text-gray-300">{formData.venue}</p>
+                  {formData.address && <p>{formData.address}</p>}
+                  {(formData.city || formData.state) && (
+                    <p>
+                      {formData.city}
+                      {formData.city && formData.state && ', '}
+                      {formData.state}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </Card>
         </div>
@@ -360,11 +410,10 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   key={ageGroup}
                   type="button"
                   onClick={() => handleToggleAgeGroup(ageGroup)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    formData.ageGroups.includes(ageGroup)
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${formData.ageGroups.includes(ageGroup)
                       ? 'bg-eha-red text-white'
                       : 'bg-[#1a3a6e] text-gray-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   {ageGroup}
                 </button>
@@ -385,11 +434,10 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   key={division}
                   type="button"
                   onClick={() => handleToggleDivision(division)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    formData.divisions.includes(division)
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${formData.divisions.includes(division)
                       ? 'bg-eha-red text-white'
                       : 'bg-[#1a3a6e] text-gray-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   {division}
                 </button>
@@ -404,25 +452,22 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
 
           <Card>
             <h2 className="text-lg font-semibold text-white mb-4">Banner Image</h2>
-            <Input
-              name="bannerImage"
+            <ImageUpload
               value={formData.bannerImage}
-              onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
-              helperText="Enter the URL of the banner image"
+              onChange={(url) => setFormData((prev) => ({ ...prev, bannerImage: url }))}
+              aspectRatio="16/9"
+              helperText="Recommended: 1920x1080"
             />
-            {formData.bannerImage && (
-              <div className="mt-4">
-                <img
-                  src={formData.bannerImage}
-                  alt="Banner preview"
-                  className="w-full h-32 object-cover rounded-lg"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none'
-                  }}
-                />
-              </div>
-            )}
+          </Card>
+
+          <Card>
+            <h2 className="text-lg font-semibold text-white mb-4">Flyer Image</h2>
+            <ImageUpload
+              value={formData.flyerImage}
+              onChange={(url) => setFormData((prev) => ({ ...prev, flyerImage: url }))}
+              aspectRatio="3/4"
+              helperText="Recommended: 1080x1440"
+            />
           </Card>
         </div>
       </div>

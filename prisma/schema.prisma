@@ -323,6 +323,7 @@ model Event {
 
   // Media
   bannerImage String?
+  flyerImage  String?     // 1080x1440 flyer image
 
   isPublished Boolean     @default(false)
   isActive    Boolean     @default(true)
