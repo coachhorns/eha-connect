@@ -101,7 +101,16 @@ export function Navbar() {
                         </p>
                       </div>
 
-                      {session.user.role !== 'ADMIN' && (
+                      {session.user.role === 'PROGRAM_DIRECTOR' ? (
+                        <Link
+                          href="/director/dashboard"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-eha-navy/50 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          <User className="w-4 h-4" />
+                          Director Dashboard
+                        </Link>
+                      ) : session.user.role !== 'ADMIN' && session.user.role !== 'SCOREKEEPER' ? (
                         <Link
                           href="/dashboard"
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-eha-navy/50 transition-colors"
@@ -110,7 +119,7 @@ export function Navbar() {
                           <User className="w-4 h-4" />
                           Dashboard
                         </Link>
-                      )}
+                      ) : null}
 
                       <Link
                         href="/dashboard/settings"
@@ -166,7 +175,7 @@ export function Navbar() {
                     Sign In
                   </Button>
                 </Link>
-                <Link href="/auth/signup">
+                <Link href="/auth/role-selection">
                   <Button size="sm">Get Started</Button>
                 </Link>
               </div>

@@ -80,9 +80,9 @@ export default function PricingPage() {
   const handleGetStarted = async (planKey: string) => {
     setError(null)
 
-    // If not logged in, redirect to signup
+    // If not logged in, redirect to role selection
     if (status === 'unauthenticated' || !session) {
-      router.push('/auth/signup')
+      router.push('/auth/role-selection')
       return
     }
 

@@ -14,7 +14,8 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session || session.user.role !== 'ADMIN') {
+    // Allow both ADMIN and PROGRAM_DIRECTOR to create programs
+    if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'PROGRAM_DIRECTOR')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -35,6 +36,9 @@ export async function POST(request: NextRequest) {
       counter++
     }
 
+    // Set ownerId to the current user if they are a PROGRAM_DIRECTOR
+    const ownerId = session.user.role === 'PROGRAM_DIRECTOR' ? session.user.id : null
+
     const program = await prisma.program.create({
       data: {
         name: name.trim(),
@@ -45,6 +49,7 @@ export async function POST(request: NextRequest) {
         logo: logo?.trim() || null,
         city: city?.trim() || null,
         state: state?.trim() || null,
+        ownerId,
       },
     })
 

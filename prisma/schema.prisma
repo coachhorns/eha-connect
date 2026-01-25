@@ -39,6 +39,7 @@ model User {
   sessions      Session[]
   players       Player[]       // Players this user manages (parent/player)
   subscription  Subscription?
+  ownedPrograms Program[]      // Programs this user owns (program director)
 
   @@map("users")
 }
@@ -86,6 +87,7 @@ enum UserRole {
   PLAYER
   PARENT
   SCOREKEEPER
+  PROGRAM_DIRECTOR
   ADMIN
 }
 
@@ -216,6 +218,10 @@ model Program {
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  // Owner (Program Director)
+  ownerId       String?
+  owner         User?    @relation(fields: [ownerId], references: [id])
 
   // Relations
   teams         Team[]

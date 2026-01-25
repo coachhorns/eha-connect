@@ -234,16 +234,15 @@ export default function StandingsPage() {
                           className="border-b border-[#1a3a6e]/50 hover:bg-[#1a3a6e]/30 transition-colors"
                         >
                           <td className="py-3 px-4">
-                            <span className={`font-bold ${
-                              idx === 0 ? 'text-white' :
-                              idx === 1 ? 'text-gray-300' :
-                              idx === 2 ? 'text-amber-600' : 'text-gray-500'
-                            }`}>
+                            <span className={`font-bold ${idx === 0 ? 'text-white' :
+                                idx === 1 ? 'text-gray-300' :
+                                  idx === 2 ? 'text-amber-600' : 'text-gray-500'
+                              }`}>
                               {idx + 1}
                             </span>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="flex items-center gap-3">
+                            <Link href={`/teams/${team.teamSlug}`} className="group flex items-center gap-3 hover:opacity-80 transition-opacity">
                               {team.teamLogo ? (
                                 <Image
                                   src={team.teamLogo}
@@ -260,7 +259,7 @@ export default function StandingsPage() {
                                 </div>
                               )}
                               <div>
-                                <div className="font-medium text-white">{team.teamName}</div>
+                                <div className="font-medium text-white group-hover:text-eha-red transition-colors">{team.teamName}</div>
                                 <div className="text-xs text-gray-500">
                                   {team.city && team.state && `${team.city}, ${team.state}`}
                                   {team.division && standingsType === 'overall' && (
@@ -268,7 +267,7 @@ export default function StandingsPage() {
                                   )}
                                 </div>
                               </div>
-                            </div>
+                            </Link>
                           </td>
                           <td className="text-center py-3 px-3">
                             <span className="text-green-400 font-medium">{team.wins}</span>
@@ -286,10 +285,9 @@ export default function StandingsPage() {
                               <td className="text-center py-3 px-3 text-gray-400">{team.pointsFor}</td>
                               <td className="text-center py-3 px-3 text-gray-400">{team.pointsAgainst}</td>
                               <td className="text-center py-3 px-3">
-                                <span className={`font-medium flex items-center justify-center gap-1 ${
-                                  (team.pointDiff || 0) > 0 ? 'text-green-400' :
-                                  (team.pointDiff || 0) < 0 ? 'text-red-400' : 'text-gray-400'
-                                }`}>
+                                <span className={`font-medium flex items-center justify-center gap-1 ${(team.pointDiff || 0) > 0 ? 'text-green-400' :
+                                    (team.pointDiff || 0) < 0 ? 'text-red-400' : 'text-gray-400'
+                                  }`}>
                                   {(team.pointDiff || 0) > 0 ? (
                                     <TrendingUp className="w-3 h-3" />
                                   ) : (team.pointDiff || 0) < 0 ? (

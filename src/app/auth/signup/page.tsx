@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button, Input, Card, Select } from '@/components/ui'
 
@@ -29,16 +29,36 @@ function GoogleIcon() {
   )
 }
 
+const validRoles = ['PARENT', 'PLAYER', 'PROGRAM_DIRECTOR']
+
+const roleLabels: Record<string, string> = {
+  PARENT: 'Parent/Guardian',
+  PLAYER: 'Player',
+  PROGRAM_DIRECTOR: 'Club/Program Director',
+}
+
 export default function SignUpPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const roleParam = searchParams.get('role')
+
+  // Validate and use role from URL param, default to PARENT
+  const initialRole = roleParam && validRoles.includes(roleParam) ? roleParam : 'PARENT'
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'PARENT',
+    role: initialRole,
   })
+
+  // Update role if URL param changes
+  useEffect(() => {
+    if (roleParam && validRoles.includes(roleParam)) {
+      setFormData(prev => ({ ...prev, role: roleParam }))
+    }
+  }, [roleParam])
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
@@ -89,7 +109,7 @@ export default function SignUpPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Something went wrong')
+        setError(data.details || data.error || 'Something went wrong')
         return
       }
 
@@ -103,7 +123,12 @@ export default function SignUpPage() {
       if (result?.error) {
         setError('Account created but could not sign in. Please try signing in manually.')
       } else {
-        router.push('/dashboard')
+        // Redirect based on role
+        if (formData.role === 'PROGRAM_DIRECTOR') {
+          router.push('/director/onboarding')
+        } else {
+          router.push('/dashboard')
+        }
         router.refresh()
       }
     } catch (err) {
@@ -121,7 +146,11 @@ export default function SignUpPage() {
             <span className="text-white font-bold text-2xl">EHA</span>
           </div>
           <h1 className="text-2xl font-bold text-white">Create Account</h1>
-          <p className="text-gray-400 mt-2">Join EHA Connect today</p>
+          <p className="text-gray-400 mt-2">
+            {roleParam && validRoles.includes(roleParam)
+              ? `Sign up as ${roleLabels[roleParam]}`
+              : 'Join EHA Connect today'}
+          </p>
         </div>
 
         {error && (
@@ -184,6 +213,7 @@ export default function SignUpPage() {
             options={[
               { value: 'PARENT', label: 'Parent/Guardian' },
               { value: 'PLAYER', label: 'Player' },
+              { value: 'PROGRAM_DIRECTOR', label: 'Club/Program Director' },
             ]}
           />
 

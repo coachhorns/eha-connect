@@ -19,6 +19,7 @@ async function getTeam(slug: string) {
           id: true,
           name: true,
           slug: true,
+          logo: true,
         },
       },
       roster: {
@@ -100,9 +101,9 @@ export default async function TeamPage({ params }: PageProps) {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             {/* Team Logo / Icon */}
             <div className="w-32 h-32 rounded-2xl bg-[#1a3a6e] border border-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
-              {team.logo ? (
+              {team.logo || team.program?.logo ? (
                 <Image
-                  src={team.logo}
+                  src={team.logo || team.program?.logo || ''}
                   alt={team.name}
                   width={128}
                   height={128}

@@ -21,6 +21,7 @@ interface Team {
     id: string
     name: string
     slug: string
+    logo?: string | null
   } | null
   _count: {
     roster: number
@@ -164,9 +165,9 @@ export default function TeamsPage() {
                 <Card variant="hover" className="p-6 h-full">
                   <div className="flex items-start gap-4">
                     <div className="w-16 h-16 bg-[#1a3a6e] rounded-lg flex items-center justify-center flex-shrink-0">
-                      {team.logo ? (
+                      {team.logo || team.program?.logo ? (
                         <img
-                          src={team.logo}
+                          src={team.logo || team.program?.logo || ''}
                           alt={team.name}
                           className="w-full h-full object-cover rounded-lg"
                         />

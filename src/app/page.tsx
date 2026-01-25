@@ -193,7 +193,7 @@ export default function HomePage() {
           <p className="text-xl text-gray-300 mb-8">
             Join thousands of athletes tracking their basketball careers with EHA Connect.
           </p>
-          <Link href="/auth/signup">
+          <Link href="/auth/role-selection">
             <Button size="lg" className="px-10">
               Get Started Today
             </Button>

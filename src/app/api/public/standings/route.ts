@@ -23,6 +23,9 @@ export async function GET(request: Request) {
               division: true,
               city: true,
               state: true,
+              program: {
+                select: { logo: true }
+              }
             },
           },
         },
@@ -40,7 +43,7 @@ export async function GET(request: Request) {
           teamId: et.team.id,
           teamSlug: et.team.slug,
           teamName: et.team.name,
-          teamLogo: et.team.logo,
+          teamLogo: et.team.logo || (et.team as any).program?.logo,
           ageGroup: et.team.ageGroup,
           city: et.team.city,
           state: et.team.state,
@@ -81,6 +84,9 @@ export async function GET(request: Request) {
         division: true,
         city: true,
         state: true,
+        program: {
+          select: { logo: true }
+        },
         wins: true,
         losses: true,
       },
@@ -98,7 +104,7 @@ export async function GET(request: Request) {
         teamId: team.id,
         teamSlug: team.slug,
         teamName: team.name,
-        teamLogo: team.logo,
+        teamLogo: team.logo || (team as any).program?.logo,
         division: team.division,
         city: team.city,
         state: team.state,
