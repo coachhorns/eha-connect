@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -33,7 +33,7 @@ interface Program {
   name: string
 }
 
-export default function DirectorNewTeamPage() {
+function DirectorNewTeamContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -249,5 +249,21 @@ export default function DirectorNewTeamPage() {
         </form>
       </Card>
     </div>
+  )
+}
+
+function NewTeamLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
+    </div>
+  )
+}
+
+export default function DirectorNewTeamPage() {
+  return (
+    <Suspense fallback={<NewTeamLoading />}>
+      <DirectorNewTeamContent />
+    </Suspense>
   )
 }

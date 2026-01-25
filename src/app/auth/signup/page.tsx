@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -37,7 +37,7 @@ const roleLabels: Record<string, string> = {
   PROGRAM_DIRECTOR: 'Club/Program Director',
 }
 
-export default function SignUpPage() {
+function SignUpContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const roleParam = searchParams.get('role')
@@ -264,5 +264,21 @@ export default function SignUpPage() {
         </div>
       </Card>
     </div>
+  )
+}
+
+function SignUpLoading() {
+  return (
+    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
+      <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
+    </div>
+  )
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<SignUpLoading />}>
+      <SignUpContent />
+    </Suspense>
   )
 }
