@@ -32,7 +32,7 @@ export function Footer() {
             <Link href="/" className="inline-block">
               <Image
                 src="/images/overall.png"
-                alt="Elite Hoops Association"
+                alt="EHA Connect"
                 width={300}
                 height={96}
                 className="w-auto h-24"
