@@ -13,6 +13,8 @@ import {
   ExternalLink,
   Calendar,
   CreditCard,
+  Search,
+  UserPlus,
 } from 'lucide-react'
 import { Card, Button, Badge, Avatar } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
@@ -103,6 +105,32 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Welcome Card for Parents/Players with no linked players */}
+          {profiles.length === 0 && (session?.user.role === 'PARENT' || session?.user.role === 'PLAYER') && (
+            <Card className="border-2 border-eha-gold/50 bg-gradient-to-br from-[#0a1628] to-[#1a3a6e]">
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 bg-eha-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <UserPlus className="w-8 h-8 text-eha-gold" />
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Welcome to EHA Connect!
+                </h2>
+                <p className="text-gray-300 mb-6 max-w-md mx-auto">
+                  Let's find your athlete in our system and link them to your account.
+                </p>
+                <Link href="/claim-player">
+                  <Button size="lg" className="flex items-center gap-2 mx-auto">
+                    <Search className="w-5 h-5" />
+                    Find Your Athlete
+                  </Button>
+                </Link>
+                <p className="text-gray-500 text-sm mt-4">
+                  Your child's coach or program director should have already added them to a team roster.
+                </p>
+              </div>
+            </Card>
+          )}
+
           {/* Player Profiles */}
           <Card>
             <div className="p-4 border-b border-[#1a3a6e] flex items-center justify-between">
@@ -110,21 +138,45 @@ export default function DashboardPage() {
                 <User className="w-5 h-5 text-white" />
                 Player Profiles
               </h2>
-              <Link href="/dashboard/players/new">
-                <Button size="sm" className="flex items-center gap-1">
-                  <Plus className="w-4 h-4" />
-                  Add Player
-                </Button>
-              </Link>
+              {/* Show "Claim Player" for PARENT/PLAYER roles, "Add Player" for others */}
+              {session?.user.role === 'PARENT' || session?.user.role === 'PLAYER' ? (
+                <Link href="/claim-player">
+                  <Button size="sm" className="flex items-center gap-1">
+                    <Search className="w-4 h-4" />
+                    Claim Player
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/dashboard/players/new">
+                  <Button size="sm" className="flex items-center gap-1">
+                    <Plus className="w-4 h-4" />
+                    Add Player
+                  </Button>
+                </Link>
+              )}
             </div>
 
             {profiles.length === 0 ? (
               <div className="p-8 text-center">
                 <User className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400 mb-4">No player profiles yet</p>
-                <Link href="/dashboard/players/new">
-                  <Button>Create Player Profile</Button>
-                </Link>
+                {session?.user.role === 'PARENT' || session?.user.role === 'PLAYER' ? (
+                  <>
+                    <p className="text-gray-400 mb-4">No player profiles linked yet</p>
+                    <Link href="/claim-player">
+                      <Button className="flex items-center gap-2 mx-auto">
+                        <Search className="w-4 h-4" />
+                        Find Your Athlete
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-gray-400 mb-4">No player profiles yet</p>
+                    <Link href="/dashboard/players/new">
+                      <Button>Create Player Profile</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             ) : (
               <div className="divide-y divide-[#1a3a6e]">

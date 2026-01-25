@@ -59,6 +59,30 @@ export const subscriptionPlans = {
   },
 }
 
+// Family Plan Pricing (additional children)
+export const familyPricing = {
+  // Base prices in cents
+  base: {
+    ANNUAL: 7500,      // $75
+    SEMI_ANNUAL: 5000, // $50
+    MONTHLY: 1000,     // $10
+  },
+  // Additional child prices in cents
+  additionalChild: {
+    ANNUAL: 5000,      // $50 per additional child per year
+    SEMI_ANNUAL: 3500, // $35 per additional child per 6 months
+    MONTHLY: 700,      // $7 per additional child per month
+  },
+}
+
+// Calculate total price for family plan
+export function calculateFamilyPrice(plan: 'ANNUAL' | 'SEMI_ANNUAL' | 'MONTHLY', childCount: number): number {
+  const base = familyPricing.base[plan]
+  const additionalChildren = Math.max(0, childCount - 1)
+  const additionalCost = familyPricing.additionalChild[plan] * additionalChildren
+  return base + additionalCost
+}
+
 // Position options
 export const positions = [
   { value: 'PG', label: 'Point Guard' },

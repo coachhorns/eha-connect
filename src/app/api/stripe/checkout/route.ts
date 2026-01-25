@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { getStripeServer, getSubscriptionPrices } from '@/lib/stripe-dynamic'
+import { getStripeServer } from '@/lib/stripe-dynamic'
+import { calculateFamilyPrice, familyPricing } from '@/lib/constants'
 import prisma from '@/lib/prisma'
 
 export async function POST(request: Request) {
@@ -12,15 +13,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { plan } = await request.json()
+    const { plan, childCount = 1 } = await request.json()
 
     if (!plan || !['ANNUAL', 'SEMI_ANNUAL', 'MONTHLY'].includes(plan)) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
     }
 
+    // Validate childCount
+    const validChildCount = Math.min(Math.max(1, parseInt(childCount) || 1), 10)
+
     // Get Stripe client from database settings
     const stripe = await getStripeServer()
-    const subscriptionPrices = await getSubscriptionPrices()
 
     // Check if user already has an active subscription
     const existingSubscription = await prisma.subscription.findUnique({
@@ -48,15 +51,38 @@ export async function POST(request: Request) {
       stripeCustomerId = customer.id
     }
 
-    // Get price ID for the selected plan
-    const priceId = subscriptionPrices[plan as keyof typeof subscriptionPrices]
+    // Calculate total price based on family plan
+    const totalPriceInCents = calculateFamilyPrice(
+      plan as 'ANNUAL' | 'SEMI_ANNUAL' | 'MONTHLY',
+      validChildCount
+    )
 
-    if (!priceId) {
-      return NextResponse.json(
-        { error: `Price not configured for plan: ${plan}. Please contact support.` },
-        { status: 400 }
-      )
+    // Determine billing interval
+    const intervalMap = {
+      ANNUAL: { interval: 'year' as const, interval_count: 1 },
+      SEMI_ANNUAL: { interval: 'month' as const, interval_count: 6 },
+      MONTHLY: { interval: 'month' as const, interval_count: 1 },
     }
+
+    const billingInterval = intervalMap[plan as keyof typeof intervalMap]
+
+    // Create a price for this specific configuration
+    const price = await stripe.prices.create({
+      unit_amount: totalPriceInCents,
+      currency: 'usd',
+      recurring: billingInterval,
+      product_data: {
+        name: `EHA Connect ${plan.replace('_', '-')} Plan${validChildCount > 1 ? ` (${validChildCount} Players)` : ''}`,
+        metadata: {
+          plan,
+          childCount: validChildCount.toString(),
+        },
+      },
+      metadata: {
+        plan,
+        childCount: validChildCount.toString(),
+      },
+    })
 
     // Create Stripe checkout session
     const checkoutSession = await stripe.checkout.sessions.create({
@@ -65,7 +91,7 @@ export async function POST(request: Request) {
       payment_method_types: ['card'],
       line_items: [
         {
-          price: priceId,
+          price: price.id,
           quantity: 1,
         },
       ],
@@ -74,6 +100,14 @@ export async function POST(request: Request) {
       metadata: {
         userId: session.user.id,
         plan,
+        childCount: validChildCount.toString(),
+      },
+      subscription_data: {
+        metadata: {
+          userId: session.user.id,
+          plan,
+          childCount: validChildCount.toString(),
+        },
       },
     })
 

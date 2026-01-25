@@ -8,15 +8,11 @@ import {
   Users,
   UsersRound,
   Calendar,
-  CalendarRange,
   BarChart3,
   Trophy,
   Activity,
-  Plus,
   ChevronRight,
   MapPin,
-  GitBranch,
-  Wand2,
   Building2,
   UserCog,
 } from 'lucide-react'
@@ -233,43 +229,16 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Quick Actions */}
-      <Card className="p-6">
-        <h2 className="text-xl font-bold text-white mb-4">Quick Actions</h2>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/admin/programs/new">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Program
-            </Button>
-          </Link>
-          <Link href="/admin/players/new">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Player
-            </Button>
-          </Link>
-          <Link href="/admin/teams/new">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Team
-            </Button>
-          </Link>
-          <Link href="/admin/events/new">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Create Event
-            </Button>
-          </Link>
-          <Link href="/admin/games/new">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Schedule Game
-            </Button>
-          </Link>
+      {/* Live Game Management */}
+      <Card className="p-6 bg-gradient-to-br from-eha-red to-red-900 border-red-500">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-white mb-2">Live Game Management</h2>
+            <p className="text-white/80">Enter Scorekeeper Mode to manage live games</p>
+          </div>
           <Link href="/scorekeeper">
-            <Button className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
+            <Button className="flex items-center gap-3 bg-white text-eha-red hover:bg-white/90 px-6 py-3 text-lg font-semibold">
+              <BarChart3 className="w-6 h-6" />
               Scorekeeper Mode
             </Button>
           </Link>

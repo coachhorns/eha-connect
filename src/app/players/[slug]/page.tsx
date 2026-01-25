@@ -12,10 +12,14 @@ import {
   Calendar,
   ExternalLink,
 } from 'lucide-react'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
-import { Badge, Button, Card, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui'
+import { Badge, Button, Card } from '@/components/ui'
 import { formatHeight, formatPosition, formatDate } from '@/lib/utils'
 import { achievementBadges } from '@/lib/constants'
+import { canViewStats } from '@/lib/permissions'
+import StatsPaywall from '@/components/players/StatsPaywall'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -131,6 +135,11 @@ export default async function PlayerProfilePage({ params }: PageProps) {
 
   const { player, careerStats } = data
   const currentTeam = player.teamRosters.find((r: any) => !r.leftAt)
+
+  // Check if user can view stats
+  const session = await getServerSession(authOptions)
+  const permission = await canViewStats(session?.user?.id, player.id)
+  const canView = permission.canView
 
   return (
     <div className="min-h-screen">
@@ -264,63 +273,66 @@ export default async function PlayerProfilePage({ params }: PageProps) {
 
             {/* Stats Summary Card */}
             {careerStats && (
-              <Card className="lg:w-72 flex-shrink-0">
-                <div className="p-4 border-b border-[#1a3a6e]">
-                  <h3 className="font-semibold text-white">Career Stats</h3>
-                  <p className="text-sm text-gray-500">{careerStats.gamesPlayed} Games</p>
+              <Card className="lg:w-72 flex-shrink-0 relative overflow-hidden">
+                <div className={!canView ? 'blur-md pointer-events-none select-none' : ''}>
+                  <div className="p-4 border-b border-[#1a3a6e]">
+                    <h3 className="font-semibold text-white">Career Stats</h3>
+                    <p className="text-sm text-gray-500">{careerStats.gamesPlayed} Games</p>
+                  </div>
+                  <div className="p-4 grid grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-eha-red">
+                        {careerStats.averages.ppg.toFixed(1)}
+                      </p>
+                      <p className="text-xs text-gray-500">PPG</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {careerStats.averages.rpg.toFixed(1)}
+                      </p>
+                      <p className="text-xs text-gray-500">RPG</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {careerStats.averages.apg.toFixed(1)}
+                      </p>
+                      <p className="text-xs text-gray-500">APG</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {careerStats.averages.spg.toFixed(1)}
+                      </p>
+                      <p className="text-xs text-gray-500">SPG</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {careerStats.averages.bpg.toFixed(1)}
+                      </p>
+                      <p className="text-xs text-gray-500">BPG</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {careerStats.totals.fg3Made}
+                      </p>
+                      <p className="text-xs text-gray-500">3PM</p>
+                    </div>
+                  </div>
+                  <div className="px-4 pb-4 pt-2 border-t border-[#1a3a6e] grid grid-cols-3 gap-2 text-center text-sm">
+                    <div>
+                      <p className="font-medium text-white">{careerStats.shooting.fgPct.toFixed(1)}%</p>
+                      <p className="text-xs text-gray-500">FG%</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-white">{careerStats.shooting.fg3Pct.toFixed(1)}%</p>
+                      <p className="text-xs text-gray-500">3P%</p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-white">{careerStats.shooting.ftPct.toFixed(1)}%</p>
+                      <p className="text-xs text-gray-500">FT%</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 grid grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-eha-red">
-                      {careerStats.averages.ppg.toFixed(1)}
-                    </p>
-                    <p className="text-xs text-gray-500">PPG</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-white">
-                      {careerStats.averages.rpg.toFixed(1)}
-                    </p>
-                    <p className="text-xs text-gray-500">RPG</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-white">
-                      {careerStats.averages.apg.toFixed(1)}
-                    </p>
-                    <p className="text-xs text-gray-500">APG</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-white">
-                      {careerStats.averages.spg.toFixed(1)}
-                    </p>
-                    <p className="text-xs text-gray-500">SPG</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-white">
-                      {careerStats.averages.bpg.toFixed(1)}
-                    </p>
-                    <p className="text-xs text-gray-500">BPG</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-white">
-                      {careerStats.totals.fg3Made}
-                    </p>
-                    <p className="text-xs text-gray-500">3PM</p>
-                  </div>
-                </div>
-                <div className="px-4 pb-4 pt-2 border-t border-[#1a3a6e] grid grid-cols-3 gap-2 text-center text-sm">
-                  <div>
-                    <p className="font-medium text-white">{careerStats.shooting.fgPct.toFixed(1)}%</p>
-                    <p className="text-xs text-gray-500">FG%</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-white">{careerStats.shooting.fg3Pct.toFixed(1)}%</p>
-                    <p className="text-xs text-gray-500">3P%</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-white">{careerStats.shooting.ftPct.toFixed(1)}%</p>
-                    <p className="text-xs text-gray-500">FT%</p>
-                  </div>
-                </div>
+                {!canView && <StatsPaywall playerId={player.id} />}
               </Card>
             )}
           </div>
@@ -378,53 +390,56 @@ export default async function PlayerProfilePage({ params }: PageProps) {
 
         {/* Game Log */}
         {player.gameStats.length > 0 && (
-          <Card>
+          <Card className="relative overflow-hidden">
             <div className="p-4 border-b border-[#1a3a6e]">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-eha-red" />
                 Recent Games
               </h2>
             </div>
-            <div className="overflow-x-auto">
-              <table className="stats-table">
-                <thead>
-                  <tr>
-                    <th className="text-left">Date</th>
-                    <th className="text-left">Event</th>
-                    <th>PTS</th>
-                    <th>REB</th>
-                    <th>AST</th>
-                    <th>STL</th>
-                    <th>BLK</th>
-                    <th>3PM</th>
-                    <th>FG%</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {player.gameStats.map((stat: any) => (
-                    <tr key={stat.id}>
-                      <td className="text-left text-sm">
-                        {formatDate(stat.game.scheduledAt)}
-                      </td>
-                      <td className="text-left text-sm">
-                        {stat.game.event?.name || 'Exhibition'}
-                      </td>
-                      <td className="font-semibold text-eha-red">{stat.points}</td>
-                      <td>{stat.rebounds}</td>
-                      <td>{stat.assists}</td>
-                      <td>{stat.steals}</td>
-                      <td>{stat.blocks}</td>
-                      <td>{stat.fg3Made}</td>
-                      <td>
-                        {stat.fgAttempted > 0
-                          ? ((stat.fgMade / stat.fgAttempted) * 100).toFixed(0) + '%'
-                          : '-'}
-                      </td>
+            <div className={!canView ? 'blur-md pointer-events-none select-none' : ''}>
+              <div className="overflow-x-auto">
+                <table className="stats-table">
+                  <thead>
+                    <tr>
+                      <th className="text-left">Date</th>
+                      <th className="text-left">Event</th>
+                      <th>PTS</th>
+                      <th>REB</th>
+                      <th>AST</th>
+                      <th>STL</th>
+                      <th>BLK</th>
+                      <th>3PM</th>
+                      <th>FG%</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {player.gameStats.map((stat: any) => (
+                      <tr key={stat.id}>
+                        <td className="text-left text-sm">
+                          {formatDate(stat.game.scheduledAt)}
+                        </td>
+                        <td className="text-left text-sm">
+                          {stat.game.event?.name || 'Exhibition'}
+                        </td>
+                        <td className="font-semibold text-eha-red">{stat.points}</td>
+                        <td>{stat.rebounds}</td>
+                        <td>{stat.assists}</td>
+                        <td>{stat.steals}</td>
+                        <td>{stat.blocks}</td>
+                        <td>{stat.fg3Made}</td>
+                        <td>
+                          {stat.fgAttempted > 0
+                            ? ((stat.fgMade / stat.fgAttempted) * 100).toFixed(0) + '%'
+                            : '-'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
+            {!canView && <StatsPaywall playerId={player.id} />}
           </Card>
         )}
       </div>

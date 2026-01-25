@@ -41,6 +41,7 @@ export async function POST(request: Request) {
         const session = event.data.object as Stripe.Checkout.Session
         const userId = session.metadata?.userId
         const plan = session.metadata?.plan as 'ANNUAL' | 'SEMI_ANNUAL' | 'MONTHLY'
+        const childCount = parseInt(session.metadata?.childCount || '1') || 1
 
         if (!userId || !plan) break
 
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
             stripeCustomerId: session.customer as string,
             stripeSubscriptionId: subscription.id,
             stripePriceId: subscription.items.data[0].price.id,
+            childCount,
             currentPeriodStart: new Date((subscription as any).current_period_start * 1000),
             currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
           },
@@ -69,6 +71,7 @@ export async function POST(request: Request) {
             stripeCustomerId: session.customer as string,
             stripeSubscriptionId: subscription.id,
             stripePriceId: subscription.items.data[0].price.id,
+            childCount,
             currentPeriodStart: new Date((subscription as any).current_period_start * 1000),
             currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
           },

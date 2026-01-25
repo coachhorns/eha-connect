@@ -37,9 +37,11 @@ model User {
   // Relations
   accounts      Account[]
   sessions      Session[]
-  players       Player[]       // Players this user manages (parent/player)
+  players       Player[]         // Players this user manages (legacy - use guardians)
   subscription  Subscription?
-  ownedPrograms Program[]      // Programs this user owns (program director)
+  ownedPrograms Program[]        // Programs this user owns (program director)
+  guardians     Guardian[]       // Players this user is guardian of
+  sentInvites   GuardianInvite[] // Co-parent invites sent by this user
 
   @@map("users")
 }
@@ -106,6 +108,7 @@ model Subscription {
   stripeCustomerId     String?
   stripeSubscriptionId String?
   stripePriceId        String?
+  childCount           Int                @default(1) // Number of children covered by family plan
 
   currentPeriodStart   DateTime
   currentPeriodEnd     DateTime
@@ -129,6 +132,52 @@ enum SubscriptionStatus {
   CANCELED
   EXPIRED
   TRIALING
+}
+
+enum GuardianRole {
+  PRIMARY    // First parent who claimed the player
+  SECONDARY  // Co-parent invited by primary
+}
+
+// ============================================
+// GUARDIANS (Family Plan - User <-> Player)
+// ============================================
+
+model Guardian {
+  id        String       @id @default(cuid())
+  userId    String
+  playerId  String
+  role      GuardianRole @default(PRIMARY)
+  isPayer   Boolean      @default(false) // True if this guardian pays for the subscription
+
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  // Relations
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  player    Player       @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, playerId])
+  @@map("guardians")
+}
+
+model GuardianInvite {
+  id         String       @id @default(cuid())
+  token      String       @unique @default(cuid())
+  email      String
+  playerId   String
+  invitedBy  String
+  role       GuardianRole @default(SECONDARY)
+  expiresAt  DateTime
+  acceptedAt DateTime?
+
+  createdAt  DateTime     @default(now())
+
+  // Relations
+  player     Player       @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  inviter    User         @relation(fields: [invitedBy], references: [id], onDelete: Cascade)
+
+  @@map("guardian_invites")
 }
 
 // ============================================
@@ -182,13 +231,15 @@ model Player {
   updatedAt       DateTime  @updatedAt
 
   // Relations
-  userId          String?   // User who manages this profile
+  userId          String?   // User who manages this profile (legacy - use guardians)
   user            User?     @relation(fields: [userId], references: [id])
 
   teamRosters     TeamRoster[]
   gameStats       GameStats[]
   achievements    Achievement[]
   media           Media[]
+  guardians       Guardian[]       // Users who are guardians of this player
+  guardianInvites GuardianInvite[] // Pending guardian invites for this player
 
   @@map("players")
 }

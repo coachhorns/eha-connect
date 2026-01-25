@@ -16,7 +16,8 @@ import {
   Baby,
   Edit,
   Key,
-  X,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react'
 import { Card, Button, Input, Select, Badge, Avatar, Modal } from '@/components/ui'
 
@@ -94,6 +95,8 @@ export default function AdminUsersPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editError, setEditError] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -153,6 +156,34 @@ export default function AdminUsersPage() {
     setEditModal({ isOpen: false, user: null })
     setEditForm({ name: '', role: '', password: '' })
     setEditError('')
+    setShowDeleteConfirm(false)
+  }
+
+  const handleDeleteUser = async () => {
+    if (!editModal.user) return
+
+    setIsDeleting(true)
+    setEditError('')
+
+    try {
+      const res = await fetch(`/api/admin/users/${editModal.user.id}`, {
+        method: 'DELETE',
+      })
+
+      if (res.ok) {
+        closeEditModal()
+        fetchUsers()
+      } else {
+        const data = await res.json()
+        setEditError(data.error || 'Failed to delete user')
+        setShowDeleteConfirm(false)
+      }
+    } catch (error) {
+      setEditError('An error occurred while deleting the user.')
+      setShowDeleteConfirm(false)
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -489,6 +520,55 @@ export default function AdminUsersPage() {
                 <p className="text-red-400 text-sm">{editError}</p>
               </div>
             )}
+
+            {/* Delete User Section */}
+            <div className="pt-4 border-t border-[#1a3a6e]">
+              {!showDeleteConfirm ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete User
+                </Button>
+              ) : (
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 space-y-4">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-red-400 font-medium">Are you sure?</p>
+                      <p className="text-red-400/80 text-sm mt-1">
+                        This action cannot be undone. This will permanently delete the user account
+                        {editModal.user.ownedPrograms.length > 0 && ' and their program ownership'}
+                        {editModal.user.players.length > 0 && ' and their player connections'}.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowDeleteConfirm(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleDeleteUser}
+                      isLoading={isDeleting}
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Yes, Delete User
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Actions */}
             <div className="flex gap-3 justify-end pt-4 border-t border-[#1a3a6e]">
