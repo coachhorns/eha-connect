@@ -22,7 +22,7 @@ interface LeaderboardEntry {
     primaryPosition?: string | null
     school?: string | null
     graduationYear?: number | null
-    currentTeam?: { name: string; slug: string; ageGroup?: string | null } | null
+    currentTeam?: { name: string; slug: string; ageGroup?: string | null; logo?: string | null; program?: { logo?: string | null } } | null
   }
   gamesPlayed: number
   totals: {
@@ -193,11 +193,10 @@ export default function LeaderboardsPage() {
           <button
             key={cat.value}
             onClick={() => setSelectedStat(cat.value)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              selectedStat === cat.value
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedStat === cat.value
                 ? 'bg-eha-red text-white'
                 : 'bg-dark-surface text-gray-400 hover:bg-eha-navy/50 hover:text-white'
-            }`}
+              }`}
           >
             {cat.label}
           </button>
@@ -268,15 +267,14 @@ export default function LeaderboardsPage() {
                   <tr key={entry.player.id} className={`hover:bg-eha-navy/30 transition-colors ${index % 2 === 0 ? 'bg-dark-surface' : 'bg-eha-navy/5'}`}>
                     <td className="px-4 py-4">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold font-stats text-sm ${
-                          index === 0
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold font-stats text-sm ${index === 0
                             ? 'bg-[#FFD700]/20 text-[#FFD700]'
                             : index === 1
-                            ? 'bg-gray-400/20 text-gray-400'
-                            : index === 2
-                            ? 'bg-orange-600/20 text-orange-500'
-                            : 'bg-eha-silver/20 text-gray-500'
-                        }`}
+                              ? 'bg-gray-400/20 text-gray-400'
+                              : index === 2
+                                ? 'bg-orange-600/20 text-orange-500'
+                                : 'bg-eha-silver/20 text-gray-500'
+                          }`}
                       >
                         {index + 1}
                       </div>
@@ -304,6 +302,14 @@ export default function LeaderboardsPage() {
                             {entry.player.currentTeam && (
                               <>
                                 <span>•</span>
+                                {(entry.player.currentTeam.logo || entry.player.currentTeam.program?.logo) && (
+                                  <Avatar
+                                    src={entry.player.currentTeam.logo || entry.player.currentTeam.program?.logo}
+                                    fallback={entry.player.currentTeam.name}
+                                    size="sm"
+                                    className="w-4 h-4 ml-1"
+                                  />
+                                )}
                                 <span>{entry.player.currentTeam.name}</span>
                               </>
                             )}

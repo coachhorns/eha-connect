@@ -72,7 +72,7 @@ export async function GET(request: Request) {
             teamRosters: {
               where: { leftAt: null },
               include: {
-                team: { select: { name: true, slug: true, ageGroup: true } },
+                team: { select: { name: true, logo: true, slug: true, ageGroup: true, program: { select: { logo: true } } } },
               },
               take: 1,
             },
