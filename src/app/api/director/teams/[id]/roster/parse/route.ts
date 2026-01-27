@@ -5,9 +5,11 @@ import { prisma } from '@/lib/prisma'
 import OpenAI from 'openai'
 import Papa from 'papaparse'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+function getOpenAI() {
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || '',
+  })
+}
 
 interface ParsedPlayer {
   firstName: string
@@ -166,7 +168,7 @@ async function parseImageWithAI(file: File): Promise<ParsedPlayer[]> {
 
   let response
   try {
-    response = await openai.chat.completions.create({
+    response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {
