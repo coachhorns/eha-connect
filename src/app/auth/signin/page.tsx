@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, getSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button, Input, Card } from '@/components/ui'
@@ -68,7 +68,15 @@ function SignInForm() {
       if (result?.error) {
         setError('Invalid email or password')
       } else {
-        router.push(callbackUrl)
+        // Fetch session to determine role-based redirect
+        const session = await getSession()
+        if (session?.user?.role === 'PROGRAM_DIRECTOR') {
+          router.push('/director/dashboard')
+        } else if (session?.user?.role === 'ADMIN') {
+          router.push('/admin')
+        } else {
+          router.push(callbackUrl)
+        }
         router.refresh()
       }
     } catch (err) {

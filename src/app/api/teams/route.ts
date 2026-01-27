@@ -6,7 +6,9 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
     const ageGroup = searchParams.get('ageGroup') || ''
+    const division = searchParams.get('division') || ''
     const state = searchParams.get('state') || ''
+    const sort = searchParams.get('sort') || ''
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
     const skip = (page - 1) * limit
@@ -26,16 +28,17 @@ export async function GET(request: Request) {
       where.ageGroup = ageGroup
     }
 
+    if (division) {
+      where.division = division
+    }
+
     if (state) {
       where.state = state
     }
 
-    const [teams, total] = await Promise.all([
+    const [allTeams, total] = await Promise.all([
       prisma.team.findMany({
         where,
-        skip,
-        take: limit,
-        orderBy: [{ wins: 'desc' }, { name: 'asc' }],
         include: {
           program: {
             select: {
@@ -52,6 +55,60 @@ export async function GET(request: Request) {
       }),
       prisma.team.count({ where }),
     ])
+
+    // Helper to extract numeric age from age group (e.g., "17U" -> 17)
+    const getAgeNumber = (ageGroup: string | null): number => {
+      if (!ageGroup) return 0
+      const match = ageGroup.match(/(\d+)/)
+      return match ? parseInt(match[1], 10) : 0
+    }
+
+    // Helper to get division priority (EPL first, then others alphabetically)
+    const getDivisionPriority = (division: string | null): number => {
+      if (!division) return 999
+      if (division === 'EPL' || division === 'EHA Premier League') return 0
+      if (division === 'Gold') return 1
+      if (division === 'Silver') return 2
+      return 3
+    }
+
+    // Sort teams based on sort parameter
+    const sortedTeams = allTeams.sort((a, b) => {
+      switch (sort) {
+        case 'name':
+          // Sort by team name alphabetically
+          return (a.name || '').localeCompare(b.name || '')
+
+        case 'program':
+          // Sort by program name, then team name
+          const programA = a.program?.name || ''
+          const programB = b.program?.name || ''
+          if (programA !== programB) return programA.localeCompare(programB)
+          return (a.name || '').localeCompare(b.name || '')
+
+        case 'age':
+          // Sort by age group (descending), then name
+          const ageA = getAgeNumber(a.ageGroup)
+          const ageB = getAgeNumber(b.ageGroup)
+          if (ageA !== ageB) return ageB - ageA
+          return (a.name || '').localeCompare(b.name || '')
+
+        default:
+          // Default: EPL first, then by age (17U -> 8U), then by name
+          const divPriorityA = getDivisionPriority(a.division)
+          const divPriorityB = getDivisionPriority(b.division)
+          if (divPriorityA !== divPriorityB) return divPriorityA - divPriorityB
+
+          const defaultAgeA = getAgeNumber(a.ageGroup)
+          const defaultAgeB = getAgeNumber(b.ageGroup)
+          if (defaultAgeA !== defaultAgeB) return defaultAgeB - defaultAgeA
+
+          return (a.name || '').localeCompare(b.name || '')
+      }
+    })
+
+    // Apply pagination to sorted results
+    const teams = sortedTeams.slice(skip, skip + limit)
 
     return NextResponse.json({
       teams,

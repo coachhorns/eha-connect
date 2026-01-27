@@ -10,6 +10,9 @@ export async function GET(request: Request) {
     const position = searchParams.get('position') || ''
     const state = searchParams.get('state') || ''
     const gradYear = searchParams.get('gradYear') || ''
+    const division = searchParams.get('division') || ''
+    const program = searchParams.get('program') || ''
+    const sort = searchParams.get('sort') || ''
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
     const skip = (page - 1) * limit
@@ -38,12 +41,9 @@ export async function GET(request: Request) {
       where.graduationYear = parseInt(gradYear)
     }
 
-    const [players, total] = await Promise.all([
+    const [allPlayersRaw, totalRaw] = await Promise.all([
       prisma.player.findMany({
         where,
-        skip,
-        take: limit,
-        orderBy: { lastName: 'asc' },
         include: {
           achievements: {
             take: 3,
@@ -53,7 +53,15 @@ export async function GET(request: Request) {
             where: { leftAt: null },
             include: {
               team: {
-                select: { name: true, slug: true, ageGroup: true },
+                select: {
+                  name: true,
+                  slug: true,
+                  ageGroup: true,
+                  division: true,
+                  program: {
+                    select: { name: true },
+                  },
+                },
               },
             },
           },
@@ -64,6 +72,93 @@ export async function GET(request: Request) {
       }),
       prisma.player.count({ where }),
     ])
+
+    // Filter by division if specified
+    let allPlayers = allPlayersRaw
+    if (division) {
+      allPlayers = allPlayers.filter((player: any) =>
+        player.teamRosters?.some((roster: any) => roster.team?.division === division)
+      )
+    }
+
+    // Filter by program name if specified
+    if (program) {
+      const programLower = program.toLowerCase()
+      allPlayers = allPlayers.filter((player: any) =>
+        player.teamRosters?.some((roster: any) =>
+          roster.team?.program?.name?.toLowerCase().includes(programLower)
+        )
+      )
+    }
+
+    // Update total count after filtering
+    const total = allPlayers.length
+
+    // Helper to check if player is on an EPL team
+    const isOnEPLTeam = (player: any): boolean => {
+      return player.teamRosters?.some((roster: any) =>
+        roster.team?.division === 'EPL' || roster.team?.division === 'EHA Premier League'
+      ) || false
+    }
+
+    // Helper to get the best age group (EPL team first, then highest age)
+    const getPlayerAgeGroup = (player: any): number => {
+      if (!player.teamRosters || player.teamRosters.length === 0) return 0
+
+      // First, try to get age from EPL team
+      const eplRoster = player.teamRosters.find((roster: any) =>
+        roster.team?.division === 'EPL' || roster.team?.division === 'EHA Premier League'
+      )
+      if (eplRoster?.team?.ageGroup) {
+        const match = eplRoster.team.ageGroup.match(/(\d+)/)
+        if (match) return parseInt(match[1], 10)
+      }
+
+      // Otherwise, get highest age from any team
+      let maxAge = 0
+      for (const roster of player.teamRosters) {
+        if (roster.team?.ageGroup) {
+          const match = roster.team.ageGroup.match(/(\d+)/)
+          if (match) {
+            const age = parseInt(match[1], 10)
+            if (age > maxAge) maxAge = age
+          }
+        }
+      }
+      return maxAge
+    }
+
+    // Sort players based on sort parameter
+    const sortedPlayers = allPlayers.sort((a: any, b: any) => {
+      switch (sort) {
+        case 'name':
+          // Sort by last name alphabetically
+          return (a.lastName || '').localeCompare(b.lastName || '')
+
+        case 'class':
+          // Sort by graduation year (ascending - earlier years first)
+          const gradA = a.graduationYear || 9999
+          const gradB = b.graduationYear || 9999
+          if (gradA !== gradB) return gradA - gradB
+          return (a.lastName || '').localeCompare(b.lastName || '')
+
+        default:
+          // Default: EPL first, then by age (descending), then by last name
+          const aIsEPL = isOnEPLTeam(a)
+          const bIsEPL = isOnEPLTeam(b)
+          if (aIsEPL && !bIsEPL) return -1
+          if (!aIsEPL && bIsEPL) return 1
+
+          const ageA = getPlayerAgeGroup(a)
+          const ageB = getPlayerAgeGroup(b)
+          if (ageA !== ageB) return ageB - ageA
+
+          return (a.lastName || '').localeCompare(b.lastName || '')
+      }
+    })
+
+    // Apply pagination to sorted results
+    const players = sortedPlayers.slice(skip, skip + limit)
 
     // Calculate career stats for each player
     const playersWithStats = await Promise.all(

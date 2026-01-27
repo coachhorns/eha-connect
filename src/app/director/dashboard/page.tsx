@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Plus, Users, Trophy, MapPin, Settings } from 'lucide-react'
-import { Card, Button, Badge } from '@/components/ui'
+import { Card, Button, Badge, Select } from '@/components/ui'
 
 interface Team {
   id: string
@@ -39,6 +39,66 @@ export default function DirectorDashboardPage() {
   const [program, setProgram] = useState<Program | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [sortBy, setSortBy] = useState('priority')
+
+  const sortOptions = [
+    { value: 'priority', label: 'Priority' },
+    { value: 'division', label: 'Division' },
+    { value: 'age', label: 'Age Group' },
+    { value: 'name', label: 'Name' },
+  ]
+
+  // Helper to extract numeric age from age group (e.g., "17U" -> 17)
+  const getAgeNumber = (ageGroup: string | null): number => {
+    if (!ageGroup) return 0
+    const match = ageGroup.match(/(\d+)/)
+    return match ? parseInt(match[1], 10) : 0
+  }
+
+  // Helper to get division priority (EPL first)
+  const getDivisionPriority = (division: string | null): number => {
+    if (!division) return 999
+    if (division === 'EPL' || division.includes('Premier')) return 0
+    if (division === 'Gold') return 1
+    if (division === 'Silver') return 2
+    return 3
+  }
+
+  // Sort teams based on selected sort option
+  const getSortedTeams = (teams: Team[]): Team[] => {
+    return [...teams].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return (a.name || '').localeCompare(b.name || '')
+
+        case 'division':
+          const divCompare = (a.division || '').localeCompare(b.division || '')
+          if (divCompare !== 0) return divCompare
+          return (a.name || '').localeCompare(b.name || '')
+
+        case 'age':
+          const ageA = getAgeNumber(a.ageGroup)
+          const ageB = getAgeNumber(b.ageGroup)
+          if (ageA !== ageB) return ageB - ageA
+          return (a.name || '').localeCompare(b.name || '')
+
+        case 'priority':
+        default:
+          // Priority 1: EPL teams first
+          const divPriorityA = getDivisionPriority(a.division)
+          const divPriorityB = getDivisionPriority(b.division)
+          if (divPriorityA !== divPriorityB) return divPriorityA - divPriorityB
+
+          // Priority 2: Age group (descending)
+          const priorityAgeA = getAgeNumber(a.ageGroup)
+          const priorityAgeB = getAgeNumber(b.ageGroup)
+          if (priorityAgeA !== priorityAgeB) return priorityAgeB - priorityAgeA
+
+          // Priority 3: Name
+          return (a.name || '').localeCompare(b.name || '')
+      }
+    })
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -191,14 +251,22 @@ export default function DirectorDashboardPage() {
       </Card>
 
       {/* Teams Section */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
         <h2 className="text-xl font-bold text-white">Teams</h2>
-        <Link href={`/director/teams/new?programId=${program.id}`}>
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Team
-          </Button>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Select
+            options={sortOptions}
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="w-36"
+          />
+          <Link href={`/director/teams/new?programId=${program.id}`}>
+            <Button className="flex items-center gap-2 whitespace-nowrap">
+              <Plus className="w-4 h-4" />
+              Add Team
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {program.teams.length === 0 ? (
@@ -219,7 +287,7 @@ export default function DirectorDashboardPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {program.teams.map((team) => (
+          {getSortedTeams(program.teams).map((team) => (
             <Link key={team.id} href={`/director/teams/${team.id}`}>
               <Card className="p-4 hover:bg-[#1a3a6e]/30 transition-colors cursor-pointer h-full">
                 <div className="flex items-start justify-between mb-3">

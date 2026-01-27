@@ -138,37 +138,20 @@ export async function DELETE(
 
     const { id } = await params
 
-    // Check if team has games
+    // Verify team exists
     const team = await prisma.team.findUnique({
       where: { id },
-      include: {
-        _count: {
-          select: {
-            homeGames: true,
-            awayGames: true,
-          },
-        },
-      },
     })
 
     if (!team) {
       return NextResponse.json({ error: 'Team not found' }, { status: 404 })
     }
 
-    const totalGames = team._count.homeGames + team._count.awayGames
-
-    if (totalGames > 0) {
-      // Soft delete - just mark as inactive
-      await prisma.team.update({
-        where: { id },
-        data: { isActive: false },
-      })
-    } else {
-      // Hard delete if no games
-      await prisma.team.delete({
-        where: { id },
-      })
-    }
+    // Always soft delete - mark as inactive to hide from public directory
+    await prisma.team.update({
+      where: { id },
+      data: { isActive: false },
+    })
 
     return NextResponse.json({ success: true })
   } catch (error) {

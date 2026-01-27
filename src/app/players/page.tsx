@@ -22,7 +22,7 @@ interface Player {
   isVerified: boolean
   achievements?: { type: string }[]
   ageGroup?: string | null
-  teamRosters?: { team: { name: string; ageGroup?: string | null } }[]
+  teamRosters?: { team: { name: string; ageGroup?: string | null; division?: string | null } }[]
   careerStats?: {
     gamesPlayed: number
     ppg: number
@@ -38,6 +38,8 @@ export default function PlayersPage() {
   const [position, setPosition] = useState('')
   const [state, setState] = useState('')
   const [gradYear, setGradYear] = useState('')
+  const [division, setDivision] = useState('')
+  const [program, setProgram] = useState('')
   const [showFilters, setShowFilters] = useState(false)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -48,6 +50,13 @@ export default function PlayersPage() {
     label: String(currentYear + i),
   }))
 
+  const divisionOptions = [
+    { value: '', label: 'All Divisions' },
+    { value: 'EPL', label: 'EPL' },
+    { value: 'Gold', label: 'Gold' },
+    { value: 'Silver', label: 'Silver' },
+  ]
+
   const fetchPlayers = async () => {
     setIsLoading(true)
     try {
@@ -56,6 +65,8 @@ export default function PlayersPage() {
       if (position) params.set('position', position)
       if (state) params.set('state', state)
       if (gradYear) params.set('gradYear', gradYear)
+      if (division) params.set('division', division)
+      if (program) params.set('program', program)
       params.set('page', String(page))
 
       const res = await fetch(`/api/players?${params}`)
@@ -72,7 +83,7 @@ export default function PlayersPage() {
 
   useEffect(() => {
     fetchPlayers()
-  }, [page, position, state, gradYear])
+  }, [page, position, state, gradYear, division])
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -80,17 +91,19 @@ export default function PlayersPage() {
       fetchPlayers()
     }, 300)
     return () => clearTimeout(debounce)
-  }, [search])
+  }, [search, program])
 
   const clearFilters = () => {
     setSearch('')
     setPosition('')
     setState('')
     setGradYear('')
+    setDivision('')
+    setProgram('')
     setPage(1)
   }
 
-  const hasFilters = search || position || state || gradYear
+  const hasFilters = search || position || state || gradYear || division || program
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -104,85 +117,68 @@ export default function PlayersPage() {
 
       {/* Search and Filters */}
       <Card className="mb-8 p-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+        <div className="space-y-4">
+          {/* Search Inputs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search by name or school..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-[#1a3a6e] border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+              />
+            </div>
             <input
               type="text"
-              placeholder="Search by name or school..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-[#1a3a6e] border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+              placeholder="Search by program name..."
+              value={program}
+              onChange={(e) => setProgram(e.target.value)}
+              className="w-full px-4 py-2.5 bg-[#1a3a6e] border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
             />
           </div>
 
-          {/* Filter Toggle (Mobile) */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="md:hidden flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1a3a6e] border border-white/10 rounded-lg text-gray-300"
-          >
-            <Filter className="w-5 h-5" />
-            Filters
-            <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-          </button>
-
-          {/* Desktop Filters */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Filters Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Select
               options={[{ value: '', label: 'All Positions' }, ...positions]}
               value={position}
               onChange={(e) => setPosition(e.target.value)}
-              className="w-40"
+              className="w-full"
             />
             <Select
               options={[{ value: '', label: 'All States' }, ...states]}
               value={state}
               onChange={(e) => setState(e.target.value)}
-              className="w-44"
+              className="w-full"
             />
             <Select
               options={[{ value: '', label: 'Grad Year' }, ...gradYears]}
               value={gradYear}
               onChange={(e) => setGradYear(e.target.value)}
-              className="w-36"
+              className="w-full"
             />
-            {hasFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                Clear
-              </Button>
-            )}
+            <Select
+              options={divisionOptions}
+              value={division}
+              onChange={(e) => setDivision(e.target.value)}
+              className="w-full"
+            />
           </div>
-        </div>
 
-        {/* Mobile Filters */}
-        {showFilters && (
-          <div className="md:hidden mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-3">
-            <Select
-              label="Position"
-              options={[{ value: '', label: 'All Positions' }, ...positions]}
-              value={position}
-              onChange={(e) => setPosition(e.target.value)}
-            />
-            <Select
-              label="State"
-              options={[{ value: '', label: 'All States' }, ...states]}
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-            />
-            <Select
-              label="Grad Year"
-              options={[{ value: '', label: 'All Years' }, ...gradYears]}
-              value={gradYear}
-              onChange={(e) => setGradYear(e.target.value)}
-            />
-            {hasFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="self-end">
-                Clear Filters
-              </Button>
-            )}
-          </div>
-        )}
+          {/* Clear Filters */}
+          {hasFilters && (
+            <div className="flex justify-end">
+              <button
+                onClick={clearFilters}
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
+        </div>
       </Card>
 
       {/* Results */}

@@ -33,9 +33,25 @@ export default function TeamsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [ageGroup, setAgeGroup] = useState('')
+  const [division, setDivision] = useState('')
   const [state, setState] = useState('')
+  const [sortBy, setSortBy] = useState('')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+
+  const divisionOptions = [
+    { value: '', label: 'All Divisions' },
+    { value: 'EPL', label: 'EPL' },
+    { value: 'Gold', label: 'Gold' },
+    { value: 'Silver', label: 'Silver' },
+  ]
+
+  const sortOptions = [
+    { value: '', label: 'Default (Priority)' },
+    { value: 'name', label: 'Name' },
+    { value: 'program', label: 'Program' },
+    { value: 'age', label: 'Age Group' },
+  ]
 
   const fetchTeams = async () => {
     setIsLoading(true)
@@ -43,7 +59,9 @@ export default function TeamsPage() {
       const params = new URLSearchParams()
       if (search) params.set('search', search)
       if (ageGroup) params.set('ageGroup', ageGroup)
+      if (division) params.set('division', division)
       if (state) params.set('state', state)
+      if (sortBy) params.set('sort', sortBy)
       params.set('page', String(page))
 
       const res = await fetch(`/api/teams?${params}`)
@@ -60,7 +78,7 @@ export default function TeamsPage() {
 
   useEffect(() => {
     fetchTeams()
-  }, [page, ageGroup, state])
+  }, [page, ageGroup, division, state, sortBy])
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -73,11 +91,13 @@ export default function TeamsPage() {
   const clearFilters = () => {
     setSearch('')
     setAgeGroup('')
+    setDivision('')
     setState('')
+    setSortBy('')
     setPage(1)
   }
 
-  const hasFilters = search || ageGroup || state
+  const hasFilters = search || ageGroup || division || state || sortBy
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -94,8 +114,9 @@ export default function TeamsPage() {
 
       {/* Search and Filters */}
       <Card className="mb-8 p-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
+        <div className="space-y-4">
+          {/* Search Bar - Full Width */}
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
             <input
               type="text"
@@ -106,7 +127,8 @@ export default function TeamsPage() {
             />
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Filters Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Select
               options={[
                 { value: '', label: 'All Age Groups' },
@@ -114,20 +136,39 @@ export default function TeamsPage() {
               ]}
               value={ageGroup}
               onChange={(e) => setAgeGroup(e.target.value)}
-              className="w-36"
+              className="w-full"
+            />
+            <Select
+              options={divisionOptions}
+              value={division}
+              onChange={(e) => setDivision(e.target.value)}
+              className="w-full"
             />
             <Select
               options={[{ value: '', label: 'All States' }, ...states]}
               value={state}
               onChange={(e) => setState(e.target.value)}
-              className="w-44"
+              className="w-full"
             />
-            {hasFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                Clear
-              </Button>
-            )}
+            <Select
+              options={sortOptions}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full"
+            />
           </div>
+
+          {/* Clear Filters */}
+          {hasFilters && (
+            <div className="flex justify-end">
+              <button
+                onClick={clearFilters}
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
         </div>
       </Card>
 

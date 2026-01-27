@@ -23,7 +23,7 @@ interface PlayerCardProps {
     ageGroup?: string | null
     isVerified: boolean
     achievements?: { type: string }[]
-    teamRosters?: { team: { name: string; ageGroup?: string | null } }[]
+    teamRosters?: { team: { name: string; ageGroup?: string | null; division?: string | null } }[]
     careerStats?: {
       gamesPlayed: number
       ppg: number
@@ -37,6 +37,11 @@ export function PlayerCard({ player }: PlayerCardProps) {
   const currentTeam = player.teamRosters?.[0]?.team
   const teamName = currentTeam?.name
   const ageGroup = player.ageGroup || currentTeam?.ageGroup
+
+  // Get division - prioritize EPL team if player is on multiple teams
+  const division = player.teamRosters?.find(
+    (r) => r.team?.division === 'EPL' || r.team?.division === 'EHA Premier League'
+  )?.team?.division || currentTeam?.division
 
   return (
     <Link href={`/players/${player.slug}`}>
@@ -94,6 +99,9 @@ export function PlayerCard({ player }: PlayerCardProps) {
             </div>
             {ageGroup && (
               <Badge variant="info" size="sm">{ageGroup}</Badge>
+            )}
+            {division && (
+              <Badge variant="orange" size="sm">{division}</Badge>
             )}
           </div>
 

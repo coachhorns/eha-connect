@@ -4,8 +4,19 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Plus, Users, Trophy, Trash2, UserPlus, Pencil } from 'lucide-react'
+import { ArrowLeft, Plus, Users, Trophy, Trash2, UserPlus, Pencil, Upload, FileText, X, Check } from 'lucide-react'
 import { Card, Button, Badge, Input, Select, Modal } from '@/components/ui'
+
+interface ParsedPlayer {
+  firstName: string
+  lastName: string
+  jerseyNumber: string | null
+  primaryPosition: string | null
+  graduationYear: number | null
+  heightFeet: number | null
+  heightInches: number | null
+  school: string | null
+}
 
 const positionOptions = [
   { value: '', label: 'Select Position' },
@@ -98,6 +109,10 @@ export default function DirectorTeamDetailPage() {
     lastName: '',
     jerseyNumber: '',
     primaryPosition: '',
+    heightFeet: '',
+    heightInches: '',
+    school: '',
+    graduationYear: '',
   })
 
   // Edit team modal state
@@ -109,6 +124,29 @@ export default function DirectorTeamDetailPage() {
     division: '',
     coachName: '',
   })
+
+  // Edit player modal state
+  const [isEditPlayerOpen, setIsEditPlayerOpen] = useState(false)
+  const [isEditPlayerSubmitting, setIsEditPlayerSubmitting] = useState(false)
+  const [editPlayerForm, setEditPlayerForm] = useState({
+    playerId: '',
+    firstName: '',
+    lastName: '',
+    jerseyNumber: '',
+    primaryPosition: '',
+    heightFeet: '',
+    heightInches: '',
+    school: '',
+    graduationYear: '',
+  })
+
+  // Smart Upload state
+  const [activeTab, setActiveTab] = useState<'manual' | 'upload'>('manual')
+  const [parsedPlayers, setParsedPlayers] = useState<ParsedPlayer[]>([])
+  const [isParsing, setIsParsing] = useState(false)
+  const [isImporting, setIsImporting] = useState(false)
+  const [parseError, setParseError] = useState('')
+  const [uploadFileName, setUploadFileName] = useState('')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -167,12 +205,16 @@ export default function DirectorTeamDetailPage() {
           lastName: playerForm.lastName.trim(),
           jerseyNumber: playerForm.jerseyNumber.trim() || null,
           primaryPosition: playerForm.primaryPosition || null,
+          heightFeet: playerForm.heightFeet || null,
+          heightInches: playerForm.heightInches || null,
+          school: playerForm.school.trim() || null,
+          graduationYear: playerForm.graduationYear || null,
         }),
       })
 
       if (res.ok) {
         setIsAddPlayerOpen(false)
-        setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '' })
+        setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '', heightFeet: '', heightInches: '', school: '', graduationYear: '' })
         fetchTeam() // Refresh the roster
       } else {
         const data = await res.json()
@@ -218,6 +260,159 @@ export default function DirectorTeamDetailPage() {
       })
       setIsEditTeamOpen(true)
     }
+  }
+
+  const openEditPlayerModal = (player: Player) => {
+    setEditPlayerForm({
+      playerId: player.id,
+      firstName: player.firstName,
+      lastName: player.lastName,
+      jerseyNumber: player.jerseyNumber || '',
+      primaryPosition: player.primaryPosition || '',
+      heightFeet: player.heightFeet?.toString() || '',
+      heightInches: player.heightInches?.toString() || '',
+      school: player.school || '',
+      graduationYear: player.graduationYear?.toString() || '',
+    })
+    setIsEditPlayerOpen(true)
+  }
+
+  const handleEditPlayer = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+
+    if (!editPlayerForm.firstName.trim() || !editPlayerForm.lastName.trim()) {
+      setError('First name and last name are required')
+      return
+    }
+
+    try {
+      setIsEditPlayerSubmitting(true)
+      const res = await fetch(`/api/director/teams/${teamId}/roster`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          playerId: editPlayerForm.playerId,
+          firstName: editPlayerForm.firstName.trim(),
+          lastName: editPlayerForm.lastName.trim(),
+          jerseyNumber: editPlayerForm.jerseyNumber.trim() || null,
+          primaryPosition: editPlayerForm.primaryPosition || null,
+          heightFeet: editPlayerForm.heightFeet || null,
+          heightInches: editPlayerForm.heightInches || null,
+          school: editPlayerForm.school.trim() || null,
+          graduationYear: editPlayerForm.graduationYear || null,
+        }),
+      })
+
+      if (res.ok) {
+        setIsEditPlayerOpen(false)
+        setEditPlayerForm({
+          playerId: '',
+          firstName: '',
+          lastName: '',
+          jerseyNumber: '',
+          primaryPosition: '',
+          heightFeet: '',
+          heightInches: '',
+          school: '',
+          graduationYear: '',
+        })
+        fetchTeam() // Refresh the roster
+      } else {
+        const data = await res.json()
+        setError(data.error || 'Failed to update player')
+      }
+    } catch (err) {
+      console.error('Error updating player:', err)
+      setError('Failed to update player')
+    } finally {
+      setIsEditPlayerSubmitting(false)
+    }
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsParsing(true)
+    setParseError('')
+    setParsedPlayers([])
+    setUploadFileName(file.name)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const res = await fetch(`/api/director/teams/${teamId}/roster/parse`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        if (data.players && data.players.length > 0) {
+          setParsedPlayers(data.players)
+        } else {
+          setParseError('No players found in the file. Please check the format.')
+        }
+      } else {
+        setParseError(data.error || 'Failed to parse file')
+      }
+    } catch (err) {
+      console.error('Error parsing file:', err)
+      setParseError('Failed to parse file')
+    } finally {
+      setIsParsing(false)
+    }
+
+    // Reset file input
+    e.target.value = ''
+  }
+
+  const handleBatchImport = async () => {
+    if (parsedPlayers.length === 0) return
+
+    setIsImporting(true)
+    setParseError('')
+
+    try {
+      const res = await fetch(`/api/director/teams/${teamId}/roster/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ players: parsedPlayers }),
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setIsAddPlayerOpen(false)
+        setParsedPlayers([])
+        setUploadFileName('')
+        setActiveTab('manual')
+        fetchTeam() // Refresh the roster
+        alert(data.message || `Successfully imported ${data.results?.added || 0} players`)
+      } else {
+        setParseError(data.error || 'Failed to import players')
+      }
+    } catch (err) {
+      console.error('Error importing players:', err)
+      setParseError('Failed to import players')
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
+  const updateParsedPlayer = (index: number, field: keyof ParsedPlayer, value: any) => {
+    setParsedPlayers(prev => {
+      const updated = [...prev]
+      updated[index] = { ...updated[index], [field]: value }
+      return updated
+    })
+  }
+
+  const removeParsedPlayer = (index: number) => {
+    setParsedPlayers(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleEditTeam = async (e: React.FormEvent) => {
@@ -463,16 +658,25 @@ export default function DirectorTeamDetailPage() {
                     {entry.player.graduationYear || '-'}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => handleRemovePlayer(
-                        entry.player.id,
-                        `${entry.player.firstName} ${entry.player.lastName}`
-                      )}
-                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                      title="Remove from roster"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => openEditPlayerModal(entry.player)}
+                        className="p-2 text-gray-400 hover:text-white hover:bg-[#1a3a6e] rounded-lg transition-colors"
+                        title="Edit player"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleRemovePlayer(
+                          entry.player.id,
+                          `${entry.player.firstName} ${entry.player.lastName}`
+                        )}
+                        className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        title="Remove from roster"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -486,91 +690,360 @@ export default function DirectorTeamDetailPage() {
         isOpen={isAddPlayerOpen}
         onClose={() => {
           setIsAddPlayerOpen(false)
-          setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '' })
+          setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '', heightFeet: '', heightInches: '', school: '', graduationYear: '' })
+          setParsedPlayers([])
+          setParseError('')
+          setUploadFileName('')
+          setActiveTab('manual')
           setError('')
         }}
-        title="Add Player to Roster"
+        title="Add Players to Roster"
       >
-        <form onSubmit={handleAddPlayer} className="space-y-4">
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-              <p className="text-red-400 text-sm">{error}</p>
-            </div>
-          )}
+        {/* Tab Navigation */}
+        <div className="flex border-b border-[#1a3a6e] mb-4">
+          <button
+            type="button"
+            onClick={() => setActiveTab('manual')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'manual'
+                ? 'border-eha-gold text-white'
+                : 'border-transparent text-gray-400 hover:text-white'
+            }`}
+          >
+            Manual Entry
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('upload')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'upload'
+                ? 'border-eha-gold text-white'
+                : 'border-transparent text-gray-400 hover:text-white'
+            }`}
+          >
+            <Upload className="w-4 h-4 inline-block mr-1" />
+            Smart Upload
+          </button>
+        </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                First Name *
-              </label>
-              <Input
-                type="text"
-                placeholder="John"
-                value={playerForm.firstName}
-                onChange={(e) => setPlayerForm(prev => ({ ...prev, firstName: e.target.value }))}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Last Name *
-              </label>
-              <Input
-                type="text"
-                placeholder="Smith"
-                value={playerForm.lastName}
-                onChange={(e) => setPlayerForm(prev => ({ ...prev, lastName: e.target.value }))}
-                required
-              />
-            </div>
-          </div>
+        {/* Manual Entry Tab */}
+        {activeTab === 'manual' && (
+          <form onSubmit={handleAddPlayer} className="space-y-4">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Jersey Number
-              </label>
-              <Input
-                type="text"
-                placeholder="23"
-                value={playerForm.jerseyNumber}
-                onChange={(e) => setPlayerForm(prev => ({ ...prev, jerseyNumber: e.target.value }))}
-                maxLength={3}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  First Name *
+                </label>
+                <Input
+                  type="text"
+                  placeholder="John"
+                  value={playerForm.firstName}
+                  onChange={(e) => setPlayerForm(prev => ({ ...prev, firstName: e.target.value }))}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Last Name *
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Smith"
+                  value={playerForm.lastName}
+                  onChange={(e) => setPlayerForm(prev => ({ ...prev, lastName: e.target.value }))}
+                  required
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Position
-              </label>
-              <Select
-                options={positionOptions}
-                value={playerForm.primaryPosition}
-                onChange={(e) => setPlayerForm(prev => ({ ...prev, primaryPosition: e.target.value }))}
-              />
-            </div>
-          </div>
 
-          <div className="flex gap-4 pt-4">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                setIsAddPlayerOpen(false)
-                setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '' })
-                setError('')
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              isLoading={isSubmitting}
-              className="flex-1"
-            >
-              Add Player
-            </Button>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Jersey Number
+                </label>
+                <Input
+                  type="text"
+                  placeholder="23"
+                  value={playerForm.jerseyNumber}
+                  onChange={(e) => setPlayerForm(prev => ({ ...prev, jerseyNumber: e.target.value }))}
+                  maxLength={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Position
+                </label>
+                <Select
+                  options={positionOptions}
+                  value={playerForm.primaryPosition}
+                  onChange={(e) => setPlayerForm(prev => ({ ...prev, primaryPosition: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Height
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  type="number"
+                  placeholder="Feet"
+                  min={3}
+                  max={7}
+                  value={playerForm.heightFeet}
+                  onChange={(e) => setPlayerForm(prev => ({ ...prev, heightFeet: e.target.value }))}
+                />
+                <Input
+                  type="number"
+                  placeholder="Inches"
+                  min={0}
+                  max={11}
+                  value={playerForm.heightInches}
+                  onChange={(e) => setPlayerForm(prev => ({ ...prev, heightInches: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  School
+                </label>
+                <Input
+                  type="text"
+                  placeholder="School name"
+                  value={playerForm.school}
+                  onChange={(e) => setPlayerForm(prev => ({ ...prev, school: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Class (Grad Year)
+                </label>
+                <Input
+                  type="number"
+                  placeholder="2026"
+                  min={2020}
+                  max={2040}
+                  value={playerForm.graduationYear}
+                  onChange={(e) => setPlayerForm(prev => ({ ...prev, graduationYear: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-4">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setIsAddPlayerOpen(false)
+                  setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '', heightFeet: '', heightInches: '', school: '', graduationYear: '' })
+                  setError('')
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                isLoading={isSubmitting}
+                className="flex-1"
+              >
+                Add Player
+              </Button>
+            </div>
+          </form>
+        )}
+
+        {/* Smart Upload Tab */}
+        {activeTab === 'upload' && (
+          <div className="space-y-4">
+            {parseError && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                <p className="text-red-400 text-sm">{parseError}</p>
+              </div>
+            )}
+
+            {/* File Upload Area */}
+            {parsedPlayers.length === 0 && !isParsing && (
+              <div className="border-2 border-dashed border-[#1a3a6e] rounded-lg p-8 text-center hover:border-eha-gold/50 transition-colors">
+                <input
+                  type="file"
+                  id="roster-upload"
+                  accept=".csv,.png,.jpg,.jpeg"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <label htmlFor="roster-upload" className="cursor-pointer">
+                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-white font-medium mb-2">
+                    Drop your roster file here or click to browse
+                  </p>
+                  <p className="text-gray-400 text-sm">
+                    Supports CSV, PNG, and JPG files
+                  </p>
+                  <p className="text-gray-500 text-xs mt-2">
+                    AI will automatically extract player data from images and documents
+                  </p>
+                </label>
+              </div>
+            )}
+
+            {/* Parsing State */}
+            {isParsing && (
+              <div className="text-center py-8">
+                <div className="animate-spin w-8 h-8 border-2 border-eha-gold border-t-transparent rounded-full mx-auto mb-4" />
+                <p className="text-white font-medium">Analyzing {uploadFileName}...</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Using AI to extract player information
+                </p>
+              </div>
+            )}
+
+            {/* Parsed Players Review */}
+            {parsedPlayers.length > 0 && !isParsing && (
+              <>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-eha-gold" />
+                    <span className="text-white font-medium">
+                      {parsedPlayers.length} players found
+                    </span>
+                    {uploadFileName && (
+                      <span className="text-gray-400 text-sm">from {uploadFileName}</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => {
+                      setParsedPlayers([])
+                      setUploadFileName('')
+                    }}
+                    className="text-gray-400 hover:text-white text-sm"
+                  >
+                    Upload different file
+                  </button>
+                </div>
+
+                <div className="max-h-64 overflow-y-auto border border-[#1a3a6e] rounded-lg">
+                  <table className="w-full text-sm">
+                    <thead className="bg-[#1a3a6e]/30 sticky top-0">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-gray-400 font-medium">Name</th>
+                        <th className="px-3 py-2 text-left text-gray-400 font-medium">#</th>
+                        <th className="px-3 py-2 text-left text-gray-400 font-medium">Pos</th>
+                        <th className="px-3 py-2 text-left text-gray-400 font-medium">Class</th>
+                        <th className="px-3 py-2 text-right text-gray-400 font-medium"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1a3a6e]">
+                      {parsedPlayers.map((player, index) => (
+                        <tr key={index} className="hover:bg-[#1a3a6e]/20">
+                          <td className="px-3 py-2">
+                            <div className="flex gap-1">
+                              <input
+                                type="text"
+                                value={player.firstName}
+                                onChange={(e) => updateParsedPlayer(index, 'firstName', e.target.value)}
+                                className="w-20 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-eha-gold text-white px-1 outline-none"
+                              />
+                              <input
+                                type="text"
+                                value={player.lastName}
+                                onChange={(e) => updateParsedPlayer(index, 'lastName', e.target.value)}
+                                className="w-24 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-eha-gold text-white px-1 outline-none"
+                              />
+                            </div>
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={player.jerseyNumber || ''}
+                              onChange={(e) => updateParsedPlayer(index, 'jerseyNumber', e.target.value || null)}
+                              className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-eha-gold text-white px-1 outline-none"
+                              placeholder="-"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={player.primaryPosition || ''}
+                              onChange={(e) => updateParsedPlayer(index, 'primaryPosition', e.target.value || null)}
+                              className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-eha-gold text-white px-1 outline-none"
+                              placeholder="-"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={player.graduationYear || ''}
+                              onChange={(e) => updateParsedPlayer(index, 'graduationYear', e.target.value ? parseInt(e.target.value) : null)}
+                              className="w-12 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-eha-gold text-white px-1 outline-none"
+                              placeholder="-"
+                            />
+                          </td>
+                          <td className="px-3 py-2 text-right">
+                            <button
+                              onClick={() => removeParsedPlayer(index)}
+                              className="text-gray-400 hover:text-red-400 transition-colors"
+                              title="Remove player"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setIsAddPlayerOpen(false)
+                      setParsedPlayers([])
+                      setUploadFileName('')
+                      setActiveTab('manual')
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleBatchImport}
+                    isLoading={isImporting}
+                    className="flex-1"
+                  >
+                    <Check className="w-4 h-4 mr-2" />
+                    Import {parsedPlayers.length} Players
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {/* Empty state with Cancel button */}
+            {parsedPlayers.length === 0 && !isParsing && (
+              <div className="flex gap-4 pt-4">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    setIsAddPlayerOpen(false)
+                    setActiveTab('manual')
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
           </div>
-        </form>
+        )}
       </Modal>
 
       {/* Edit Team Modal */}
@@ -651,6 +1124,169 @@ export default function DirectorTeamDetailPage() {
             <Button
               type="submit"
               isLoading={isEditSubmitting}
+              className="flex-1"
+            >
+              Save Changes
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Player Modal */}
+      <Modal
+        isOpen={isEditPlayerOpen}
+        onClose={() => {
+          setIsEditPlayerOpen(false)
+          setEditPlayerForm({
+            playerId: '',
+            firstName: '',
+            lastName: '',
+            jerseyNumber: '',
+            primaryPosition: '',
+            heightFeet: '',
+            heightInches: '',
+            school: '',
+            graduationYear: '',
+          })
+          setError('')
+        }}
+        title="Edit Player"
+      >
+        <form onSubmit={handleEditPlayer} className="space-y-4">
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                First Name *
+              </label>
+              <Input
+                type="text"
+                placeholder="John"
+                value={editPlayerForm.firstName}
+                onChange={(e) => setEditPlayerForm(prev => ({ ...prev, firstName: e.target.value }))}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Last Name *
+              </label>
+              <Input
+                type="text"
+                placeholder="Smith"
+                value={editPlayerForm.lastName}
+                onChange={(e) => setEditPlayerForm(prev => ({ ...prev, lastName: e.target.value }))}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Jersey Number
+              </label>
+              <Input
+                type="text"
+                placeholder="23"
+                value={editPlayerForm.jerseyNumber}
+                onChange={(e) => setEditPlayerForm(prev => ({ ...prev, jerseyNumber: e.target.value }))}
+                maxLength={3}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Position
+              </label>
+              <Select
+                options={positionOptions}
+                value={editPlayerForm.primaryPosition}
+                onChange={(e) => setEditPlayerForm(prev => ({ ...prev, primaryPosition: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Height
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                type="number"
+                placeholder="Feet"
+                min={3}
+                max={7}
+                value={editPlayerForm.heightFeet}
+                onChange={(e) => setEditPlayerForm(prev => ({ ...prev, heightFeet: e.target.value }))}
+              />
+              <Input
+                type="number"
+                placeholder="Inches"
+                min={0}
+                max={11}
+                value={editPlayerForm.heightInches}
+                onChange={(e) => setEditPlayerForm(prev => ({ ...prev, heightInches: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                School
+              </label>
+              <Input
+                type="text"
+                placeholder="School name"
+                value={editPlayerForm.school}
+                onChange={(e) => setEditPlayerForm(prev => ({ ...prev, school: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Class (Grad Year)
+              </label>
+              <Input
+                type="number"
+                placeholder="2026"
+                min={2020}
+                max={2040}
+                value={editPlayerForm.graduationYear}
+                onChange={(e) => setEditPlayerForm(prev => ({ ...prev, graduationYear: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setIsEditPlayerOpen(false)
+                setEditPlayerForm({
+                  playerId: '',
+                  firstName: '',
+                  lastName: '',
+                  jerseyNumber: '',
+                  primaryPosition: '',
+                  heightFeet: '',
+                  heightInches: '',
+                  school: '',
+                  graduationYear: '',
+                })
+                setError('')
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              isLoading={isEditPlayerSubmitting}
               className="flex-1"
             >
               Save Changes

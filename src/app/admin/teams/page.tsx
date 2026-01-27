@@ -20,6 +20,7 @@ interface Team {
   coachName: string | null
   ageGroup: string | null
   division: string | null
+  isActive: boolean
 }
 
 interface Pagination {
@@ -181,6 +182,9 @@ export default function AdminTeamsPage() {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Division
                   </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Status
+                  </th>
                   <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Actions
                   </th>
@@ -190,11 +194,11 @@ export default function AdminTeamsPage() {
                 {teams.map((team) => (
                   <tr
                     key={team.id}
-                    className="hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer"
+                    className={`hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer ${!team.isActive ? 'opacity-60' : ''}`}
                     onClick={() => router.push(`/admin/teams/${team.id}`)}
                   >
                     <td className="px-6 py-4">
-                      <div className="font-medium text-white">{team.name}</div>
+                      <div className={`font-medium ${team.isActive ? 'text-white' : 'text-gray-400'}`}>{team.name}</div>
                     </td>
                     <td className="px-6 py-4 text-gray-400">
                       {team.coachName || '-'}
@@ -215,6 +219,13 @@ export default function AdminTeamsPage() {
                         </Badge>
                       ) : (
                         <span className="text-gray-600">-</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {team.isActive ? (
+                        <Badge variant="success" size="sm">Active</Badge>
+                      ) : (
+                        <Badge variant="danger" size="sm">Inactive</Badge>
                       )}
                     </td>
                     <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>

@@ -56,6 +56,9 @@ export default function DashboardPage() {
     if (session?.user?.role === 'ADMIN') {
       router.push('/admin')
     }
+    if (session?.user?.role === 'PROGRAM_DIRECTOR') {
+      router.push('/director/dashboard')
+    }
   }, [status, session, router])
 
   useEffect(() => {

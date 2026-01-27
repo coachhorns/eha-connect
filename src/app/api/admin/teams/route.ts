@@ -95,6 +95,7 @@ export async function GET(request: NextRequest) {
           ageGroup: true,
           division: true,
           programId: true,
+          isActive: true,
           program: {
             select: {
               id: true,
@@ -108,7 +109,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: { name: 'asc' },
+        orderBy: [{ isActive: 'desc' }, { name: 'asc' }],
         skip,
         take: limit,
       }),

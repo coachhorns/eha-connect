@@ -183,7 +183,16 @@ export async function DELETE(
     }
 
     // Prevent deleting the last admin
-    const user = await prisma.user.findUnique({ where: { id } })
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: {
+        ownedPrograms: {
+          include: {
+            teams: true,
+          },
+        },
+      },
+    })
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -198,7 +207,30 @@ export async function DELETE(
       }
     }
 
-    // Delete the user (cascades will handle related records per schema)
+    // If user is a Program Director, handle their programs and teams
+    if (user.ownedPrograms.length > 0) {
+      // Get all team IDs from all programs owned by this user
+      const teamIds = user.ownedPrograms.flatMap(program =>
+        program.teams.map(team => team.id)
+      )
+
+      // Soft-delete all teams (set isActive: false)
+      if (teamIds.length > 0) {
+        await prisma.team.updateMany({
+          where: { id: { in: teamIds } },
+          data: { isActive: false },
+        })
+      }
+
+      // Soft-delete all programs (set isActive: false)
+      const programIds = user.ownedPrograms.map(program => program.id)
+      await prisma.program.updateMany({
+        where: { id: { in: programIds } },
+        data: { isActive: false, ownerId: null },
+      })
+    }
+
+    // Delete the user
     await prisma.user.delete({ where: { id } })
 
     return NextResponse.json({ message: 'User deleted successfully' })
