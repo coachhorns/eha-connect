@@ -15,8 +15,10 @@ import {
   CreditCard,
   Search,
   UserPlus,
+  Smartphone,
+  ArrowRight,
 } from 'lucide-react'
-import { Card, Button, Badge, Avatar } from '@/components/ui'
+import { Card, Button, Badge, Avatar, Modal } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
 
 interface PlayerProfile {
@@ -48,6 +50,10 @@ export default function DashboardPage() {
   const [profiles, setProfiles] = useState<PlayerProfile[]>([])
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [inviteModal, setInviteModal] = useState<{ playerId: string; playerName: string; type: 'PARENT' | 'PLAYER' } | null>(null)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteStatus, setInviteStatus] = useState<{ success?: string; error?: string } | null>(null)
+  const [isSending, setIsSending] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -84,6 +90,40 @@ export default function DashboardPage() {
       console.error('Error fetching data:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const openInviteModal = (playerId: string, playerName: string, type: 'PARENT' | 'PLAYER') => {
+    setInviteEmail('')
+    setInviteStatus(null)
+    setInviteModal({ playerId, playerName, type })
+  }
+
+  const sendInvite = async () => {
+    if (!inviteModal || !inviteEmail.trim()) return
+    setIsSending(true)
+    setInviteStatus(null)
+    try {
+      const res = await fetch('/api/guardians/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: inviteEmail.trim(),
+          playerId: inviteModal.playerId,
+          type: inviteModal.type,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setInviteStatus({ error: data.error || 'Failed to send invite' })
+      } else {
+        setInviteStatus({ success: data.message || 'Invite sent!' })
+        setInviteEmail('')
+      }
+    } catch {
+      setInviteStatus({ error: 'Something went wrong. Please try again.' })
+    } finally {
+      setIsSending(false)
     }
   }
 
@@ -134,105 +174,108 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {/* Player Profiles */}
-          <Card>
-            <div className="p-4 border-b border-[#1a3a6e] flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-white" />
-                Player Profiles
-              </h2>
-              {/* Show "Claim Player" for PARENT/PLAYER roles, "Add Player" for others */}
-              {session?.user.role === 'PARENT' || session?.user.role === 'PLAYER' ? (
-                <Link href="/claim-player">
-                  <Button size="sm" className="flex items-center gap-1">
-                    <Search className="w-4 h-4" />
-                    Claim Player
-                  </Button>
-                </Link>
-              ) : (
-                <Link href="/dashboard/players/new">
-                  <Button size="sm" className="flex items-center gap-1">
-                    <Plus className="w-4 h-4" />
-                    Add Player
-                  </Button>
-                </Link>
-              )}
-            </div>
-
-            {profiles.length === 0 ? (
-              <div className="p-8 text-center">
-                <User className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+          {/* Player Profiles - hidden for PARENT/PLAYER with no profiles (they see the Welcome card instead) */}
+          {!((session?.user.role === 'PARENT' || session?.user.role === 'PLAYER') && profiles.length === 0) && (
+            <Card>
+              <div className="p-4 border-b border-[#1a3a6e] flex items-center justify-between">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <User className="w-5 h-5 text-white" />
+                  Player Profiles
+                </h2>
                 {session?.user.role === 'PARENT' || session?.user.role === 'PLAYER' ? (
-                  <>
-                    <p className="text-gray-400 mb-4">No player profiles linked yet</p>
-                    <Link href="/claim-player">
-                      <Button className="flex items-center gap-2 mx-auto">
-                        <Search className="w-4 h-4" />
-                        Find Your Athlete
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-gray-400 mb-4">No player profiles yet</p>
-                    <Link href="/dashboard/players/new">
-                      <Button>Create Player Profile</Button>
-                    </Link>
-                  </>
-                )}
+                  <Link href="/claim-player">
+                    <Button size="sm" className="flex items-center gap-1">
+                      <Search className="w-4 h-4" />
+                      Claim Player
+                    </Button>
+                  </Link>
+                ) : profiles.length === 0 ? (
+                  <Link href="/dashboard/players/new">
+                    <Button size="sm" className="flex items-center gap-1">
+                      <Plus className="w-4 h-4" />
+                      Add Player
+                    </Button>
+                  </Link>
+                ) : null}
               </div>
-            ) : (
-              <div className="divide-y divide-[#1a3a6e]">
-                {profiles.map((profile) => (
-                  <div key={profile.id} className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <Avatar
-                        src={profile.profilePhoto}
-                        fallback={`${profile.firstName} ${profile.lastName}`}
-                        size="lg"
-                      />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-white">
-                            {profile.firstName} {profile.lastName}
-                          </h3>
-                          {profile.isVerified && (
-                            <Badge variant="success" size="sm">Verified</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-500">
-                          {profile.school && `${profile.school} • `}
-                          {profile.graduationYear && `Class of ${profile.graduationYear}`}
-                        </p>
-                        <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <BarChart3 className="w-3.5 h-3.5" />
-                            {profile._count.gameStats} games
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Trophy className="w-3.5 h-3.5" />
-                            {profile._count.achievements} achievements
-                          </span>
+
+              {profiles.length === 0 ? (
+                <div className="p-8 text-center">
+                  <User className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400 mb-4">No player profiles yet</p>
+                  <Link href="/dashboard/players/new">
+                    <Button>Create Player Profile</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="divide-y divide-[#1a3a6e]">
+                  {profiles.map((profile) => (
+                    <div key={profile.id} className="p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <Avatar
+                          src={profile.profilePhoto}
+                          fallback={`${profile.firstName} ${profile.lastName}`}
+                          size="lg"
+                        />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-white">
+                              {profile.firstName} {profile.lastName}
+                            </h3>
+                            {profile.isVerified && (
+                              <Badge variant="success" size="sm">Verified</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            {profile.school && `${profile.school} • `}
+                            {profile.graduationYear && `Class of ${profile.graduationYear}`}
+                          </p>
+                          <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <BarChart3 className="w-3.5 h-3.5" />
+                              {profile._count.gameStats} games
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Trophy className="w-3.5 h-3.5" />
+                              {profile._count.achievements} achievements
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Link href={`/players/${profile.slug}`}>
-                        <Button variant="ghost" size="sm">
-                          <ExternalLink className="w-4 h-4" />
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openInviteModal(profile.id, `${profile.firstName} ${profile.lastName}`, 'PARENT')}
+                          title="Add Parent/Guardian"
+                        >
+                          <UserPlus className="w-4 h-4" />
                         </Button>
-                      </Link>
-                      <Link href={`/dashboard/players/${profile.id}/edit`}>
-                        <Button variant="outline" size="sm">
-                          Edit Profile
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openInviteModal(profile.id, `${profile.firstName} ${profile.lastName}`, 'PLAYER')}
+                          title="Give Player Access"
+                        >
+                          <Smartphone className="w-4 h-4" />
                         </Button>
-                      </Link>
+                        <Link href={`/players/${profile.slug}`}>
+                          <Button variant="ghost" size="sm">
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                        <Link href={`/dashboard/players/${profile.id}/edit`}>
+                          <Button variant="outline" size="sm">
+                            Edit Profile
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
+                  ))}
+                </div>
+              )}
+            </Card>
+          )}
 
           {/* Recent Activity */}
           <Card>
@@ -339,6 +382,58 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
+
+      {/* Invite Modal */}
+      <Modal
+        isOpen={!!inviteModal}
+        onClose={() => setInviteModal(null)}
+        title={inviteModal?.type === 'PARENT' ? 'Invite Co-Parent' : 'Give Player Access'}
+        size="sm"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-400">
+            {inviteModal?.type === 'PARENT'
+              ? `Send an invitation to another parent/guardian to view and manage ${inviteModal.playerName}'s profile.`
+              : `Send an invitation to ${inviteModal?.playerName} so they can create an account and edit their own profile (Bio, Socials, Media).`}
+          </p>
+          <div>
+            <label htmlFor="invite-email" className="block text-sm font-medium text-gray-300 mb-1">
+              Email Address
+            </label>
+            <input
+              id="invite-email"
+              type="email"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              placeholder="Enter email address"
+              className="w-full px-3 py-2 bg-[#0a1628] border border-[#1a3a6e] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-gold"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') sendInvite()
+              }}
+            />
+          </div>
+          {inviteStatus?.error && (
+            <p className="text-sm text-red-400">{inviteStatus.error}</p>
+          )}
+          {inviteStatus?.success && (
+            <p className="text-sm text-green-400">{inviteStatus.success}</p>
+          )}
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="ghost" size="sm" onClick={() => setInviteModal(null)}>
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={sendInvite}
+              disabled={isSending || !inviteEmail.trim()}
+              className="flex items-center gap-1"
+            >
+              {isSending ? 'Sending...' : 'Send Invite'}
+              {!isSending && <ArrowRight className="w-4 h-4" />}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

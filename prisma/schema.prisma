@@ -137,6 +137,7 @@ enum SubscriptionStatus {
 enum GuardianRole {
   PRIMARY    // First parent who claimed the player
   SECONDARY  // Co-parent invited by primary
+  PLAYER     // Player invited to manage their own profile
 }
 
 // ============================================
@@ -224,6 +225,8 @@ model Player {
   twitterHandle   String?
   instagramHandle String?
   hudlUrl         String?
+  youtubeUrl      String?
+  highlightUrl    String?
 
   // Status
   isActive        Boolean   @default(true)

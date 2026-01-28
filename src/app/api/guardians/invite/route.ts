@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { sendEmail, buildInviteEmail } from '@/lib/email'
 
 // GET - Get pending invites sent by user
 export async function GET(request: NextRequest) {
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { playerId, email } = body
+    const { playerId, email, type } = body
 
     if (!playerId || !email) {
       return NextResponse.json(
@@ -59,6 +60,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    const inviteType: 'PARENT' | 'PLAYER' = type === 'PLAYER' ? 'PLAYER' : 'PARENT'
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -103,23 +106,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check for existing pending invite
-    const existingInvite = await prisma.guardianInvite.findFirst({
-      where: {
-        email,
-        playerId,
-        acceptedAt: null,
-        expiresAt: { gt: new Date() },
-      },
-    })
-
-    if (existingInvite) {
-      return NextResponse.json(
-        { error: 'An invite has already been sent to this email' },
-        { status: 400 }
-      )
-    }
-
     // Get player info for the invite
     const player = await prisma.player.findUnique({
       where: { id: playerId },
@@ -142,14 +128,29 @@ export async function POST(request: NextRequest) {
         email,
         playerId,
         invitedBy: session.user.id,
-        role: 'SECONDARY',
+        role: inviteType === 'PLAYER' ? 'PLAYER' : 'SECONDARY',
         expiresAt,
       },
     })
 
-    // TODO: Send email with invite link
-    // For now, return the invite token for testing
     const inviteUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/invite/${invite.token}`
+    const playerFullName = `${player.firstName} ${player.lastName}`
+
+    // Build and send the email
+    const { subject, html } = buildInviteEmail({
+      type: inviteType,
+      playerName: playerFullName,
+      inviteUrl,
+    })
+
+    const emailResult = await sendEmail({ to: email, subject, html })
+
+    if (!emailResult.success) {
+      console.warn(`[Invite] Email delivery failed for ${email}: ${emailResult.error}`)
+      console.log(`[DEV] Manual Invite Link: ${inviteUrl}`)
+    } else {
+      console.log(`[Invite] Email sent to ${email}. Link: ${inviteUrl}`)
+    }
 
     return NextResponse.json({
       success: true,
@@ -157,9 +158,12 @@ export async function POST(request: NextRequest) {
         id: invite.id,
         email: invite.email,
         expiresAt: invite.expiresAt,
-        inviteUrl, // In production, this would be in the email only
+        type: inviteType,
+        emailSent: emailResult.success,
       },
-      message: `Invite sent to ${email}`,
+      message: emailResult.success
+        ? `Invite sent to ${email}`
+        : `Invite created but email failed: ${emailResult.error}`,
     })
   } catch (error) {
     console.error('Error sending invite:', error)

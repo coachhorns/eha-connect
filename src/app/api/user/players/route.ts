@@ -14,7 +14,10 @@ export async function GET() {
 
     const players = await prisma.player.findMany({
       where: {
-        userId: session.user.id,
+        OR: [
+          { userId: session.user.id },
+          { guardians: { some: { userId: session.user.id } } },
+        ],
         isActive: true,
       },
       include: {

@@ -16,19 +16,11 @@ import {
   Loader2,
   Info,
   Mail,
+  Shield,
+  GraduationCap,
 } from 'lucide-react'
-import { Card, Button, Input, Badge, Select } from '@/components/ui'
+import { Card, Button, Input, Badge } from '@/components/ui'
 import { formatPosition } from '@/lib/utils'
-
-interface Team {
-  id: string
-  name: string
-  slug: string
-  ageGroup: string | null
-  program?: {
-    name: string
-  } | null
-}
 
 interface PlayerResult {
   id: string
@@ -38,11 +30,21 @@ interface PlayerResult {
   profilePhoto: string | null
   graduationYear: number | null
   primaryPosition: string | null
-  currentTeam: Team | null
+  currentTeam: {
+    id: string
+    name: string
+    slug: string
+    ageGroup: string | null
+    division: string | null
+    program: {
+      id: string
+      name: string
+    } | null
+  } | null
   hasPrimaryGuardian: boolean
 }
 
-type Step = 'info' | 'team' | 'search' | 'results' | 'success' | 'approval'
+type Step = 'info' | 'search' | 'results' | 'success' | 'approval'
 
 export default function ClaimPlayerPage() {
   const { data: session, status } = useSession()
@@ -51,9 +53,6 @@ export default function ClaimPlayerPage() {
   const [step, setStep] = useState<Step>('info')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [selectedTeamId, setSelectedTeamId] = useState('')
-  const [teams, setTeams] = useState<Team[]>([])
-  const [isLoadingTeams, setIsLoadingTeams] = useState(true)
   const [players, setPlayers] = useState<PlayerResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [isClaiming, setIsClaiming] = useState(false)
@@ -67,32 +66,9 @@ export default function ClaimPlayerPage() {
     }
   }, [status, router])
 
-  useEffect(() => {
-    fetchTeams()
-  }, [])
-
-  const fetchTeams = async () => {
-    try {
-      const res = await fetch('/api/teams?active=true&limit=500')
-      const data = await res.json()
-      if (res.ok) {
-        setTeams(data.teams || [])
-      }
-    } catch (error) {
-      console.error('Error fetching teams:', error)
-    } finally {
-      setIsLoadingTeams(false)
-    }
-  }
-
   const handleSearchPlayers = async () => {
     if (!firstName.trim() || !lastName.trim()) {
       setError('Please enter both first and last name')
-      return
-    }
-
-    if (!selectedTeamId) {
-      setError('Please select a team')
       return
     }
 
@@ -104,7 +80,6 @@ export default function ClaimPlayerPage() {
       const params = new URLSearchParams({
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        teamId: selectedTeamId,
       })
 
       const res = await fetch(`/api/claim-player?${params}`)
@@ -118,7 +93,7 @@ export default function ClaimPlayerPage() {
       setStep('results')
     } catch (err: any) {
       setError(err.message || 'Failed to search for players')
-      setStep('team')
+      setStep('info')
     } finally {
       setIsSearching(false)
     }
@@ -159,7 +134,6 @@ export default function ClaimPlayerPage() {
     setStep('info')
     setFirstName('')
     setLastName('')
-    setSelectedTeamId('')
     setPlayers([])
     setError('')
     setClaimedPlayer(null)
@@ -174,16 +148,6 @@ export default function ClaimPlayerPage() {
     )
   }
 
-  const selectedTeam = teams.find(t => t.id === selectedTeamId)
-
-  // Group teams by program for better organization
-  const teamOptions = teams.map((team) => ({
-    value: team.id,
-    label: team.program
-      ? `${team.name} (${team.program.name}${team.ageGroup ? ` - ${team.ageGroup}` : ''})`
-      : `${team.name}${team.ageGroup ? ` - ${team.ageGroup}` : ''}`,
-  }))
-
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-2xl mx-auto px-4">
@@ -193,17 +157,17 @@ export default function ClaimPlayerPage() {
             Find Your Athlete
           </h1>
           <p className="mt-2 text-gray-400">
-            Link your account to your child's official player profile
+            Link your account to your child&apos;s official player profile
           </p>
         </div>
 
         {/* Progress Steps */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          {['Player Info', 'Select Team', 'Confirm'].map((label, index) => {
-            const stepMap = ['info', 'team', 'results']
-            const currentStepIndex = stepMap.indexOf(step)
-            const isActive = index <= currentStepIndex || step === 'success' || step === 'approval' || step === 'search'
-            const isCurrent = stepMap[index] === step || (step === 'search' && index === 2)
+          {['Player Info', 'Confirm'].map((label, index) => {
+            const stepMap = ['info', 'results']
+            const currentStepIndex = step === 'info' ? 0 : 1
+            const isActive = index <= currentStepIndex || step === 'success' || step === 'approval'
+            const isCurrent = index === currentStepIndex && step !== 'success' && step !== 'approval'
 
             return (
               <div key={label} className="flex items-center">
@@ -216,10 +180,10 @@ export default function ClaimPlayerPage() {
                 >
                   {index + 1}
                 </div>
-                {index < 2 && (
+                {index < 1 && (
                   <div
                     className={`w-12 h-0.5 mx-1 ${
-                      isActive && index < currentStepIndex ? 'bg-eha-red' : 'bg-white/10'
+                      currentStepIndex > 0 || step === 'success' || step === 'approval' ? 'bg-eha-red' : 'bg-white/10'
                     }`}
                   />
                 )}
@@ -239,7 +203,7 @@ export default function ClaimPlayerPage() {
                 </div>
                 <h2 className="text-xl font-bold text-white">Enter Player Name</h2>
                 <p className="text-gray-400 text-sm mt-1">
-                  Enter your child's name exactly as it appears on their team roster
+                  Enter your child&apos;s name exactly as it appears on their team roster
                 </p>
               </div>
 
@@ -267,91 +231,28 @@ export default function ClaimPlayerPage() {
               )}
 
               <Button
-                onClick={() => {
-                  if (!firstName.trim() || !lastName.trim()) {
-                    setError('Please enter both first and last name')
-                    return
-                  }
-                  setError('')
-                  setStep('team')
-                }}
+                onClick={handleSearchPlayers}
                 disabled={!firstName.trim() || !lastName.trim()}
                 className="w-full"
               >
-                Continue
-                <ChevronRight className="w-4 h-4 ml-2" />
+                Find Player
+                <Search className="w-4 h-4 ml-2" />
               </Button>
             </div>
           )}
 
-          {/* Step 2: Team Selection */}
-          {step === 'team' && (
-            <div className="space-y-6">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-eha-red/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-eha-red" />
-                </div>
-                <h2 className="text-xl font-bold text-white">Select Team</h2>
-                <p className="text-gray-400 text-sm mt-1">
-                  Choose the team that <span className="text-white font-medium">{firstName} {lastName}</span> is currently on
-                </p>
-              </div>
-
-              {isLoadingTeams ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 text-eha-red animate-spin" />
-                </div>
-              ) : (
-                <Select
-                  label="Team"
-                  options={[
-                    { value: '', label: 'Select a team...' },
-                    ...teamOptions,
-                  ]}
-                  value={selectedTeamId}
-                  onChange={(e) => setSelectedTeamId(e.target.value)}
-                />
-              )}
-
-              {error && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-                  <p className="text-red-400 text-sm">{error}</p>
-                </div>
-              )}
-
-              <div className="flex gap-3">
-                <Button
-                  variant="ghost"
-                  onClick={() => setStep('info')}
-                  className="flex-1"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Button>
-                <Button
-                  onClick={handleSearchPlayers}
-                  className="flex-1"
-                  disabled={!selectedTeamId}
-                >
-                  Find Player
-                  <Search className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Searching */}
+          {/* Searching */}
           {step === 'search' && isSearching && (
             <div className="py-12 text-center">
               <Loader2 className="w-12 h-12 text-eha-red animate-spin mx-auto mb-4" />
               <h2 className="text-xl font-bold text-white">Searching...</h2>
               <p className="text-gray-400 text-sm mt-1">
-                Looking for {firstName} {lastName} on {selectedTeam?.name}
+                Looking for {firstName} {lastName}
               </p>
             </div>
           )}
 
-          {/* Step 4: Results */}
+          {/* Results */}
           {step === 'results' && (
             <div className="space-y-6">
               <div className="text-center mb-6">
@@ -369,13 +270,12 @@ export default function ClaimPlayerPage() {
 
               {players.length === 0 ? (
                 <div className="space-y-6">
-                  {/* Helpful message for no results */}
                   <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-5">
                     <div className="flex gap-3">
                       <Info className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-yellow-200 font-medium mb-2">
-                          We couldn't find a player matching "{firstName} {lastName}" on {selectedTeam?.name}.
+                          We couldn&apos;t find a player matching &quot;{firstName} {lastName}&quot;.
                         </p>
                         <p className="text-yellow-200/80 text-sm">
                           Please contact your <strong>Program Director</strong> or <strong>Coach</strong> to ensure your child has been added to the official roster. Player profiles must be created by team staff before they can be claimed.
@@ -390,10 +290,9 @@ export default function ClaimPlayerPage() {
                       Need Help?
                     </h3>
                     <ul className="text-gray-400 text-sm space-y-2">
-                      <li>• Double-check the spelling of the first and last name</li>
-                      <li>• Make sure you selected the correct team</li>
-                      <li>• Contact your coach if the player was recently added</li>
-                      <li>• Players must be on the official team roster to be claimed</li>
+                      <li>&bull; Double-check the spelling of the first and last name</li>
+                      <li>&bull; Contact your coach if the player was recently added</li>
+                      <li>&bull; Players must be on the official team roster to be claimed</li>
                     </ul>
                   </div>
 
@@ -405,22 +304,23 @@ export default function ClaimPlayerPage() {
               ) : (
                 <div className="space-y-3">
                   <p className="text-gray-400 text-sm text-center mb-4">
-                    Select the player you want to claim
+                    Select the correct player to claim
                   </p>
                   {players.map((player) => (
                     <div
                       key={player.id}
-                      className="flex items-center justify-between p-4 bg-[#1a3a6e]/30 rounded-lg hover:bg-[#1a3a6e]/50 transition-colors"
+                      className="p-4 bg-[#1a3a6e]/30 rounded-lg hover:bg-[#1a3a6e]/50 transition-colors"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10">
+                        {/* Photo */}
+                        <div className="w-14 h-14 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
                           {player.profilePhoto ? (
                             <Image
                               src={player.profilePhoto}
                               alt={`${player.firstName} ${player.lastName}`}
-                              width={48}
-                              height={48}
-                              className="object-cover"
+                              width={56}
+                              height={56}
+                              className="object-cover w-full h-full"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-lg font-bold text-gray-500">
@@ -428,31 +328,64 @@ export default function ClaimPlayerPage() {
                             </div>
                           )}
                         </div>
-                        <div>
-                          <p className="font-medium text-white">
-                            {player.firstName} {player.lastName}
-                          </p>
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-semibold text-white">
+                              {player.firstName} {player.lastName}
+                            </p>
+                            {player.hasPrimaryGuardian && (
+                              <Badge variant="warning" size="sm">
+                                <Shield className="w-3 h-3 mr-1" />
+                                Has Guardian
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* Team / Program line */}
+                          {player.currentTeam && (
+                            <p className="text-sm text-gray-300 mt-0.5 flex items-center gap-1.5">
+                              <Users className="w-3.5 h-3.5 flex-shrink-0" />
+                              <span className="font-medium">{player.currentTeam.name}</span>
+                              {player.currentTeam.program && (
+                                <span className="text-gray-500">
+                                  &mdash; {player.currentTeam.program.name}
+                                </span>
+                              )}
+                            </p>
+                          )}
+
+                          {/* Details line */}
+                          <div className="flex items-center gap-3 text-xs text-gray-400 mt-1 flex-wrap">
+                            {player.currentTeam?.ageGroup && (
+                              <span className="bg-white/5 px-2 py-0.5 rounded">
+                                {player.currentTeam.ageGroup}
+                              </span>
+                            )}
+                            {player.currentTeam?.division && (
+                              <span className="bg-white/5 px-2 py-0.5 rounded">
+                                {player.currentTeam.division}
+                              </span>
+                            )}
                             {player.primaryPosition && (
                               <span>{formatPosition(player.primaryPosition)}</span>
                             )}
                             {player.graduationYear && (
-                              <span>Class of {player.graduationYear}</span>
-                            )}
-                            {player.currentTeam && (
-                              <span>• {player.currentTeam.name}</span>
+                              <span className="flex items-center gap-1">
+                                <GraduationCap className="w-3 h-3" />
+                                {player.graduationYear}
+                              </span>
                             )}
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {player.hasPrimaryGuardian && (
-                          <Badge variant="warning" size="sm">Has Guardian</Badge>
-                        )}
+
+                        {/* Claim button */}
                         <Button
                           size="sm"
                           onClick={() => handleClaimPlayer(player)}
                           disabled={isClaiming}
+                          className="flex-shrink-0"
                         >
                           {isClaiming ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -536,7 +469,7 @@ export default function ClaimPlayerPage() {
             Player profiles are created by Program Directors and Coaches.
           </p>
           <p>
-            If you can't find your athlete, please contact your team's staff.
+            If you can&apos;t find your athlete, please contact your team&apos;s staff.
           </p>
         </div>
       </div>

@@ -22,10 +22,7 @@ const nextConfig: any = {
     ],
   },
   turbopack: {},
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
+typescript: {
     ignoreBuildErrors: true,
   },
 };

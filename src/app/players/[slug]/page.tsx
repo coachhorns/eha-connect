@@ -11,6 +11,8 @@ import {
   Users,
   Calendar,
   ExternalLink,
+  Camera,
+  Link as LinkIcon,
 } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -384,6 +386,85 @@ export default async function PlayerProfilePage({ params }: PageProps) {
             </div>
             <div className="p-4">
               <p className="text-gray-300 whitespace-pre-wrap">{player.bio}</p>
+            </div>
+          </Card>
+        )}
+
+        {/* Highlights & Links */}
+        {(player.hudlUrl || player.youtubeUrl || player.highlightUrl) && (
+          <Card className="mb-8">
+            <div className="p-4 border-b border-[#1a3a6e]">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <ExternalLink className="w-5 h-5 text-eha-red" />
+                Highlights & Links
+              </h2>
+            </div>
+            <div className="p-4 flex flex-wrap gap-3">
+              {player.hudlUrl && (
+                <a
+                  href={player.hudlUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a3a6e] rounded-lg text-gray-300 hover:text-white hover:bg-[#1a3a6e]/80 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 3.993L9 16z" />
+                  </svg>
+                  Hudl Profile
+                </a>
+              )}
+              {player.youtubeUrl && (
+                <a
+                  href={player.youtubeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a3a6e] rounded-lg text-gray-300 hover:text-white hover:bg-[#FF0000]/20 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
+                  YouTube
+                </a>
+              )}
+              {player.highlightUrl && (
+                <a
+                  href={player.highlightUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a3a6e] rounded-lg text-gray-300 hover:text-white hover:bg-eha-red/20 transition-colors"
+                >
+                  <LinkIcon className="w-4 h-4" />
+                  Highlight Reel
+                </a>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Photo Gallery */}
+        {player.media.filter((m: any) => m.type === 'PHOTO').length > 0 && (
+          <Card className="mb-8">
+            <div className="p-4 border-b border-[#1a3a6e]">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Camera className="w-5 h-5 text-eha-red" />
+                Photos
+              </h2>
+            </div>
+            <div className="p-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {player.media
+                  .filter((m: any) => m.type === 'PHOTO')
+                  .map((item: any) => (
+                    <div key={item.id} className="relative rounded-lg overflow-hidden bg-white/5 aspect-square">
+                      <Image
+                        src={item.url}
+                        alt={item.title || 'Player photo'}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ))}
+              </div>
             </div>
           </Card>
         )}

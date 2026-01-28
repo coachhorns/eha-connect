@@ -15,8 +15,6 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const firstName = searchParams.get('firstName')
     const lastName = searchParams.get('lastName')
-    const dateOfBirth = searchParams.get('dateOfBirth')
-    const teamId = searchParams.get('teamId')
 
     if (!firstName || !lastName) {
       return NextResponse.json(
@@ -32,29 +30,7 @@ export async function GET(request: NextRequest) {
       isActive: true,
     }
 
-    // Add date of birth filter if provided
-    if (dateOfBirth) {
-      const dob = new Date(dateOfBirth)
-      // Match within the same day
-      const startOfDay = new Date(dob.setHours(0, 0, 0, 0))
-      const endOfDay = new Date(dob.setHours(23, 59, 59, 999))
-      where.dateOfBirth = {
-        gte: startOfDay,
-        lte: endOfDay,
-      }
-    }
-
-    // Add team filter if provided
-    if (teamId) {
-      where.teamRosters = {
-        some: {
-          teamId,
-          leftAt: null, // Currently on the team
-        },
-      }
-    }
-
-    // Find matching players
+    // Find matching players with team and program info
     const players = await prisma.player.findMany({
       where,
       include: {
@@ -67,6 +43,13 @@ export async function GET(request: NextRequest) {
                 name: true,
                 slug: true,
                 ageGroup: true,
+                division: true,
+                program: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
               },
             },
           },
@@ -76,21 +59,33 @@ export async function GET(request: NextRequest) {
           select: { id: true },
         },
       },
-      take: 10,
+      take: 20,
     })
 
-    // Map players with claim status
-    const results = players.map((player) => ({
-      id: player.id,
-      firstName: player.firstName,
-      lastName: player.lastName,
-      slug: player.slug,
-      profilePhoto: player.profilePhoto,
-      graduationYear: player.graduationYear,
-      primaryPosition: player.primaryPosition,
-      currentTeam: player.teamRosters[0]?.team || null,
-      hasPrimaryGuardian: player.guardians.length > 0,
-    }))
+    // Map players with claim status and all team info
+    const results = players.map((player) => {
+      const activeRoster = player.teamRosters[0]
+      return {
+        id: player.id,
+        firstName: player.firstName,
+        lastName: player.lastName,
+        slug: player.slug,
+        profilePhoto: player.profilePhoto,
+        graduationYear: player.graduationYear,
+        primaryPosition: player.primaryPosition,
+        currentTeam: activeRoster?.team
+          ? {
+              id: activeRoster.team.id,
+              name: activeRoster.team.name,
+              slug: activeRoster.team.slug,
+              ageGroup: activeRoster.team.ageGroup,
+              division: activeRoster.team.division,
+              program: activeRoster.team.program,
+            }
+          : null,
+        hasPrimaryGuardian: player.guardians.length > 0,
+      }
+    })
 
     return NextResponse.json({ players: results })
   } catch (error) {
