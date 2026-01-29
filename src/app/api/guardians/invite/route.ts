@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { sendEmail, buildInviteEmail } from '@/lib/email'
+import { GuardianRole } from '@prisma/client'
 
 // GET - Get pending invites sent by user
 export async function GET(request: NextRequest) {
@@ -119,19 +120,46 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Player not found' }, { status: 404 })
     }
 
-    // Create the invite (expires in 7 days)
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 7)
-
-    const invite = await prisma.guardianInvite.create({
-      data: {
+    // Check for existing pending invite
+    const existingInvite = await prisma.guardianInvite.findFirst({
+      where: {
         email,
         playerId,
-        invitedBy: session.user.id,
-        role: inviteType === 'PLAYER' ? 'PLAYER' : 'SECONDARY',
-        expiresAt,
+        acceptedAt: null,
       },
     })
+
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + 7)
+    // Use string literal to avoid potential stale Enum object issues
+    const role = inviteType === 'PLAYER' ? 'PLAYER' as GuardianRole : 'SECONDARY' as GuardianRole
+
+    let invite
+
+    if (existingInvite) {
+      // Update existing invite
+      invite = await prisma.guardianInvite.update({
+        where: { id: existingInvite.id },
+        data: {
+          expiresAt,
+          role, // Allow role update if needed
+          invitedBy: session.user.id, // Update inviter to current user
+        },
+      })
+      console.log(`[Invite] Updated existing invite ${invite.id} for ${email}`)
+    } else {
+      // Create new invite
+      invite = await prisma.guardianInvite.create({
+        data: {
+          email,
+          playerId,
+          invitedBy: session.user.id,
+          role,
+          expiresAt,
+        },
+      })
+      console.log(`[Invite] Created new invite ${invite.id} for ${email}`)
+    }
 
     const inviteUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/invite/${invite.token}`
     const playerFullName = `${player.firstName} ${player.lastName}`
@@ -168,7 +196,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error sending invite:', error)
     return NextResponse.json(
-      { error: 'Failed to send invite' },
+      { error: `Failed to send invite: ${error instanceof Error ? error.message : String(error)}` },
       { status: 500 }
     )
   }

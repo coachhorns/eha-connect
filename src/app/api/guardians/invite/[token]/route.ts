@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { sendEmail, buildInviteAcceptedEmail } from '@/lib/email'
 
 // GET - Get invite details by token
 export async function GET(
@@ -99,6 +100,12 @@ export async function POST(
             slug: true,
           },
         },
+        inviter: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
       },
     })
 
@@ -162,6 +169,33 @@ export async function POST(
         data: { acceptedAt: new Date() },
       }),
     ])
+
+    // Send notification email to inviter
+    if (invite.inviter?.email) {
+      try {
+        const inviterName = invite.inviter.name || 'Parent'
+        const accepterName = session.user.name || 'A user'
+        const playerName = `${invite.player.firstName} ${invite.player.lastName}`
+
+        const { subject, html } = buildInviteAcceptedEmail({
+          inviterName,
+          accepterName,
+          playerName,
+        })
+
+        // Log for debugging
+        console.log(`[Invite] Sending acceptance email to ${invite.inviter.email}`)
+
+        await sendEmail({
+          to: invite.inviter.email,
+          subject,
+          html,
+        })
+      } catch (emailError) {
+        console.error('Error sending acceptance notification:', emailError)
+        // Non-blocking error
+      }
+    }
 
     return NextResponse.json({
       success: true,

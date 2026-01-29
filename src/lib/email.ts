@@ -102,3 +102,38 @@ export function buildInviteEmail({
     `,
   }
 }
+
+export function buildInviteAcceptedEmail({
+  inviterName,
+  accepterName,
+  playerName,
+}: {
+  inviterName: string
+  accepterName: string
+  playerName: string
+}) {
+  const subject = `${accepterName} accepted your invite to manage ${playerName}`
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a1628; color: #e5e7eb; padding: 32px; border-radius: 8px;">
+      <h1 style="color: #ffffff; font-size: 24px; margin-bottom: 16px;">Invite Accepted</h1>
+      <p style="margin-bottom: 16px; line-height: 1.6;">
+        Hello <strong style="color: #ffffff;">${inviterName}</strong>,
+      </p>
+      <p style="margin-bottom: 24px; line-height: 1.6;">
+        <strong style="color: #ffffff;">${accepterName}</strong> has accepted your invitation to manage <strong style="color: #ffffff;">${playerName}</strong>'s profile on EHA Connect.
+      </p>
+      <p style="margin-bottom: 24px; line-height: 1.6; color: #9ca3af;">
+        They now have access to update the player's bio, social links, and media highlights.
+      </p>
+      <div style="text-align: center;">
+        <a href="${process.env.NEXTAUTH_URL}/dashboard" style="display: inline-block; background: #dc2626; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+          View Dashboard
+        </a>
+      </div>
+      <p style="margin-top: 24px; font-size: 12px; color: #6b7280; text-align: center;">
+        &copy; ${new Date().getFullYear()} Elite Hoop Ambitions. All rights reserved.
+      </p>
+    </div>
+  `
+  return { subject, html }
+}
