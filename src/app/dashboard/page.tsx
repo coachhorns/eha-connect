@@ -35,6 +35,23 @@ interface PlayerProfile {
     gameStats: number
     achievements: number
   }
+  user?: {
+    id: string
+    name: string | null
+    email: string | null
+    image: string | null
+    role: string
+  }
+  guardians: Array<{
+    role: string
+    user: {
+      id: string
+      name: string | null
+      email: string | null
+      image: string | null
+      role: string
+    }
+  }>
 }
 
 interface Subscription {
@@ -239,6 +256,40 @@ export default function DashboardPage() {
                               <Trophy className="w-3.5 h-3.5" />
                               {profile._count.achievements} achievements
                             </span>
+                          </div>
+
+                          {/* Connected Users */}
+                          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-white/5">
+                            <span className="text-xs text-gray-500 uppercase tracking-wide">Access:</span>
+                            <div className="flex items-center gap-2">
+                              {/* Creator/Primary User */}
+                              {profile.user && (
+                                <div className="relative group cursor-help">
+                                  <Avatar
+                                    src={profile.user.image}
+                                    fallback={profile.user.name || 'U'}
+                                    className="w-6 h-6 border border-[#1a3a6e] ring-2 ring-[#0a1628]"
+                                  />
+                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-xs text-white rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    {profile.user.name} (Creator)
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Guardians & Player Access */}
+                              {profile.guardians.map((g) => (
+                                <div key={g.user.id} className="relative group cursor-help">
+                                  <Avatar
+                                    src={g.user.image}
+                                    fallback={g.user.name || 'U'}
+                                    className={`w-6 h-6 border border-[#1a3a6e] ring-2 ring-[#0a1628] ${g.role === 'PLAYER' ? 'ring-eha-gold/50' : ''}`}
+                                  />
+                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-xs text-white rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    {g.user.name} ({g.role === 'PLAYER' ? 'Player Access' : 'Guardian'})
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>

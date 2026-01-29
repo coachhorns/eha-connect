@@ -27,6 +27,28 @@ export async function GET() {
             achievements: true,
           },
         },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+          }
+        },
+        guardians: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+                role: true,
+              }
+            }
+          }
+        }
       },
       orderBy: { createdAt: 'desc' },
     })
