@@ -172,6 +172,7 @@ export async function POST(
 
     // Send notification email to inviter
     if (invite.inviter?.email) {
+      console.log(`[InviteDebug] Inviter has email: ${invite.inviter.email}`)
       try {
         const inviterName = invite.inviter.name || 'Parent'
         const accepterName = session.user.name || 'A user'
@@ -183,18 +184,20 @@ export async function POST(
           playerName,
         })
 
-        // Log for debugging
-        console.log(`[Invite] Sending acceptance email to ${invite.inviter.email}`)
+        console.log(`[InviteDebug] Attempting to send acceptance email to ${invite.inviter.email}`)
 
-        await sendEmail({
+        const emailResult = await sendEmail({
           to: invite.inviter.email,
           subject,
           html,
         })
+        console.log(`[InviteDebug] Email result:`, emailResult)
       } catch (emailError) {
-        console.error('Error sending acceptance notification:', emailError)
+        console.error('[InviteDebug] Error sending acceptance notification:', emailError)
         // Non-blocking error
       }
+    } else {
+      console.warn(`[InviteDebug] No inviter email found for invite ${invite.id}`)
     }
 
     return NextResponse.json({
