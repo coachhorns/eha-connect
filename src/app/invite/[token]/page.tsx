@@ -196,17 +196,30 @@ export default function AcceptInvitePage({
           {/* Valid Invite - Show Accept Form */}
           {inviteStatus === 'valid' && invite && !acceptResult && (
             <div className="text-center">
-              <div className="w-20 h-20 bg-eha-red/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <UserPlus className="w-10 h-10 text-eha-red" />
+              <div
+                className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${invite.role === 'PLAYER'
+                    ? 'bg-eha-gold/20'
+                    : 'bg-eha-red/20'
+                  }`}
+              >
+                {invite.role === 'PLAYER' ? (
+                  <UserPlus className="w-10 h-10 text-eha-gold" />
+                ) : (
+                  <UserPlus className="w-10 h-10 text-eha-red" />
+                )}
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
-                Co-Parent Invitation
+                {invite.role === 'PLAYER'
+                  ? 'Claim Athlete Profile'
+                  : 'Co-Parent Invitation'}
               </h2>
               <p className="text-gray-400 mb-6">
                 <span className="text-white font-medium">
                   {invite.inviter.name || invite.inviter.email}
                 </span>{' '}
-                has invited you to become a guardian of:
+                {invite.role === 'PLAYER'
+                  ? 'has invited you to manage your own profile for:'
+                  : 'has invited you to become a guardian of:'}
               </p>
 
               {/* Player Card */}
@@ -223,7 +236,8 @@ export default function AcceptInvitePage({
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-xl font-bold text-gray-500">
-                        {invite.player.firstName[0]}{invite.player.lastName[0]}
+                        {invite.player.firstName[0]}
+                        {invite.player.lastName[0]}
                       </div>
                     )}
                   </div>
@@ -232,7 +246,9 @@ export default function AcceptInvitePage({
                       {invite.player.firstName} {invite.player.lastName}
                     </p>
                     <p className="text-sm text-gray-400">
-                      You'll be added as a {invite.role.toLowerCase()} guardian
+                      {invite.role === 'PLAYER'
+                        ? 'You will get full access to edit this profile'
+                        : `You'll be added as a ${invite.role.toLowerCase()} guardian`}
                     </p>
                   </div>
                 </div>
