@@ -123,8 +123,12 @@ function SignUpContent() {
       if (result?.error) {
         setError('Account created but could not sign in. Please try signing in manually.')
       } else {
+        const callbackUrl = searchParams.get('callbackUrl')
+
         // Redirect based on role
-        if (formData.role === 'PROGRAM_DIRECTOR') {
+        if (callbackUrl) {
+          router.push(callbackUrl)
+        } else if (formData.role === 'PROGRAM_DIRECTOR') {
           router.push('/director/onboarding')
         } else {
           router.push('/dashboard')

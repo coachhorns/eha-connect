@@ -85,7 +85,7 @@ export default function AcceptInvitePage({
   const handleAccept = async () => {
     if (!session) {
       // Redirect to sign in with callback to this page
-      router.push(`/auth/signin?callbackUrl=/invite/${token}`)
+      router.push(`/auth/signin?callbackUrl=/invite/${token}&role=${invite?.role || 'PARENT'}`)
       return
     }
 
@@ -100,7 +100,7 @@ export default function AcceptInvitePage({
       const data = await res.json()
 
       if (data.requiresAuth) {
-        router.push(`/auth/signin?callbackUrl=/invite/${token}`)
+        router.push(`/auth/signin?callbackUrl=/invite/${token}&role=${invite?.role || 'PARENT'}`)
         return
       }
 
@@ -198,8 +198,8 @@ export default function AcceptInvitePage({
             <div className="text-center">
               <div
                 className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${invite.role === 'PLAYER'
-                    ? 'bg-eha-gold/20'
-                    : 'bg-eha-red/20'
+                  ? 'bg-eha-gold/20'
+                  : 'bg-eha-red/20'
                   }`}
               >
                 {invite.role === 'PLAYER' ? (

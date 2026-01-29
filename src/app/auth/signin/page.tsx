@@ -167,7 +167,13 @@ function SignInForm() {
         <div className="mt-6 text-center">
           <p className="text-gray-400 text-sm">
             Don&apos;t have an account?{' '}
-            <Link href="/auth/signup" className="text-eha-red hover:underline font-medium">
+            <Link
+              href={`/auth/signup?${new URLSearchParams({
+                ...(searchParams.get('role') && { role: searchParams.get('role')! }),
+                ...(callbackUrl && { callbackUrl }),
+              }).toString()}`}
+              className="text-eha-red hover:underline font-medium"
+            >
               Sign up
             </Link>
           </p>
