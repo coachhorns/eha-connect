@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {
   MapPin,
   GraduationCap,
-  Shield,
+  ShieldCheck,
   Share2,
   Download,
   Trophy,
@@ -13,11 +13,12 @@ import {
   ExternalLink,
   Camera,
   Link as LinkIcon,
+  UserPlus,
 } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
-import { Badge, Button, Card } from '@/components/ui'
+import { Badge, Button, Card, VerifiedBadge } from '@/components/ui'
 import { formatHeight, formatPosition, formatDate } from '@/lib/utils'
 import { achievementBadges } from '@/lib/constants'
 import { canViewStats } from '@/lib/permissions'
@@ -31,6 +32,9 @@ async function getPlayer(slug: string) {
   const player = await prisma.player.findUnique({
     where: { slug },
     include: {
+      guardians: {
+        select: { id: true },
+      },
       achievements: {
         orderBy: { earnedAt: 'desc' },
       },
@@ -143,8 +147,34 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   const permission = await canViewStats(session?.user?.id, player.id)
   const canView = permission.canView
 
+  // Verified = has guardians or userId
+  const isVerified = (player.guardians?.length > 0) || !!player.userId
+
   return (
     <div className="min-h-screen">
+      {/* Claim Profile CTA for unverified profiles */}
+      {!isVerified && (
+        <div className="bg-gradient-to-r from-[#1a3a6e] to-[#0d1f3c] border-b border-[#FFD700]/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3 text-center sm:text-left">
+                <UserPlus className="w-6 h-6 text-[#FFD700]" />
+                <div>
+                  <p className="text-white font-medium">Is this your profile?</p>
+                  <p className="text-gray-400 text-sm">Claim it to manage your stats and get verified</p>
+                </div>
+              </div>
+              <Link href="/claim-player">
+                <Button variant="outline" className="border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700]/10">
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Claim This Profile
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="relative bg-gradient-to-b from-eha-red/20 to-transparent py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,10 +201,10 @@ export default async function PlayerProfilePage({ params }: PageProps) {
             {/* Player Info */}
             <div className="flex-1 text-center lg:text-left">
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-3">
-                {player.isVerified && (
-                  <Badge variant="success" className="flex items-center gap-1">
-                    <Shield className="w-3 h-3" />
-                    Verified
+                {isVerified && (
+                  <Badge variant="gold" className="flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3" />
+                    Verified Athlete
                   </Badge>
                 )}
                 {player.primaryPosition && (
@@ -275,7 +305,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
 
             {/* Stats Summary Card */}
             {careerStats && (
-              <Card className="lg:w-72 flex-shrink-0 relative overflow-hidden">
+              <Card className={`lg:w-72 flex-shrink-0 relative overflow-hidden ${isVerified ? 'border-[#FFD700]/30 shadow-[0_0_15px_rgba(255,215,0,0.15)]' : ''}`}>
                 <div className={!canView ? 'blur-md pointer-events-none select-none' : ''}>
                   <div className="p-4 border-b border-[#1a3a6e]">
                     <h3 className="font-semibold text-white">Career Stats</h3>

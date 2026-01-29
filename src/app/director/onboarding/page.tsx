@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Loader2, ImageIcon, X } from 'lucide-react'
 import { Card, Button, Input } from '@/components/ui'
 
@@ -126,9 +127,14 @@ export default function DirectorOnboardingPage() {
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
       <Card className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#FF6B00] to-[#FFD700] rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-2xl">EHA</span>
-          </div>
+          <Image
+            src="/images/main.png"
+            alt="EHA Connect"
+            width={200}
+            height={200}
+            className="w-auto h-40 mx-auto mb-2 object-contain"
+            priority
+          />
           <h1 className="text-2xl font-bold text-white">Set Up Your Program</h1>
           <p className="text-gray-400 mt-2">
             Welcome, {session.user.name || 'Director'}! Let's create your program.

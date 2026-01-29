@@ -34,6 +34,11 @@ interface Player {
   slug: string
 }
 
+interface Guardian {
+  role: string
+  player: Player
+}
+
 interface UserData {
   id: string
   name: string | null
@@ -43,6 +48,7 @@ interface UserData {
   createdAt: string
   ownedPrograms: Program[]
   players: Player[]
+  guardians: Guardian[]
   _count: {
     players: number
     ownedPrograms: number
@@ -366,15 +372,15 @@ export default function AdminUsersPage() {
                               </span>
                             </div>
                           )}
-                          {user.players.length > 0 && (
+                          {user.guardians.length > 0 && (
                             <div className="flex items-center gap-2 text-sm">
                               <Baby className="w-4 h-4 text-green-400" />
                               <span className="text-gray-300">
-                                Parent of: {user.players.length} player{user.players.length > 1 ? 's' : ''}
+                                Linked to: {user.guardians.map(g => `${g.player.firstName} ${g.player.lastName}`).join(', ')}
                               </span>
                             </div>
                           )}
-                          {user.ownedPrograms.length === 0 && user.players.length === 0 && (
+                          {user.ownedPrograms.length === 0 && user.guardians.length === 0 && (
                             <span className="text-gray-600 text-sm">None</span>
                           )}
                         </div>
@@ -459,7 +465,7 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Connected Entities (Read-only) */}
-            {(editModal.user.ownedPrograms.length > 0 || editModal.user.players.length > 0) && (
+            {(editModal.user.ownedPrograms.length > 0 || editModal.user.guardians.length > 0) && (
               <div className="p-4 bg-[#1a3a6e]/20 rounded-lg space-y-2">
                 <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider">
                   Connected Entities
@@ -472,11 +478,11 @@ export default function AdminUsersPage() {
                     </span>
                   </div>
                 )}
-                {editModal.user.players.length > 0 && (
+                {editModal.user.guardians.length > 0 && (
                   <div className="flex items-center gap-2">
                     <Baby className="w-4 h-4 text-green-400" />
                     <span className="text-white text-sm">
-                      Players: {editModal.user.players.map(p => `${p.firstName} ${p.lastName}`).join(', ')}
+                      Linked to: {editModal.user.guardians.map(g => `${g.player.firstName} ${g.player.lastName}`).join(', ')}
                     </span>
                   </div>
                 )}
@@ -542,7 +548,7 @@ export default function AdminUsersPage() {
                       <p className="text-red-400/80 text-sm mt-1">
                         This action cannot be undone. This will permanently delete the user account
                         {editModal.user.ownedPrograms.length > 0 && ' and their program ownership'}
-                        {editModal.user.players.length > 0 && ' and their player connections'}.
+                        {editModal.user.guardians.length > 0 && ' and their player connections'}.
                       </p>
                     </div>
                   </div>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Users, Calendar } from 'lucide-react'
-import { Card, Badge, Avatar } from '@/components/ui'
+import { Card, Badge, Avatar, VerifiedBadge } from '@/components/ui'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui'
 import { formatDate, formatPositionShort } from '@/lib/utils'
 
@@ -14,6 +14,8 @@ interface Player {
   profilePhoto: string | null
   primaryPosition: string | null
   jerseyNumber: string | null
+  userId: string | null
+  guardians: { id: string }[]
 }
 
 interface RosterEntry {
@@ -88,8 +90,11 @@ export function TeamTabs({ roster, games, teamId }: TeamTabsProps) {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-white font-semibold truncate group-hover:text-eha-red transition-colors">
+                      <p className="text-white font-semibold truncate group-hover:text-eha-red transition-colors flex items-center gap-1.5">
                         {entry.player.firstName} {entry.player.lastName}
+                        {(entry.player.guardians?.length > 0 || entry.player.userId) && (
+                          <VerifiedBadge size="sm" />
+                        )}
                       </p>
                       {entry.player.primaryPosition && (
                         <p className="text-sm text-gray-400">

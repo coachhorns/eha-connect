@@ -20,6 +20,8 @@ interface Player {
   state?: string | null
   graduationYear?: number | null
   isVerified: boolean
+  userId?: string | null
+  guardians?: { id: string }[]
   achievements?: { type: string }[]
   ageGroup?: string | null
   teamRosters?: { team: { name: string; ageGroup?: string | null; division?: string | null } }[]

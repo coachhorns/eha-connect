@@ -59,6 +59,19 @@ export async function GET(request: NextRequest) {
               slug: true,
             },
           },
+          guardians: {
+            select: {
+              role: true,
+              player: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  slug: true,
+                },
+              },
+            },
+          },
           _count: {
             select: {
               players: true,

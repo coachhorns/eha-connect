@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, GraduationCap, Trophy, Shield, Users } from 'lucide-react'
-import { Badge } from '@/components/ui'
+import { MapPin, GraduationCap, Trophy, Users } from 'lucide-react'
+import { Badge, VerifiedBadge } from '@/components/ui'
 import { formatHeight, formatPosition } from '@/lib/utils'
 
 interface PlayerCardProps {
@@ -22,6 +22,8 @@ interface PlayerCardProps {
     graduationYear?: number | null
     ageGroup?: string | null
     isVerified: boolean
+    userId?: string | null
+    guardians?: { id: string }[]
     achievements?: { type: string }[]
     teamRosters?: { team: { name: string; ageGroup?: string | null; division?: string | null } }[]
     careerStats?: {
@@ -42,6 +44,9 @@ export function PlayerCard({ player }: PlayerCardProps) {
   const division = player.teamRosters?.find(
     (r) => r.team?.division === 'EPL' || r.team?.division === 'EHA Premier League'
   )?.team?.division || currentTeam?.division
+
+  // Verified = has guardians or userId
+  const isVerified = (player.guardians && player.guardians.length > 0) || !!player.userId
 
   return (
     <Link href={`/players/${player.slug}`}>
@@ -64,12 +69,9 @@ export function PlayerCard({ player }: PlayerCardProps) {
           )}
 
           {/* Verification Badge */}
-          {player.isVerified && (
+          {isVerified && (
             <div className="absolute top-3 right-3">
-              <Badge variant="success" size="sm" className="flex items-center gap-1">
-                <Shield className="w-3 h-3" />
-                Verified
-              </Badge>
+              <VerifiedBadge size="md" />
             </div>
           )}
 
@@ -85,8 +87,9 @@ export function PlayerCard({ player }: PlayerCardProps) {
 
         {/* Player Info */}
         <div className="p-4">
-          <h3 className="text-lg font-bold text-white group-hover:text-eha-red transition-colors">
+          <h3 className="text-lg font-bold text-white group-hover:text-eha-red transition-colors flex items-center gap-1.5">
             {player.firstName} {player.lastName}
+            {isVerified && <VerifiedBadge size="sm" />}
           </h3>
 
           {/* Team & Age Group - Prominent Display */}

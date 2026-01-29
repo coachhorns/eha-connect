@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Users, User, Building2, ArrowRight } from 'lucide-react'
 import { Card } from '@/components/ui'
 
@@ -46,9 +47,14 @@ export default function RoleSelectionPage() {
       <div className="w-full max-w-4xl">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#FF6B00] to-[#FFD700] rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-2xl">EHA</span>
-          </div>
+          <Image
+            src="/images/main.png"
+            alt="EHA Connect"
+            width={200}
+            height={200}
+            className="w-auto h-40 mx-auto mb-2 object-contain"
+            priority
+          />
           <h1 className="text-3xl font-bold text-white">Join EHA Connect</h1>
           <p className="text-gray-400 mt-2">
             Select your account type to get started

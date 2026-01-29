@@ -33,6 +33,10 @@ async function getTeam(slug: string) {
               profilePhoto: true,
               primaryPosition: true,
               jerseyNumber: true,
+              userId: true,
+              guardians: {
+                select: { id: true },
+              },
             },
           },
         },

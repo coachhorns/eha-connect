@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { signIn, getSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button, Input, Card } from '@/components/ui'
 
 import { Suspense } from 'react'
@@ -90,9 +91,14 @@ function SignInForm() {
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#FF6B00] to-[#FFD700] rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-2xl">EHA</span>
-          </div>
+          <Image
+            src="/images/main.png"
+            alt="EHA Connect"
+            width={150}
+            height={150}
+            className="w-auto h-40 mx-auto mb-2 object-contain"
+            priority
+          />
           <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
           <p className="text-gray-400 mt-2">Sign in to your EHA Connect account</p>
         </div>

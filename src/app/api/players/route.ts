@@ -49,6 +49,9 @@ export async function GET(request: Request) {
             take: 3,
             orderBy: { earnedAt: 'desc' },
           },
+          guardians: {
+            select: { id: true },
+          },
           teamRosters: {
             where: { leftAt: null },
             include: {
