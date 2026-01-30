@@ -19,12 +19,12 @@ export function VerifiedBadge({ size = 'sm', showLabel = false, className = '' }
 
   return (
     <span
-      className={`inline-flex items-center gap-1 text-[#FFD700] ${className}`}
+      className={`inline-flex items-center gap-1 text-blue-500 ${className}`}
       title="Verified Athlete"
     >
-      <ShieldCheck className={`${iconSize} fill-[#FFD700]/20`} />
+      <ShieldCheck className={`${iconSize} fill-blue-500/20`} />
       {showLabel && (
-        <span className="text-xs font-medium text-[#FFD700]">Verified</span>
+        <span className="text-xs font-medium text-blue-500">Verified</span>
       )}
     </span>
   )

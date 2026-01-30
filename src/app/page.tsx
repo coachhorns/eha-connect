@@ -66,7 +66,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-eha-red/10 via-transparent to-transparent" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-eha-red/5 rounded-full blur-3xl" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/30 rounded-full text-white text-sm font-medium mb-6">
               <Star className="w-4 h-4" />
@@ -112,7 +112,7 @@ export default function HomePage() {
 
       {/* Features Section */}
       <section className="py-20 bg-eha-navy/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-white">
               Everything You Need to Get Noticed
@@ -139,7 +139,7 @@ export default function HomePage() {
 
       {/* How It Works */}
       <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-white">How It Works</h2>
             <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
@@ -203,7 +203,7 @@ export default function HomePage() {
 
       {/* Live Stats Preview */}
       <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">

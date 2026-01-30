@@ -404,7 +404,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="min-h-screen">
       {/* Back link */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-6">
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
@@ -416,7 +416,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
       {/* Hero Section — matches public profile */}
       <div className="relative bg-gradient-to-b from-eha-red/20 to-transparent py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Player Photo — clickable for upload */}
             <div className="flex-shrink-0">
@@ -562,7 +562,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       </div>
 
       {/* Editable Sections */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
         {/* Alerts */}
         {error && (
           <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4">

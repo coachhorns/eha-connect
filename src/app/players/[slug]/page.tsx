@@ -151,37 +151,15 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   const isVerified = (player.guardians?.length > 0) || !!player.userId
 
   return (
-    <div className="min-h-screen">
-      {/* Claim Profile CTA for unverified profiles */}
-      {!isVerified && (
-        <div className="bg-gradient-to-r from-[#1a3a6e] to-[#0d1f3c] border-b border-[#FFD700]/20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3 text-center sm:text-left">
-                <UserPlus className="w-6 h-6 text-[#FFD700]" />
-                <div>
-                  <p className="text-white font-medium">Is this your profile?</p>
-                  <p className="text-gray-400 text-sm">Claim it to manage your stats and get verified</p>
-                </div>
-              </div>
-              <Link href="/claim-player">
-                <Button variant="outline" className="border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700]/10">
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Claim This Profile
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-b from-eha-red/20 to-transparent py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Player Photo */}
-            <div className="flex-shrink-0">
-              <div className="relative w-48 h-48 lg:w-64 lg:h-64 rounded-2xl overflow-hidden bg-white/5 mx-auto lg:mx-0">
+    <div className="min-h-screen">
+      {/* Header Section */}
+      <header className="pt-20 lg:pt-24 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-12 lg:py-16 relative z-10">
+          <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-end">
+            {/* Profile Photo */}
+            <div className="relative shrink-0 mx-auto md:mx-0">
+              <div className="w-48 h-60 lg:w-56 lg:h-64 bg-[#1a3a6e] rounded-sm border-4 border-white/10 overflow-hidden relative group shadow-2xl">
                 {player.profilePhoto ? (
                   <Image
                     src={player.profilePhoto}
@@ -191,369 +169,329 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                     priority
                   />
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-[#1a3a6e] text-5xl font-bold text-gray-500">
-                    {player.firstName[0]}{player.lastName[0]}
+                  <div className="absolute inset-0 flex items-center justify-center text-white/30">
+                    <Users className="w-20 h-20" />
+                  </div>
+                )}
+                {isVerified && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-eha-red py-2 text-center">
+                    <span className="text-[10px] font-extrabold text-white uppercase tracking-[0.2em] flex items-center justify-center gap-1">
+                      <ShieldCheck className="w-3 h-3" />
+                      Verified Athlete
+                    </span>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Player Info */}
-            <div className="flex-1 text-center lg:text-left">
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-3">
-                {isVerified && (
-                  <Badge variant="gold" className="flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3" />
-                    Verified Athlete
-                  </Badge>
-                )}
-                {player.primaryPosition && (
-                  <Badge variant="orange">{formatPosition(player.primaryPosition)}</Badge>
-                )}
-                {player.jerseyNumber && (
-                  <Badge variant="default">#{player.jerseyNumber}</Badge>
-                )}
-              </div>
-
-              <h1 className="text-4xl lg:text-5xl font-bold text-white">
-                {player.firstName} {player.lastName}
-              </h1>
-
-              <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-gray-400">
-                {player.heightFeet && (
-                  <span>{formatHeight(player.heightFeet, player.heightInches)}</span>
-                )}
-                {player.weight && <span>{player.weight} lbs</span>}
+            <div className="flex-1 pb-2 text-center md:text-left">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-4">
                 {player.graduationYear && (
-                  <span className="text-eha-red font-semibold">
+                  <span className="px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20">
                     Class of {player.graduationYear}
                   </span>
                 )}
+                <span className="text-white/60 font-bold text-sm uppercase tracking-widest flex items-center gap-2">
+                  {player.primaryPosition ? formatPosition(player.primaryPosition) : 'Athlete'}
+                  {player.heightFeet && ` • ${formatHeight(player.heightFeet, player.heightInches)}`}
+                  {player.weight && ` • ${player.weight} lbs`}
+                </span>
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-gray-400 text-sm">
-                {player.school && (
-                  <span className="flex items-center gap-1.5">
-                    <GraduationCap className="w-4 h-4" />
-                    {player.school}
-                  </span>
-                )}
-                {(player.city || player.state) && (
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4" />
-                    {[player.city, player.state].filter(Boolean).join(', ')}
-                  </span>
+              <h1 className="text-5xl lg:text-7xl mb-4 tracking-tighter font-bold text-white uppercase">
+                {player.firstName} <span className="text-white/90">{player.lastName}</span>
+              </h1>
+
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 lg:gap-8 text-white/80">
+                {(player.school || player.city) && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-eha-red" />
+                    <span className="font-bold text-sm uppercase tracking-wider">
+                      {[player.school, player.city, player.state].filter(Boolean).join(', ')}
+                    </span>
+                  </div>
                 )}
                 {currentTeam && (
-                  <Link href={`/teams/${currentTeam.team.slug}`} className="flex items-center gap-1.5 hover:text-eha-red">
-                    <Users className="w-4 h-4" />
-                    {currentTeam.team.name}
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-eha-red" />
+                    <Link href={`/teams/${currentTeam.team.slug}`} className="font-bold text-sm uppercase tracking-wider hover:text-white transition-colors">
+                      {currentTeam.team.name}
+                    </Link>
+                  </div>
+                )}
+                {player.jerseyNumber && (
+                  <div className="flex items-center gap-2">
+                    <span className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-full font-bold text-sm border border-white/10">
+                      #{player.jerseyNumber}
+                    </span>
+                  </div>
                 )}
               </div>
+            </div>
 
-              {/* Social Links */}
-              <div className="mt-4 flex items-center justify-center lg:justify-start gap-3">
-                {player.twitterHandle && (
-                  <a
-                    href={`https://twitter.com/${player.twitterHandle}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 bg-[#1a3a6e] rounded-lg text-gray-400 hover:text-white hover:bg-[#1DA1F2]/20 transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                    </svg>
-                  </a>
-                )}
-                {player.instagramHandle && (
-                  <a
-                    href={`https://instagram.com/${player.instagramHandle}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 bg-[#1a3a6e] rounded-lg text-gray-400 hover:text-white hover:bg-[#E4405F]/20 transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd" />
-                    </svg>
-                  </a>
-                )}
-                {player.hudlUrl && (
-                  <a
-                    href={player.hudlUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 bg-[#1a3a6e] rounded-lg text-gray-400 hover:text-white hover:bg-eha-red/20 transition-colors"
-                  >
-                    <ExternalLink className="w-5 h-5" />
-                  </a>
-                )}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="mt-6 flex items-center justify-center lg:justify-start gap-3">
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  <Share2 className="w-4 h-4" />
+            {/* Actions */}
+            <div className="flex flex-wrap justify-center gap-4 pb-2 w-full md:w-auto">
+              {/* If unverified, show Claim button instead of Share */}
+              {!isVerified ? (
+                <Link href="/claim-player" className="w-full md:w-auto">
+                  <Button className="w-full md:w-auto bg-[#FFD700] hover:bg-[#FDB931] text-[#0A1D37] border-0">
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Claim Profile
+                  </Button>
+                </Link>
+              ) : (
+                <Button variant="outline" className="bg-white hover:bg-white/90 text-[#0A1D37] border-0 rounded-full px-6 py-6 text-[10px] font-extrabold uppercase tracking-widest shadow-lg">
+                  <Share2 className="w-4 h-4 mr-2" />
                   Share Profile
                 </Button>
-                <Button variant="secondary" size="sm" className="flex items-center gap-2">
-                  <Download className="w-4 h-4" />
-                  Download PDF
-                </Button>
-              </div>
+              )}
+              <Button className="bg-eha-red hover:bg-eha-red/90 text-white border-0 rounded-full px-6 py-6 text-[10px] font-extrabold uppercase tracking-widest shadow-lg shadow-eha-red/20">
+                <Download className="w-4 h-4 mr-2" />
+                Export Resume
+              </Button>
             </div>
-
-            {/* Stats Summary Card */}
-            {careerStats && (
-              <Card className={`lg:w-72 flex-shrink-0 relative overflow-hidden ${isVerified ? 'border-[#FFD700]/30 shadow-[0_0_15px_rgba(255,215,0,0.15)]' : ''}`}>
-                <div className={!canView ? 'blur-md pointer-events-none select-none' : ''}>
-                  <div className="p-4 border-b border-[#1a3a6e]">
-                    <h3 className="font-semibold text-white">Career Stats</h3>
-                    <p className="text-sm text-gray-500">{careerStats.gamesPlayed} Games</p>
-                  </div>
-                  <div className="p-4 grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-eha-red">
-                        {careerStats.averages.ppg.toFixed(1)}
-                      </p>
-                      <p className="text-xs text-gray-500">PPG</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-white">
-                        {careerStats.averages.rpg.toFixed(1)}
-                      </p>
-                      <p className="text-xs text-gray-500">RPG</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-white">
-                        {careerStats.averages.apg.toFixed(1)}
-                      </p>
-                      <p className="text-xs text-gray-500">APG</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-white">
-                        {careerStats.averages.spg.toFixed(1)}
-                      </p>
-                      <p className="text-xs text-gray-500">SPG</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-white">
-                        {careerStats.averages.bpg.toFixed(1)}
-                      </p>
-                      <p className="text-xs text-gray-500">BPG</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-white">
-                        {careerStats.totals.fg3Made}
-                      </p>
-                      <p className="text-xs text-gray-500">3PM</p>
-                    </div>
-                  </div>
-                  <div className="px-4 pb-4 pt-2 border-t border-[#1a3a6e] grid grid-cols-3 gap-2 text-center text-sm">
-                    <div>
-                      <p className="font-medium text-white">{careerStats.shooting.fgPct.toFixed(1)}%</p>
-                      <p className="text-xs text-gray-500">FG%</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-white">{careerStats.shooting.fg3Pct.toFixed(1)}%</p>
-                      <p className="text-xs text-gray-500">3P%</p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-white">{careerStats.shooting.ftPct.toFixed(1)}%</p>
-                      <p className="text-xs text-gray-500">FT%</p>
-                    </div>
-                  </div>
-                </div>
-                {!canView && <StatsPaywall playerId={player.id} />}
-              </Card>
-            )}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Achievements */}
-        {player.achievements.length > 0 && (
-          <Card className="mb-8">
-            <div className="p-4 border-b border-[#1a3a6e]">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-[#FFD700]" />
-                Achievements
-              </h2>
-            </div>
-            <div className="p-4">
-              <div className="flex flex-wrap gap-3">
-                {player.achievements.map((achievement: any) => {
-                  const config = achievementBadges[achievement.type as keyof typeof achievementBadges]
-                  return (
-                    <div
-                      key={achievement.id}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#1a3a6e] rounded-lg"
-                    >
-                      <div className={`w-8 h-8 rounded-full ${config?.color || 'bg-gray-500'} flex items-center justify-center`}>
-                        <Trophy className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-white text-sm">{achievement.title}</p>
-                        {achievement.eventName && (
-                          <p className="text-xs text-gray-500">{achievement.eventName}</p>
-                        )}
+      {/* Main Content Grid */}
+      <main className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-12">
+        <div className="grid lg:grid-cols-12 gap-10">
+
+          {/* Main Column (Stats & Graphics) */}
+          <div className="lg:col-span-8 space-y-12">
+
+            {/* Season Averages */}
+            <section>
+              <div className="flex items-baseline justify-between mb-8">
+                <h2 className="text-2xl text-white uppercase tracking-tight font-bold">Season Averages</h2>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                  Verified by EHA Circuit Officials
+                </span>
+              </div>
+
+              {careerStats ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {/* Points */}
+                  <div className="bg-[#152e50]/50 border border-white/5 p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all group relative overflow-hidden">
+                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Points</span>
+                    <span className="text-4xl font-extrabold text-white">{careerStats.averages.ppg.toFixed(1)}</span>
+                    <div className="mt-2 text-[10px] font-bold text-eha-red/80 uppercase">Per Game</div>
+                  </div>
+                  {/* Assists */}
+                  <div className="bg-[#152e50]/50 border border-white/5 p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
+                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Assists</span>
+                    <span className="text-4xl font-extrabold text-white">{careerStats.averages.apg.toFixed(1)}</span>
+                    <div className="mt-2 text-[10px] font-bold text-gray-500 uppercase">Per Game</div>
+                  </div>
+                  {/* Rebounds */}
+                  <div className="bg-[#152e50]/50 border border-white/5 p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
+                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Rebounds</span>
+                    <span className="text-4xl font-extrabold text-white">{careerStats.averages.rpg.toFixed(1)}</span>
+                    <div className="mt-2 text-[10px] font-bold text-gray-500 uppercase">Per Game</div>
+                  </div>
+                  {/* Efficiency (Mock for now, using FG%) */}
+                  <div className="bg-[#152e50]/50 border border-white/5 p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
+                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Efficiency</span>
+                    <span className="text-4xl font-extrabold text-eha-red">{careerStats.shooting.fgPct.toFixed(1)}</span>
+                    <div className="mt-2 text-[10px] font-bold text-eha-red uppercase">Elite Tier</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-8 border border-dashed border-white/10 rounded-sm text-center">
+                  <p className="text-gray-500 uppercase tracking-widest text-xs font-bold">No verified stats recorded yet</p>
+                </div>
+              )}
+            </section>
+
+            {/* Scout Evaluation (Placeholder Structure) */}
+            <section className="bg-white border border-white/10 p-10 rounded-sm shadow-lg">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 bg-[#0A1D37] flex items-center justify-center text-white rounded-sm">
+                  <Calendar className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl text-[#0A1D37] font-bold uppercase tracking-tight">Lead Scout Evaluation</h3>
+                  <p className="text-xs font-bold text-eha-red uppercase tracking-widest">Pending Evaluation • Elite Hoops</p>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-10">
+                <div className="space-y-4">
+                  <h4 className="text-xs font-extrabold uppercase tracking-widest text-[#0A1D37]">Strengths</h4>
+                  <p className="text-sm text-slate-500 italic">Scouting report coming soon...</p>
+                </div>
+                <div className="space-y-4">
+                  <h4 className="text-xs font-extrabold uppercase tracking-widest text-[#0A1D37]">Development Areas</h4>
+                  <p className="text-sm text-slate-500 italic">Scouting report coming soon...</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Game Log */}
+            <section>
+              <h3 className="text-2xl text-white mb-8 font-bold uppercase tracking-tight">Recent Game Log</h3>
+              <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
+                <div className={!canView ? 'blur-md pointer-events-none select-none relative' : ''}>
+                  <table className="w-full text-left">
+                    <thead className="bg-white/5 border-b border-white/5">
+                      <tr>
+                        <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">Date</th>
+                        <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">Opponent</th>
+                        <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">PTS</th>
+                        <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">AST</th>
+                        <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">REB</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {player.gameStats.length > 0 ? player.gameStats.map((stat) => (
+                        <tr key={stat.id} className="hover:bg-white/5 transition-colors">
+                          <td className="px-6 py-5 text-sm font-bold text-white">{formatDate(stat.game.scheduledAt)}</td>
+                          <td className="px-6 py-5 text-sm text-gray-400">
+                            {stat.game.homeTeamId === currentTeam?.teamId
+                              ? `vs ${stat.game.awayTeam?.name || 'Opponent'}`
+                              : `@ ${stat.game.homeTeam?.name || 'Opponent'}`}
+                          </td>
+                          <td className="px-6 py-5 text-sm font-bold text-white">{stat.points}</td>
+                          <td className="px-6 py-5 text-sm text-gray-400">{stat.assists}</td>
+                          <td className="px-6 py-5 text-sm text-gray-400">{stat.rebounds}</td>
+                        </tr>
+                      )) : (
+                        <tr>
+                          <td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-500">No recent games recorded</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                {!canView && <StatsPaywall playerId={player.id} />}
+              </div>
+            </section>
+
+            {/* Film Room (Highlights) */}
+            {(player.hudlUrl || player.youtubeUrl || player.highlightUrl) && (
+              <section>
+                <div className="flex items-baseline justify-between mb-8">
+                  <h3 className="text-2xl text-white font-bold uppercase tracking-tight">Film Room</h3>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Mock Thumbnail 1 */}
+                  <a href={player.hudlUrl || player.youtubeUrl || '#'} target="_blank" className="group relative aspect-video bg-[#0A1D37] rounded-sm overflow-hidden border border-white/10 cursor-pointer">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A1D37] to-transparent"></div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                      <div className="w-16 h-16 bg-eha-red rounded-full flex items-center justify-center text-white shadow-xl shadow-eha-red/20 transform group-hover:scale-110 transition-transform">
+                        <div className="w-0 h-0 border-t-8 border-t-transparent border-l-[16px] border-l-white border-b-8 border-b-transparent ml-1"></div>
                       </div>
                     </div>
-                  )
-                })}
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <span className="inline-block text-[10px] font-extrabold text-eha-red uppercase tracking-widest bg-white px-2 py-0.5 rounded-sm mb-2">Featured</span>
+                      <p className="text-white font-bold truncate">Official Highlights Playlist</p>
+                    </div>
+                  </a>
+                </div>
+              </section>
+            )}
+          </div>
+
+          {/* Sidebar Column */}
+          <div className="lg:col-span-4 space-y-10">
+
+            {/* Recruitment Status (Placeholder Data) */}
+            <section className="bg-[#152e50] border border-white/5 p-8 rounded-sm shadow-xl">
+              <h4 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Recruitment Status</h4>
+              <div className="space-y-6">
+                <div className="flex justify-between items-center pb-6 border-b border-white/5">
+                  <span className="text-sm text-gray-400 font-medium">Player Tier</span>
+                  <span className="text-lg font-extrabold text-white">Prospect</span>
+                </div>
+                <div className="flex justify-between items-center pb-6 border-b border-white/5">
+                  <span className="text-sm text-gray-400 font-medium">Circuit Rank</span>
+                  <span className="text-lg font-extrabold text-white">Unranked</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-400 font-medium">Academic Eligibility</span>
+                  <span className="flex items-center gap-2 text-gray-400 font-bold uppercase text-xs">
+                    Pending
+                  </span>
+                </div>
               </div>
-            </div>
-          </Card>
-        )}
+              <Button className="w-full mt-10 py-6 bg-eha-red text-white text-[10px] font-extrabold uppercase tracking-[0.2em] rounded-sm hover:bg-white hover:text-[#0A1D37] transition-all">
+                Request Scout Package
+              </Button>
+            </section>
 
-        {/* Bio */}
-        {player.bio && (
-          <Card className="mb-8">
-            <div className="p-4 border-b border-[#1a3a6e]">
-              <h2 className="text-xl font-bold text-white">About</h2>
-            </div>
-            <div className="p-4">
-              <p className="text-gray-300 whitespace-pre-wrap">{player.bio}</p>
-            </div>
-          </Card>
-        )}
+            {/* College Interest (Placeholder for now) */}
+            <section className="bg-white border border-white/10 rounded-sm shadow-lg p-8">
+              <h4 className="text-xs font-extrabold uppercase tracking-widest text-[#0A1D37] mb-8 flex items-center justify-between">
+                College Interest
+                <span className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-[10px] font-bold">0</span>
+              </h4>
+              <div className="text-center py-8">
+                <Trophy className="w-12 h-12 text-slate-200 mx-auto mb-3" />
+                <p className="text-sm text-slate-400 font-medium">No offers reported yet.</p>
+              </div>
+              <div className="mt-8 pt-8 border-t border-slate-100">
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4">Upcoming Visits</p>
+                <div className="flex gap-3">
+                  <div className="flex-1 p-3 bg-slate-50 border border-slate-100 rounded-sm text-center">
+                    <span className="text-xs text-slate-400 font-medium">None Scheduled</span>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-        {/* Highlights & Links */}
-        {(player.hudlUrl || player.youtubeUrl || player.highlightUrl) && (
-          <Card className="mb-8">
-            <div className="p-4 border-b border-[#1a3a6e]">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <ExternalLink className="w-5 h-5 text-eha-red" />
-                Highlights & Links
-              </h2>
-            </div>
-            <div className="p-4 flex flex-wrap gap-3">
-              {player.hudlUrl && (
-                <a
-                  href={player.hudlUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a3a6e] rounded-lg text-gray-300 hover:text-white hover:bg-[#1a3a6e]/80 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 3.993L9 16z" />
-                  </svg>
-                  Hudl Profile
-                </a>
-              )}
-              {player.youtubeUrl && (
-                <a
-                  href={player.youtubeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a3a6e] rounded-lg text-gray-300 hover:text-white hover:bg-[#FF0000]/20 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                  YouTube
-                </a>
-              )}
-              {player.highlightUrl && (
-                <a
-                  href={player.highlightUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a3a6e] rounded-lg text-gray-300 hover:text-white hover:bg-eha-red/20 transition-colors"
-                >
-                  <LinkIcon className="w-4 h-4" />
-                  Highlight Reel
-                </a>
-              )}
-            </div>
-          </Card>
-        )}
+            {/* Athlete Bio/Info */}
+            <section className="bg-white border border-white/10 rounded-sm p-8 shadow-lg">
+              <h4 className="text-xs font-extrabold uppercase tracking-widest text-[#0A1D37] mb-6">Athlete Info</h4>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-xs font-bold text-slate-400 uppercase">Age</span>
+                  <span className="text-xs font-bold text-[#0A1D37]">{player.dateOfBirth ? new Date().getFullYear() - new Date(player.dateOfBirth).getFullYear() : 'N/A'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs font-bold text-slate-400 uppercase">Height</span>
+                  <span className="text-xs font-bold text-[#0A1D37]">{formatHeight(player.heightFeet, player.heightInches)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs font-bold text-slate-400 uppercase">Position</span>
+                  <span className="text-xs font-bold text-[#0A1D37]">{formatPosition(player.primaryPosition)}</span>
+                </div>
+                {/* Bio Text if available */}
+                {player.bio && (
+                  <div className="pt-4 mt-4 border-t border-slate-100">
+                    <p className="text-xs leading-relaxed text-slate-600">
+                      {player.bio}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
 
-        {/* Photo Gallery */}
-        {player.media.filter((m: any) => m.type === 'PHOTO').length > 0 && (
-          <Card className="mb-8">
-            <div className="p-4 border-b border-[#1a3a6e]">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Camera className="w-5 h-5 text-eha-red" />
-                Photos
-              </h2>
-            </div>
-            <div className="p-4">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {player.media
-                  .filter((m: any) => m.type === 'PHOTO')
-                  .map((item: any) => (
-                    <div key={item.id} className="relative rounded-lg overflow-hidden bg-white/5 aspect-square">
+            {/* Photos (Vertical Stack in Sidebar) */}
+            {player.media.filter(m => m.type === 'PHOTO').length > 0 && (
+              <section>
+                <h4 className="text-xs font-extrabold uppercase tracking-widest text-white mb-6">Photos</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  {player.media.filter(m => m.type === 'PHOTO').slice(0, 4).map((item) => (
+                    <div key={item.id} className="relative aspect-square rounded-sm overflow-hidden bg-white/5 border border-white/10">
                       <Image
                         src={item.url}
-                        alt={item.title || 'Player photo'}
+                        alt="Player Photo"
                         fill
                         className="object-cover"
                       />
                     </div>
                   ))}
-              </div>
-            </div>
-          </Card>
-        )}
+                </div>
+              </section>
+            )}
 
-        {/* Game Log */}
-        {player.gameStats.length > 0 && (
-          <Card className="relative overflow-hidden">
-            <div className="p-4 border-b border-[#1a3a6e]">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-eha-red" />
-                Recent Games
-              </h2>
-            </div>
-            <div className={!canView ? 'blur-md pointer-events-none select-none' : ''}>
-              <div className="overflow-x-auto">
-                <table className="stats-table">
-                  <thead>
-                    <tr>
-                      <th className="text-left">Date</th>
-                      <th className="text-left">Event</th>
-                      <th>PTS</th>
-                      <th>REB</th>
-                      <th>AST</th>
-                      <th>STL</th>
-                      <th>BLK</th>
-                      <th>3PM</th>
-                      <th>FG%</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {player.gameStats.map((stat: any) => (
-                      <tr key={stat.id}>
-                        <td className="text-left text-sm">
-                          {formatDate(stat.game.scheduledAt)}
-                        </td>
-                        <td className="text-left text-sm">
-                          {stat.game.event?.name || 'Exhibition'}
-                        </td>
-                        <td className="font-semibold text-eha-red">{stat.points}</td>
-                        <td>{stat.rebounds}</td>
-                        <td>{stat.assists}</td>
-                        <td>{stat.steals}</td>
-                        <td>{stat.blocks}</td>
-                        <td>{stat.fg3Made}</td>
-                        <td>
-                          {stat.fgAttempted > 0
-                            ? ((stat.fgMade / stat.fgAttempted) * 100).toFixed(0) + '%'
-                            : '-'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            {!canView && <StatsPaywall playerId={player.id} />}
-          </Card>
-        )}
-      </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer is global, no need to add here */}
     </div>
+
   )
 }

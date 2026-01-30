@@ -64,9 +64,9 @@ const config: Config = {
                 sm: 'calc(var(--radius) - 4px)'
             },
             fontFamily: {
-                sans: ['var(--font-geist-sans)'], // Or Inter if you configured it
-                heading: ['var(--font-geist-mono)'], // Placeholder
-                stats: ['monospace'],
+                sans: ['var(--font-inter)', 'sans-serif'],
+                heading: ['var(--font-heading)', 'sans-serif'],
+                stats: ['var(--font-stats)', 'monospace'],
             },
         },
     },

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono, Oswald } from 'next/font/google'
+import { Inter, JetBrains_Mono, Outfit } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { QueryProvider } from '@/components/providers/QueryProvider'
@@ -18,10 +18,9 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-stats',
 })
 
-const oswald = Oswald({
+const outfit = Outfit({
   subsets: ['latin'],
-  weight: ['200', '300', '400', '500', '600', '700'],
-  variable: '--font-oswald',
+  variable: '--font-heading',
 })
 
 export const metadata: Metadata = {
@@ -74,7 +73,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} font-sans antialiased bg-navy-gradient text-white min-h-screen`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable} ${outfit.variable} font-sans antialiased bg-navy-gradient text-white min-h-screen`}>
         <SessionProvider>
           <QueryProvider>
             <Navbar />

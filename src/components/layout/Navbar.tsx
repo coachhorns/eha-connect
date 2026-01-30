@@ -47,8 +47,8 @@ export function Navbar() {
         ? "bg-[#0F0F1A]/80 backdrop-blur-md border-white/5 shadow-lg"
         : "bg-transparent border-transparent"
     )}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-auto py-4">
+      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
+        <div className="flex items-center justify-between w-full h-auto py-4">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <Image

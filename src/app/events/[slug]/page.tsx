@@ -319,7 +319,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
         {/* Content */}
         <div className="absolute inset-0 flex items-end">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 w-full">
+          <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pb-8 w-full">
             <Link
               href="/events"
               className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
@@ -340,7 +340,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
         {/* Event Info Bar */}
         <Card className="mb-6">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

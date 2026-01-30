@@ -11,20 +11,20 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-bold rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-base disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-100'
+    const baseStyles = 'inline-flex items-center justify-center font-extrabold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-base disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-100 uppercase tracking-widest'
 
     const variants = {
-      primary: 'bg-eha-red text-white uppercase tracking-wider hover:brightness-110 focus:ring-eha-red',
-      secondary: 'bg-transparent border-2 border-eha-silver text-white hover:bg-eha-silver/10 focus:ring-eha-silver',
-      outline: 'border-2 border-eha-red text-eha-red hover:bg-eha-red hover:text-white focus:ring-eha-red',
-      ghost: 'text-gray-400 hover:text-white hover:bg-dark-surface focus:ring-eha-silver',
-      danger: 'bg-red-600 text-white uppercase tracking-wider hover:brightness-110 focus:ring-red-600',
+      primary: 'bg-eha-red text-white hover:bg-white hover:text-eha-navy focus:ring-eha-red',
+      secondary: 'bg-transparent border border-white/20 text-white hover:border-eha-red hover:bg-eha-red hover:text-white focus:ring-eha-silver',
+      outline: 'border border-eha-red text-eha-red hover:bg-eha-red hover:text-white focus:ring-eha-red',
+      ghost: 'text-gray-400 hover:text-eha-red hover:bg-transparent focus:ring-eha-silver',
+      danger: 'bg-eha-red text-white hover:brightness-110 focus:ring-red-600',
     }
 
     const sizes = {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
+      sm: 'px-4 py-2 text-[10px]',
+      md: 'px-6 py-3 text-xs',
+      lg: 'px-8 py-4 text-sm',
     }
 
     return (

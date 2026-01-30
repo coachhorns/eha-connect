@@ -145,7 +145,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
 
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 text-center">
           <p className="text-red-400">{error}</p>
           <button
@@ -170,7 +170,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
   const awayStats = game.stats.filter(s => s.teamId === game.awayTeam.id)
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
       {/* Header */}
       <div className="mb-8">
         <Link

@@ -1,314 +1,340 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
 import {
   Trophy,
-  Filter,
+  Calendar,
   ChevronDown,
+  ArrowRight,
+  Radio,
+  Shield,
   TrendingUp,
-  TrendingDown,
-  Minus,
+  Activity
 } from 'lucide-react'
-import { Card, Button, Badge } from '@/components/ui'
+import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui'
 
-interface TeamStanding {
-  teamId: string
-  teamSlug: string
-  teamName: string
-  teamLogo: string | null
-  ageGroup?: string | null
-  division?: string | null
-  city: string | null
-  state: string | null
-  wins: number
-  losses: number
-  winPct?: string
-  pointsFor?: number
-  pointsAgainst?: number
-  pointDiff?: number
-  seed?: number | null
-}
+// Mock Data
+const atlanticEliteTeams = [
+  { pos: 1, abbr: 'BE', name: 'Brooklyn Elite', wins: 12, losses: 2, pct: '.857', streak: 'W6', streakType: 'W', lastTen: '9-1' },
+  { pos: 2, abbr: 'NJS', name: 'NJ Scholars', wins: 11, losses: 3, pct: '.786', streak: 'W2', streakType: 'W', lastTen: '7-3' },
+  { pos: 3, abbr: 'DCG', name: 'DC Grads', wins: 9, losses: 5, pct: '.643', streak: 'L1', streakType: 'L', lastTen: '6-4' },
+  { pos: 4, abbr: 'PHX', name: 'Philly Xpress', wins: 8, losses: 6, pct: '.571', streak: 'L2', streakType: 'L', lastTen: '4-6' }
+]
 
-interface EventFilter {
-  id: string
-  name: string
-  slug: string
-}
+const coastalPremierTeams = [
+  { pos: 1, abbr: 'MIA', name: 'Miami Tropics', wins: 14, losses: 0, pct: '1.000', streak: 'W14', streakType: 'W', lastTen: '10-0' },
+  { pos: 2, abbr: 'ORL', name: 'Orlando Magic AAU', wins: 10, losses: 4, pct: '.714', streak: 'W1', streakType: 'W', lastTen: '8-2' }
+]
 
-interface Filters {
-  ageGroups: string[]
-  divisions: string[]
-  events: EventFilter[]
-}
+const matchups = [
+  {
+    date: 'Saturday • Oct 12 • 4:30 PM',
+    team1Abbr: 'BE',
+    team1Name: 'Brooklyn Elite',
+    team1Record: '12-2',
+    team1Color: '#0A1D37',
+    team2Abbr: 'NJS',
+    team2Name: 'NJ Scholars',
+    team2Record: '11-3',
+    team2Color: '#E31837',
+    buttonText: 'Watch Preview'
+  },
+  {
+    date: 'Saturday • Oct 12 • 6:00 PM',
+    team1Abbr: 'DCG',
+    team1Name: 'DC Grads',
+    team1Record: '9-5',
+    team1Color: '#cbd5e1', // Using gray/silver
+    team2Abbr: 'PHX',
+    team2Name: 'Philly Xpress',
+    team2Record: '8-6',
+    team2Color: '#cbd5e1',
+    buttonText: 'Watch Live'
+  }
+]
 
 export default function StandingsPage() {
-  const [standings, setStandings] = useState<Record<string, TeamStanding[]>>({})
-  const [filters, setFilters] = useState<Filters | null>(null)
-  const [standingsType, setStandingsType] = useState<'overall' | 'event'>('overall')
+  const [ageGroup, setAgeGroup] = useState('17U')
+  const [division, setDivision] = useState('All Divisions')
+  const [teams, setTeams] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>('')
-  const [selectedDivision, setSelectedDivision] = useState<string>('')
-  const [selectedEvent, setSelectedEvent] = useState<string>('')
 
   useEffect(() => {
     const fetchStandings = async () => {
       setIsLoading(true)
       try {
-        const params = new URLSearchParams()
-        if (selectedEvent) {
-          params.append('eventId', selectedEvent)
+        const res = await fetch(`/api/standings?ageGroup=${ageGroup}&division=${division}`)
+        const data = await res.json()
+        if (data.teams) {
+          setTeams(data.teams)
         } else {
-          if (selectedAgeGroup) params.append('ageGroup', selectedAgeGroup)
-          if (selectedDivision) params.append('division', selectedDivision)
-        }
-
-        const res = await fetch(`/api/public/standings?${params}`)
-        if (res.ok) {
-          const data = await res.json()
-          setStandings(data.standings)
-          setStandingsType(data.type)
-          if (data.filters) {
-            setFilters(data.filters)
-          }
+          setTeams([])
         }
       } catch (error) {
         console.error('Error fetching standings:', error)
+        setTeams([])
       } finally {
         setIsLoading(false)
       }
     }
-
     fetchStandings()
-  }, [selectedAgeGroup, selectedDivision, selectedEvent])
-
-  const sortedGroups = Object.keys(standings).sort((a, b) => {
-    if (a === 'Other' || a === 'Overall') return 1
-    if (b === 'Other' || b === 'Overall') return -1
-    return a.localeCompare(b)
-  })
+  }, [ageGroup, division])
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Trophy className="w-8 h-8 text-white" />
-            <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Standings</h1>
-          </div>
-          <p className="text-gray-400">Team rankings and records</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#0A1D37] text-white font-sans selection:bg-eha-red selection:text-white">
+      {/* Header / Hero */}
+      <header className="pt-32 pb-12 bg-[#0a1628] border-b border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#E2E8F0 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 relative z-10">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <Card className="mb-6">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2 text-gray-400">
-              <Filter className="w-4 h-4" />
-              <span className="text-sm font-medium">Filter by:</span>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-eha-red/10 border border-eha-red/20 rounded-full">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-eha-red">Season 2026</span>
+              </div>
+              <h1 className="text-5xl lg:text-6xl font-heading font-bold tracking-tighter text-white">League Standings</h1>
             </div>
 
-            {/* Event Filter */}
-            {filters?.events && filters.events.length > 0 && (
+            <div className="flex gap-4">
               <div className="relative">
                 <select
-                  value={selectedEvent}
-                  onChange={(e) => {
-                    setSelectedEvent(e.target.value)
-                    if (e.target.value) {
-                      setSelectedAgeGroup('')
-                      setSelectedDivision('')
-                    }
-                  }}
-                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="appearance-none bg-[#0a1628] border border-white/10 pl-4 pr-10 py-3 text-[11px] font-extrabold uppercase tracking-widest rounded-sm focus:outline-none focus:border-eha-red text-white min-w-[180px]"
+                  value={ageGroup}
+                  onChange={(e) => setAgeGroup(e.target.value)}
                 >
-                  <option value="">All Events (Overall)</option>
-                  {filters.events.map(event => (
-                    <option key={event.id} value={event.id}>{event.name}</option>
-                  ))}
+                  <option value="All">All Ages</option>
+                  <option value="17U">17U</option>
+                  <option value="16U">16U</option>
+                  <option value="15U">15U</option>
+                  <option value="14U">14U</option>
+                  <option value="13U">13U</option>
+                  <option value="12U">12U</option>
+                  <option value="11U">11U</option>
+                  <option value="10U">10U</option>
+                  <option value="9U">9U</option>
+                  <option value="8U">8U</option>
                 </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
-            )}
-
-            {/* Age Group Filter (only for overall standings) */}
-            {!selectedEvent && filters?.ageGroups && filters.ageGroups.length > 0 && (
               <div className="relative">
                 <select
-                  value={selectedAgeGroup}
-                  onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="appearance-none bg-[#0a1628] border border-white/10 pl-4 pr-10 py-3 text-[11px] font-extrabold uppercase tracking-widest rounded-sm focus:outline-none focus:border-eha-red text-white min-w-[180px]"
+                  value={division}
+                  onChange={(e) => setDivision(e.target.value)}
                 >
-                  <option value="">All Age Groups</option>
-                  {filters.ageGroups.map(ag => (
-                    <option key={ag} value={ag}>{ag}</option>
-                  ))}
+                  <option value="All Divisions">All Divisions</option>
+                  <option value="EPL">EPL</option>
+                  <option value="Gold">Gold</option>
+                  <option value="Silver">Silver</option>
                 </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
-            )}
-
-            {/* Division Filter (only for overall standings) */}
-            {!selectedEvent && filters?.divisions && filters.divisions.length > 0 && (
-              <div className="relative">
-                <select
-                  value={selectedDivision}
-                  onChange={(e) => setSelectedDivision(e.target.value)}
-                  className="appearance-none bg-[#1a3a6e] text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
-                >
-                  <option value="">All Divisions</option>
-                  {filters.divisions.map(d => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
-            )}
-
-            {(selectedAgeGroup || selectedDivision || selectedEvent) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSelectedAgeGroup('')
-                  setSelectedDivision('')
-                  setSelectedEvent('')
-                }}
-              >
-                Clear Filters
-              </Button>
-            )}
+            </div>
           </div>
-        </Card>
 
-        {/* Standings Tables */}
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
+        </div>
+      </header>
+
+      <main className="py-12">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
+
+          {/* Highlights Grid - Placeholder or use real data if available */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {/* We can hide these or make them dynamic later. For now, static placeholders as example/empty state */}
+            {/* If we strictly want NO empty/fake data, conditionally render these only if we have highlights. 
+                 Since user asked for "records yet because we don't have any games", maybe hide highlights or show a "Season Starts Soon" card.
+             */}
+            <div className="p-6 border border-white/10 rounded-sm flex items-center justify-between bg-eha-red/10 border-eha-red/20 shadow-lg relative overflow-hidden md:col-span-3">
+              <div className="absolute top-0 right-0 p-16 bg-eha-red/20 blur-3xl rounded-full translate-x-10 -translate-y-10"></div>
+              <div className="flex flex-col relative z-10">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest mb-1 text-eha-red">
+                  Season 2026
+                </span>
+                <span className="text-white font-bold text-sm">Official Season begins soon on EHA Connect</span>
+              </div>
+              <Activity className="w-6 h-6 text-eha-red animate-pulse relative z-10" />
+            </div>
           </div>
-        ) : sortedGroups.length === 0 ? (
-          <Card className="p-8 text-center">
-            <Trophy className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No Standings Available</h3>
-            <p className="text-gray-500">There are no team records to display yet.</p>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            {sortedGroups.map(group => (
-              <Card key={group} className="overflow-hidden p-0">
-                <div className="bg-[#1a3a6e] px-4 py-3 border-b border-[#1A1A2E]">
-                  <h2 className="font-semibold text-white flex items-center gap-2">
-                    <Badge variant={standingsType === 'event' ? 'info' : 'orange'}>{group}</Badge>
-                    <span className="text-gray-500 text-sm font-normal">
-                      ({standings[group].length} teams)
+
+          <div className="grid lg:grid-cols-3 gap-12">
+
+            {/* Standings Tables */}
+            <div className="lg:col-span-2 space-y-12">
+              {isLoading ? (
+                <div className="text-center py-20">
+                  <div className="w-16 h-16 border-4 border-eha-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-gray-400">Loading standings...</p>
+                </div>
+              ) : teams.length === 0 ? (
+                <div className="text-center py-20 border border-white/10 rounded-sm bg-[#0a1628]">
+                  <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-xl font-bold text-white mb-2">No Teams Found</h3>
+                  <p className="text-gray-400">No teams found for the selected filters.</p>
+                </div>
+              ) : division === 'All Divisions' ? (
+                <>
+                  <StandingsTable
+                    division="EPL"
+                    teams={teams.filter(t => t.division === 'EPL')}
+                  />
+                  <div className="h-px bg-white/5 my-12" />
+                  <StandingsTable
+                    division="Gold"
+                    teams={teams.filter(t => t.division === 'Gold')}
+                  />
+                  <div className="h-px bg-white/5 my-12" />
+                  <StandingsTable
+                    division="Silver"
+                    teams={teams.filter(t => t.division === 'Silver')}
+                  />
+                </>
+              ) : (
+                <StandingsTable
+                  division={division}
+                  teams={teams}
+                />
+              )}
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-12">
+
+              {/* Matchups - Hide if no games */}
+              {/* <div>
+                <div className="flex justify-between items-baseline mb-6">
+                  <h3 className="text-xl font-heading font-bold text-white">
+                    Featured Matchups
+                  </h3>
+                  <a href="#" className="text-[10px] font-bold uppercase tracking-widest text-eha-red hover:text-white transition-colors">
+                    Full Schedule
+                  </a>
+                </div>
+
+                <div className="space-y-4">
+                  {matchups.map((matchup, index) => (
+                    <MatchupCard key={index} matchup={matchup} />
+                  ))}
+                </div>
+              </div> */}
+
+              {/* Conference Leaders Widget - Placeholder */}
+              <div className="bg-[#0a1628] border border-white/10 p-8 rounded-sm shadow-xl">
+                <h4 className="text-xs font-extrabold uppercase mb-6 text-eha-red tracking-[0.2em]">
+                  League Leaders
+                </h4>
+                <div className="space-y-6">
+                  <p className="text-sm text-gray-400 italic">Stats will appear here once the season begins.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  )
+}
+
+// Sub-components
+
+const StandingsTable = ({ division, teams }: { division: string, teams: any[] }) => {
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="h-6 w-1 bg-eha-red"></div>
+        <h2 className="text-2xl font-heading font-bold text-white">
+          Division: {division}
+        </h2>
+      </div>
+
+      <div className="bg-[#0a1628] border border-white/10 overflow-hidden rounded-sm shadow-xl">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="bg-[#153361] border-b border-white/5">
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">Pos</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">Team Name</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 text-center">W</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 text-center">L</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 text-center">PCT</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 text-center">Strk</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">L10</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {teams.map((team, index) => (
+              <tr key={index} className="transition-colors group hover:bg-white/5">
+                <td className="px-6 py-5 font-bold text-white">{team.pos}</td>
+                <td className="px-6 py-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-[10px] font-black text-white">
+                      {team.abbr}
+                    </div>
+                    <span className="font-bold text-white group-hover:text-eha-red transition-colors">
+                      {team.name}
                     </span>
-                  </h2>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-[#1a3a6e] text-xs text-gray-500 uppercase">
-                        <th className="text-left py-3 px-4 w-12">#</th>
-                        <th className="text-left py-3 px-4">Team</th>
-                        <th className="text-center py-3 px-3">W</th>
-                        <th className="text-center py-3 px-3">L</th>
-                        {standingsType === 'overall' && (
-                          <th className="text-center py-3 px-3">PCT</th>
-                        )}
-                        {standingsType === 'event' && (
-                          <>
-                            <th className="text-center py-3 px-3">PF</th>
-                            <th className="text-center py-3 px-3">PA</th>
-                            <th className="text-center py-3 px-3">+/-</th>
-                          </>
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {standings[group].map((team, idx) => (
-                        <tr
-                          key={team.teamId}
-                          className="border-b border-[#1a3a6e]/50 hover:bg-[#1a3a6e]/30 transition-colors"
-                        >
-                          <td className="py-3 px-4">
-                            <span className={`font-bold ${idx === 0 ? 'text-white' :
-                                idx === 1 ? 'text-gray-300' :
-                                  idx === 2 ? 'text-amber-600' : 'text-gray-500'
-                              }`}>
-                              {idx + 1}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <Link href={`/teams/${team.teamSlug}`} className="group flex items-center gap-3 hover:opacity-80 transition-opacity">
-                              {team.teamLogo ? (
-                                <Image
-                                  src={team.teamLogo}
-                                  alt={`${team.teamName} logo`}
-                                  width={32}
-                                  height={32}
-                                  className="w-8 h-8 rounded-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-8 h-8 bg-[#1a3a6e] rounded-full flex items-center justify-center">
-                                  <span className="text-xs font-bold text-gray-400">
-                                    {team.teamName.charAt(0)}
-                                  </span>
-                                </div>
-                              )}
-                              <div>
-                                <div className="font-medium text-white group-hover:text-eha-red transition-colors">{team.teamName}</div>
-                                <div className="text-xs text-gray-500">
-                                  {team.city && team.state && `${team.city}, ${team.state}`}
-                                  {team.division && standingsType === 'overall' && (
-                                    <span className="ml-2 text-gray-600">• {team.division}</span>
-                                  )}
-                                </div>
-                              </div>
-                            </Link>
-                          </td>
-                          <td className="text-center py-3 px-3">
-                            <span className="text-green-400 font-medium">{team.wins}</span>
-                          </td>
-                          <td className="text-center py-3 px-3">
-                            <span className="text-red-400 font-medium">{team.losses}</span>
-                          </td>
-                          {standingsType === 'overall' && (
-                            <td className="text-center py-3 px-3">
-                              <span className="text-white font-medium">{team.winPct}</span>
-                            </td>
-                          )}
-                          {standingsType === 'event' && (
-                            <>
-                              <td className="text-center py-3 px-3 text-gray-400">{team.pointsFor}</td>
-                              <td className="text-center py-3 px-3 text-gray-400">{team.pointsAgainst}</td>
-                              <td className="text-center py-3 px-3">
-                                <span className={`font-medium flex items-center justify-center gap-1 ${(team.pointDiff || 0) > 0 ? 'text-green-400' :
-                                    (team.pointDiff || 0) < 0 ? 'text-red-400' : 'text-gray-400'
-                                  }`}>
-                                  {(team.pointDiff || 0) > 0 ? (
-                                    <TrendingUp className="w-3 h-3" />
-                                  ) : (team.pointDiff || 0) < 0 ? (
-                                    <TrendingDown className="w-3 h-3" />
-                                  ) : (
-                                    <Minus className="w-3 h-3" />
-                                  )}
-                                  {(team.pointDiff || 0) > 0 ? '+' : ''}{team.pointDiff || 0}
-                                </span>
-                              </td>
-                            </>
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
+                  </div>
+                </td>
+                <td className="px-6 py-5 text-center font-bold text-white">{team.wins}</td>
+                <td className="px-6 py-5 text-center font-bold text-white">{team.losses}</td>
+                <td className="px-6 py-5 text-center text-gray-400 font-medium">{team.pct}</td>
+                <td
+                  className="px-6 py-5 text-center font-bold"
+                  style={{ color: team.streakType === 'W' ? '#4ade80' : '#E31837' }}
+                >
+                  {team.streak}
+                </td>
+                <td className="px-6 py-5 text-xs font-bold text-gray-500">{team.lastTen}</td>
+              </tr>
             ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+const MatchupCard = ({ matchup }: { matchup: any }) => {
+  return (
+    <div className="bg-[#0a1628] border border-white/10 p-5 rounded-sm hover:border-eha-red/50 transition-colors shadow-lg group">
+      <div className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+        <Calendar className="w-3 h-3 text-eha-red" />
+        {matchup.date}
+      </div>
+
+      {/* Team 1 */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <div
+            className="w-6 h-6 text-white text-[8px] flex items-center justify-center rounded-sm font-bold shadow-sm"
+            style={{ backgroundColor: matchup.team1Color }}
+          >
+            {matchup.team1Abbr}
           </div>
-        )}
+          <span className="text-sm font-bold text-white">{matchup.team1Name}</span>
+        </div>
+        <span className="text-[10px] font-bold text-gray-500 uppercase">{matchup.team1Record}</span>
+      </div>
+
+      {/* Team 2 */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div
+            className="w-6 h-6 text-white text-[8px] flex items-center justify-center rounded-sm font-bold shadow-sm"
+            style={{ backgroundColor: matchup.team2Color }}
+          >
+            {matchup.team2Abbr}
+          </div>
+          <span className="text-sm font-bold text-white">{matchup.team2Name}</span>
+        </div>
+        <span className="text-[10px] font-bold text-gray-500 uppercase">{matchup.team2Record}</span>
+      </div>
+
+      <div className="mt-4 pt-4 border-t border-white/5">
+        <button className="w-full py-2 bg-white/5 text-[10px] font-extrabold text-white uppercase tracking-widest rounded-sm hover:bg-eha-red hover:text-white transition-all">
+          {matchup.buttonText}
+        </button>
       </div>
     </div>
   )

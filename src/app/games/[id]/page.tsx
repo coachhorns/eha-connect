@@ -204,7 +204,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
     <div className="min-h-screen">
       {/* Header */}
       <div className="bg-transparent border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-6">
           {/* Back Link */}
           {game.event && (
             <Link
@@ -263,7 +263,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
         {/* Box Score Section */}
         {(game.homeStats.length > 0 || game.awayStats.length > 0) ? (
           <>

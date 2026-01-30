@@ -1,350 +1,436 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { Trophy, TrendingUp, Filter, ChevronDown } from 'lucide-react'
-import { Card, Badge, Select, Avatar, Button } from '@/components/ui'
-import { formatPosition } from '@/lib/utils'
-import { ageGroups, divisions } from '@/lib/constants'
-
-interface EventOption {
-  id: string
-  name: string
-}
-
-interface LeaderboardEntry {
-  player: {
-    id: string
-    slug: string
-    firstName: string
-    lastName: string
-    profilePhoto?: string | null
-    primaryPosition?: string | null
-    school?: string | null
-    graduationYear?: number | null
-    currentTeam?: { name: string; slug: string; ageGroup?: string | null; logo?: string | null; program?: { logo?: string | null } } | null
-  }
-  gamesPlayed: number
-  totals: {
-    points: number
-    rebounds: number
-    assists: number
-    steals: number
-    blocks: number
-    fg3Made: number
-  }
-  averages: {
-    ppg: number
-    rpg: number
-    apg: number
-    spg: number
-    bpg: number
-    fg3pg: number
-  }
-}
-
-const statCategories = [
-  { value: 'points', label: 'Points', avgKey: 'ppg', totalKey: 'points' },
-  { value: 'rebounds', label: 'Rebounds', avgKey: 'rpg', totalKey: 'rebounds' },
-  { value: 'assists', label: 'Assists', avgKey: 'apg', totalKey: 'assists' },
-  { value: 'steals', label: 'Steals', avgKey: 'spg', totalKey: 'steals' },
-  { value: 'blocks', label: 'Blocks', avgKey: 'bpg', totalKey: 'blocks' },
-  { value: 'fg3Made', label: '3-Pointers', avgKey: 'fg3pg', totalKey: 'fg3Made' },
-]
+import { useRouter } from 'next/navigation'
+import {
+  Trophy,
+  User,
+  Search,
+  Filter,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  TrendingUp,
+  Target,
+  Activity,
+  Download
+} from 'lucide-react'
+import { Button, Badge, Avatar, VerifiedBadge } from '@/components/ui'
+import { cn } from '@/lib/utils'
 
 export default function LeaderboardsPage() {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [events, setEvents] = useState<EventOption[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedStat, setSelectedStat] = useState('points')
-  const [selectedEvent, setSelectedEvent] = useState('')
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState('')
-  const [selectedDivision, setSelectedDivision] = useState('')
+  const [division, setDivision] = useState('All Divisions')
+  const [category, setCategory] = useState('Points Per Game')
+  const [activePosition, setActivePosition] = useState('All')
+  const [currentPage, setCurrentPage] = useState(1)
 
-  // Fetch events list on mount
+  const router = useRouter()
+
+  const [players, setPlayers] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchLeaderboard = async () => {
+      setIsLoading(true)
       try {
-        const res = await fetch('/api/events?limit=50')
+        const res = await fetch(`/api/leaderboard?division=${division}`)
         const data = await res.json()
-        setEvents(data.events?.map((e: any) => ({ id: e.id, name: e.name })) || [])
+        if (data.players) {
+          setPlayers(data.players)
+        } else {
+          setPlayers([])
+        }
       } catch (error) {
-        console.error('Error fetching events:', error)
+        console.error('Error fetching leaderboard:', error)
+        setPlayers([])
+      } finally {
+        setIsLoading(false)
       }
     }
-    fetchEvents()
-  }, [])
+    fetchLeaderboard()
+  }, [division])
 
-  const fetchLeaderboard = async () => {
-    setIsLoading(true)
-    try {
-      const params = new URLSearchParams()
-      params.set('stat', selectedStat)
-      params.set('limit', '25')
-      if (selectedEvent) params.set('eventId', selectedEvent)
-      if (selectedAgeGroup) params.set('ageGroup', selectedAgeGroup)
-      if (selectedDivision) params.set('division', selectedDivision)
+  // Filter Logic
+  const filteredPlayers = players.filter(p =>
+    activePosition === 'All' || p.position === activePosition
+  )
 
-      const res = await fetch(`/api/leaderboards?${params}`)
-      const data = await res.json()
-      setLeaderboard(data.leaderboard || [])
-    } catch (error) {
-      console.error('Error fetching leaderboard:', error)
-    } finally {
-      setIsLoading(false)
+  const getValue = (p: any, cat: string) => {
+    switch (cat) {
+      case 'Points Per Game': return p.ppg
+      case 'Rebounds Per Game': return p.rpg
+      case 'Assists Per Game': return p.apg
+      case 'Steals Per Game':
+        return p.gamesPlayed > 0 ? Number((p.totalSteals / p.gamesPlayed).toFixed(1)) : 0
+      case 'Blocks Per Game':
+        return p.gamesPlayed > 0 ? Number((p.totalBlocks / p.gamesPlayed).toFixed(1)) : 0
+      case 'Field Goal %':
+        return p.fgAttempted > 0 ? Number(((p.fgMade / p.fgAttempted) * 100).toFixed(1)) : 0
+      case '3PT %':
+        return p.fg3Attempted > 0 ? Number(((p.fg3Made / p.fg3Attempted) * 100).toFixed(1)) : 0
+      case 'Free Throw %':
+        return p.ftAttempted > 0 ? Number(((p.ftMade / p.ftAttempted) * 100).toFixed(1)) : 0
+      case 'Turnovers':
+        return p.gamesPlayed > 0 ? Number((p.totalTurnovers / p.gamesPlayed).toFixed(1)) : 0
+      case 'Plus/Minus':
+        return p.plusMinus
+      case 'Player Efficiency (PER)': return p.per
+      default: return p.ppg
     }
   }
 
-  useEffect(() => {
-    fetchLeaderboard()
-  }, [selectedStat, selectedEvent, selectedAgeGroup, selectedDivision])
+  // Sort based on category
+  const sortedPlayers = [...filteredPlayers].sort((a, b) => {
+    const valA = getValue(a, category)
+    const valB = getValue(b, category)
+    return valB - valA
+  })
 
-  const hasActiveFilters = selectedEvent || selectedAgeGroup || selectedDivision
+  // Re-assign ranks based on sort
+  sortedPlayers.forEach((p, i) => p.rank = i + 1)
 
-  const currentCategory = statCategories.find((c) => c.value === selectedStat)
+  // Top Leaders logic
+  const topScorer = players.length > 0 ? [...players].sort((a, b) => b.ppg - a.ppg)[0] : null
+  const topAssister = players.length > 0 ? [...players].sort((a, b) => b.apg - a.apg)[0] : null
+  const topBlocker = players.length > 0 ? [...players].sort((a, b) => (b.totalBlocks || 0) - (a.totalBlocks || 0))[0] : null
+
+  const getCategoryLabel = (cat: string) => {
+    if (cat === 'Points Per Game') return 'PPG'
+    if (cat === 'Rebounds Per Game') return 'RPG'
+    if (cat === 'Assists Per Game') return 'APG'
+    if (cat === 'Steals Per Game') return 'SPG'
+    if (cat === 'Blocks Per Game') return 'BPG'
+    if (cat === 'Field Goal %') return 'FG%'
+    if (cat === '3PT %') return '3PT%'
+    if (cat === 'Free Throw %') return 'FT%'
+    if (cat === 'Turnovers') return 'TO'
+    if (cat === 'Plus/Minus') return '+/-'
+    if (cat === 'Player Efficiency (PER)') return 'PER'
+    return 'Value'
+  }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3 uppercase tracking-wider">
-          <Trophy className="w-8 h-8 text-white" />
-          Stat Leaderboards
-        </h1>
-        <p className="mt-2 text-gray-400">
-          Top performers across all EHA events
-        </p>
-      </div>
-
-      {/* Filter Bar */}
-      <Card className="mb-6">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2 text-gray-400">
-            <Filter className="w-4 h-4" />
-            <span className="text-sm font-medium">Filter by:</span>
-          </div>
-
-          {/* Event Filter */}
-          {events.length > 0 && (
-            <div className="relative">
-              <select
-                value={selectedEvent}
-                onChange={(e) => setSelectedEvent(e.target.value)}
-                className="appearance-none bg-dark-surface border border-eha-silver/20 text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red max-w-[200px]"
-              >
-                <option value="">All Events</option>
-                {events.map(event => (
-                  <option key={event.id} value={event.id}>{event.name}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+    <div className="min-h-screen bg-[#0A1D37]">
+      {/* Header / Hero */}
+      <header className="pt-32 pb-12 bg-[#0a1628] border-b border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#E2E8F0 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-eha-red/10 border border-eha-red/20 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-eha-red animate-pulse"></span>
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-eha-red">Live Updates: 2024 Circuit</span>
+              </div>
+              <h1 className="text-5xl lg:text-6xl text-white font-heading font-bold tracking-tighter">Leaderboards</h1>
+              <p className="text-gray-400 max-w-xl font-light">Filter through the top performers across the association. Data verified by independent on-site statisticians.</p>
             </div>
-          )}
-
-          {/* Age Group Filter */}
-          <div className="relative">
-            <select
-              value={selectedAgeGroup}
-              onChange={(e) => setSelectedAgeGroup(e.target.value)}
-              className="appearance-none bg-dark-surface border border-eha-silver/20 text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
-            >
-              <option value="">All Age Groups</option>
-              {ageGroups.map(ag => (
-                <option key={ag} value={ag}>{ag}</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <div className="flex gap-3">
+              <button className="flex items-center gap-2 px-5 py-3 bg-[#0a1628] border border-white/10 rounded-sm font-bold text-xs uppercase tracking-widest text-white hover:bg-[#153361] transition-colors">
+                <Download className="w-4 h-4" /> Export CSV
+              </button>
+              <button className="flex items-center gap-2 px-5 py-3 bg-eha-navy text-white border border-white/10 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-eha-red hover:border-eha-red transition-all shadow-lg">
+                <Filter className="w-4 h-4" /> Advanced Filter
+              </button>
+            </div>
           </div>
-
-          {/* Division Filter */}
-          <div className="relative">
-            <select
-              value={selectedDivision}
-              onChange={(e) => setSelectedDivision(e.target.value)}
-              className="appearance-none bg-dark-surface border border-eha-silver/20 text-white px-4 py-2 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
-            >
-              <option value="">All Divisions</option>
-              {divisions.map(div => (
-                <option key={div} value={div}>{div}</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          </div>
-
-          {hasActiveFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSelectedEvent('')
-                setSelectedAgeGroup('')
-                setSelectedDivision('')
-              }}
-            >
-              Clear Filters
-            </Button>
-          )}
         </div>
-      </Card>
+      </header>
 
-      {/* Category Tabs */}
-      <div className="mb-6 flex flex-wrap gap-2">
-        {statCategories.map((cat) => (
+      {/* Sticky Filters */}
+      <section className="py-10 bg-[#0A1D37] sticky top-20 z-40 border-b border-white/5 backdrop-blur-md bg-opacity-90 shadow-xl">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
+          <div className="flex flex-wrap items-center gap-8">
+            <FilterSelect
+              label="Division"
+              options={['All Divisions', 'EPL', 'Gold', 'Silver']}
+              value={division}
+              onChange={(e: any) => setDivision(e.target.value)}
+            />
+            <FilterSelect
+              label="Category"
+              options={[
+                'Points Per Game',
+                'Rebounds Per Game',
+                'Assists Per Game',
+                'Steals Per Game',
+                'Blocks Per Game',
+                'Field Goal %',
+                '3PT %',
+                'Free Throw %',
+                'Turnovers',
+                'Plus/Minus',
+                'Player Efficiency (PER)'
+              ]}
+              value={category}
+              onChange={(e: any) => setCategory(e.target.value)}
+            />
+            {/* Region Filter Removed */}
+            <PositionFilter
+              activePosition={activePosition}
+              onPositionChange={setActivePosition}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <main className="py-20">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
+
+          {isLoading ? (
+            <div className="text-center py-20">
+              <div className="w-16 h-16 border-4 border-eha-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-400">Loading stats...</p>
+            </div>
+          ) : sortedPlayers.length === 0 ? (
+            <div className="text-center py-32 bg-[#0a1628] border border-white/5 rounded-sm">
+              <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4 opacity-50" />
+              <h3 className="text-xl font-bold text-white mb-2">No Stats Recorded Yet</h3>
+              <p className="text-gray-400 max-w-md mx-auto">There are no players matching your criteria, or no games have been played yet for this season.</p>
+            </div>
+          ) : (
+            <>
+              {/* Top Leaders Cards */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+                {/* Always show Top Scorer if available */}
+                {topScorer && topScorer.ppg >= 0 && (
+                  <LeaderCard
+                    title="Top Scorer"
+                    playerName={topScorer.name}
+                    teamName={topScorer.team}
+                    stat={topScorer.ppg}
+                    statLabel="PPG"
+                    isPrimary={true}
+                    icon={Target}
+                    onClick={() => router.push(`/players/${topScorer.slug}`)}
+                  />
+                )}
+                {/* Only show others if they are meaningful */}
+                {topAssister && (topAssister.apg > 0 ? (
+                  <LeaderCard
+                    title="Assists Leader"
+                    playerName={topAssister.name}
+                    teamName={topAssister.team}
+                    stat={topAssister.apg}
+                    statLabel="APG"
+                    isPrimary={false}
+                    icon={Activity}
+                    onClick={() => router.push(`/players/${topAssister.slug}`)}
+                  />
+                ) : (
+                  <LeaderCard
+                    title="Efficiency Leader"
+                    playerName={topScorer?.name} // Fallback to top scorer if no assister
+                    teamName={topScorer?.team}
+                    stat={topScorer?.per}
+                    statLabel="PER"
+                    isPrimary={false}
+                    icon={Activity}
+                    onClick={() => topScorer && router.push(`/players/${topScorer.slug}`)}
+                  />
+                ))}
+
+                {topBlocker && (topBlocker.totalBlocks || 0) > 0 ? (
+                  <LeaderCard
+                    title="Rim Protector"
+                    playerName={topBlocker.name}
+                    teamName={topBlocker.team}
+                    stat={topBlocker.totalBlocks}
+                    statLabel="Blocks"
+                    isPrimary={false}
+                    icon={TrendingUp}
+                    onClick={() => router.push(`/players/${topBlocker.slug}`)}
+                  />
+                ) : (
+                  <LeaderCard
+                    title="Top Rebounder"
+                    playerName={players.sort((a, b) => b.rpg - a.rpg)[0]?.name}
+                    teamName={players.sort((a, b) => b.rpg - a.rpg)[0]?.team}
+                    stat={players.sort((a, b) => b.rpg - a.rpg)[0]?.rpg}
+                    statLabel="RPG"
+                    isPrimary={false}
+                    icon={TrendingUp}
+                    onClick={() => {
+                      const rebounder = players.sort((a, b) => b.rpg - a.rpg)[0]
+                      if (rebounder) router.push(`/players/${rebounder.slug}`)
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Leaderboard Table */}
+              <div className="bg-[#0a1628] border border-white/10 rounded-sm overflow-hidden shadow-2xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-[#153361] border-b border-white/5">
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Rank</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Player</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Team</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-center">Pos</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-center">GP</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-white uppercase tracking-widest text-right bg-white/5">
+                          {getCategoryLabel(category)}
+                        </th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">RPG</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">APG</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">PER</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedPlayers.map((player) => (
+                        <LeaderboardRow
+                          key={player.id}
+                          rank={player.rank}
+                          player={player}
+                          categoryValue={getValue(player, category)}
+                          onClick={() => router.push(`/players/${player.slug}`)}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                <div className="px-8 py-6 bg-[#0a1628] border-t border-white/5 flex items-center justify-between">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                    Showing {sortedPlayers.length} Players
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+
+        </div>
+      </main>
+    </div>
+  )
+}
+
+function FilterSelect({ label, options, value, onChange }: any) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">{label}</label>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={onChange}
+          className="appearance-none bg-[#0a1628] border border-white/10 rounded-sm text-sm font-bold text-white px-4 py-2.5 pr-10 min-w-[180px] focus:outline-none focus:border-eha-red focus:ring-1 focus:ring-eha-red transition-all"
+        >
+          {options.map((opt: string) => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+        <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+      </div>
+    </div>
+  )
+}
+
+function PositionFilter({ activePosition, onPositionChange }: any) {
+  const positions = ['All', 'PG', 'SG', 'SF', 'PF', 'C']
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Position</label>
+      <div className="flex bg-[#0a1628] border border-white/10 rounded-sm p-1">
+        {positions.map(pos => (
           <button
-            key={cat.value}
-            onClick={() => setSelectedStat(cat.value)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedStat === cat.value
-                ? 'bg-eha-red text-white'
-                : 'bg-dark-surface text-gray-400 hover:bg-eha-navy/50 hover:text-white'
-              }`}
+            key={pos}
+            onClick={() => onPositionChange(pos)}
+            className={cn(
+              "px-3 py-1.5 text-xs font-bold rounded-sm transition-all",
+              activePosition === pos
+                ? "bg-eha-red text-white shadow-lg"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
           >
-            {cat.label}
+            {pos}
           </button>
         ))}
       </div>
-
-      {/* Leaderboard */}
-      <Card>
-        {isLoading ? (
-          <div className="p-8 space-y-4">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="animate-pulse flex items-center gap-4">
-                <div className="w-8 h-8 bg-eha-navy/50 rounded-full" />
-                <div className="w-10 h-10 bg-eha-navy/50 rounded-full" />
-                <div className="flex-1">
-                  <div className="h-4 bg-eha-navy/50 rounded w-1/3 mb-2" />
-                  <div className="h-3 bg-eha-navy/50 rounded w-1/4" />
-                </div>
-                <div className="w-16 h-6 bg-eha-navy/50 rounded" />
-              </div>
-            ))}
-          </div>
-        ) : leaderboard.length === 0 ? (
-          <div className="p-12 text-center">
-            <TrendingUp className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">
-              {hasActiveFilters ? 'No stats match the selected filters' : 'No stats recorded yet'}
-            </p>
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-3"
-                onClick={() => {
-                  setSelectedEvent('')
-                  setSelectedAgeGroup('')
-                  setSelectedDivision('')
-                }}
-              >
-                Clear Filters
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-eha-navy">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                    Rank
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                    Player
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider">
-                    GP
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider">
-                    Per Game
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaderboard.map((entry, index) => (
-                  <tr key={entry.player.id} className={`hover:bg-eha-navy/30 transition-colors ${index % 2 === 0 ? 'bg-dark-surface' : 'bg-eha-navy/5'}`}>
-                    <td className="px-4 py-4">
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold font-stats text-sm ${index === 0
-                            ? 'bg-[#FFD700]/20 text-[#FFD700]'
-                            : index === 1
-                              ? 'bg-gray-400/20 text-gray-400'
-                              : index === 2
-                                ? 'bg-orange-600/20 text-orange-500'
-                                : 'bg-eha-silver/20 text-gray-500'
-                          }`}
-                      >
-                        {index + 1}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <Link href={`/players/${entry.player.slug}`} className="flex items-center gap-3 hover:text-eha-red">
-                        <Avatar
-                          src={entry.player.profilePhoto}
-                          fallback={`${entry.player.firstName} ${entry.player.lastName}`}
-                          size="md"
-                        />
-                        <div>
-                          <p className="font-semibold text-white">
-                            {entry.player.firstName} {entry.player.lastName}
-                            {entry.player.currentTeam?.ageGroup && (
-                              <span className="ml-2 text-sm font-normal text-gray-400">
-                                ({entry.player.currentTeam.ageGroup})
-                              </span>
-                            )}
-                          </p>
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            {entry.player.primaryPosition && (
-                              <span>{formatPosition(entry.player.primaryPosition)}</span>
-                            )}
-                            {entry.player.currentTeam && (
-                              <>
-                                <span>•</span>
-                                {(entry.player.currentTeam.logo || entry.player.currentTeam.program?.logo) && (
-                                  <Avatar
-                                    src={entry.player.currentTeam.logo || entry.player.currentTeam.program?.logo}
-                                    fallback={entry.player.currentTeam.name}
-                                    size="sm"
-                                    className="w-4 h-4 ml-1"
-                                  />
-                                )}
-                                <span>{entry.player.currentTeam.name}</span>
-                              </>
-                            )}
-                            {entry.player.graduationYear && (
-                              <>
-                                <span>•</span>
-                                <Badge size="sm">&apos;{String(entry.player.graduationYear).slice(-2)}</Badge>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </Link>
-                    </td>
-                    <td className="px-4 py-4 text-center text-gray-400 font-stats">
-                      {entry.gamesPlayed}
-                    </td>
-                    <td className="px-4 py-4 text-center text-white font-medium font-stats">
-                      {currentCategory
-                        ? entry.totals[currentCategory.totalKey as keyof typeof entry.totals]
-                        : '-'}
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <span className="text-xl font-bold font-stats text-eha-red">
-                        {currentCategory
-                          ? entry.averages[currentCategory.avgKey as keyof typeof entry.averages].toFixed(1)
-                          : '-'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
     </div>
+  )
+}
+
+function LeaderCard({ title, playerName, teamName, stat, statLabel, isPrimary, icon: Icon, onClick }: any) {
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "relative overflow-hidden rounded-sm transition-transform hover:-translate-y-1 duration-300 group cursor-pointer",
+        isPrimary
+          ? "bg-eha-red text-white shadow-2xl shadow-eha-red/20"
+          : "bg-[#0a1628] border border-white/10 hover:border-eha-red/50"
+      )}>
+      {isPrimary && (
+        <div className="absolute top-0 right-0 p-32 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      )}
+
+      <div className="p-8 relative z-10">
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex items-center gap-2">
+            <div className={cn("p-2 rounded-lg", isPrimary ? "bg-black/20" : "bg-white/5")}>
+              <Icon className={cn("w-5 h-5", isPrimary ? "text-white" : "text-eha-red")} />
+            </div>
+            <span className={cn("text-xs font-extrabold uppercase tracking-widest", isPrimary ? "text-white/80" : "text-gray-400")}>
+              {title}
+            </span>
+          </div>
+          <Badge className={cn("border-0", isPrimary ? "bg-white/20 text-white" : "bg-eha-red/10 text-eha-red")}>
+            #1 Rank
+          </Badge>
+        </div>
+
+        <div className="mb-6">
+          <h3 className={cn("text-2xl font-bold font-heading mb-1", isPrimary ? "text-white" : "text-white group-hover:text-eha-red transition-colors")}>
+            {playerName}
+          </h3>
+          <p className={cn("text-sm font-medium", isPrimary ? "text-white/80" : "text-gray-400")}>{teamName}</p>
+        </div>
+
+        <div className="flex items-end gap-2">
+          <span className="text-5xl font-black font-stats tracking-tighter">{stat}</span>
+          <span className={cn("text-sm font-bold uppercase tracking-widest mb-2", isPrimary ? "text-white/60" : "text-gray-500")}>
+            {statLabel}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const LeaderboardRow = ({ rank, player, onClick, categoryValue }: any) => {
+  return (
+    <tr
+      className="border-b border-white/5 transition-colors cursor-pointer hover:bg-white/5 group"
+      onClick={onClick}
+    >
+      <td className="px-8 py-6 font-black text-white text-lg font-heading">{rank}</td>
+      <td className="px-8 py-6">
+        <div className="flex items-center gap-4">
+          <Avatar
+            src={player.headshot}
+            fallback={player.name}
+            className="w-10 h-10 border border-white/10 group-hover:border-eha-red/50 transition-colors"
+          />
+          <div>
+            <div className="flex items-center gap-1.5">
+              <div className="font-bold text-white font-heading">{player.name}</div>
+              {player.isVerified && <VerifiedBadge size="sm" />}
+            </div>
+            <div className="text-[10px] font-bold text-eha-red uppercase tracking-widest">{player.class}</div>
+          </div>
+        </div>
+      </td>
+      <td className="px-8 py-6 text-sm font-semibold text-gray-400">{player.team}</td>
+      <td className="px-8 py-6 text-sm font-bold text-white text-center font-heading">{player.position}</td>
+      <td className="px-8 py-6 text-sm font-semibold text-gray-400 text-center">{player.gamesPlayed}</td>
+      <td className="px-8 py-6 font-bold text-white text-right bg-white/5">
+        {categoryValue}
+      </td>
+      <td className="px-8 py-6 text-sm font-semibold text-gray-400 text-right">{player.rpg}</td>
+      <td className="px-8 py-6 text-sm font-semibold text-gray-400 text-right">{player.apg}</td>
+      <td className="px-8 py-6 text-sm font-bold text-green-400 text-right font-stats">{player.per}</td>
+    </tr>
   )
 }
