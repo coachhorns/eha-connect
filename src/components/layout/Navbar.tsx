@@ -78,6 +78,11 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              {/* Scouting Pill - Coming Soon */}
+              <span className="flex items-center gap-2 px-6 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 text-xs font-bold uppercase tracking-widest text-amber-400 cursor-default">
+                Scouting
+                <span className="text-[8px] px-1.5 py-0.5 bg-amber-500/20 rounded-full">Soon</span>
+              </span>
             </div>
           )}
 
@@ -245,6 +250,11 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              {/* Scouting - Coming Soon */}
+              <div className="flex items-center gap-2 px-4 py-3 font-heading font-bold uppercase tracking-[0.15em] text-sm text-amber-400 border-l-2 border-amber-500/30 bg-amber-500/5">
+                Scouting
+                <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 rounded-full normal-case tracking-normal">Soon</span>
+              </div>
             </div>
           </div>
         </div>

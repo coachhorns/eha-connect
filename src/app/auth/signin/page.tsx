@@ -5,9 +5,8 @@ import { signIn, getSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Button, Input, Card } from '@/components/ui'
-
 import { Suspense } from 'react'
+import { Mail, Lock, ArrowRight } from 'lucide-react'
 
 function GoogleIcon() {
   return (
@@ -69,7 +68,6 @@ function SignInForm() {
       if (result?.error) {
         setError('Invalid email or password')
       } else {
-        // Fetch session to determine role-based redirect
         const session = await getSession()
         if (session?.user?.role === 'PROGRAM_DIRECTOR') {
           router.push('/director/dashboard')
@@ -88,114 +86,191 @@ function SignInForm() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Image
-            src="/images/main.png"
-            alt="EHA Connect"
-            width={150}
-            height={150}
-            className="w-auto h-40 mx-auto mb-2 object-contain"
-            priority
-          />
-          <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
-          <p className="text-gray-400 mt-2">Sign in to your EHA Connect account</p>
-        </div>
+    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center px-4 pt-32 pb-12 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      />
 
-        {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm mb-4">
-            {error}
+      {/* Blur Circles */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E31837] blur-[150px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500 blur-[120px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />
+
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-md">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-8">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <Image
+              src="/images/main.png"
+              alt="EHA Connect"
+              width={340}
+              height={110}
+              className="w-auto h-36 mx-auto mb-2 object-contain"
+              priority
+            />
+            <h1 className="text-3xl font-heading font-bold text-white tracking-tight">
+              Welcome Back
+            </h1>
+            <p className="text-gray-400 mt-2 font-light">
+              Sign in to your EHA Connect account
+            </p>
           </div>
-        )}
 
-        {/* Google Sign In Button */}
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          disabled={isGoogleLoading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-gray-100 text-gray-800 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isGoogleLoading ? (
-            <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <GoogleIcon />
+          {/* Error Message */}
+          {error && (
+            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm mb-6 flex items-center gap-3">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              {error}
+            </div>
           )}
-          Continue with Google
-        </button>
 
-        {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-eha-silver/20" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-[#153361] text-gray-400">or continue with email</span>
-          </div>
-        </div>
+          {/* Google Sign In Button */}
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={isGoogleLoading}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-white hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+          >
+            {isGoogleLoading ? (
+              <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <GoogleIcon />
+            )}
+            Continue with Google
+          </button>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            type="email"
-            label="Email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
-            required
-          />
-
-          <Input
-            type="password"
-            label="Password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
-            required
-          />
-
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2 text-gray-400">
-              <input type="checkbox" className="rounded border-gray-600" />
-              Remember me
-            </label>
-            <Link href="/auth/forgot-password" className="text-eha-red hover:underline">
-              Forgot password?
-            </Link>
+          {/* Divider */}
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="px-4 bg-[#0A1D37] text-gray-500 uppercase tracking-widest font-medium">
+                or continue with email
+              </span>
+            </div>
           </div>
 
-          <Button type="submit" className="w-full" isLoading={isLoading}>
-            Sign In
-          </Button>
-        </form>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email Input */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                Email
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                />
+              </div>
+            </div>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-400 text-sm">
-            Don&apos;t have an account?{' '}
-            <Link
-              href={`/auth/signup?${new URLSearchParams({
-                ...(searchParams.get('role') && { role: searchParams.get('role')! }),
-                ...(callbackUrl && { callbackUrl }),
-              }).toString()}`}
-              className="text-eha-red hover:underline font-medium"
+            {/* Password Input */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      const form = e.currentTarget.form
+                      if (form) form.requestSubmit()
+                    }
+                  }}
+                  required
+                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Remember Me & Forgot Password */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 text-gray-400 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-white/20 bg-[#0a1628] text-[#E31837] focus:ring-[#E31837]/50 focus:ring-offset-0"
+                />
+                <span className="group-hover:text-gray-300 transition-colors">Remember me</span>
+              </label>
+              <Link
+                href="/auth/forgot-password"
+                className="text-[#E31837] hover:text-white transition-colors font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-4 bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] text-white font-bold uppercase tracking-widest text-sm rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#E31837]/25 hover:shadow-xl hover:shadow-[#E31837]/40 hover:-translate-y-0.5 flex items-center justify-center gap-2"
             >
-              Sign up
-            </Link>
-          </p>
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Sign Up Link */}
+          <div className="mt-8 text-center">
+            <p className="text-gray-400 text-sm">
+              Don&apos;t have an account?{' '}
+              <Link
+                href={`/auth/signup?${new URLSearchParams({
+                  ...(searchParams.get('role') && { role: searchParams.get('role')! }),
+                  ...(callbackUrl && { callbackUrl }),
+                }).toString()}`}
+                className="text-[#E31837] hover:text-white transition-colors font-semibold"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
         </div>
-      </Card>
+      </div>
     </div>
   )
 }
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
+        </div>
+      }
+    >
       <SignInForm />
     </Suspense>
   )

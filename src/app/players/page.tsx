@@ -294,7 +294,7 @@ export default function PlayersPage() {
   const [players, setPlayers] = useState<Player[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, setSortBy] = useState('name')
+  const [sortBy, setSortBy] = useState('priority')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
@@ -463,6 +463,7 @@ export default function PlayersPage() {
                       }}
                       className="text-xs font-bold border-none bg-transparent text-white focus:ring-0 cursor-pointer"
                     >
+                      <option value="priority">Verified + EPL First</option>
                       <option value="name">Name: A to Z</option>
                       <option value="gradYear">Class Year</option>
                       <option value="recent">Recently Added</option>

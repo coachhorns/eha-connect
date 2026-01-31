@@ -124,7 +124,7 @@ export default function DirectorOnboardingPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center px-4 pt-32 pb-12">
       <Card className="w-full max-w-lg">
         <div className="text-center mb-8">
           <Image

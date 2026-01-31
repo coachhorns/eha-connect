@@ -153,7 +153,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 space-y-8 py-8">
+    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 space-y-8 pt-32 pb-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Dashboard</h1>

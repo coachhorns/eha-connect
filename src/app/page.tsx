@@ -37,7 +37,7 @@ const features = [
   {
     icon: BarChart3,
     title: 'Advanced Analytics',
-    description: 'Shot charts, efficiency ratings, and +/- impact metrics calculated automatically.',
+    description: 'Efficiency ratings and +/- impact metrics calculated automatically.',
   },
   {
     icon: Video,
@@ -155,7 +155,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'EPL' | 'GOLD' | 'SILVER'>('EPL')
 
   return (
-    <div className="min-h-screen -mt-36">
+    <div className="min-h-screen">
       {/* ========== HERO SECTION ========== */}
       <section
         className="relative bg-[#0A1D37] pt-32 pb-24 lg:pt-48 lg:pb-32 overflow-hidden"

@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Button, Input, Card, Select } from '@/components/ui'
+import { Mail, Lock, User, ChevronDown, ArrowRight } from 'lucide-react'
 
 function GoogleIcon() {
   return (
@@ -43,7 +43,6 @@ function SignUpContent() {
   const searchParams = useSearchParams()
   const roleParam = searchParams.get('role')
 
-  // Validate and use role from URL param, default to PARENT
   const initialRole = roleParam && validRoles.includes(roleParam) ? roleParam : 'PARENT'
 
   const [formData, setFormData] = useState({
@@ -54,12 +53,12 @@ function SignUpContent() {
     role: initialRole,
   })
 
-  // Update role if URL param changes
   useEffect(() => {
     if (roleParam && validRoles.includes(roleParam)) {
-      setFormData(prev => ({ ...prev, role: roleParam }))
+      setFormData((prev) => ({ ...prev, role: roleParam }))
     }
   }, [roleParam])
+
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
@@ -114,7 +113,6 @@ function SignUpContent() {
         return
       }
 
-      // Auto sign in after registration
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
@@ -126,7 +124,6 @@ function SignUpContent() {
       } else {
         const callbackUrl = searchParams.get('callbackUrl')
 
-        // Redirect based on role
         if (callbackUrl) {
           router.push(callbackUrl)
         } else if (formData.role === 'PROGRAM_DIRECTOR') {
@@ -144,143 +141,227 @@ function SignUpContent() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Image
-            src="/images/main.png"
-            alt="EHA Connect"
-            width={150}
-            height={150}
-            className="w-auto h-40 mx-auto mb-2 object-contain"
-            priority
-          />
-          <h1 className="text-2xl font-bold text-white">Create Account</h1>
-          <p className="text-gray-400 mt-2">
-            {roleParam && validRoles.includes(roleParam)
-              ? `Sign up as ${roleLabels[roleParam]}`
-              : 'Join EHA Connect today'}
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center px-4 pt-32 pb-12 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      />
 
-        {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm mb-4">
-            {error}
+      {/* Blur Circles */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E31837] blur-[150px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500 blur-[120px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />
+
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-md">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-8">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <Image
+              src="/images/main.png"
+              alt="EHA Connect"
+              width={340}
+              height={110}
+              className="w-auto h-36 mx-auto mb-2 object-contain"
+              priority
+            />
+            <h1 className="text-3xl font-heading font-bold text-white tracking-tight">
+              Create Account
+            </h1>
+            <p className="text-gray-400 mt-2 font-light">
+              {roleParam && validRoles.includes(roleParam)
+                ? `Sign up as ${roleLabels[roleParam]}`
+                : 'Join EHA Connect today'}
+            </p>
           </div>
-        )}
 
-        {/* Google Sign Up Button */}
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          disabled={isGoogleLoading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-gray-100 text-gray-800 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isGoogleLoading ? (
-            <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <GoogleIcon />
+          {/* Error Message */}
+          {error && (
+            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm mb-6 flex items-center gap-3">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              {error}
+            </div>
           )}
-          Continue with Google
-        </button>
 
-        {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-eha-silver/20" />
+          {/* Google Sign Up Button */}
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={isGoogleLoading}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-white hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+          >
+            {isGoogleLoading ? (
+              <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <GoogleIcon />
+            )}
+            Continue with Google
+          </button>
+
+          {/* Divider */}
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="px-4 bg-[#0A1D37] text-gray-500 uppercase tracking-widest font-medium">
+                or continue with email
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-[#153361] text-gray-400">or continue with email</span>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Name Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="John Smith"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Email Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Account Type Select */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Account Type</label>
+              <div className="relative">
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all appearance-none cursor-pointer"
+                >
+                  <option value="PARENT">Parent/Guardian</option>
+                  <option value="PLAYER">Player</option>
+                  <option value="PROGRAM_DIRECTOR">Club/Program Director</option>
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="At least 8 characters"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Confirm Password Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      const form = e.currentTarget.form
+                      if (form) form.requestSubmit()
+                    }
+                  }}
+                  required
+                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Terms */}
+            <div className="text-sm text-gray-400">
+              By creating an account, you agree to our{' '}
+              <Link href="/terms" className="text-[#E31837] hover:text-white transition-colors">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link href="/privacy" className="text-[#E31837] hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+              .
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-4 bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] text-white font-bold uppercase tracking-widest text-sm rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#E31837]/25 hover:shadow-xl hover:shadow-[#E31837]/40 hover:-translate-y-0.5 flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  Create Account
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Sign In Link */}
+          <div className="mt-8 text-center">
+            <p className="text-gray-400 text-sm">
+              Already have an account?{' '}
+              <Link
+                href="/auth/signin"
+                className="text-[#E31837] hover:text-white transition-colors font-semibold"
+              >
+                Sign in
+              </Link>
+            </p>
           </div>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            type="text"
-            label="Full Name"
-            name="name"
-            placeholder="John Smith"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-
-          <Input
-            type="email"
-            label="Email"
-            name="email"
-            placeholder="you@example.com"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-
-          <Select
-            label="Account Type"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            options={[
-              { value: 'PARENT', label: 'Parent/Guardian' },
-              { value: 'PLAYER', label: 'Player' },
-              { value: 'PROGRAM_DIRECTOR', label: 'Club/Program Director' },
-            ]}
-          />
-
-          <Input
-            type="password"
-            label="Password"
-            name="password"
-            placeholder="At least 8 characters"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-
-          <Input
-            type="password"
-            label="Confirm Password"
-            name="confirmPassword"
-            placeholder="Confirm your password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-
-          <div className="text-sm text-gray-400">
-            By creating an account, you agree to our{' '}
-            <Link href="/terms" className="text-eha-red hover:underline">
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link href="/privacy" className="text-eha-red hover:underline">
-              Privacy Policy
-            </Link>
-            .
-          </div>
-
-          <Button type="submit" className="w-full" isLoading={isLoading}>
-            Create Account
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-gray-400 text-sm">
-            Already have an account?{' '}
-            <Link href="/auth/signin" className="text-eha-red hover:underline font-medium">
-              Sign in
-            </Link>
-          </p>
-        </div>
-      </Card>
+      </div>
     </div>
   )
 }
 
 function SignUpLoading() {
   return (
-    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
-      <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
+    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
     </div>
   )
 }

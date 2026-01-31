@@ -88,7 +88,7 @@ export default function SettingsPage() {
   const hasPrimaryGuardianship = players.some((p) => p.guardianRole === 'PRIMARY')
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Account Settings</h1>
         <p className="mt-2 text-gray-400">Manage your profile and account preferences</p>

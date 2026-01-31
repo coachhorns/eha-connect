@@ -154,7 +154,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
 
     <div className="min-h-screen">
       {/* Header Section */}
-      <header className="pt-20 lg:pt-24 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-12 lg:py-16 relative z-10">
           <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-end">
             {/* Profile Photo */}

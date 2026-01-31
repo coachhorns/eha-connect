@@ -130,7 +130,7 @@ export default function AcceptInvitePage({
   }
 
   return (
-    <div className="min-h-screen py-12 flex items-center justify-center">
+    <div className="min-h-screen pt-32 pb-12 flex items-center justify-center">
       <div className="max-w-md w-full mx-auto px-4">
         <Card className="p-8">
           {/* Not Found */}

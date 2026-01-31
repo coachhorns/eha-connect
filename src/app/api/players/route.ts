@@ -131,6 +131,11 @@ export async function GET(request: Request) {
       return maxAge
     }
 
+    // Helper to check if player is verified/connected
+    const isVerified = (player: any): boolean => {
+      return player.isVerified || (player.guardians && player.guardians.length > 0) || !!player.userId
+    }
+
     // Sort players based on sort parameter
     const sortedPlayers = allPlayers.sort((a: any, b: any) => {
       switch (sort) {
@@ -138,6 +143,7 @@ export async function GET(request: Request) {
           // Sort by last name alphabetically
           return (a.lastName || '').localeCompare(b.lastName || '')
 
+        case 'gradYear':
         case 'class':
           // Sort by graduation year (ascending - earlier years first)
           const gradA = a.graduationYear || 9999
@@ -145,8 +151,17 @@ export async function GET(request: Request) {
           if (gradA !== gradB) return gradA - gradB
           return (a.lastName || '').localeCompare(b.lastName || '')
 
+        case 'recent':
+          // Sort by most recently created
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+
         default:
-          // Default: EPL first, then by age (descending), then by last name
+          // Default priority: Verified first, then EPL, then by age (17U first), then by last name
+          const aIsVerified = isVerified(a)
+          const bIsVerified = isVerified(b)
+          if (aIsVerified && !bIsVerified) return -1
+          if (!aIsVerified && bIsVerified) return 1
+
           const aIsEPL = isOnEPLTeam(a)
           const bIsEPL = isOnEPLTeam(b)
           if (aIsEPL && !bIsEPL) return -1

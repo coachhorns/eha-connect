@@ -200,7 +200,6 @@ export default function LeaderboardsPage() {
                     teamName={topScorer.team}
                     stat={topScorer.ppg}
                     statLabel="PPG"
-                    isPrimary={true}
                     icon={Target}
                     onClick={() => router.push(`/players/${topScorer.slug}`)}
                   />
@@ -213,18 +212,16 @@ export default function LeaderboardsPage() {
                     teamName={topAssister.team}
                     stat={topAssister.apg}
                     statLabel="APG"
-                    isPrimary={false}
                     icon={Activity}
                     onClick={() => router.push(`/players/${topAssister.slug}`)}
                   />
                 ) : (
                   <LeaderCard
                     title="Efficiency Leader"
-                    playerName={topScorer?.name} // Fallback to top scorer if no assister
+                    playerName={topScorer?.name}
                     teamName={topScorer?.team}
                     stat={topScorer?.per}
                     statLabel="PER"
-                    isPrimary={false}
                     icon={Activity}
                     onClick={() => topScorer && router.push(`/players/${topScorer.slug}`)}
                   />
@@ -237,7 +234,6 @@ export default function LeaderboardsPage() {
                     teamName={topBlocker.team}
                     stat={topBlocker.totalBlocks}
                     statLabel="Blocks"
-                    isPrimary={false}
                     icon={TrendingUp}
                     onClick={() => router.push(`/players/${topBlocker.slug}`)}
                   />
@@ -248,7 +244,6 @@ export default function LeaderboardsPage() {
                     teamName={players.sort((a, b) => b.rpg - a.rpg)[0]?.team}
                     stat={players.sort((a, b) => b.rpg - a.rpg)[0]?.rpg}
                     statLabel="RPG"
-                    isPrimary={false}
                     icon={TrendingUp}
                     onClick={() => {
                       const rebounder = players.sort((a, b) => b.rpg - a.rpg)[0]
@@ -352,45 +347,37 @@ function PositionFilter({ activePosition, onPositionChange }: any) {
   )
 }
 
-function LeaderCard({ title, playerName, teamName, stat, statLabel, isPrimary, icon: Icon, onClick }: any) {
+function LeaderCard({ title, playerName, teamName, stat, statLabel, icon: Icon, onClick }: any) {
   return (
     <div
       onClick={onClick}
-      className={cn(
-        "relative overflow-hidden rounded-sm transition-transform hover:-translate-y-1 duration-300 group cursor-pointer",
-        isPrimary
-          ? "bg-eha-red text-white shadow-2xl shadow-eha-red/20"
-          : "bg-[#0a1628] border border-white/10 hover:border-eha-red/50"
-      )}>
-      {isPrimary && (
-        <div className="absolute top-0 right-0 p-32 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-      )}
-
+      className="relative overflow-hidden rounded-sm transition-transform hover:-translate-y-1 duration-300 group cursor-pointer bg-[#0a1628] border border-white/10 hover:border-eha-red/50"
+    >
       <div className="p-8 relative z-10">
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center gap-2">
-            <div className={cn("p-2 rounded-lg", isPrimary ? "bg-black/20" : "bg-white/5")}>
-              <Icon className={cn("w-5 h-5", isPrimary ? "text-white" : "text-eha-red")} />
+            <div className="p-2 rounded-lg bg-white/5">
+              <Icon className="w-5 h-5 text-eha-red" />
             </div>
-            <span className={cn("text-xs font-extrabold uppercase tracking-widest", isPrimary ? "text-white/80" : "text-gray-400")}>
+            <span className="text-xs font-extrabold uppercase tracking-widest text-gray-400">
               {title}
             </span>
           </div>
-          <Badge className={cn("border-0", isPrimary ? "bg-white/20 text-white" : "bg-eha-red/10 text-eha-red")}>
+          <Badge className="border-0 bg-eha-red/10 text-eha-red">
             #1 Rank
           </Badge>
         </div>
 
         <div className="mb-6">
-          <h3 className={cn("text-2xl font-bold font-heading mb-1", isPrimary ? "text-white" : "text-white group-hover:text-eha-red transition-colors")}>
+          <h3 className="text-2xl font-bold font-heading mb-1 text-white group-hover:text-eha-red transition-colors">
             {playerName}
           </h3>
-          <p className={cn("text-sm font-medium", isPrimary ? "text-white/80" : "text-gray-400")}>{teamName}</p>
+          <p className="text-sm font-medium text-gray-400">{teamName}</p>
         </div>
 
         <div className="flex items-end gap-2">
-          <span className="text-5xl font-black font-stats tracking-tighter">{stat}</span>
-          <span className={cn("text-sm font-bold uppercase tracking-widest mb-2", isPrimary ? "text-white/60" : "text-gray-500")}>
+          <span className="text-5xl font-black font-stats tracking-tighter text-white">{stat}</span>
+          <span className="text-sm font-bold uppercase tracking-widest mb-2 text-gray-500">
             {statLabel}
           </span>
         </div>

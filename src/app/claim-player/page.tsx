@@ -149,7 +149,7 @@ export default function ClaimPlayerPage() {
   }
 
   return (
-    <div className="min-h-screen py-12">
+    <div className="min-h-screen pt-32 pb-12">
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">

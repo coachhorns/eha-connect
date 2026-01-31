@@ -77,7 +77,7 @@ export default function RootLayout({
         <SessionProvider>
           <QueryProvider>
             <Navbar />
-            <main className="pt-36 min-h-[calc(100vh-80px)]">{children}</main>
+            <main className="min-h-[calc(100vh-80px)]">{children}</main>
             <Footer />
           </QueryProvider>
         </SessionProvider>

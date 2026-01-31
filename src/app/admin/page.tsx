@@ -120,7 +120,7 @@ export default function AdminDashboard() {
   ]
 
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
+    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Admin Dashboard</h1>

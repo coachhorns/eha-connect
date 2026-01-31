@@ -203,7 +203,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-transparent border-b border-white/10">
+      <div className="bg-[#0a1628] border-b border-white/10 pt-32">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-6">
           {/* Back Link */}
           {game.event && (
