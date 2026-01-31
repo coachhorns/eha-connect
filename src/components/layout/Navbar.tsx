@@ -44,7 +44,7 @@ export function Navbar() {
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 pt-[env(safe-area-inset-top)]",
       isScrolled
-        ? "bg-[#0F0F1A]/80 backdrop-blur-md border-white/5 shadow-lg"
+        ? "bg-[#0F0F1A]/20 backdrop-blur-xl border-white/5 shadow-2xl"
         : "bg-transparent border-transparent"
     )}>
       <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
