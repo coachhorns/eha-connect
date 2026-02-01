@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -46,7 +46,7 @@ interface PlayerResult {
 
 type Step = 'info' | 'search' | 'results' | 'success' | 'approval'
 
-export default function ClaimPlayerPage() {
+function ClaimPlayerContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -670,5 +670,17 @@ export default function ClaimPlayerPage() {
         </div>
       </section>
     </div>
+  )
+}
+
+export default function ClaimPlayerPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#E31837]" />
+      </div>
+    }>
+      <ClaimPlayerContent />
+    </Suspense>
   )
 }
