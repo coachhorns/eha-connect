@@ -22,6 +22,9 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCw,
+  FileText,
+  Upload,
+  X,
 } from 'lucide-react'
 import { Card, Button, Input } from '@/components/ui'
 import { formatHeight, formatPosition } from '@/lib/utils'
@@ -105,6 +108,8 @@ interface PlayerData {
   hudlUrl: string | null
   youtubeUrl: string | null
   highlightUrl: string | null
+  gpa: number | null
+  transcriptUrl: string | null
   media: MediaItem[]
   teamRosters: TeamRoster[]
 }
@@ -144,6 +149,10 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
   const [hudlUrl, setHudlUrl] = useState('')
   const [youtubeUrl, setYoutubeUrl] = useState('')
   const [highlightUrl, setHighlightUrl] = useState('')
+  const [gpa, setGpa] = useState('')
+  const [transcriptUrl, setTranscriptUrl] = useState('')
+  const [isUploadingTranscript, setIsUploadingTranscript] = useState(false)
+  const transcriptInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -166,6 +175,8 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           setHudlUrl(p.hudlUrl || '')
           setYoutubeUrl(p.youtubeUrl || '')
           setHighlightUrl(p.highlightUrl || '')
+          setGpa(p.gpa ? String(p.gpa) : '')
+          setTranscriptUrl(p.transcriptUrl || '')
         } else if (res.status === 404 || res.status === 403) {
           setError('Player not found or access denied')
         } else {
@@ -336,6 +347,84 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
     }
   }
 
+  const handleTranscriptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.type !== 'application/pdf') {
+      setError('Please select a PDF file')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError('PDF must be less than 10MB')
+      return
+    }
+
+    setIsUploadingTranscript(true)
+    setError('')
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('folder', 'players/transcripts')
+
+      const uploadRes = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!uploadRes.ok) {
+        const data = await uploadRes.json()
+        setError(data.error || 'Upload failed')
+        return
+      }
+
+      const { url } = await uploadRes.json()
+      setTranscriptUrl(url)
+
+      // Save immediately to the player record
+      const updateRes = await fetch(`/api/user/players/${resolvedParams.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcriptUrl: url }),
+      })
+
+      if (updateRes.ok) {
+        setPlayer(prev => prev ? { ...prev, transcriptUrl: url } : null)
+        setSuccess('Transcript uploaded successfully')
+        setTimeout(() => setSuccess(''), 3000)
+      } else {
+        setError('Failed to save transcript')
+      }
+    } catch (err) {
+      console.error('Error uploading transcript:', err)
+      setError('Failed to upload transcript')
+    } finally {
+      setIsUploadingTranscript(false)
+      if (transcriptInputRef.current) transcriptInputRef.current.value = ''
+    }
+  }
+
+  const handleRemoveTranscript = async () => {
+    try {
+      const res = await fetch(`/api/user/players/${resolvedParams.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcriptUrl: null }),
+      })
+
+      if (res.ok) {
+        setTranscriptUrl('')
+        setPlayer(prev => prev ? { ...prev, transcriptUrl: null } : null)
+      } else {
+        setError('Failed to remove transcript')
+      }
+    } catch (err) {
+      console.error('Error removing transcript:', err)
+      setError('Failed to remove transcript')
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -354,6 +443,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           hudlUrl: hudlUrl.trim() || null,
           youtubeUrl: youtubeUrl.trim() || null,
           highlightUrl: highlightUrl.trim() || null,
+          gpa: gpa ? parseFloat(gpa) : null,
         }),
       })
 
@@ -689,6 +779,95 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   <p className="text-xs text-gray-500 mt-1">
                     Link to any additional highlight reel or recruiting page
                   </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Academic Information */}
+            <Card className="lg:col-span-2">
+              <div className="p-4 border-b border-[#1a3a6e]">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-eha-red" />
+                  Academic Information
+                </h2>
+              </div>
+              <div className="p-4 grid md:grid-cols-2 gap-6">
+                {/* GPA Input */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    GPA (Grade Point Average)
+                  </label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="4.0"
+                    placeholder="3.5"
+                    value={gpa}
+                    onChange={(e) => setGpa(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter GPA on a 4.0 scale
+                  </p>
+                </div>
+
+                {/* Transcript Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Transcript (PDF)
+                  </label>
+                  {transcriptUrl ? (
+                    <div className="flex items-center gap-3 p-3 bg-[#153361] border border-white/10 rounded-lg">
+                      <FileText className="w-8 h-8 text-eha-red flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">Transcript Uploaded</p>
+                        <a
+                          href={transcriptUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-eha-red hover:underline"
+                        >
+                          View PDF
+                        </a>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveTranscript}
+                        className="p-1.5 bg-red-500 hover:bg-red-600 rounded-full transition-colors"
+                      >
+                        <X className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => transcriptInputRef.current?.click()}
+                      className={`relative border-2 border-dashed rounded-lg cursor-pointer transition-colors border-[#1a3a6e] hover:border-eha-red/50 ${isUploadingTranscript ? 'pointer-events-none opacity-50' : ''}`}
+                    >
+                      <div className="flex flex-col items-center justify-center p-6">
+                        {isUploadingTranscript ? (
+                          <>
+                            <Loader2 className="w-8 h-8 text-eha-red animate-spin mb-2" />
+                            <p className="text-sm text-gray-400">Uploading...</p>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 text-gray-500 mb-2" />
+                            <p className="text-sm text-gray-400 text-center">
+                              Click to upload transcript PDF
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">Max 10MB</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <input
+                    ref={transcriptInputRef}
+                    type="file"
+                    accept="application/pdf"
+                    className="hidden"
+                    onChange={handleTranscriptUpload}
+                  />
                 </div>
               </div>
             </Card>

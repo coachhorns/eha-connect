@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
-// GET - Search for players to claim
+// GET - Search for players to claim or fetch single player by ID
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -13,9 +13,72 @@ export async function GET(request: NextRequest) {
     }
 
     const searchParams = request.nextUrl.searchParams
+    const playerId = searchParams.get('playerId')
     const firstName = searchParams.get('firstName')
     const lastName = searchParams.get('lastName')
 
+    // If playerId is provided, fetch that specific player
+    if (playerId) {
+      const player = await prisma.player.findUnique({
+        where: { id: playerId, isActive: true },
+        include: {
+          teamRosters: {
+            where: { leftAt: null },
+            include: {
+              team: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  ageGroup: true,
+                  division: true,
+                  program: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          guardians: {
+            where: { role: 'PRIMARY' },
+            select: { id: true },
+          },
+        },
+      })
+
+      if (!player) {
+        return NextResponse.json({ error: 'Player not found' }, { status: 404 })
+      }
+
+      const activeRoster = player.teamRosters[0]
+      const result = {
+        id: player.id,
+        firstName: player.firstName,
+        lastName: player.lastName,
+        slug: player.slug,
+        profilePhoto: player.profilePhoto,
+        graduationYear: player.graduationYear,
+        primaryPosition: player.primaryPosition,
+        currentTeam: activeRoster?.team
+          ? {
+              id: activeRoster.team.id,
+              name: activeRoster.team.name,
+              slug: activeRoster.team.slug,
+              ageGroup: activeRoster.team.ageGroup,
+              division: activeRoster.team.division,
+              program: activeRoster.team.program,
+            }
+          : null,
+        hasPrimaryGuardian: player.guardians.length > 0,
+      }
+
+      return NextResponse.json({ player: result })
+    }
+
+    // Otherwise, search by name
     if (!firstName || !lastName) {
       return NextResponse.json(
         { error: 'First name and last name are required' },

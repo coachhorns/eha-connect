@@ -214,6 +214,8 @@ model Player {
   // Profile
   profilePhoto    String?   // URL
   bio             String?   @db.Text
+  gpa             Float?    // Grade Point Average
+  transcriptUrl   String?   // PDF URL
 
   // Verification
   isVerified      Boolean   @default(false)

@@ -281,32 +281,47 @@ export default function ResultsPage() {
   const [selectedDate, setSelectedDate] = useState<string>('')
   const [sortBy, setSortBy] = useState<string>('date')
 
-  useEffect(() => {
-    const fetchResults = async () => {
+  // Refactored fetch function that can be called for initial load or silent refresh
+  const fetchResults = async (silent: boolean = false) => {
+    if (!silent) {
       setIsLoading(true)
-      try {
-        const params = new URLSearchParams()
-        if (selectedEvent) params.append('eventId', selectedEvent)
-        if (selectedAgeGroup) params.append('ageGroup', selectedAgeGroup)
-        if (selectedDivision) params.append('division', selectedDivision)
-        if (selectedDate) params.append('date', selectedDate)
+    }
+    try {
+      const params = new URLSearchParams()
+      if (selectedEvent) params.append('eventId', selectedEvent)
+      if (selectedAgeGroup) params.append('ageGroup', selectedAgeGroup)
+      if (selectedDivision) params.append('division', selectedDivision)
+      if (selectedDate) params.append('date', selectedDate)
 
-        const res = await fetch(`/api/public/results?${params}`)
-        if (res.ok) {
-          const data = await res.json()
-          setGames(data.games)
-          if (data.filters) {
-            setFilters(data.filters)
-          }
+      const res = await fetch(`/api/public/results?${params}`)
+      if (res.ok) {
+        const data = await res.json()
+        setGames(data.games)
+        if (data.filters) {
+          setFilters(data.filters)
         }
-      } catch (error) {
-        console.error('Error fetching results:', error)
-      } finally {
+      }
+    } catch (error) {
+      console.error('Error fetching results:', error)
+    } finally {
+      if (!silent) {
         setIsLoading(false)
       }
     }
+  }
 
-    fetchResults()
+  // Initial fetch and refetch when filters change (shows loading spinner)
+  useEffect(() => {
+    fetchResults(false)
+  }, [selectedEvent, selectedAgeGroup, selectedDivision, selectedDate])
+
+  // Auto-refresh every 5 seconds (silent - no loading spinner)
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchResults(true)
+    }, 5000)
+
+    return () => clearInterval(intervalId)
   }, [selectedEvent, selectedAgeGroup, selectedDivision, selectedDate])
 
   // Filter games by search query

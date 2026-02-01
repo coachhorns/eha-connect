@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   Search,
@@ -51,8 +50,6 @@ interface Filters {
 
 // Player Card Component
 const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
-  const router = useRouter()
-
   const height = player.heightFeet && player.heightInches !== null
     ? `${player.heightFeet}'${player.heightInches}"`
     : '-'
@@ -60,7 +57,7 @@ const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
   const initials = `${player.firstName?.charAt(0) || ''}${player.lastName?.charAt(0) || ''}`
 
   return (
-    <div className="bg-[#0a1628] border border-white/10 rounded-sm overflow-hidden group transition-all hover:shadow-xl hover:shadow-eha-red/10 hover:-translate-y-1 hover:border-white/20">
+    <Link href={`/players/${player.slug}`} className="bg-[#0a1628] border border-white/10 rounded-sm overflow-hidden group transition-all hover:shadow-xl hover:shadow-eha-red/10 hover:-translate-y-1 hover:border-white/20 block">
       {/* Image Section */}
       <div className="relative h-56 bg-[#153361] overflow-hidden">
         {player.profilePhoto ? (
@@ -132,18 +129,15 @@ const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
 
         {/* Actions */}
         <div className="mt-5 flex gap-2">
-          <button
-            onClick={() => router.push(`/players/${player.slug}`)}
-            className="flex-1 bg-[#153361] text-white text-[10px] font-black uppercase tracking-widest py-3 hover:bg-eha-red transition-colors rounded-sm"
-          >
+          <span className="flex-1 bg-[#153361] text-white text-[10px] font-black uppercase tracking-widest py-3 group-hover:bg-eha-red transition-colors rounded-sm text-center">
             View Profile
-          </button>
-          <button className="w-11 border border-white/10 flex items-center justify-center hover:bg-white/5 rounded-sm transition-colors">
+          </span>
+          <span className="w-11 border border-white/10 flex items-center justify-center group-hover:bg-white/5 rounded-sm transition-colors">
             <Plus className="w-4 h-4 text-gray-400" />
-          </button>
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
@@ -161,10 +155,6 @@ const FilterSidebar = ({
   onClose?: () => void
   isMobile?: boolean
 }) => {
-  const currentYear = new Date().getFullYear()
-  // Generate 12 years starting from next year (covers 17U down to 8U age groups)
-  const gradYears = Array.from({ length: 12 }, (_, i) => currentYear + 1 + i)
-
   const divisionOptions = [
     { value: '', label: 'All Divisions' },
     { value: 'EPL', label: 'EPL' },
@@ -223,22 +213,22 @@ const FilterSidebar = ({
           <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
             Class Year
           </label>
-          <div className="grid grid-cols-2 gap-2">
-            {gradYears.map((year) => (
-              <button
-                key={year}
-                onClick={() => setFilters({ ...filters, year: filters.year === String(year) ? '' : String(year) })}
-                className={cn(
-                  "px-3 py-2 border text-xs font-bold rounded-sm transition-colors",
-                  filters.year === String(year)
-                    ? "border-eha-red bg-eha-red text-white"
-                    : "border-white/10 text-gray-400 hover:border-white/30 hover:text-white"
-                )}
-              >
-                {year}
-              </button>
+          <select
+            value={filters.year}
+            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+            className="w-full text-sm font-semibold border border-white/10 bg-[#153361] text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
+            style={{
+              backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 1rem center',
+              backgroundSize: '1rem'
+            }}
+          >
+            <option value="">All Class Years</option>
+            {Array.from({ length: 13 }, (_, i) => 2026 + i).map((year) => (
+              <option key={year} value={String(year)}>{year}</option>
             ))}
-          </div>
+          </select>
         </div>
 
         {/* State */}

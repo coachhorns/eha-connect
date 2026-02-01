@@ -5,15 +5,13 @@ import {
   MapPin,
   GraduationCap,
   ShieldCheck,
-  Share2,
-  Download,
   Trophy,
   Users,
-  Calendar,
   ExternalLink,
   Camera,
   Link as LinkIcon,
   UserPlus,
+  FileText,
 } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -23,6 +21,8 @@ import { formatHeight, formatPosition, formatDate } from '@/lib/utils'
 import { achievementBadges } from '@/lib/constants'
 import { canViewStats } from '@/lib/permissions'
 import StatsPaywall from '@/components/players/StatsPaywall'
+import ShareProfileButton from '@/components/players/ShareProfileButton'
+import ContactCoachButton from '@/components/players/ContactCoachButton'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -33,7 +33,7 @@ async function getPlayer(slug: string) {
     where: { slug },
     include: {
       guardians: {
-        select: { id: true },
+        select: { id: true, userId: true },
       },
       achievements: {
         orderBy: { earnedAt: 'desc' },
@@ -150,6 +150,12 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   // Verified = has guardians or userId
   const isVerified = (player.guardians?.length > 0) || !!player.userId
 
+  // Check if current user owns this profile (player or guardian)
+  const isOwner = session?.user?.id && (
+    player.userId === session.user.id ||
+    player.guardians?.some((g: { userId: string }) => g.userId === session.user.id)
+  )
+
   return (
 
     <div className="min-h-screen">
@@ -234,22 +240,19 @@ export default async function PlayerProfilePage({ params }: PageProps) {
             <div className="flex flex-wrap justify-center gap-4 pb-2 w-full md:w-auto">
               {/* If unverified, show Claim button instead of Share */}
               {!isVerified ? (
-                <Link href="/claim-player" className="w-full md:w-auto">
+                <Link href={`/claim-player?playerId=${player.id}&name=${encodeURIComponent(`${player.firstName} ${player.lastName}`)}`} className="w-full md:w-auto">
                   <Button className="w-full md:w-auto bg-[#FFD700] hover:bg-[#FDB931] text-[#0A1D37] border-0">
                     <UserPlus className="w-4 h-4 mr-2" />
                     Claim Profile
                   </Button>
                 </Link>
               ) : (
-                <Button variant="outline" className="bg-white hover:bg-white/90 text-[#0A1D37] border-0 rounded-full px-6 py-6 text-[10px] font-extrabold uppercase tracking-widest shadow-lg">
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share Profile
-                </Button>
+                <ShareProfileButton playerName={`${player.firstName} ${player.lastName}`} />
               )}
-              <Button className="bg-eha-red hover:bg-eha-red/90 text-white border-0 rounded-full px-6 py-6 text-[10px] font-extrabold uppercase tracking-widest shadow-lg shadow-eha-red/20">
-                <Download className="w-4 h-4 mr-2" />
-                Export Resume
-              </Button>
+              {/* Contact Coach only visible to profile owners (player or guardian) */}
+              {isOwner && (
+                <ContactCoachButton playerName={`${player.firstName} ${player.lastName}`} />
+              )}
             </div>
           </div>
         </div>
@@ -303,29 +306,6 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                   <p className="text-gray-500 uppercase tracking-widest text-xs font-bold">No verified stats recorded yet</p>
                 </div>
               )}
-            </section>
-
-            {/* Scout Evaluation (Placeholder Structure) */}
-            <section className="bg-white border border-white/10 p-10 rounded-sm shadow-lg">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 bg-[#0A1D37] flex items-center justify-center text-white rounded-sm">
-                  <Calendar className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-xl text-[#0A1D37] font-bold uppercase tracking-tight">Lead Scout Evaluation</h3>
-                  <p className="text-xs font-bold text-eha-red uppercase tracking-widest">Pending Evaluation • Elite Hoops</p>
-                </div>
-              </div>
-              <div className="grid md:grid-cols-2 gap-10">
-                <div className="space-y-4">
-                  <h4 className="text-xs font-extrabold uppercase tracking-widest text-[#0A1D37]">Strengths</h4>
-                  <p className="text-sm text-slate-500 italic">Scouting report coming soon...</p>
-                </div>
-                <div className="space-y-4">
-                  <h4 className="text-xs font-extrabold uppercase tracking-widest text-[#0A1D37]">Development Areas</h4>
-                  <p className="text-sm text-slate-500 italic">Scouting report coming soon...</p>
-                </div>
-              </div>
             </section>
 
             {/* Game Log */}
@@ -456,6 +436,26 @@ export default async function PlayerProfilePage({ params }: PageProps) {
                   <span className="text-xs font-bold text-slate-400 uppercase">Position</span>
                   <span className="text-xs font-bold text-[#0A1D37]">{formatPosition(player.primaryPosition)}</span>
                 </div>
+                {player.gpa && (
+                  <div className="flex justify-between">
+                    <span className="text-xs font-bold text-slate-400 uppercase">GPA</span>
+                    <span className="text-xs font-bold text-[#0A1D37]">{player.gpa.toFixed(2)}</span>
+                  </div>
+                )}
+                {/* Transcript Download */}
+                {player.transcriptUrl && (
+                  <div className="pt-4 mt-4 border-t border-slate-100">
+                    <a
+                      href={player.transcriptUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-3 bg-[#0A1D37] hover:bg-eha-red text-white text-xs font-extrabold uppercase tracking-widest rounded-sm transition-colors"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Download Transcript (PDF)
+                    </a>
+                  </div>
+                )}
                 {/* Bio Text if available */}
                 {player.bio && (
                   <div className="pt-4 mt-4 border-t border-slate-100">

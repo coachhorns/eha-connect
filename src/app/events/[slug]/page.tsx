@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, use } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { format } from 'date-fns'
@@ -23,6 +25,9 @@ import {
   Mail,
   Phone,
   CalendarDays,
+  AlertTriangle,
+  X,
+  ShieldAlert,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 
@@ -100,6 +105,8 @@ interface Event {
 
 export default function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = use(params)
+  const { data: session, status: sessionStatus } = useSession()
+  const router = useRouter()
   const [event, setEvent] = useState<Event | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -107,6 +114,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>('')
   const [selectedDivision, setSelectedDivision] = useState<string>('')
+  const [showBlockingModal, setShowBlockingModal] = useState(false)
+  const [isCheckingDirector, setIsCheckingDirector] = useState(false)
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -130,6 +139,56 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
     fetchEvent()
   }, [resolvedParams.slug])
+
+  // Smart registration handler
+  const handleRegisterClick = async () => {
+    // Not logged in - redirect to signin with director role hint
+    if (sessionStatus !== 'authenticated' || !session) {
+      const callbackUrl = `/events/${resolvedParams.slug}/register`
+      router.push(`/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}&role=PROGRAM_DIRECTOR`)
+      return
+    }
+
+    const role = session.user?.role
+
+    // PARENT or PLAYER - show blocking modal
+    if (role === 'PARENT' || role === 'PLAYER') {
+      setShowBlockingModal(true)
+      return
+    }
+
+    // PROGRAM_DIRECTOR - check if they have a program
+    if (role === 'PROGRAM_DIRECTOR') {
+      setIsCheckingDirector(true)
+      try {
+        const res = await fetch('/api/director/program')
+        const data = await res.json()
+
+        if (!data.program) {
+          // No program - redirect to onboarding with callback
+          const callbackUrl = `/events/${resolvedParams.slug}/register/director`
+          router.push(`/director/onboarding?callbackUrl=${encodeURIComponent(callbackUrl)}`)
+        } else if (data.program.teams.length === 0) {
+          // Has program but no teams - redirect to onboarding
+          const callbackUrl = `/events/${resolvedParams.slug}/register/director`
+          router.push(`/director/onboarding?callbackUrl=${encodeURIComponent(callbackUrl)}`)
+        } else {
+          // Has program with teams - go to director registration
+          router.push(`/events/${resolvedParams.slug}/register/director`)
+        }
+      } catch (err) {
+        console.error('Error checking director program:', err)
+        // Fallback to regular registration page
+        router.push(`/events/${resolvedParams.slug}/register`)
+      } finally {
+        setIsCheckingDirector(false)
+      }
+      return
+    }
+
+    // ADMIN or other roles - go to regular registration
+    router.push(`/events/${resolvedParams.slug}/register`)
+  }
 
   if (isLoading) {
     return (
@@ -346,19 +405,32 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden mb-8">
             <div className="relative h-64 md:h-80 bg-gradient-to-br from-[#0a1628] to-[#1a3a6e]/50">
               {event.bannerImage ? (
-                <Image
-                  src={event.bannerImage}
-                  alt={event.name}
-                  fill
-                  className="object-cover opacity-80"
-                />
+                <>
+                  {/* Blurred background image */}
+                  <Image
+                    src={event.bannerImage}
+                    alt=""
+                    fill
+                    className="object-cover scale-110 blur-2xl opacity-40"
+                    sizes="(max-width: 1920px) 100vw, 1920px"
+                    aria-hidden="true"
+                  />
+                  {/* Main image */}
+                  <Image
+                    src={event.bannerImage}
+                    alt={event.name}
+                    fill
+                    className="object-contain object-center relative z-10"
+                    sizes="(max-width: 1920px) 100vw, 1920px"
+                  />
+                </>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Trophy className="w-24 h-24 text-white/10" />
                 </div>
               )}
               {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1D37] via-[#0A1D37]/50 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1D37] via-[#0A1D37]/30 to-transparent z-20" />
 
               {/* Content overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
@@ -608,12 +680,18 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                       <div className="flex flex-wrap items-center justify-center gap-3">
                         {isUpcoming && (
                           <>
-                            <Link href={`/events/${event.slug}/register`}>
-                              <Button className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25">
+                            <Button
+                              onClick={handleRegisterClick}
+                              disabled={isCheckingDirector}
+                              className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25"
+                            >
+                              {isCheckingDirector ? (
+                                <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              ) : (
                                 <Users className="w-4 h-4 mr-2" />
-                                Register Team
-                              </Button>
-                            </Link>
+                              )}
+                              Register Team
+                            </Button>
                             <Button variant="outline" className="border-white/20 text-gray-300 hover:bg-white/5">
                               <Bell className="w-4 h-4 mr-2" />
                               Notify Me
@@ -661,12 +739,18 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                           : 'Be the first to register your team for this event!'}
                       </p>
                       {isUpcoming && !hasActiveFilters && (
-                        <Link href={`/events/${event.slug}/register`}>
-                          <Button className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530]">
+                        <Button
+                          onClick={handleRegisterClick}
+                          disabled={isCheckingDirector}
+                          className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530]"
+                        >
+                          {isCheckingDirector ? (
+                            <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          ) : (
                             <Users className="w-4 h-4 mr-2" />
-                            Register Team
-                          </Button>
-                        </Link>
+                          )}
+                          Register Team
+                        </Button>
                       )}
                     </div>
                   ) : (
@@ -879,18 +963,75 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   <p className="text-gray-400 text-sm mb-4">
                     Secure your spot in this event. Registration is open!
                   </p>
-                  <Link href={`/events/${event.slug}/register`} className="block">
-                    <Button className="w-full bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25">
-                      Register Now
-                      <ChevronRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={handleRegisterClick}
+                    disabled={isCheckingDirector}
+                    className="w-full bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25"
+                  >
+                    {isCheckingDirector ? (
+                      <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : null}
+                    Register Now
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
                 </div>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Blocking Modal for Parents/Players */}
+      {showBlockingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowBlockingModal(false)}
+          />
+          <div className="relative bg-[#0A1D37] border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <button
+              onClick={() => setShowBlockingModal(false)}
+              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <ShieldAlert className="w-8 h-8 text-amber-400" />
+              </div>
+
+              <h2 className="text-2xl font-heading font-bold text-white mb-3">
+                Director Account Required
+              </h2>
+
+              <p className="text-gray-400 mb-6">
+                Only Program Directors can register teams for events.
+              </p>
+
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6 text-left">
+                <h3 className="text-sm font-semibold text-white mb-2">Are you a coach or club director?</h3>
+                <p className="text-sm text-gray-400 mb-3">
+                  Create a Director Account to manage your program and register teams for events.
+                </p>
+                <Link href="/auth/signup?role=PROGRAM_DIRECTOR">
+                  <Button className="w-full bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530]">
+                    Create Director Account
+                    <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="text-left">
+                <h3 className="text-sm font-semibold text-white mb-2">Are you a parent or player?</h3>
+                <p className="text-sm text-gray-400">
+                  Contact your team's director to register for this event.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

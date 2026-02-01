@@ -91,6 +91,8 @@ export async function PUT(
       hudlUrl,
       youtubeUrl,
       highlightUrl,
+      gpa,
+      transcriptUrl,
     } = body
 
     if (firstName !== undefined && !firstName?.trim()) {
@@ -125,6 +127,8 @@ export async function PUT(
         ...(hudlUrl !== undefined && { hudlUrl: hudlUrl?.trim() || null }),
         ...(youtubeUrl !== undefined && { youtubeUrl: youtubeUrl?.trim() || null }),
         ...(highlightUrl !== undefined && { highlightUrl: highlightUrl?.trim() || null }),
+        ...(gpa !== undefined && { gpa: gpa ? parseFloat(String(gpa)) : null }),
+        ...(transcriptUrl !== undefined && { transcriptUrl: transcriptUrl?.trim() || null }),
       },
     })
 
