@@ -182,7 +182,7 @@ Each player object should have these fields:
 - firstName (string, required)
 - lastName (string, required)
 - jerseyNumber (string or null)
-- primaryPosition (string or null - use standard basketball positions: PG, SG, SF, PF, C, G, F)
+- primaryPosition (string or null - MUST be one of these EXACT values only: "PG", "SG", "SF", "PF", "C". If position says "Guard" or "G", use "PG". If position says "Forward" or "F", use "SF". If position says "Center", use "C". If unclear, use null.)
 - graduationYear (number or null - 4-digit year like 2026)
 - heightFeet (number or null)
 - heightInches (number or null)

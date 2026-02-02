@@ -20,6 +20,38 @@ function generateSlug(firstName: string, lastName: string): string {
   return `${base}-${random}`
 }
 
+// Valid Position enum values from Prisma schema
+const VALID_POSITIONS = ['PG', 'SG', 'SF', 'PF', 'C']
+
+// Map common position variations to valid enum values
+function normalizePosition(position: string | null): string | null {
+  if (!position) return null
+
+  const upper = position.toUpperCase().trim()
+
+  // Already valid
+  if (VALID_POSITIONS.includes(upper)) {
+    return upper
+  }
+
+  // Map common variations
+  const positionMap: Record<string, string> = {
+    'G': 'PG',
+    'GUARD': 'PG',
+    'POINT GUARD': 'PG',
+    'POINT': 'PG',
+    'SHOOTING GUARD': 'SG',
+    'F': 'SF',
+    'FORWARD': 'SF',
+    'SMALL FORWARD': 'SF',
+    'POWER FORWARD': 'PF',
+    'CENTER': 'C',
+    'CENTRE': 'C',
+  }
+
+  return positionMap[upper] || null
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -97,6 +129,9 @@ export async function POST(
         }
 
         try {
+          // Normalize position to valid enum value
+          const validPosition = normalizePosition(primaryPosition)
+
           // Create the player
           const player = await tx.player.create({
             data: {
@@ -104,7 +139,7 @@ export async function POST(
               lastName: lastName.trim(),
               slug: generateSlug(firstName, lastName),
               jerseyNumber: jerseyNumber || null,
-              primaryPosition: primaryPosition || null,
+              primaryPosition: validPosition,
               graduationYear: graduationYear || null,
               heightFeet: heightFeet || null,
               heightInches: heightInches || null,

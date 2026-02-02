@@ -142,10 +142,10 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
   // Smart registration handler
   const handleRegisterClick = async () => {
-    // Not logged in - redirect to signin with director role hint
+    // Not logged in - redirect to director get-started page
     if (sessionStatus !== 'authenticated' || !session) {
-      const callbackUrl = `/events/${resolvedParams.slug}/register`
-      router.push(`/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}&role=PROGRAM_DIRECTOR`)
+      const returnUrl = `/events/${resolvedParams.slug}/register`
+      router.push(`/director/get-started?returnUrl=${encodeURIComponent(returnUrl)}`)
       return
     }
 

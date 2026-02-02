@@ -4,8 +4,8 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Building2 } from 'lucide-react'
-import { Card, Button, Input, Select, Badge } from '@/components/ui'
+import { ArrowLeft, Building2, AlertCircle, ChevronDown } from 'lucide-react'
+import { Button, Input, Badge } from '@/components/ui'
 
 const ageGroupOptions = [
   { value: '', label: 'Select Age Group' },
@@ -141,8 +141,8 @@ function DirectorNewTeamContent() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -152,110 +152,156 @@ function DirectorNewTeamContent() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8">
+    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+      {/* Background Pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      />
+
+      {/* Blur Circles */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E31837] blur-[150px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500 blur-[120px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />
+
+      <div className="relative z-10 max-w-2xl mx-auto px-4 pt-32 pb-12">
+        {/* Back Link */}
         <Link
           href="/director/dashboard"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
         </Link>
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">New Team</h1>
-        {program && (
-          <div className="mt-2 flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-400">Adding team to:</span>
-            <Badge variant="info">{program.name}</Badge>
-          </div>
-        )}
-      </div>
 
-      <Card className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-              <p className="text-red-400 text-sm">{error}</p>
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-white tracking-tight">
+            New Team
+          </h1>
+          {program && (
+            <div className="mt-3 flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-white" />
+              <span className="text-gray-400">Adding team to:</span>
+              <Badge variant="info">{program.name}</Badge>
             </div>
           )}
+        </div>
 
-          {/* Team Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Team Name *
-            </label>
-            <Input
-              type="text"
-              placeholder="e.g., Houston Elite 17U"
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              required
-            />
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
+            <p className="text-red-400 text-sm flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-red-400" />
+              {error}
+            </p>
           </div>
+        )}
 
-          {/* Age Group & Division */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Form Card */}
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Team Name */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Age Group
+                Team Name *
               </label>
-              <Select
-                options={ageGroupOptions}
-                value={formData.ageGroup}
-                onChange={(e) => handleChange('ageGroup', e.target.value)}
+              <Input
+                type="text"
+                placeholder="e.g., Houston Elite 17U"
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                required
               />
             </div>
+
+            {/* Age Group & Division */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Age Group
+                </label>
+                <div className="relative">
+                  <select
+                    value={formData.ageGroup}
+                    onChange={(e) => handleChange('ageGroup', e.target.value)}
+                    className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
+                  >
+                    {ageGroupOptions.map((option) => (
+                      <option key={option.value} value={option.value} className="bg-[#0a1628]">
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Division
+                </label>
+                <div className="relative">
+                  <select
+                    value={formData.division}
+                    onChange={(e) => handleChange('division', e.target.value)}
+                    className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
+                  >
+                    {divisionOptions.map((option) => (
+                      <option key={option.value} value={option.value} className="bg-[#0a1628]">
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                </div>
+              </div>
+            </div>
+
+            {/* Coach Name */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Division
+                Coach Name
               </label>
-              <Select
-                options={divisionOptions}
-                value={formData.division}
-                onChange={(e) => handleChange('division', e.target.value)}
+              <Input
+                type="text"
+                placeholder="John Smith"
+                value={formData.coachName}
+                onChange={(e) => handleChange('coachName', e.target.value)}
               />
             </div>
-          </div>
 
-          {/* Coach Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Coach Name
-            </label>
-            <Input
-              type="text"
-              placeholder="John Smith"
-              value={formData.coachName}
-              onChange={(e) => handleChange('coachName', e.target.value)}
-            />
-          </div>
-
-          {/* Submit */}
-          <div className="flex gap-4 pt-4">
-            <Link href="/director/dashboard">
-              <Button type="button" variant="ghost">
-                Cancel
+            {/* Actions */}
+            <div className="flex gap-3 pt-4">
+              <Link href="/director/dashboard" className="flex-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full border-white/20 text-gray-300 hover:bg-white/10"
+                >
+                  Cancel
+                </Button>
+              </Link>
+              <Button
+                type="submit"
+                isLoading={isSubmitting}
+                className="flex-1 bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25"
+              >
+                Create Team
               </Button>
-            </Link>
-            <Button
-              type="submit"
-              isLoading={isSubmitting}
-              className="flex-1"
-            >
-              Create Team
-            </Button>
-          </div>
-        </form>
-      </Card>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   )
 }
 
 function NewTeamLoading() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
+    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
     </div>
   )
 }
