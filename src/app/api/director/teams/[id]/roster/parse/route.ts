@@ -188,6 +188,11 @@ Each player object should have these fields:
 - heightInches (number or null)
 - school (string or null)
 
+CRITICAL FORMATTING RULES:
+1. Capitalization: Convert ALL names and schools to proper Title Case (e.g., "John Smith", "Lincoln High"). Do NOT return all-caps or lowercase.
+2. School Names: Correct obvious spelling/punctuation errors in school names (e.g., convert "st marys" to "St. Mary's", "hs" to "High School").
+3. Unique Names: If a name appears to be unique or spelled creatively, PRESERVE the spelling but fix the capitalization. Do NOT autocorrect unique names to common dictionary words.
+
 Example output format:
 [{"firstName":"John","lastName":"Smith","jerseyNumber":"23","primaryPosition":"PG","graduationYear":2026,"heightFeet":6,"heightInches":2,"school":"Lincoln High"}]
 

@@ -15,6 +15,7 @@ import {
   MapPin,
   Building2,
   UserCog,
+  GraduationCap,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 
@@ -116,6 +117,13 @@ export default function AdminDashboard() {
       label: 'Manage Venues',
       description: 'Configure courts and locations',
       count: stats?.totalVenues || 0,
+    },
+    {
+      href: '/admin/colleges/import',
+      icon: GraduationCap,
+      label: 'Import College Data',
+      description: 'Upload CSVs for college coaches database',
+      count: null,
     },
   ]
 

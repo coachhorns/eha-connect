@@ -2,15 +2,17 @@ import prisma from '@/lib/prisma'
 
 interface CanViewStatsResult {
   canView: boolean
-  reason: 'guardian' | 'subscriber' | 'admin' | 'none'
+  reason: 'guardian' | 'subscriber' | 'admin' | 'director' | 'claimed' | 'none'
 }
 
 /**
  * Determines if a user can view detailed stats for a player
+ * - Returns true if player is claimed (has a guardian) and viewer is logged in
  * - Returns true if user is a Guardian of the player
+ * - Returns true if user is a Program Director with the player on their roster
  * - Returns true if user has an ACTIVE Subscription (any tier)
  * - Returns true if user is ADMIN
- * - Returns false otherwise
+ * - Returns false otherwise (unclaimed profiles require special access)
  */
 export async function canViewStats(
   userId: string | undefined,
@@ -21,8 +23,8 @@ export async function canViewStats(
     return { canView: false, reason: 'none' }
   }
 
-  // Check user role, guardian record, and subscription in parallel
-  const [user, guardian, subscription] = await Promise.all([
+  // Check user role, guardian record, subscription, and if player is claimed in parallel
+  const [user, guardian, subscription, playerGuardianCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: { role: true }
@@ -35,8 +37,16 @@ export async function canViewStats(
     prisma.subscription.findUnique({
       where: { userId },
       select: { status: true }
+    }),
+    prisma.guardian.count({
+      where: { playerId }
     })
   ])
+
+  // If player is claimed (has any guardian), any logged-in user can view
+  if (playerGuardianCount > 0) {
+    return { canView: true, reason: 'claimed' }
+  }
 
   // Admin users have full access
   if (user?.role === 'ADMIN') {
@@ -46,6 +56,24 @@ export async function canViewStats(
   // Guardian of this player has access
   if (guardian) {
     return { canView: true, reason: 'guardian' }
+  }
+
+  // Program Director can view players on their rosters
+  if (user?.role === 'PROGRAM_DIRECTOR') {
+    const playerOnDirectorRoster = await prisma.teamRoster.findFirst({
+      where: {
+        playerId,
+        leftAt: null,
+        team: {
+          program: {
+            ownerId: userId
+          }
+        }
+      }
+    })
+    if (playerOnDirectorRoster) {
+      return { canView: true, reason: 'director' }
+    }
   }
 
   // Active subscriber has access

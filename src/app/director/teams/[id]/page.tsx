@@ -667,7 +667,10 @@ export default function DirectorTeamDetailPage() {
                       {entry.jerseyNumber || entry.player.jerseyNumber || '-'}
                     </td>
                     <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
+                      <Link
+                        href={`/players/${entry.player.slug}`}
+                        className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                      >
                         {entry.player.profilePhoto ? (
                           <div className="relative w-10 h-10 rounded-full overflow-hidden">
                             <Image
@@ -684,10 +687,10 @@ export default function DirectorTeamDetailPage() {
                             </span>
                           </div>
                         )}
-                        <div className="font-medium text-white">
+                        <div className="font-medium text-white hover:text-[#E31837] transition-colors">
                           {entry.player.firstName} {entry.player.lastName}
                         </div>
-                      </div>
+                      </Link>
                     </td>
                     <td className="px-5 py-4 text-gray-300">
                       {entry.player.primaryPosition || '-'}
@@ -920,15 +923,18 @@ export default function DirectorTeamDetailPage() {
                     className="hidden"
                   />
                   <label htmlFor="roster-upload" className="cursor-pointer">
-                    <Upload className="w-12 h-12 text-white mx-auto mb-4" />
+                    <Upload className="w-12 h-12 text-white mx-auto mb-3" />
+                    <p className="text-gray-300 text-sm mb-1">
+                      Include: First Name, Last Name, Number, Position, Height, Grad Year, School
+                    </p>
+                    <p className="text-gray-400 text-xs mb-4">
+                      (any order - AI will figure it out)
+                    </p>
                     <p className="text-white font-medium mb-2">
                       Drop your roster file here or click to browse
                     </p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-gray-500 text-sm">
                       Supports CSV, PNG, and JPG files
-                    </p>
-                    <p className="text-gray-500 text-xs mt-2">
-                      AI will automatically extract player data from images and documents
                     </p>
                   </label>
                 </div>

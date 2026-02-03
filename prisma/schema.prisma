@@ -799,4 +799,45 @@ enum MediaType {
   HIGHLIGHT
 }
 
+// ============================================
+// COLLEGE RECRUITING
+// ============================================
+
+model College {
+  id          String   @id @default(cuid())
+  name        String   // Mapped from 'School'
+  slug        String   @unique
+  division    String   // Mapped from 'Division'
+  conference  String?  // Mapped from 'Conference'
+  city        String?  // Mapped from 'City'
+  state       String?  // Mapped from 'State'
+  region      String?  // Mapped from 'Region'
+  logo        String?
+
+  coaches     CollegeCoach[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name, state])
+  @@map("colleges")
+}
+
+model CollegeCoach {
+  id          String   @id @default(cuid())
+  collegeId   String
+  college     College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+
+  firstName   String   // Mapped from 'First name'
+  lastName    String   // Mapped from 'Last name'
+  title       String?  // Mapped from 'Position' (e.g. Head Coach)
+  email       String?  // Mapped from 'Email address'
+  phone       String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("college_coaches")
+}
+
 

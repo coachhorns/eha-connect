@@ -13,10 +13,12 @@ export async function sendEmail({
   to,
   subject,
   html,
+  replyTo,
 }: {
   to: string
   subject: string
   html: string
+  replyTo?: string
 }) {
   if (!process.env.RESEND_API_KEY) {
     console.warn('[Email] RESEND_API_KEY not set — skipping email send')
@@ -33,6 +35,7 @@ export async function sendEmail({
       to,
       subject,
       html,
+      ...(replyTo && { reply_to: replyTo }),
     })
 
     if (error) {

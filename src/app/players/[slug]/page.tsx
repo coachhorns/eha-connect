@@ -22,7 +22,7 @@ import { achievementBadges } from '@/lib/constants'
 import { canViewStats } from '@/lib/permissions'
 import StatsPaywall from '@/components/players/StatsPaywall'
 import ShareProfileButton from '@/components/players/ShareProfileButton'
-import ContactCoachButton from '@/components/players/ContactCoachButton'
+import RecruitingButton from '@/components/recruiting/RecruitingButton'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -249,9 +249,14 @@ export default async function PlayerProfilePage({ params }: PageProps) {
               ) : (
                 <ShareProfileButton playerName={`${player.firstName} ${player.lastName}`} />
               )}
-              {/* Contact Coach only visible to profile owners (player or guardian) */}
-              {isOwner && (
-                <ContactCoachButton playerName={`${player.firstName} ${player.lastName}`} />
+              {/* College Recruiting - visible to anyone who can view the profile */}
+              {canView && (
+                <RecruitingButton player={{
+                  firstName: player.firstName,
+                  lastName: player.lastName,
+                  graduationYear: player.graduationYear,
+                  slug: player.slug,
+                }} />
               )}
             </div>
           </div>
