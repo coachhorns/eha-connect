@@ -13,7 +13,7 @@ import {
   ShieldOff,
   MoreVertical,
 } from 'lucide-react'
-import { Card, Button, Badge, Avatar, Input, Modal } from '@/components/ui'
+import { Button, Badge, Avatar, Modal } from '@/components/ui'
 import { formatHeight, formatPosition } from '@/lib/utils'
 
 interface Player {
@@ -29,6 +29,12 @@ interface Player {
   graduationYear?: number | null
   isVerified: boolean
   isActive: boolean
+  guardians?: { id: string }[]
+  userId?: string | null
+}
+
+const isPlayerVerified = (player: Player): boolean => {
+  return player.isVerified || (player.guardians != null && player.guardians.length > 0) || !!player.userId
 }
 
 export default function AdminPlayersPage() {
@@ -74,7 +80,7 @@ export default function AdminPlayersPage() {
       await fetch(`/api/admin/players/${player.id}/verify`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isVerified: !player.isVerified }),
+        body: JSON.stringify({ isVerified: !isPlayerVerified(player) }),
       })
       fetchPlayers()
     } catch (error) {
@@ -110,25 +116,28 @@ export default function AdminPlayersPage() {
   }
 
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Manage Players</h1>
-          <p className="mt-2 text-gray-400">
-            Add, edit, and verify player profiles
-          </p>
+    <div className="min-h-screen">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div>
+              <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Manage Players</h1>
+              <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">Add, edit, and verify player profiles</p>
+            </div>
+            <Link href="/admin/players/new">
+              <Button className="flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Add Player
+              </Button>
+            </Link>
+          </div>
         </div>
-        <Link href="/admin/players/new">
-          <Button className="flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Add Player
-          </Button>
-        </Link>
-      </div>
+      </header>
+      <main className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10">
 
       {/* Search */}
-      <Card className="mb-6 p-4">
+      <div className="mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
           <input
@@ -136,21 +145,21 @@ export default function AdminPlayersPage() {
             placeholder="Search players..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-[#1a3a6e] border border-[#1a3a6e] rounded-lg text-white placeholder-gray-500 focus:border-eha-red transition-all"
+            className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
           />
         </div>
-      </Card>
+      </div>
 
       {/* Players Table */}
-      <Card>
+      <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
         {isLoading ? (
           <div className="p-8">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="animate-pulse flex items-center gap-4 py-4 border-b border-[#1a3a6e]">
-                <div className="w-10 h-10 bg-[#1a3a6e] rounded-full" />
+              <div key={i} className="animate-pulse flex items-center gap-4 py-4 border-b border-white/5">
+                <div className="w-10 h-10 bg-white/10 rounded-full" />
                 <div className="flex-1">
-                  <div className="h-4 bg-[#1a3a6e] rounded w-1/4 mb-2" />
-                  <div className="h-3 bg-[#1a3a6e] rounded w-1/3" />
+                  <div className="h-4 bg-white/10 rounded w-1/4 mb-2" />
+                  <div className="h-3 bg-white/10 rounded w-1/3" />
                 </div>
               </div>
             ))}
@@ -162,32 +171,32 @@ export default function AdminPlayersPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#1a3a6e]">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+              <thead className="bg-white/5 border-b border-white/5">
+                <tr>
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Player
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Position
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     School
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Class
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">
+                  <th className="px-6 py-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">
+                  <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1a3a6e]">
+              <tbody className="divide-y divide-white/5">
                 {players.map((player) => (
-                  <tr key={player.id} className="hover:bg-[#1a3a6e]/50 transition-colors">
-                    <td className="px-4 py-4">
+                  <tr key={player.id} className="hover:bg-white/5 transition-colors">
+                    <td className="px-6 py-5">
                       <Link href={`/players/${player.slug}`} className="flex items-center gap-3 hover:text-eha-red">
                         <Avatar
                           src={player.profilePhoto}
@@ -206,17 +215,17 @@ export default function AdminPlayersPage() {
                         </div>
                       </Link>
                     </td>
-                    <td className="px-4 py-4 text-gray-400">
+                    <td className="px-6 py-5 text-gray-400">
                       {formatPosition(player.primaryPosition)}
                     </td>
-                    <td className="px-4 py-4 text-gray-400">
+                    <td className="px-6 py-5 text-gray-400">
                       {player.school || '-'}
                     </td>
-                    <td className="px-4 py-4 text-gray-400">
+                    <td className="px-6 py-5 text-gray-400">
                       {player.graduationYear || '-'}
                     </td>
-                    <td className="px-4 py-4 text-center">
-                      {player.isVerified ? (
+                    <td className="px-6 py-5 text-center">
+                      {isPlayerVerified(player) ? (
                         <Badge variant="success" size="sm" className="flex items-center gap-1 w-fit mx-auto">
                           <Shield className="w-3 h-3" />
                           Verified
@@ -228,15 +237,15 @@ export default function AdminPlayersPage() {
                         </Badge>
                       )}
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-6 py-5">
                       <div className="flex items-center justify-end gap-2">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => toggleVerification(player)}
-                          title={player.isVerified ? 'Remove verification' : 'Verify player'}
+                          title={isPlayerVerified(player) ? 'Remove verification' : 'Verify player'}
                         >
-                          {player.isVerified ? (
+                          {isPlayerVerified(player) ? (
                             <ShieldOff className="w-4 h-4 text-white" />
                           ) : (
                             <Shield className="w-4 h-4 text-white" />
@@ -265,7 +274,7 @@ export default function AdminPlayersPage() {
             </table>
           </div>
         )}
-      </Card>
+      </div>
 
       {/* Delete Modal */}
       <Modal
@@ -298,6 +307,8 @@ export default function AdminPlayersPage() {
           </Button>
         </div>
       </Modal>
+
+      </main>
     </div>
   )
 }

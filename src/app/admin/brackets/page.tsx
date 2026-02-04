@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  ArrowLeft,
   Plus,
   Trash2,
   Trophy,
@@ -17,7 +16,7 @@ import {
   GitBranch,
   LayoutGrid,
 } from 'lucide-react'
-import { Card, Button, Badge, Select } from '@/components/ui'
+import { Button, Badge } from '@/components/ui'
 
 interface Event {
   id: string
@@ -147,60 +146,45 @@ export default function BracketsPage() {
   const elimBrackets = brackets.filter(b => b.type === 'SINGLE_ELIM' || b.type === 'DOUBLE_ELIM')
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-4">
-          <Link href="/admin">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-white">Brackets & Pools</h1>
-            <p className="text-sm text-gray-500">
-              Manage tournament brackets and pool play groups
-            </p>
+    <div className="min-h-screen">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div>
+              <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Brackets & Pools</h1>
+              <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">Manage tournament brackets and pool play groups</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isRefreshing}>
+                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </Button>
+              <Link href="/admin/brackets/new">
+                <Button className="flex items-center gap-2"><Plus className="w-4 h-4" />New Bracket / Pool</Button>
+              </Link>
+            </div>
           </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </Button>
-          <Link href="/admin/brackets/new">
-            <Button className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              New Bracket / Pool
-            </Button>
-          </Link>
-        </div>
-      </div>
+      </header>
+      <main className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10">
 
       {/* Filter */}
-      <Card className="p-4 mb-6">
-        <div className="flex items-center gap-4">
-          <Calendar className="w-5 h-5 text-gray-500" />
-          <div className="w-64">
-            <Select
-              value={eventFilter}
-              onChange={(e) => setEventFilter(e.target.value)}
-              options={[
-                { value: '', label: 'All Events' },
-                ...events.map(e => ({ value: e.id, label: e.name })),
-              ]}
-            />
-          </div>
-          <span className="text-sm text-gray-500">
-            {brackets.length} bracket{brackets.length !== 1 ? 's' : ''} found
-          </span>
-        </div>
-      </Card>
+      <div className="mb-8 flex items-center gap-4">
+        <Calendar className="w-5 h-5 text-gray-500" />
+        <select
+          className="bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm w-64 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+          value={eventFilter}
+          onChange={(e) => setEventFilter(e.target.value)}
+        >
+          <option className="bg-[#0A1D37] text-white" value="">All Events</option>
+          {events.map(e => (
+            <option className="bg-[#0A1D37] text-white" key={e.id} value={e.id}>{e.name}</option>
+          ))}
+        </select>
+        <span className="text-sm text-gray-500">
+          {brackets.length} bracket{brackets.length !== 1 ? 's' : ''} found
+        </span>
+      </div>
 
       {/* Error Banner */}
       {error && (
@@ -218,7 +202,7 @@ export default function BracketsPage() {
 
       {/* Content */}
       {brackets.length === 0 ? (
-        <Card className="p-12 text-center">
+        <div className="bg-[#152e50]/30 border border-white/5 rounded-sm p-12 text-center">
           <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-white mb-2">No Brackets Yet</h3>
           <p className="text-gray-400 mb-6 max-w-md mx-auto">
@@ -230,13 +214,13 @@ export default function BracketsPage() {
               Create First Bracket
             </Button>
           </Link>
-        </Card>
+        </div>
       ) : (
         <div className="space-y-8">
           {/* Pool Play Section */}
           {poolBrackets.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <h2 className="font-heading text-[10px] font-extrabold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
                 <LayoutGrid className="w-5 h-5 text-blue-400" />
                 Pool Play Groups
                 <Badge variant="default">{poolBrackets.length}</Badge>
@@ -257,7 +241,7 @@ export default function BracketsPage() {
           {/* Elimination Brackets Section */}
           {elimBrackets.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <h2 className="font-heading text-[10px] font-extrabold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
                 <GitBranch className="w-5 h-5 text-green-400" />
                 Elimination Brackets
                 <Badge variant="default">{elimBrackets.length}</Badge>
@@ -276,6 +260,7 @@ export default function BracketsPage() {
           )}
         </div>
       )}
+    </main>
     </div>
   )
 }
@@ -292,7 +277,7 @@ function BracketCard({
   const Icon = TYPE_ICONS[bracket.type] || GitBranch
 
   return (
-    <Card variant="hover" className="p-4">
+    <div className="bg-[#152e50]/30 border border-white/5 rounded-sm p-5 hover:border-eha-red/50 hover:-translate-y-0.5 transition-all">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
@@ -347,7 +332,7 @@ function BracketCard({
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-4 pt-4 border-t border-eha-silver/20 flex items-center justify-between">
+      <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
         <span className="text-xs text-gray-500">
           Created {new Date(bracket.createdAt).toLocaleDateString()}
         </span>
@@ -358,6 +343,6 @@ function BracketCard({
           </Button>
         </Link>
       </div>
-    </Card>
+    </div>
   )
 }

@@ -26,7 +26,7 @@ import {
   X,
   Wand2,
 } from 'lucide-react'
-import { Card, Button, Badge, Select } from '@/components/ui'
+import { Button, Badge } from '@/components/ui'
 
 interface Team {
   id: string
@@ -83,7 +83,7 @@ function DraggableGameCard({
 }) {
   return (
     <div
-      className={`p-3 bg-dark-surface border border-eha-silver/20 rounded-lg cursor-grab active:cursor-grabbing transition-all ${isDragging ? 'opacity-50 ring-2 ring-eha-red' : 'hover:border-eha-red/50'
+      className={`p-3 bg-white/5 border border-white/10 rounded-lg cursor-grab active:cursor-grabbing transition-all ${isDragging ? 'opacity-50 ring-2 ring-eha-red' : 'hover:border-eha-red/50'
         }`}
     >
       <div className="flex items-start gap-2">
@@ -132,7 +132,7 @@ function DroppableCell({
 }) {
   return (
     <div
-      className={`min-h-[60px] border-b border-r border-eha-silver/10 p-1 transition-colors ${isOver ? 'bg-eha-red/20' : game ? 'bg-eha-navy/50' : 'hover:bg-white/5'
+      className={`min-h-[60px] border-b border-r border-white/5 p-1 transition-colors ${isOver ? 'bg-eha-red/20' : game ? 'bg-white/5' : 'hover:bg-white/5'
         }`}
     >
       {game && (
@@ -396,7 +396,7 @@ export default function SchedulingGridPage() {
 
               <div className="flex items-center gap-3">
                 {/* Date Navigation */}
-                <div className="flex items-center gap-2 bg-dark-surface rounded-lg p-1">
+                <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
                   <Button variant="ghost" size="sm" onClick={goToPreviousDay}>
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
@@ -469,8 +469,8 @@ export default function SchedulingGridPage() {
         {/* Main Content */}
         <div className="flex h-[calc(100vh-80px)]">
           {/* Sidebar - Unscheduled Games */}
-          <div className="w-[300px] flex-shrink-0 border-r border-eha-silver/20 bg-dark-surface overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-eha-silver/20">
+          <div className="w-[300px] flex-shrink-0 border-r border-white/10 bg-[#0A1D37] overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-white/10">
               <h2 className="font-semibold text-white mb-3 flex items-center gap-2">
                 <Filter className="w-4 h-4" />
                 Unscheduled Games
@@ -479,22 +479,26 @@ export default function SchedulingGridPage() {
 
               {/* Filters */}
               <div className="space-y-2">
-                <Select
+                <select
                   value={eventFilter}
                   onChange={(e) => setEventFilter(e.target.value)}
-                  options={[
-                    { value: '', label: 'All Events' },
-                    ...events.map((e) => ({ value: e.id, label: e.name })),
-                  ]}
-                />
-                <Select
+                  className="w-full bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+                >
+                  <option value="" className="bg-[#0A1D37] text-white">All Events</option>
+                  {events.map((e) => (
+                    <option key={e.id} value={e.id} className="bg-[#0A1D37] text-white">{e.name}</option>
+                  ))}
+                </select>
+                <select
                   value={divisionFilter}
                   onChange={(e) => setDivisionFilter(e.target.value)}
-                  options={[
-                    { value: '', label: 'All Divisions' },
-                    ...divisions.map((d) => ({ value: d, label: d })),
-                  ]}
-                />
+                  className="w-full bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+                >
+                  <option value="" className="bg-[#0A1D37] text-white">All Divisions</option>
+                  {divisions.map((d) => (
+                    <option key={d} value={d} className="bg-[#0A1D37] text-white">{d}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -525,7 +529,7 @@ export default function SchedulingGridPage() {
           <div className="flex-1 overflow-auto min-w-0">
             {allCourts.length === 0 ? (
               <div className="flex items-center justify-center h-full">
-                <Card className="p-8 text-center max-w-md">
+                <div className="bg-[#152e50]/30 border border-white/5 rounded-sm p-8 text-center max-w-md">
                   <AlertCircle className="w-12 h-12 text-gray-600 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-white mb-2">
                     No Courts Available
@@ -537,17 +541,17 @@ export default function SchedulingGridPage() {
                   <Link href="/admin/venues">
                     <Button>Manage Venues</Button>
                   </Link>
-                </Card>
+                </div>
               </div>
             ) : (
               <div className="min-w-max">
                 {/* Court Headers */}
-                <div className="sticky top-0 z-30 bg-eha-navy flex border-b border-eha-silver/20">
-                  <div className="w-20 flex-shrink-0 p-2 border-r border-eha-silver/20" />
+                <div className="sticky top-0 z-30 bg-[#0A1D37] flex border-b border-white/10">
+                  <div className="w-20 flex-shrink-0 p-2 border-r border-white/10" />
                   {allCourts.map((court) => (
                     <div
                       key={court.id}
-                      className="w-40 flex-shrink-0 p-2 border-r border-eha-silver/20 text-center"
+                      className="w-40 flex-shrink-0 p-2 border-r border-white/10 text-center"
                     >
                       <p className="font-medium text-white text-sm">{court.name}</p>
                       <p className="text-xs text-gray-500">{court.venueName}</p>
@@ -559,7 +563,7 @@ export default function SchedulingGridPage() {
                 {TIME_SLOTS.map((slot) => (
                   <div key={`${slot.hour}-${slot.minute}`} className="flex">
                     {/* Time Label */}
-                    <div className="w-20 flex-shrink-0 p-2 border-r border-b border-eha-silver/20 text-right">
+                    <div className="w-20 flex-shrink-0 p-2 border-r border-b border-white/5 text-right">
                       <span className="text-xs text-gray-500">{slot.label}</span>
                     </div>
 

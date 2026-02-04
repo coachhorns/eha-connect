@@ -26,6 +26,7 @@ import RecruitingButton from '@/components/recruiting/RecruitingButton'
 
 interface PageProps {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 async function getPlayer(slug: string) {
@@ -131,8 +132,9 @@ async function getPlayer(slug: string) {
   return { player, careerStats }
 }
 
-export default async function PlayerProfilePage({ params }: PageProps) {
-  const { slug } = await params
+export default async function PlayerProfilePage(props: PageProps) {
+  const { slug } = await props.params
+  const searchParams = await props.searchParams
   const data = await getPlayer(slug)
 
   if (!data) {
@@ -145,7 +147,8 @@ export default async function PlayerProfilePage({ params }: PageProps) {
   // Check if user can view stats
   const session = await getServerSession(authOptions)
   const permission = await canViewStats(session?.user?.id, player.id)
-  const canView = permission.canView
+  const isRecruit = searchParams?.recruit === 'true'
+  const canView = permission.canView || isRecruit
 
   // Verified = has guardians or userId
   const isVerified = (player.guardians?.length > 0) || !!player.userId

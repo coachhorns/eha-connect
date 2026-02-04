@@ -17,7 +17,7 @@ import {
   UserCog,
   GraduationCap,
 } from 'lucide-react'
-import { Card, Button, Badge } from '@/components/ui'
+import { Button, Badge } from '@/components/ui'
 
 interface Stats {
   totalPlayers: number
@@ -128,130 +128,97 @@ export default function AdminDashboard() {
   ]
 
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Admin Dashboard</h1>
-        <p className="mt-2 text-gray-400">
-          Manage players, teams, events, and stats
-        </p>
-      </div>
-
-      {/* Stats Overview */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <Link href="/admin/programs">
-          <Card className="p-4 hover:bg-white/5 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{stats?.totalPrograms || 0}</p>
-                <p className="text-sm text-gray-500">Programs</p>
-              </div>
-            </div>
-          </Card>
-        </Link>
-
-        <Link href="/admin/players">
-          <Card className="p-4 hover:bg-white/5 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{stats?.totalPlayers || 0}</p>
-                <p className="text-sm text-gray-500">Players</p>
-              </div>
-            </div>
-          </Card>
-        </Link>
-
-        <Link href="/admin/teams">
-          <Card className="p-4 hover:bg-white/5 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                <UsersRound className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{stats?.totalTeams || 0}</p>
-                <p className="text-sm text-gray-500">Teams</p>
-              </div>
-            </div>
-          </Card>
-        </Link>
-
-        <Link href="/admin/events">
-          <Card className="p-4 hover:bg-white/5 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{stats?.totalEvents || 0}</p>
-                <p className="text-sm text-gray-500">Events</p>
-              </div>
-            </div>
-          </Card>
-        </Link>
-
-        <Link href="/admin/settings/payments">
-          <Card className="p-4 hover:bg-white/5 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{stats?.activeSubscriptions || 0}</p>
-                <p className="text-sm text-gray-500">Subscribers</p>
-              </div>
-            </div>
-          </Card>
-        </Link>
-      </div>
-
-      {/* Quick Links */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        {quickLinks.map((link, index) => (
-          <Link key={`${link.href}-${index}`} href={link.href}>
-            <Card variant="hover" className="p-6 h-full">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
-                    <link.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">{link.label}</h3>
-                    <p className="text-sm text-gray-500">{link.description}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {link.count !== null && (
-                    <Badge variant="default">{link.count}</Badge>
-                  )}
-                  <ChevronRight className="w-5 h-5 text-gray-500" />
-                </div>
-              </div>
-            </Card>
-          </Link>
-        ))}
-      </div>
-
-      {/* Live Game Management */}
-      <Card className="p-6 bg-gradient-to-br from-eha-red to-red-900 border-red-500">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-white mb-2">Live Game Management</h2>
-            <p className="text-white/80">Enter Scorekeeper Mode to manage live games</p>
-          </div>
-          <Link href="/scorekeeper">
-            <Button className="flex items-center gap-3 bg-white text-eha-red hover:bg-white/90 px-6 py-3 text-lg font-semibold">
-              <BarChart3 className="w-6 h-6" />
-              Scorekeeper Mode
-            </Button>
-          </Link>
+    <div className="min-h-screen">
+      {/* Header Section */}
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
+          <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">
+            Admin Panel
+          </span>
+          <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">
+            Dashboard
+          </h1>
+          <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">
+            Manage players, teams, events, and stats
+          </p>
         </div>
-      </Card>
+      </header>
+
+      <main className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10">
+
+        {/* Stats Overview */}
+        <section className="mb-10">
+          <h2 className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-6">Overview</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            {[
+              { href: '/admin/programs', icon: Building2, value: stats?.totalPrograms || 0, label: 'Programs' },
+              { href: '/admin/players', icon: Users, value: stats?.totalPlayers || 0, label: 'Players' },
+              { href: '/admin/teams', icon: UsersRound, value: stats?.totalTeams || 0, label: 'Teams' },
+              { href: '/admin/events', icon: Calendar, value: stats?.totalEvents || 0, label: 'Events' },
+              { href: '/admin/settings/payments', icon: Trophy, value: stats?.activeSubscriptions || 0, label: 'Subscribers' },
+            ].map((stat) => (
+              <Link key={stat.href} href={stat.href}>
+                <div className="bg-[#152e50]/50 border border-white/5 p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all group">
+                  <div className="flex items-center gap-3 mb-3">
+                    <stat.icon className="w-5 h-5 text-gray-400 group-hover:text-eha-red transition-colors" />
+                  </div>
+                  <span className="block text-3xl font-extrabold text-white">{stat.value}</span>
+                  <span className="block mt-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Quick Links */}
+        <section className="mb-10">
+          <h2 className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-6">Quick Actions</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {quickLinks.map((link, index) => (
+              <Link key={`${link.href}-${index}`} href={link.href}>
+                <div className="bg-[#152e50]/30 border border-white/5 rounded-sm p-6 hover:border-eha-red/50 hover:-translate-y-0.5 transition-all group h-full">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-11 h-11 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center group-hover:border-eha-red/30 transition-colors">
+                        <link.icon className="w-5 h-5 text-gray-400 group-hover:text-eha-red transition-colors" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white text-sm">{link.label}</h3>
+                        <p className="text-xs text-gray-500 mt-0.5">{link.description}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {link.count !== null && (
+                        <Badge variant="default">{link.count}</Badge>
+                      )}
+                      <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-eha-red transition-colors" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Live Game Management */}
+        <section>
+          <div className="relative overflow-hidden rounded-sm border border-eha-red/30 bg-gradient-to-br from-eha-red to-red-900 p-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
+              <div>
+                <h2 className="font-heading font-bold text-xl text-white uppercase tracking-tight mb-1">Live Game Management</h2>
+                <p className="text-white/70 text-sm font-bold uppercase tracking-widest">Enter Scorekeeper Mode to manage live games</p>
+              </div>
+              <Link href="/scorekeeper">
+                <Button className="flex items-center gap-3 bg-white text-eha-red hover:bg-white/90">
+                  <BarChart3 className="w-5 h-5" />
+                  Scorekeeper Mode
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+      </main>
     </div>
   )
 }

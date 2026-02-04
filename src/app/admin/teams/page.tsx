@@ -12,7 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
-import { Card, Button, Input, Badge, Modal } from '@/components/ui'
+import { Button, Badge, Modal } from '@/components/ui'
 
 interface Team {
   id: string
@@ -116,45 +116,43 @@ export default function AdminTeamsPage() {
   }
 
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Manage Teams</h1>
-          <p className="mt-2 text-gray-400">
-            View and manage all registered teams
-          </p>
+    <div className="min-h-screen">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div>
+              <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Manage Teams</h1>
+              <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">View and manage all registered teams</p>
+            </div>
+            <Link href="/admin/teams/new">
+              <Button className="flex items-center gap-2"><Users className="w-4 h-4" />Add Team</Button>
+            </Link>
+          </div>
         </div>
-        <Link href="/admin/teams/new">
-          <Button className="mt-4 sm:mt-0 flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            Add Team
-          </Button>
-        </Link>
-      </div>
+      </header>
+      <main className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10">
 
       {/* Search */}
-      <Card className="mb-6 p-4">
-        <form onSubmit={handleSearch} className="flex gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-              <Input
-                placeholder="Search teams..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+      <form onSubmit={handleSearch} className="flex gap-4 mb-8">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <input
+              placeholder="Search teams..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+            />
           </div>
-          <Button type="submit" variant="secondary">
-            Search
-          </Button>
-        </form>
-      </Card>
+        </div>
+        <Button type="submit" variant="secondary">
+          Search
+        </Button>
+      </form>
 
       {/* Teams Table */}
-      <Card className="overflow-hidden p-0">
+      <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
@@ -168,33 +166,33 @@ export default function AdminTeamsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#1a3a6e]">
+              <thead className="bg-white/5 border-b border-white/5">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Name
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Coach
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Age Group
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Division
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1a3a6e]">
+              <tbody className="divide-y divide-white/5">
                 {teams.map((team) => (
                   <tr
                     key={team.id}
-                    className={`hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer ${!team.isActive ? 'opacity-60' : ''}`}
+                    className={`hover:bg-white/5 transition-colors cursor-pointer ${!team.isActive ? 'opacity-60' : ''}`}
                     onClick={() => router.push(`/admin/teams/${team.id}`)}
                   >
                     <td className="px-6 py-4">
@@ -257,7 +255,7 @@ export default function AdminTeamsPage() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-[#1a3a6e]">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
             <p className="text-sm text-gray-500">
               Showing {((page - 1) * pagination.limit) + 1} to{' '}
               {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} teams
@@ -285,7 +283,7 @@ export default function AdminTeamsPage() {
             </div>
           </div>
         )}
-      </Card>
+      </div>
 
       {/* Delete Confirmation Modal */}
       <Modal
@@ -315,6 +313,6 @@ export default function AdminTeamsPage() {
           </div>
         </div>
       </Modal>
-    </div>
+    </main></div>
   )
 }

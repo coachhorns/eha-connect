@@ -16,7 +16,7 @@ import {
   MoreVertical,
   Calendar,
 } from 'lucide-react'
-import { Card, Button, Input, Select, Badge, Modal } from '@/components/ui'
+import { Button, Badge, Modal } from '@/components/ui'
 
 interface Game {
   id: string
@@ -161,56 +161,59 @@ export default function AdminGamesPage() {
   }
 
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Manage Games</h1>
-          <p className="mt-2 text-gray-400">
-            Schedule and manage games across all events
-          </p>
+    <div className="min-h-screen">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div>
+              <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Manage Games</h1>
+              <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">Schedule and manage games across all events</p>
+            </div>
+            <Link href="/admin/games/new">
+              <Button className="flex items-center gap-2"><Plus className="w-4 h-4" />Schedule Game</Button>
+            </Link>
+          </div>
         </div>
-        <Link href="/admin/games/new">
-          <Button className="mt-4 sm:mt-0 flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Schedule Game
-          </Button>
-        </Link>
-      </div>
+      </header>
+      <main className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10">
 
       {/* Filters */}
-      <Card className="mb-6 p-4">
-        <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-              <Input
-                placeholder="Search by team or event name..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-          <div className="flex gap-4">
-            <Select
-              options={statusOptions}
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value)
-                setPage(1)
-              }}
-              className="w-40"
+      <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-4 mb-8">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <input
+              placeholder="Search by team or event name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
             />
-            <Button type="submit" variant="secondary">
-              Search
-            </Button>
           </div>
-        </form>
-      </Card>
+        </div>
+        <div className="flex gap-4">
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value)
+              setPage(1)
+            }}
+            className="bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+          >
+            {statusOptions.map((opt) => (
+              <option key={opt.value} value={opt.value} className="bg-[#0A1D37] text-white">
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <Button type="submit" variant="secondary">
+            Search
+          </Button>
+        </div>
+      </form>
 
       {/* Games Table */}
-      <Card className="overflow-hidden p-0">
+      <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
@@ -227,38 +230,38 @@ export default function AdminGamesPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#1a3a6e]">
+              <thead className="bg-white/5 border-b border-white/5">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Date
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Home Team
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Away Team
                   </th>
-                  <th className="px-6 py-4 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Score
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Event
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1a3a6e]">
+              <tbody className="divide-y divide-white/5">
                 {games.map((game) => {
                   const statusBadge = getStatusBadge(game.status)
                   return (
                     <tr
                       key={game.id}
-                      className="hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer"
+                      className="hover:bg-white/5 transition-colors cursor-pointer"
                       onClick={() => router.push(`/admin/games/${game.id}`)}
                     >
                       <td className="px-6 py-4">
@@ -310,13 +313,13 @@ export default function AdminGamesPage() {
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                             {openDropdown === game.id && (
-                              <div className="absolute right-0 top-full mt-1 w-48 bg-dark-surface border border-[#1a3a6e] rounded-lg shadow-xl z-10">
+                              <div className="absolute right-0 top-full mt-1 w-48 bg-[#0A1D37] border border-white/10 rounded-sm shadow-xl z-10">
                                 <button
                                   onClick={() => {
                                     setDeleteModal({ isOpen: true, game })
                                     setOpenDropdown(null)
                                   }}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-[#1a3a6e] transition-colors"
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-white/10 transition-colors"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                   Delete
@@ -336,7 +339,7 @@ export default function AdminGamesPage() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-[#1a3a6e]">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
             <p className="text-sm text-gray-500">
               Showing {((page - 1) * pagination.limit) + 1} to{' '}
               {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} games
@@ -364,7 +367,7 @@ export default function AdminGamesPage() {
             </div>
           </div>
         )}
-      </Card>
+      </div>
 
       {/* Delete Confirmation Modal */}
       <Modal
@@ -403,6 +406,8 @@ export default function AdminGamesPage() {
           onClick={() => setOpenDropdown(null)}
         />
       )}
+
+      </main>
     </div>
   )
 }

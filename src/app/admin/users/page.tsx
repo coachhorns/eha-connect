@@ -19,7 +19,7 @@ import {
   Trash2,
   AlertTriangle,
 } from 'lucide-react'
-import { Card, Button, Input, Select, Badge, Avatar, Modal } from '@/components/ui'
+import { Button, Badge, Avatar, Modal } from '@/components/ui'
 
 interface Program {
   id: string
@@ -250,196 +250,213 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-white uppercase tracking-wider">User Management</h1>
-          <p className="mt-2 text-gray-400">
-            View and manage all registered users
-          </p>
+    <div className="min-h-screen">
+      {/* Header Section — matches Player Profile hero pattern */}
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+        <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div>
+              <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">
+                Admin Panel
+              </span>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">
+                User Management
+              </h1>
+              <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">
+                View and manage all registered users
+              </p>
+            </div>
+            <div>
+              {pagination && (
+                <Badge variant="default" size="lg">
+                  {pagination.total} Total Users
+                </Badge>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="mt-4 sm:mt-0">
-          {pagination && (
-            <Badge variant="default" size="lg">
-              {pagination.total} Total Users
-            </Badge>
-          )}
-        </div>
-      </div>
+      </header>
 
-      {/* Filters */}
-      <Card className="mb-6 p-4">
-        <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-4">
+      {/* Main Content */}
+      <main className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10">
+
+        {/* Filters */}
+        <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-4 mb-8">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-              <Input
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <input
+                type="text"
                 placeholder="Search by name or email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
+                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
               />
             </div>
           </div>
           <div className="flex gap-4">
-            <Select
-              options={roleOptions}
+            <select
               value={roleFilter}
               onChange={(e) => {
                 setRoleFilter(e.target.value)
                 setPage(1)
               }}
-              className="w-40"
-            />
+              className="bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+            >
+              {roleOptions.map((opt) => (
+                <option key={opt.value} value={opt.value} className="bg-[#0A1D37] text-white">
+                  {opt.label}
+                </option>
+              ))}
+            </select>
             <Button type="submit" variant="secondary">
               Search
             </Button>
           </div>
         </form>
-      </Card>
 
-      {/* Users Table */}
-      <Card className="overflow-hidden p-0">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
-          </div>
-        ) : users.length === 0 ? (
-          <div className="text-center py-12">
-            <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No users found</h3>
-            <p className="text-gray-500">Try adjusting your search or filters</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-[#1a3a6e]">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Connected Entities
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Joined
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#1a3a6e]">
-                {users.map((user) => {
-                  const roleBadge = getRoleBadge(user.role)
-                  return (
-                    <tr
-                      key={user.id}
-                      className="hover:bg-[#1a3a6e]/50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <Avatar
-                            src={user.image}
-                            name={user.name || user.email}
-                            size="md"
-                          />
-                          <div>
-                            <div className="font-medium text-white">
-                              {user.name || 'No name'}
-                            </div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Badge variant={roleBadge.variant}>
-                          <roleBadge.icon className="w-3 h-3 mr-1" />
-                          {roleBadge.label}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
-                          {user.ownedPrograms.length > 0 && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <Building2 className="w-4 h-4 text-blue-400" />
-                              <span className="text-gray-300">
-                                Director: {user.ownedPrograms.map(p => p.name).join(', ')}
-                              </span>
-                            </div>
-                          )}
-                          {user.guardians.length > 0 && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <Baby className="w-4 h-4 text-green-400" />
-                              <span className="text-gray-300">
-                                Linked to: {user.guardians.map(g => `${g.player.firstName} ${g.player.lastName}`).join(', ')}
-                              </span>
-                            </div>
-                          )}
-                          {user.ownedPrograms.length === 0 && user.guardians.length === 0 && (
-                            <span className="text-gray-600 text-sm">None</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-gray-400">
-                          {format(new Date(user.createdAt), 'MMM d, yyyy')}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openEditModal(user)}
-                          className="flex items-center gap-1"
-                        >
-                          <Edit className="w-4 h-4" />
-                          Edit
-                        </Button>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Pagination */}
-        {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-[#1a3a6e]">
-            <p className="text-sm text-gray-500">
-              Showing {((page - 1) * pagination.limit) + 1} to{' '}
-              {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} users
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <span className="text-sm text-gray-400">
-                Page {page} of {pagination.totalPages}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={page === pagination.totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
+        {/* Users Table */}
+        <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
             </div>
-          </div>
-        )}
-      </Card>
+          ) : users.length === 0 ? (
+            <div className="text-center py-16">
+              <Users className="w-12 h-12 text-white/20 mx-auto mb-4" />
+              <h3 className="font-heading text-lg font-bold text-white mb-2">No users found</h3>
+              <p className="text-gray-500 text-sm uppercase tracking-widest">Try adjusting your search or filters</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-white/5 border-b border-white/5">
+                  <tr>
+                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                      User
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                      Role
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                      Connected Entities
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                      Joined
+                    </th>
+                    <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {users.map((user) => {
+                    const roleBadge = getRoleBadge(user.role)
+                    return (
+                      <tr
+                        key={user.id}
+                        className="hover:bg-white/5 transition-colors"
+                      >
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <Avatar
+                              src={user.image}
+                              name={user.name || user.email}
+                              size="md"
+                            />
+                            <div>
+                              <div className="font-bold text-sm text-white">
+                                {user.name || 'No name'}
+                              </div>
+                              <div className="text-sm text-gray-400">{user.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5">
+                          <Badge variant={roleBadge.variant}>
+                            <roleBadge.icon className="w-3 h-3 mr-1" />
+                            {roleBadge.label}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-5">
+                          <div className="space-y-1">
+                            {user.ownedPrograms.length > 0 && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <Building2 className="w-4 h-4 text-blue-400" />
+                                <span className="text-gray-300">
+                                  Director: {user.ownedPrograms.map(p => p.name).join(', ')}
+                                </span>
+                              </div>
+                            )}
+                            {user.guardians.length > 0 && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <Baby className="w-4 h-4 text-green-400" />
+                                <span className="text-gray-300">
+                                  Linked to: {user.guardians.map(g => `${g.player.firstName} ${g.player.lastName}`).join(', ')}
+                                </span>
+                              </div>
+                            )}
+                            {user.ownedPrograms.length === 0 && user.guardians.length === 0 && (
+                              <span className="text-gray-600 text-sm">None</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="text-sm font-bold text-white">
+                            {format(new Date(user.createdAt), 'MMM d, yyyy')}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEditModal(user)}
+                            className="flex items-center gap-1"
+                          >
+                            <Edit className="w-4 h-4" />
+                            Edit
+                          </Button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                Showing {((page - 1) * pagination.limit) + 1} to{' '}
+                {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} users
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <span className="text-sm font-bold text-gray-400">
+                  Page {page} of {pagination.totalPages}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={page === pagination.totalPages}
+                  onClick={() => setPage(page + 1)}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
 
       {/* Edit User Modal */}
       <Modal
@@ -450,24 +467,24 @@ export default function AdminUsersPage() {
         {editModal.user && (
           <form onSubmit={handleEditSubmit} className="space-y-6">
             {/* User Info Header */}
-            <div className="flex items-center gap-4 p-4 bg-[#1a3a6e]/30 rounded-lg">
+            <div className="flex items-center gap-4 p-4 bg-white/5 rounded-sm border border-white/10">
               <Avatar
                 src={editModal.user.image}
                 name={editModal.user.name || editModal.user.email}
                 size="lg"
               />
               <div>
-                <div className="font-medium text-white text-lg">
+                <div className="font-bold text-white text-lg">
                   {editModal.user.name || 'No name'}
                 </div>
-                <div className="text-gray-400">{editModal.user.email}</div>
+                <div className="text-gray-400 text-sm">{editModal.user.email}</div>
               </div>
             </div>
 
             {/* Connected Entities (Read-only) */}
             {(editModal.user.ownedPrograms.length > 0 || editModal.user.guardians.length > 0) && (
-              <div className="p-4 bg-[#1a3a6e]/20 rounded-lg space-y-2">
-                <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider">
+              <div className="p-4 bg-white/5 rounded-sm border border-white/10 space-y-3">
+                <h4 className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">
                   Connected Entities
                 </h4>
                 {editModal.user.ownedPrograms.length > 0 && (
@@ -491,44 +508,57 @@ export default function AdminUsersPage() {
 
             {/* Editable Fields */}
             <div className="space-y-4">
-              <Input
-                label="Name"
-                value={editForm.name}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                placeholder="User's display name"
-              />
-
-              <Select
-                label="Role"
-                options={editRoleOptions}
-                value={editForm.role}
-                onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-              />
+              <div>
+                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Name</label>
+                <input
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  placeholder="User's display name"
+                  className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                />
+              </div>
 
               <div>
-                <Input
-                  label="Reset Password"
+                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Role</label>
+                <select
+                  value={editForm.role}
+                  onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+                >
+                  {editRoleOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-[#0A1D37] text-white">
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Reset Password</label>
+                <input
                   type="password"
                   value={editForm.password}
                   onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
                   placeholder="Leave empty to keep current password"
+                  className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
                 />
-                <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
+                <p className="mt-2 text-[10px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1">
                   <Key className="w-3 h-3" />
-                  Enter a new password to reset, or leave blank to keep unchanged
+                  Enter a new password to reset, or leave blank
                 </p>
               </div>
             </div>
 
             {/* Error Message */}
             {editError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-sm p-4">
                 <p className="text-red-400 text-sm">{editError}</p>
               </div>
             )}
 
             {/* Delete User Section */}
-            <div className="pt-4 border-t border-[#1a3a6e]">
+            <div className="pt-4 border-t border-white/10">
               {!showDeleteConfirm ? (
                 <Button
                   type="button"
@@ -540,11 +570,11 @@ export default function AdminUsersPage() {
                   Delete User
                 </Button>
               ) : (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 space-y-4">
+                <div className="bg-red-500/10 border border-red-500/20 rounded-sm p-4 space-y-4">
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-red-400 font-medium">Are you sure?</p>
+                      <p className="text-red-400 font-bold">Are you sure?</p>
                       <p className="text-red-400/80 text-sm mt-1">
                         This action cannot be undone. This will permanently delete the user account
                         {editModal.user.ownedPrograms.length > 0 && ' and their program ownership'}
@@ -577,7 +607,7 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 justify-end pt-4 border-t border-[#1a3a6e]">
+            <div className="flex gap-3 justify-end pt-4 border-t border-white/10">
               <Button type="button" variant="ghost" onClick={closeEditModal}>
                 Cancel
               </Button>
