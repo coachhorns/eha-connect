@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Crown,
   UserCheck,
+  Star,
 } from 'lucide-react'
 import { Card, Button, Avatar, Badge } from '@/components/ui'
 import InviteCoParentModal from '@/components/dashboard/InviteCoParentModal'
@@ -33,7 +34,7 @@ interface GuardedPlayer {
   profilePhoto: string | null
   graduationYear: number | null
   primaryPosition: string | null
-  guardianRole: 'PRIMARY' | 'SECONDARY'
+  guardianRole: 'PRIMARY' | 'SECONDARY' | 'SELF'
   isPayer: boolean
   teamRosters: Array<{
     team: Team
@@ -86,26 +87,28 @@ export default function SettingsPage() {
   }
 
   const hasPrimaryGuardianship = players.some((p) => p.guardianRole === 'PRIMARY')
+  const selfPlayer = players.find((p) => p.guardianRole === 'SELF')
+  const avatarSrc = selfPlayer?.profilePhoto || session.user.image
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Account Settings</h1>
-        <p className="mt-2 text-gray-400">Manage your profile and account preferences</p>
+        <h1 className="text-5xl tracking-tighter font-bold text-white uppercase">Account Settings</h1>
+        <p className="mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Manage your profile and account preferences</p>
       </div>
 
       <div className="space-y-6">
         {/* Profile Card */}
-        <Card className="p-6 space-y-6">
-          <div className="flex items-center gap-6 pb-6 border-b border-white/10">
+        <Card className="rounded-sm p-0">
+          <div className="flex items-center gap-6 p-8 border-b border-white/5">
             <Avatar
-              src={session.user.image}
+              src={avatarSrc}
               fallback={session.user.name?.[0] || 'U'}
               size="lg"
               className="w-24 h-24 text-3xl"
             />
             <div>
-              <h2 className="text-xl font-bold text-white">{session.user.name}</h2>
+              <h2 className="text-2xl font-bold text-white uppercase tracking-tight">{session.user.name}</h2>
               <p className="text-gray-400">{session.user.email}</p>
               <div className="mt-2">
                 <Badge variant={session.user.role === 'ADMIN' ? 'error' : 'default'}>
@@ -115,36 +118,36 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold text-white uppercase tracking-wide">Personal Information</h3>
+          <div className="p-8 space-y-4">
+            <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red">Personal Information</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                   <User className="w-4 h-4" />
                   Full Name
                 </label>
-                <div className="p-3 rounded-lg bg-dark-surface border border-white/10 text-white">
+                <div className="p-3 rounded-sm bg-[#152e50]/50 border border-white/5 text-white text-sm font-medium">
                   {session.user.name}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                   <Mail className="w-4 h-4" />
                   Email Address
                 </label>
-                <div className="p-3 rounded-lg bg-dark-surface border border-white/10 text-white">
+                <div className="p-3 rounded-sm bg-[#152e50]/50 border border-white/5 text-white text-sm font-medium">
                   {session.user.email}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                   <Shield className="w-4 h-4" />
                   Account Role
                 </label>
-                <div className="p-3 rounded-lg bg-dark-surface border border-white/10 text-white">
+                <div className="p-3 rounded-sm bg-[#152e50]/50 border border-white/5 text-white text-sm font-medium">
                   {session.user.role}
                 </div>
               </div>
@@ -153,14 +156,14 @@ export default function SettingsPage() {
         </Card>
 
         {/* My Players Section */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
+        <Card className="rounded-sm p-0">
+          <div className="p-6 border-b border-white/5 flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-bold text-white uppercase tracking-wide flex items-center gap-2">
-                <Users className="w-5 h-5 text-eha-red" />
+              <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red flex items-center gap-2">
+                <Users className="w-4 h-4 text-eha-red" />
                 My Players
               </h3>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">
                 Players you are linked to as a guardian
               </p>
             </div>
@@ -189,10 +192,10 @@ export default function SettingsPage() {
               <div className="animate-spin w-6 h-6 border-2 border-eha-red border-t-transparent rounded-full" />
             </div>
           ) : players.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center p-8">
               <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h4 className="text-white font-medium mb-2">No Players Linked</h4>
-              <p className="text-gray-500 text-sm mb-4">
+              <h4 className="text-white font-bold uppercase tracking-wide mb-2">No Players Linked</h4>
+              <p className="text-gray-500 uppercase tracking-widest text-xs font-bold mb-4">
                 Link your account to a player profile to track their stats and achievements
               </p>
               <Link href="/claim-player">
@@ -203,15 +206,15 @@ export default function SettingsPage() {
               </Link>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="p-6 space-y-3">
               {players.map((player) => (
                 <Link
                   key={player.id}
                   href={`/players/${player.slug}`}
-                  className="flex items-center justify-between p-4 bg-[#1a3a6e]/30 rounded-lg hover:bg-[#1a3a6e]/50 transition-colors"
+                  className="flex items-center justify-between p-5 bg-[#152e50]/50 border border-white/5 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
+                    <div className="w-12 h-12 rounded-sm overflow-hidden bg-white/10 flex-shrink-0">
                       {player.profilePhoto ? (
                         <Image
                           src={player.profilePhoto}
@@ -228,10 +231,15 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-white">
+                        <p className="font-bold text-white uppercase tracking-wide">
                           {player.firstName} {player.lastName}
                         </p>
-                        {player.guardianRole === 'PRIMARY' ? (
+                        {player.guardianRole === 'SELF' ? (
+                          <Badge variant="info" size="sm" className="flex items-center gap-1">
+                            <Star className="w-3 h-3" />
+                            Athlete
+                          </Badge>
+                        ) : player.guardianRole === 'PRIMARY' ? (
                           <Badge variant="gold" size="sm" className="flex items-center gap-1">
                             <Crown className="w-3 h-3" />
                             Primary
@@ -243,7 +251,7 @@ export default function SettingsPage() {
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                         {player.graduationYear && (
                           <span>Class of {player.graduationYear}</span>
                         )}
@@ -265,8 +273,8 @@ export default function SettingsPage() {
 
         {/* Admin Quick Actions */}
         {session.user.role === 'ADMIN' && (
-          <Card className="p-6 border-eha-red/30">
-            <h3 className="text-lg font-bold text-white uppercase tracking-wide mb-4">
+          <Card className="rounded-sm p-8 border-eha-red/30">
+            <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">
               Admin Settings
             </h3>
             <p className="text-sm text-gray-400 mb-4">

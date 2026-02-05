@@ -11,42 +11,68 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const guardians = await prisma.guardian.findMany({
-      where: { userId: session.user.id },
-      include: {
-        player: {
-          include: {
-            teamRosters: {
-              where: { leftAt: null },
-              include: {
-                team: {
-                  select: {
-                    id: true,
-                    name: true,
-                    slug: true,
-                  },
-                },
-              },
-              take: 1,
+    const playerInclude = {
+      teamRosters: {
+        where: { leftAt: null },
+        include: {
+          team: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
             },
           },
         },
+        take: 1,
       },
-      orderBy: { createdAt: 'asc' },
-    })
+    } as const
 
-    const players = guardians.map((g) => ({
-      id: g.player.id,
-      firstName: g.player.firstName,
-      lastName: g.player.lastName,
-      slug: g.player.slug,
-      profilePhoto: g.player.profilePhoto,
-      graduationYear: g.player.graduationYear,
-      primaryPosition: g.player.primaryPosition,
-      guardianRole: g.role,
-      isPayer: g.isPayer,
-      teamRosters: g.player.teamRosters,
-    }))
+    // Fetch guardian-linked players and self-linked players in parallel
+    const [guardians, selfLinkedPlayers] = await Promise.all([
+      prisma.guardian.findMany({
+        where: { userId: session.user.id },
+        include: { player: { include: playerInclude } },
+        orderBy: { createdAt: 'asc' },
+      }),
+      prisma.player.findMany({
+        where: { userId: session.user.id },
+        include: playerInclude,
+      }),
+    ])
+
+    // Build a set of player IDs already linked via guardian table
+    const guardianPlayerIds = new Set(guardians.map((g) => g.player.id))
+
+    const players = [
+      // Guardian records: map PLAYER role to SELF, keep PRIMARY/SECONDARY
+      ...guardians.map((g) => ({
+        id: g.player.id,
+        firstName: g.player.firstName,
+        lastName: g.player.lastName,
+        slug: g.player.slug,
+        profilePhoto: g.player.profilePhoto,
+        graduationYear: g.player.graduationYear,
+        primaryPosition: g.player.primaryPosition,
+        guardianRole: g.role === 'PLAYER' ? 'SELF' : g.role,
+        isPayer: g.isPayer,
+        teamRosters: g.player.teamRosters,
+      })),
+      // Legacy self-linked players not already in guardian results
+      ...selfLinkedPlayers
+        .filter((p) => !guardianPlayerIds.has(p.id))
+        .map((p) => ({
+          id: p.id,
+          firstName: p.firstName,
+          lastName: p.lastName,
+          slug: p.slug,
+          profilePhoto: p.profilePhoto,
+          graduationYear: p.graduationYear,
+          primaryPosition: p.primaryPosition,
+          guardianRole: 'SELF' as const,
+          isPayer: false,
+          teamRosters: p.teamRosters,
+        })),
+    ]
 
     return NextResponse.json({ players })
   } catch (error) {

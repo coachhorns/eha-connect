@@ -69,13 +69,19 @@ function SignInForm() {
         setError('Invalid email or password')
       } else {
         const session = await getSession()
-        if (session?.user?.role === 'PROGRAM_DIRECTOR') {
-          router.push('/director/dashboard')
-        } else if (session?.user?.role === 'ADMIN') {
-          router.push('/admin')
-        } else {
-          router.push(callbackUrl)
+        const role = session?.user?.role
+
+        let destination = '/dashboard'
+        if (role === 'ADMIN') {
+          destination = '/admin'
+        } else if (role === 'PROGRAM_DIRECTOR') {
+          destination = '/director/dashboard'
+        } else if (callbackUrl && callbackUrl !== '/' && callbackUrl.startsWith('/dashboard/')) {
+          // Allow specific deep links within dashboard (e.g. /dashboard/settings)
+          destination = callbackUrl
         }
+
+        router.push(destination)
         router.refresh()
       }
     } catch (err) {

@@ -237,6 +237,7 @@ export default async function PlayerProfilePage(props: PageProps) {
                   </div>
                 )}
               </div>
+
             </div>
 
             {/* Actions */}

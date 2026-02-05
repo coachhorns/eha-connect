@@ -494,7 +494,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="min-h-screen">
       {/* Back link */}
-      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-6">
+      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-6">
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
@@ -505,7 +505,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       </div>
 
       {/* Hero Section — matches public profile */}
-      <div className="relative bg-gradient-to-b from-eha-red/20 to-transparent py-12">
+      <div className="relative bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5 py-12 lg:py-16">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Player Photo — clickable for upload */}
@@ -513,7 +513,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
               <button
                 type="button"
                 onClick={() => photoInputRef.current?.click()}
-                className="relative w-48 h-48 lg:w-64 lg:h-64 rounded-2xl overflow-hidden bg-white/5 mx-auto lg:mx-0 group cursor-pointer"
+                className="relative w-48 h-60 lg:w-56 lg:h-64 rounded-sm overflow-hidden bg-[#1a3a6e] border-4 border-white/10 mx-auto lg:mx-0 group cursor-pointer shadow-2xl"
                 disabled={isUploadingPhoto}
               >
                 {player.profilePhoto ? (
@@ -525,8 +525,8 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     priority
                   />
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-[#1a3a6e] text-5xl font-bold text-gray-500">
-                    {player.firstName[0]}{player.lastName[0]}
+                  <div className="absolute inset-0 flex items-center justify-center text-white/30">
+                    <Users className="w-20 h-20" />
                   </div>
                 )}
 
@@ -554,57 +554,60 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             {/* Player Info — read-only display */}
             <div className="flex-1 text-center lg:text-left">
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-3">
+                {player.graduationYear && (
+                  <span className="px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20">
+                    Class of {player.graduationYear}
+                  </span>
+                )}
                 {player.isVerified && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-sm text-[10px] font-extrabold uppercase tracking-widest bg-green-500/20 text-green-400 border border-green-500/30">
                     <Shield className="w-3 h-3" />
                     Verified
                   </span>
                 )}
                 {player.primaryPosition && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest bg-white/10 text-white/60 border border-white/20">
                     {formatPosition(player.primaryPosition)}
                   </span>
                 )}
                 {player.jerseyNumber && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-gray-300 border border-white/20">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest bg-white/10 text-gray-300 border border-white/20">
                     #{player.jerseyNumber}
                   </span>
                 )}
               </div>
 
-              <h1 className="text-4xl lg:text-5xl font-bold text-white">
-                {player.firstName} {player.lastName}
+              <h1 className="text-5xl lg:text-7xl tracking-tighter font-bold text-white uppercase">
+                {player.firstName} <span className="text-white/90">{player.lastName}</span>
               </h1>
 
-              <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-gray-400">
+              <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-white/60 font-bold text-sm uppercase tracking-widest">
+                {player.primaryPosition && (
+                  <span>{formatPosition(player.primaryPosition)}</span>
+                )}
                 {player.heightFeet && (
-                  <span>{formatHeight(player.heightFeet, player.heightInches)}</span>
+                  <span>• {formatHeight(player.heightFeet, player.heightInches)}</span>
                 )}
-                {player.weight && <span>{player.weight} lbs</span>}
-                {player.graduationYear && (
-                  <span className="text-eha-red font-semibold">
-                    Class of {player.graduationYear}
-                  </span>
-                )}
+                {player.weight && <span>• {player.weight} lbs</span>}
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-gray-400 text-sm">
+              <div className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-6 lg:gap-8 text-white/80">
                 {player.school && (
-                  <span className="flex items-center gap-1.5">
-                    <GraduationCap className="w-4 h-4" />
-                    {player.school}
+                  <span className="flex items-center gap-2">
+                    <GraduationCap className="w-5 h-5 text-eha-red" />
+                    <span className="font-bold text-sm uppercase tracking-wider">{player.school}</span>
                   </span>
                 )}
                 {(player.city || player.state) && (
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4" />
-                    {[player.city, player.state].filter(Boolean).join(', ')}
+                  <span className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-eha-red" />
+                    <span className="font-bold text-sm uppercase tracking-wider">{[player.city, player.state].filter(Boolean).join(', ')}</span>
                   </span>
                 )}
                 {currentTeam && (
-                  <span className="flex items-center gap-1.5">
-                    <Users className="w-4 h-4" />
-                    {currentTeam.team.name}
+                  <span className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-eha-red" />
+                    <span className="font-bold text-sm uppercase tracking-wider">{currentTeam.team.name}</span>
                   </span>
                 )}
               </div>
@@ -616,7 +619,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     href={`https://twitter.com/${player.twitterHandle}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 bg-[#1a3a6e] rounded-lg text-gray-400 hover:text-white hover:bg-[#1DA1F2]/20 transition-colors"
+                    className="p-2 bg-white/10 rounded-sm text-gray-400 hover:text-white hover:bg-[#1DA1F2]/20 transition-colors"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
@@ -628,7 +631,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     href={`https://instagram.com/${player.instagramHandle}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 bg-[#1a3a6e] rounded-lg text-gray-400 hover:text-white hover:bg-[#E4405F]/20 transition-colors"
+                    className="p-2 bg-white/10 rounded-sm text-gray-400 hover:text-white hover:bg-[#E4405F]/20 transition-colors"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd" />
@@ -640,7 +643,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     href={player.hudlUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 bg-[#1a3a6e] rounded-lg text-gray-400 hover:text-white hover:bg-eha-red/20 transition-colors"
+                    className="p-2 bg-white/10 rounded-sm text-gray-400 hover:text-white hover:bg-eha-red/20 transition-colors"
                   >
                     <ExternalLink className="w-5 h-5" />
                   </a>
@@ -655,12 +658,12 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
         {/* Alerts */}
         {error && (
-          <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+          <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-sm p-4">
             <p className="text-red-400 text-sm">{error}</p>
           </div>
         )}
         {success && (
-          <div className="mb-6 bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+          <div className="mb-6 bg-green-500/10 border border-green-500/20 rounded-sm p-4">
             <p className="text-green-400 text-sm">{success}</p>
           </div>
         )}
@@ -668,9 +671,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-2 gap-6">
             {/* About Me */}
-            <Card className="lg:col-span-2">
-              <div className="p-4 border-b border-[#1a3a6e]">
-                <h2 className="text-xl font-bold text-white">About Me</h2>
+            <Card className="lg:col-span-2 rounded-sm p-0">
+              <div className="p-4 border-b border-white/5">
+                <h2 className="text-2xl text-white uppercase tracking-tight font-bold">About Me</h2>
               </div>
               <div className="p-4">
                 <textarea
@@ -678,15 +681,15 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Write a short bio about the player..."
                   rows={4}
-                  className="w-full bg-[#0a1628] border border-[#1a3a6e] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 resize-none"
+                  className="w-full bg-[#0a1628] border border-white/5 rounded-sm px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 resize-none"
                 />
               </div>
             </Card>
 
             {/* Socials & Contact */}
-            <Card>
-              <div className="p-4 border-b border-[#1a3a6e]">
-                <h2 className="text-xl font-bold text-white">Socials & Contact</h2>
+            <Card className="rounded-sm p-0">
+              <div className="p-4 border-b border-white/5">
+                <h2 className="text-2xl text-white uppercase tracking-tight font-bold">Socials & Contact</h2>
               </div>
               <div className="p-4 space-y-4">
                 <div>
@@ -732,9 +735,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             </Card>
 
             {/* Highlights & Media Links */}
-            <Card>
-              <div className="p-4 border-b border-[#1a3a6e]">
-                <h2 className="text-xl font-bold text-white">Highlights & Media</h2>
+            <Card className="rounded-sm p-0">
+              <div className="p-4 border-b border-white/5">
+                <h2 className="text-2xl text-white uppercase tracking-tight font-bold">Highlights & Media</h2>
               </div>
               <div className="p-4 space-y-4">
                 <div>
@@ -784,9 +787,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             </Card>
 
             {/* Academic Information */}
-            <Card className="lg:col-span-2">
-              <div className="p-4 border-b border-[#1a3a6e]">
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <Card className="lg:col-span-2 rounded-sm p-0">
+              <div className="p-4 border-b border-white/5">
+                <h2 className="text-2xl text-white uppercase tracking-tight font-bold flex items-center gap-2">
                   <GraduationCap className="w-5 h-5 text-eha-red" />
                   Academic Information
                 </h2>
@@ -817,7 +820,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     Transcript (PDF)
                   </label>
                   {transcriptUrl ? (
-                    <div className="flex items-center gap-3 p-3 bg-[#153361] border border-white/10 rounded-lg">
+                    <div className="flex items-center gap-3 p-3 bg-[#152e50]/50 border border-white/5 rounded-sm">
                       <FileText className="w-8 h-8 text-eha-red flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-white truncate">Transcript Uploaded</p>
@@ -841,7 +844,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   ) : (
                     <div
                       onClick={() => transcriptInputRef.current?.click()}
-                      className={`relative border-2 border-dashed rounded-lg cursor-pointer transition-colors border-[#1a3a6e] hover:border-eha-red/50 ${isUploadingTranscript ? 'pointer-events-none opacity-50' : ''}`}
+                      className={`relative border-2 border-dashed rounded-sm cursor-pointer transition-colors border-white/10 hover:border-eha-red/50 ${isUploadingTranscript ? 'pointer-events-none opacity-50' : ''}`}
                     >
                       <div className="flex flex-col items-center justify-center p-6">
                         {isUploadingTranscript ? (
@@ -893,9 +896,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
         </form>
 
         {/* Media Gallery — outside the form */}
-        <Card className="mt-6">
-          <div className="p-4 border-b border-[#1a3a6e] flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Photo Gallery</h2>
+        <Card className="mt-6 rounded-sm p-0">
+          <div className="p-4 border-b border-white/5 flex items-center justify-between">
+            <h2 className="text-2xl text-white uppercase tracking-tight font-bold">Photo Gallery</h2>
             <Button
               type="button"
               variant="outline"
@@ -931,7 +934,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {photos.map((item) => (
-                  <div key={item.id} className="relative group rounded-lg overflow-hidden bg-white/5 aspect-square">
+                  <div key={item.id} className="relative group rounded-sm overflow-hidden bg-white/5 aspect-square border border-white/5">
                     <Image
                       src={item.url}
                       alt={item.title || 'Player photo'}
@@ -956,9 +959,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       {/* Crop Modal */}
       {cropImageSrc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-          <div className="bg-[#0a1628] border border-[#1a3a6e] rounded-2xl w-full max-w-lg overflow-hidden">
-            <div className="p-4 border-b border-[#1a3a6e]">
-              <h3 className="text-lg font-bold text-white">Frame Your Photo</h3>
+          <div className="bg-[#0a1628] border border-white/5 rounded-sm w-full max-w-lg overflow-hidden">
+            <div className="p-4 border-b border-white/5">
+              <h3 className="text-lg font-bold text-white uppercase tracking-tight">Frame Your Photo</h3>
               <p className="text-sm text-gray-400 mt-1">Drag to reposition, scroll or use controls to zoom</p>
             </div>
 
@@ -979,7 +982,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             </div>
 
             {/* Controls */}
-            <div className="p-4 space-y-3 border-t border-[#1a3a6e]">
+            <div className="p-4 space-y-3 border-t border-white/5">
               {/* Zoom */}
               <div className="flex items-center gap-3">
                 <ZoomOut className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -1012,7 +1015,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             </div>
 
             {/* Actions */}
-            <div className="p-4 border-t border-[#1a3a6e] flex gap-3">
+            <div className="p-4 border-t border-white/5 flex gap-3">
               <Button
                 type="button"
                 variant="ghost"
