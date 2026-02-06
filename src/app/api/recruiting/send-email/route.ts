@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
           select: {
             firstName: true,
             lastName: true,
+            email: true,
             primaryPosition: true,
             heightFeet: true,
             heightInches: true,
@@ -95,7 +96,7 @@ export async function POST(request: NextRequest) {
       ? `<span style="display: inline-block; font-size: 11px; font-weight: 700; color: #60a5fa; background-color: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.25); padding: 4px 10px; border-radius: 12px;">${teamName}</span>`
       : ''
 
-    const sanitizedMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    const sanitizedMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')
 
     const html = `
       <!DOCTYPE html>
@@ -216,7 +217,7 @@ export async function POST(request: NextRequest) {
                 <tr>
                   <td style="padding: 24px 0 0 0; text-align: center;">
                     <p style="margin: 0 0 6px 0; font-size: 11px; color: #5a6a8a; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
-                      Reply directly to this email to respond to ${senderName}.
+                      Reply directly to this email to respond to ${player?.email ? playerName : senderName}.
                     </p>
                     <p style="margin: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3a4a6a;">
                       Elite Hoops Association
@@ -236,7 +237,9 @@ export async function POST(request: NextRequest) {
       to: coachEmail,
       subject: dynamicSubject,
       html,
-      replyTo: session.user.email,
+      replyTo: player?.email
+        ? (playerName ? `${playerName} <${player.email}>` : player.email)
+        : (session.user.name ? `${session.user.name} <${session.user.email}>` : session.user.email),
     })
 
     if (!result.success) {
