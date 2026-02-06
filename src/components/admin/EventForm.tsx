@@ -27,6 +27,7 @@ interface EventFormData {
   state: string
   startDate: string
   endDate: string
+  registrationDeadline: string
   ageGroups: string[]
   divisions: string[]
   entryFee: string
@@ -46,6 +47,7 @@ interface EventInput {
   state?: string | null
   startDate?: string | Date
   endDate?: string | Date
+  registrationDeadline?: string | Date | null
   ageGroups?: string[]
   divisions?: string[]
   entryFee?: number | string | null
@@ -83,6 +85,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
     state: '',
     startDate: '',
     endDate: '',
+    registrationDeadline: '',
     ageGroups: [],
     divisions: [],
     entryFee: '',
@@ -126,6 +129,9 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
         endDate: initialData.endDate
           ? format(new Date(initialData.endDate), 'yyyy-MM-dd')
           : '',
+        registrationDeadline: initialData.registrationDeadline
+          ? format(new Date(initialData.registrationDeadline), 'yyyy-MM-dd')
+          : '',
         ageGroups: initialData.ageGroups || [],
         divisions: (initialData.divisions || []).filter(d => divisionOptions.includes(d)),
         entryFee: initialData.entryFee?.toString() || '',
@@ -135,6 +141,19 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
       })
     }
   }, [initialData])
+
+  // Match venue from initialData after venues are loaded
+  useEffect(() => {
+    if (venues.length > 0 && initialData?.venue && !formData.venueId) {
+      const matchedVenue = venues.find((v) => v.name === initialData.venue)
+      if (matchedVenue) {
+        setFormData((prev) => ({
+          ...prev,
+          venueId: matchedVenue.id,
+        }))
+      }
+    }
+  }, [venues, initialData?.venue, formData.venueId])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -257,9 +276,9 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
           Back
         </button>
         <div className="flex items-center gap-3">
@@ -277,7 +296,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               name="isPublished"
               checked={formData.isPublished}
               onChange={handleChange}
-              className="w-4 h-4 rounded border-[#1a3a6e] bg-[#1A1A2E] text-eha-red focus:ring-eha-red"
+              className="w-4 h-4 rounded-sm border-white/10 bg-[#0A1D37] text-eha-red focus:ring-eha-red"
             />
             Published
           </label>
@@ -289,7 +308,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
       </div>
 
       {errors.submit && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-sm p-4">
           <p className="text-red-400 text-sm">{errors.submit}</p>
         </div>
       )}
@@ -297,8 +316,8 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Main Info */}
         <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <h2 className="text-lg font-semibold text-white mb-4">Event Details</h2>
+          <Card className="rounded-sm border border-white/5">
+            <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Event Details</h2>
             <div className="space-y-4">
               <Input
                 label="Event Name"
@@ -332,7 +351,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                   Description
                 </label>
                 <textarea
@@ -340,16 +359,16 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   value={formData.description}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-4 py-2.5 bg-[#1A1A2E] border border-[#1a3a6e] rounded-lg text-white placeholder-gray-500 transition-colors duration-200 resize-none"
+                  className="w-full px-4 py-2.5 bg-[#0A1D37] border border-white/10 rounded-sm text-white placeholder-gray-500 transition-colors duration-200 resize-none focus:outline-none focus:ring-2 focus:ring-eha-red"
                   placeholder="Describe the event..."
                 />
               </div>
             </div>
           </Card>
 
-          <Card>
-            <h2 className="text-lg font-semibold text-white mb-4">Dates</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
+          <Card className="rounded-sm border border-white/5">
+            <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Dates</h2>
+            <div className="grid sm:grid-cols-3 gap-4">
               <Input
                 label="Start Date"
                 name="startDate"
@@ -366,11 +385,22 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                 onChange={handleChange}
                 error={errors.endDate}
               />
+              <Input
+                label="Registration Deadline"
+                name="registrationDeadline"
+                type="date"
+                value={formData.registrationDeadline}
+                onChange={handleChange}
+                error={errors.registrationDeadline}
+              />
             </div>
+            <p className="mt-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+              Registration will close automatically after the deadline
+            </p>
           </Card>
 
-          <Card>
-            <h2 className="text-lg font-semibold text-white mb-4">Location</h2>
+          <Card className="rounded-sm border border-white/5">
+            <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Location</h2>
             <div className="space-y-4">
               <Select
                 label="Venue"
@@ -384,9 +414,9 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                 disabled={isLoadingVenues}
               />
               {formData.venueId && (
-                <div className="text-sm text-gray-400 bg-[#1a3a6e]/30 rounded-lg p-3">
-                  <p className="font-medium text-gray-300">{formData.venue}</p>
-                  {formData.address && <p>{formData.address}</p>}
+                <div className="text-sm text-gray-400 bg-[#152e50]/50 border border-white/5 rounded-sm p-3">
+                  <p className="font-bold text-white uppercase tracking-wide">{formData.venue}</p>
+                  {formData.address && <p className="mt-1">{formData.address}</p>}
                   {(formData.city || formData.state) && (
                     <p>
                       {formData.city}
@@ -402,17 +432,17 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <Card>
-            <h2 className="text-lg font-semibold text-white mb-4">Age Groups</h2>
+          <Card className="rounded-sm border border-white/5">
+            <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Age Groups</h2>
             <div className="flex flex-wrap gap-2">
               {ageGroupOptions.map((ageGroup) => (
                 <button
                   key={ageGroup}
                   type="button"
                   onClick={() => handleToggleAgeGroup(ageGroup)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${formData.ageGroups.includes(ageGroup)
+                  className={`px-3 py-1.5 rounded-sm text-sm font-bold uppercase tracking-wide transition-colors ${formData.ageGroups.includes(ageGroup)
                       ? 'bg-eha-red text-white'
-                      : 'bg-[#1a3a6e] text-gray-400 hover:text-white'
+                      : 'bg-[#152e50]/50 border border-white/5 text-gray-400 hover:text-white hover:bg-white/5'
                     }`}
                 >
                   {ageGroup}
@@ -420,23 +450,23 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               ))}
             </div>
             {formData.ageGroups.length > 0 && (
-              <p className="mt-3 text-sm text-gray-500">
+              <p className="mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                 Selected: {formData.ageGroups.join(', ')}
               </p>
             )}
           </Card>
 
-          <Card>
-            <h2 className="text-lg font-semibold text-white mb-4">Divisions</h2>
+          <Card className="rounded-sm border border-white/5">
+            <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Divisions</h2>
             <div className="flex flex-wrap gap-2">
               {divisionOptions.map((division) => (
                 <button
                   key={division}
                   type="button"
                   onClick={() => handleToggleDivision(division)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${formData.divisions.includes(division)
+                  className={`px-3 py-1.5 rounded-sm text-sm font-bold uppercase tracking-wide transition-colors ${formData.divisions.includes(division)
                       ? 'bg-eha-red text-white'
-                      : 'bg-[#1a3a6e] text-gray-400 hover:text-white'
+                      : 'bg-[#152e50]/50 border border-white/5 text-gray-400 hover:text-white hover:bg-white/5'
                     }`}
                 >
                   {division}
@@ -444,14 +474,14 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               ))}
             </div>
             {formData.divisions.length > 0 && (
-              <p className="mt-3 text-sm text-gray-500">
+              <p className="mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                 Selected: {formData.divisions.join(', ')}
               </p>
             )}
           </Card>
 
-          <Card>
-            <h2 className="text-lg font-semibold text-white mb-4">Banner Image</h2>
+          <Card className="rounded-sm border border-white/5">
+            <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Banner Image</h2>
             <ImageUpload
               value={formData.bannerImage}
               onChange={(url) => setFormData((prev) => ({ ...prev, bannerImage: url }))}
@@ -460,15 +490,6 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
             />
           </Card>
 
-          <Card>
-            <h2 className="text-lg font-semibold text-white mb-4">Flyer Image</h2>
-            <ImageUpload
-              value={formData.flyerImage}
-              onChange={(url) => setFormData((prev) => ({ ...prev, flyerImage: url }))}
-              aspectRatio="3/4"
-              helperText="Recommended: 1080x1440"
-            />
-          </Card>
         </div>
       </div>
     </form>

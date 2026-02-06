@@ -369,8 +369,9 @@ model Event {
   state       String?
 
   // Dates
-  startDate   DateTime
-  endDate     DateTime
+  startDate            DateTime
+  endDate              DateTime
+  registrationDeadline DateTime?
 
   // Details
   ageGroups   String[]    // e.g., ["17U", "16U", "15U"]

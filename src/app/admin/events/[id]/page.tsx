@@ -150,7 +150,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
@@ -162,8 +162,8 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
   if (error) {
     return (
-      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 text-center">
+      <div className="min-h-screen bg-[#0A1D37] text-white w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-sm p-6 text-center">
           <p className="text-red-400">{error}</p>
           <button
             onClick={() => router.push('/admin/events')}
@@ -183,12 +183,12 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
   const eventStatus = getEventStatus()
 
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-8">
+    <div className="min-h-screen bg-[#0A1D37] text-white w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8">
       {/* Header */}
       <div className="mb-8">
         <Link
           href="/admin/events"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-6 text-sm font-bold uppercase tracking-widest"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Events
@@ -197,21 +197,21 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-white uppercase tracking-wider">{event.name}</h1>
+              <h1 className="text-4xl lg:text-5xl tracking-tighter font-bold text-white uppercase">{event.name}</h1>
               <Badge variant={eventStatus.variant as any}>{eventStatus.label}</Badge>
               {!event.isPublished && (
                 <Badge variant="warning">Draft</Badge>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-gray-400">
-              <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 font-bold uppercase tracking-widest mt-3">
+              <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <span>
                   {format(new Date(event.startDate), 'MMM d')} - {format(new Date(event.endDate), 'MMM d, yyyy')}
                 </span>
               </div>
               {(event.venue || event.city) && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
                   <span>
                     {event.venue ? `${event.venue}, ` : ''}
@@ -241,44 +241,44 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="p-4">
+        <Card className="rounded-sm p-4 border border-white/5">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-lg">
+            <div className="p-2 bg-white/10 rounded-sm">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{teams.length}</p>
-              <p className="text-sm text-gray-400">Teams</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Teams</p>
             </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="rounded-sm p-4 border border-white/5">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-lg">
+            <div className="p-2 bg-white/10 rounded-sm">
               <Gamepad2 className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{games.length}</p>
-              <p className="text-sm text-gray-400">Games</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Games</p>
             </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="rounded-sm p-4 border border-white/5">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-lg">
+            <div className="p-2 bg-white/10 rounded-sm">
               <Gamepad2 className="w-5 h-5 text-white" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">
                 {games.filter(g => g.status === 'FINAL').length}
               </p>
-              <p className="text-sm text-gray-400">Completed</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Completed</p>
             </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="rounded-sm p-4 border border-white/5">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-lg">
+            <div className="p-2 bg-white/10 rounded-sm">
               {event.isPublished ? (
                 <Eye className="w-5 h-5 text-white" />
               ) : (
@@ -289,7 +289,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
               <p className="text-2xl font-bold text-white">
                 {event.isPublished ? 'Live' : 'Draft'}
               </p>
-              <p className="text-sm text-gray-400">Status</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Status</p>
             </div>
           </div>
         </Card>
@@ -310,39 +310,39 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
         {/* Teams Tab */}
         <TabsContent value="teams">
-          <Card className="overflow-hidden p-0">
+          <Card className="overflow-hidden p-0 rounded-sm border border-white/5">
             {teams.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-white mb-2">No teams registered</h3>
-                <p className="text-gray-500">Teams will appear here once they register for this event</p>
+                <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-2">No teams registered</h3>
+                <p className="text-gray-500 text-sm">Teams will appear here once they register for this event</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#1a3a6e]">
+                  <thead className="bg-[#152e50]/50 border-b border-white/5">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Team Name
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Coach
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Age Group
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Division
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1a3a6e]">
+                  <tbody className="divide-y divide-white/5">
                     {teams.map((team) => (
-                      <tr key={team.id} className="hover:bg-[#1a3a6e]/50 transition-colors">
+                      <tr key={team.id} className="hover:bg-white/5 transition-colors">
                         <td className="px-6 py-4">
-                          <div className="font-medium text-white">{team.name}</div>
+                          <div className="font-bold text-white uppercase tracking-wide">{team.name}</div>
                         </td>
-                        <td className="px-6 py-4 text-gray-400">
+                        <td className="px-6 py-4 text-gray-400 text-sm">
                           {team.coachName || '-'}
                         </td>
                         <td className="px-6 py-4">
@@ -370,12 +370,12 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
         {/* Games Tab */}
         <TabsContent value="games">
-          <Card className="overflow-hidden p-0">
+          <Card className="overflow-hidden p-0 rounded-sm border border-white/5">
             {games.length === 0 ? (
               <div className="text-center py-12">
                 <Gamepad2 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-white mb-2">No games scheduled</h3>
-                <p className="text-gray-500 mb-4">Schedule games for this event</p>
+                <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-2">No games scheduled</h3>
+                <p className="text-gray-500 text-sm mb-4">Schedule games for this event</p>
                 <Link href="/admin/games/new">
                   <Button>Schedule Game</Button>
                 </Link>
@@ -383,37 +383,37 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#1a3a6e]">
+                  <thead className="bg-[#152e50]/50 border-b border-white/5">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Matchup
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-center text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Score
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Date/Time
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Court
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Type
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Status
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1a3a6e]">
+                  <tbody className="divide-y divide-white/5">
                     {games.map((game) => (
                       <tr
                         key={game.id}
-                        className="hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer"
+                        className="hover:bg-white/5 transition-colors cursor-pointer"
                         onClick={() => router.push(`/admin/games/${game.id}`)}
                       >
                         <td className="px-6 py-4">
-                          <div className="font-medium text-white">
+                          <div className="font-bold text-white uppercase tracking-wide">
                             {game.homeTeam.name} vs {game.awayTeam.name}
                           </div>
                         </td>
@@ -426,10 +426,10 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                             <span className="text-gray-500">-</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-400">
+                        <td className="px-6 py-4 text-gray-400 text-sm">
                           {format(new Date(game.scheduledAt), 'MMM d, h:mm a')}
                         </td>
-                        <td className="px-6 py-4 text-gray-400">
+                        <td className="px-6 py-4 text-gray-400 text-sm">
                           {game.court || '-'}
                         </td>
                         <td className="px-6 py-4">

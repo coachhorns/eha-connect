@@ -120,7 +120,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-eha-silver/20">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm">
-              &copy; {new Date().getFullYear()} Continuum. All rights reserved.
+              &copy; 2026 Elite Hoops Association. All Rights Reserved.
             </p>
             <p className="text-gray-600 text-sm">
               Powered by Continuum
