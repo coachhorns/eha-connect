@@ -3,6 +3,72 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
+interface TimeConstraint {
+  type: 'NOT_BEFORE' | 'NOT_AFTER' | 'NOT_BETWEEN'
+  day: 'Friday' | 'Saturday' | 'Sunday'
+  time: string
+  endTime?: string
+}
+
+interface ScheduleRequestData {
+  coachConflict: boolean
+  maxGamesPerDay: number | null
+  constraints: TimeConstraint[]
+}
+
+function validateScheduleRequests(
+  scheduleRequests: Record<string, unknown>,
+  validTeamIds: string[]
+): { valid: boolean; error?: string } {
+  const validSet = new Set(validTeamIds)
+  const validTypes = ['NOT_BEFORE', 'NOT_AFTER', 'NOT_BETWEEN']
+  const validDays = ['Friday', 'Saturday', 'Sunday']
+  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/
+
+  for (const [teamId, data] of Object.entries(scheduleRequests)) {
+    if (!validSet.has(teamId)) {
+      return { valid: false, error: `Schedule request references unknown team: ${teamId}` }
+    }
+
+    const sr = data as Record<string, unknown>
+    if (typeof sr !== 'object' || sr === null) {
+      return { valid: false, error: `Invalid schedule request for team ${teamId}` }
+    }
+
+    if (typeof sr.coachConflict !== 'boolean') {
+      return { valid: false, error: 'coachConflict must be a boolean' }
+    }
+
+    if (sr.maxGamesPerDay !== null && sr.maxGamesPerDay !== undefined) {
+      const max = Number(sr.maxGamesPerDay)
+      if (!Number.isInteger(max) || max < 1 || max > 10) {
+        return { valid: false, error: 'maxGamesPerDay must be 1-10 or null' }
+      }
+    }
+
+    if (!Array.isArray(sr.constraints)) {
+      return { valid: false, error: 'constraints must be an array' }
+    }
+
+    for (const c of sr.constraints as TimeConstraint[]) {
+      if (!validTypes.includes(c.type)) {
+        return { valid: false, error: `Invalid constraint type: ${c.type}` }
+      }
+      if (!validDays.includes(c.day)) {
+        return { valid: false, error: `Invalid day: ${c.day}` }
+      }
+      if (!timeRegex.test(c.time)) {
+        return { valid: false, error: `Invalid time format: ${c.time}` }
+      }
+      if (c.type === 'NOT_BETWEEN' && (!c.endTime || !timeRegex.test(c.endTime))) {
+        return { valid: false, error: 'NOT_BETWEEN requires a valid endTime' }
+      }
+    }
+  }
+
+  return { valid: true }
+}
+
 // POST - Bulk team registration for an event (Director only)
 export async function POST(
   request: Request,
@@ -24,7 +90,10 @@ export async function POST(
 
     const { id: eventId } = await params
     const body = await request.json()
-    const { teamIds } = body
+    const { teamIds, scheduleRequests } = body as {
+      teamIds: string[]
+      scheduleRequests?: Record<string, ScheduleRequestData>
+    }
 
     if (!teamIds || !Array.isArray(teamIds) || teamIds.length === 0) {
       return NextResponse.json(
@@ -155,6 +224,17 @@ export async function POST(
       )
     }
 
+    // Validate schedule requests if provided
+    if (scheduleRequests && typeof scheduleRequests === 'object') {
+      const validation = validateScheduleRequests(scheduleRequests, teamIds)
+      if (!validation.valid) {
+        return NextResponse.json(
+          { error: validation.error },
+          { status: 400 }
+        )
+      }
+    }
+
     // Create EventTeam records in a transaction
     const eventTeams = await prisma.$transaction(
       teamIds.map(teamId =>
@@ -162,6 +242,9 @@ export async function POST(
           data: {
             eventId,
             teamId,
+            ...(scheduleRequests?.[teamId]
+              ? { scheduleRequests: scheduleRequests[teamId] }
+              : {}),
           },
           include: {
             team: {

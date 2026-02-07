@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 
+
 interface Team {
   id: string
   slug: string
@@ -455,6 +456,9 @@ export default function DirectorDashboardPage() {
             </div>
           </Link>
         </div>
+
+        {/* Documentation */}
+
       </div>
     </div>
   )

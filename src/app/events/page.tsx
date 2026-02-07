@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   Search,
   MapPin,
@@ -48,7 +49,7 @@ const EventCard = ({
 }: {
   event: Event;
   viewDetails: () => void;
-  register: () => void;
+  register: (e: React.MouseEvent) => void;
   isFeatured?: boolean;
 }) => {
   const startDate = new Date(event.startDate)
@@ -141,7 +142,7 @@ const EventCard = ({
           </div>
           <div className="flex gap-4 w-full sm:w-auto">
             <Button variant="secondary" onClick={viewDetails} className="flex-1 sm:flex-none">View Details</Button>
-            <Button variant="primary" onClick={register} className="flex-1 sm:flex-none">Register Team</Button>
+            <Button variant="primary" onClick={(e) => register(e)} className="flex-1 sm:flex-none">Register Team</Button>
           </div>
         </div>
       </div>
@@ -191,6 +192,7 @@ const UpcomingEventRow = ({ event }: { event: Event }) => {
 }
 
 export default function EventsPage() {
+  const router = useRouter()
   const [events, setEvents] = useState<Event[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
@@ -323,7 +325,7 @@ export default function EventsPage() {
                       <EventCard
                         event={event}
                         viewDetails={() => { }}
-                        register={() => { }}
+                        register={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/events/${event.slug}/register`); }}
                         isFeatured={true}
                       />
                     </Link>

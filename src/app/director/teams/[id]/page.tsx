@@ -149,6 +149,16 @@ export default function DirectorTeamDetailPage() {
   const [parseError, setParseError] = useState('')
   const [uploadFileName, setUploadFileName] = useState('')
 
+  // Push to Exposure state
+  const [isPushModalOpen, setIsPushModalOpen] = useState(false)
+  const [isPushing, setIsPushing] = useState(false)
+  const [pushEventId, setPushEventId] = useState('')
+  const [pushDivisionId, setPushDivisionId] = useState('')
+  const [pushResult, setPushResult] = useState<{ success?: boolean; error?: string } | null>(null)
+
+  // Events the team is registered for (to populate dropdown)
+  const [registeredEvents, setRegisteredEvents] = useState<any[]>([])
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/signin?callbackUrl=/director/dashboard')
@@ -172,6 +182,10 @@ export default function DirectorTeamDetailPage() {
 
       if (res.ok) {
         setTeam(data.team)
+        // Extract registered events if available (needs API update to include eventTeams)
+        if (data.team.eventTeams) {
+          setRegisteredEvents(data.team.eventTeams.map((et: any) => et.event))
+        }
       } else if (res.status === 403 || res.status === 404) {
         router.push('/director/dashboard')
         return
@@ -183,6 +197,43 @@ export default function DirectorTeamDetailPage() {
       setError('Failed to fetch team')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handlePushToExposure = async () => {
+    if (!pushEventId || !pushDivisionId) return
+
+    setIsPushing(true)
+    setPushResult(null)
+
+    try {
+      const res = await fetch(`/api/director/teams/${teamId}/push-exposure`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventId: pushEventId,
+          exposureDivisionId: pushDivisionId
+        })
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setPushResult({ success: true })
+        // Close modal after delay
+        setTimeout(() => {
+          setIsPushModalOpen(false)
+          setPushResult(null)
+          setPushEventId('')
+          setPushDivisionId('')
+        }, 2000)
+      } else {
+        setPushResult({ error: data.error || 'Failed to push team' })
+      }
+    } catch (err) {
+      setPushResult({ error: 'Network error occurred' })
+    } finally {
+      setIsPushing(false)
     }
   }
 
@@ -567,6 +618,7 @@ export default function DirectorTeamDetailPage() {
                 {team.wins}-{team.losses}
               </span>
             </div>
+
           </div>
         </div>
 
@@ -753,22 +805,20 @@ export default function DirectorTeamDetailPage() {
             <button
               type="button"
               onClick={() => setActiveTab('manual')}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'manual'
-                  ? 'border-[#E31837] text-white'
-                  : 'border-transparent text-gray-400 hover:text-white'
-              }`}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'manual'
+                ? 'border-[#E31837] text-white'
+                : 'border-transparent text-gray-400 hover:text-white'
+                }`}
             >
               Manual Entry
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('upload')}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'upload'
-                  ? 'border-[#E31837] text-white'
-                  : 'border-transparent text-gray-400 hover:text-white'
-              }`}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'upload'
+                ? 'border-[#E31837] text-white'
+                : 'border-transparent text-gray-400 hover:text-white'
+                }`}
             >
               <Upload className="w-4 h-4 inline-block mr-1" />
               Smart Upload
@@ -1340,6 +1390,8 @@ export default function DirectorTeamDetailPage() {
           </form>
         </Modal>
       </div>
+      {/* Push to Exposure Modal */}
+
     </div>
   )
 }

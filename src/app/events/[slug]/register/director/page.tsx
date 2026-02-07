@@ -19,6 +19,9 @@ import {
   ChevronUp,
   ExternalLink,
   CreditCard,
+  Clock,
+  Plus,
+  Trash2,
 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 
@@ -57,6 +60,19 @@ interface Event {
   teams: { team: { id: string } }[]
 }
 
+interface TimeConstraint {
+  type: 'NOT_BEFORE' | 'NOT_AFTER' | 'NOT_BETWEEN'
+  day: 'Friday' | 'Saturday' | 'Sunday'
+  time: string
+  endTime?: string
+}
+
+interface ScheduleRequest {
+  coachConflict: boolean
+  maxGamesPerDay: number | null
+  constraints: TimeConstraint[]
+}
+
 type RegistrationStep = 'teams' | 'rosters' | 'payment' | 'complete'
 
 export default function DirectorRegistrationPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -75,6 +91,8 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
   const [rostersConfirmed, setRostersConfirmed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [registrationSuccess, setRegistrationSuccess] = useState(false)
+  const [scheduleRequests, setScheduleRequests] = useState<Map<string, ScheduleRequest>>(new Map())
+  const [expandedScheduleIds, setExpandedScheduleIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const checkAuthAndFetch = async () => {
@@ -171,6 +189,12 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
     const newSelected = new Set(selectedTeamIds)
     if (newSelected.has(teamId)) {
       newSelected.delete(teamId)
+      const newMap = new Map(scheduleRequests)
+      newMap.delete(teamId)
+      setScheduleRequests(newMap)
+      const newExpanded = new Set(expandedScheduleIds)
+      newExpanded.delete(teamId)
+      setExpandedScheduleIds(newExpanded)
     } else {
       newSelected.add(teamId)
     }
@@ -187,6 +211,54 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
     setExpandedTeamIds(newExpanded)
   }
 
+  const toggleScheduleExpand = (teamId: string) => {
+    const newExpanded = new Set(expandedScheduleIds)
+    if (newExpanded.has(teamId)) {
+      newExpanded.delete(teamId)
+    } else {
+      newExpanded.add(teamId)
+    }
+    setExpandedScheduleIds(newExpanded)
+  }
+
+  const getScheduleRequest = (teamId: string): ScheduleRequest => {
+    return scheduleRequests.get(teamId) || {
+      coachConflict: false,
+      maxGamesPerDay: null,
+      constraints: [],
+    }
+  }
+
+  const updateScheduleRequest = (teamId: string, updates: Partial<ScheduleRequest>) => {
+    const newMap = new Map(scheduleRequests)
+    const current = getScheduleRequest(teamId)
+    newMap.set(teamId, { ...current, ...updates })
+    setScheduleRequests(newMap)
+  }
+
+  const addConstraint = (teamId: string) => {
+    const current = getScheduleRequest(teamId)
+    updateScheduleRequest(teamId, {
+      constraints: [
+        ...current.constraints,
+        { type: 'NOT_BEFORE', day: 'Saturday', time: '08:00' },
+      ],
+    })
+  }
+
+  const updateConstraint = (teamId: string, index: number, updates: Partial<TimeConstraint>) => {
+    const current = getScheduleRequest(teamId)
+    const newConstraints = [...current.constraints]
+    newConstraints[index] = { ...newConstraints[index], ...updates }
+    updateScheduleRequest(teamId, { constraints: newConstraints })
+  }
+
+  const removeConstraint = (teamId: string, index: number) => {
+    const current = getScheduleRequest(teamId)
+    const newConstraints = current.constraints.filter((_, i) => i !== index)
+    updateScheduleRequest(teamId, { constraints: newConstraints })
+  }
+
   const selectedTeams = program?.teams.filter(t => selectedTeamIds.has(t.id)) || []
   const totalFee = event?.entryFee ? Number(event.entryFee) * selectedTeams.length : 0
   const isFreeEvent = !event?.entryFee || Number(event.entryFee) === 0
@@ -198,11 +270,23 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
     setError('')
 
     try {
+      // Build scheduleRequests payload - only include teams with non-default data
+      const scheduleRequestsPayload: Record<string, ScheduleRequest> = {}
+      for (const teamId of selectedTeamIds) {
+        const sr = scheduleRequests.get(teamId)
+        if (sr && (sr.coachConflict || sr.maxGamesPerDay !== null || sr.constraints.length > 0)) {
+          scheduleRequestsPayload[teamId] = sr
+        }
+      }
+
       const res = await fetch(`/api/events/${event.id}/register-teams`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           teamIds: Array.from(selectedTeamIds),
+          ...(Object.keys(scheduleRequestsPayload).length > 0
+            ? { scheduleRequests: scheduleRequestsPayload }
+            : {}),
         }),
       })
 
@@ -471,6 +555,177 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                 <AlertTriangle className="w-4 h-4" />
                                 {reason}
                               </div>
+                            </div>
+                          )}
+
+                          {/* Schedule Requests - only for selected teams */}
+                          {isSelected && (
+                            <div className="border-t border-white/10">
+                              <div
+                                className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-white/5 transition-all duration-200"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  toggleScheduleExpand(team.id)
+                                }}
+                              >
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Clock className="w-4 h-4 text-[#E31837]" />
+                                  <span className="text-gray-300 font-medium">Schedule Requests</span>
+                                  {(() => {
+                                    const sr = getScheduleRequest(team.id)
+                                    const count = (sr.coachConflict ? 1 : 0)
+                                      + (sr.maxGamesPerDay !== null ? 1 : 0)
+                                      + sr.constraints.length
+                                    return count > 0 ? (
+                                      <Badge size="sm" variant="orange">{count}</Badge>
+                                    ) : null
+                                  })()}
+                                </div>
+                                {expandedScheduleIds.has(team.id) ? (
+                                  <ChevronUp className="w-4 h-4 text-gray-400" />
+                                ) : (
+                                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                                )}
+                              </div>
+
+                              {expandedScheduleIds.has(team.id) && (
+                                <div className="px-4 pb-4 space-y-4" onClick={(e) => e.stopPropagation()}>
+                                  {/* Coach Conflict Checkbox */}
+                                  <label className="flex items-center gap-3 cursor-pointer">
+                                    <div
+                                      className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
+                                        getScheduleRequest(team.id).coachConflict
+                                          ? 'border-[#E31837] bg-[#E31837]'
+                                          : 'border-white/30 hover:border-white/50'
+                                      }`}
+                                      onClick={() =>
+                                        updateScheduleRequest(team.id, {
+                                          coachConflict: !getScheduleRequest(team.id).coachConflict,
+                                        })
+                                      }
+                                    >
+                                      {getScheduleRequest(team.id).coachConflict && (
+                                        <Check className="w-3 h-3 text-white" />
+                                      )}
+                                    </div>
+                                    <div>
+                                      <span className="text-sm text-white">Check for Coach Conflicts</span>
+                                      <p className="text-xs text-gray-500">
+                                        Flag if this coach also coaches another registered team
+                                      </p>
+                                    </div>
+                                  </label>
+
+                                  {/* Max Games Per Day */}
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                                      Max Games Per Day
+                                    </label>
+                                    <input
+                                      type="number"
+                                      min={1}
+                                      max={10}
+                                      placeholder="No limit"
+                                      value={getScheduleRequest(team.id).maxGamesPerDay ?? ''}
+                                      onChange={(e) =>
+                                        updateScheduleRequest(team.id, {
+                                          maxGamesPerDay: e.target.value ? parseInt(e.target.value) : null,
+                                        })
+                                      }
+                                      className="w-full max-w-[200px] px-3 py-2 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white placeholder-gray-500 text-sm transition-all duration-200 focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                    />
+                                  </div>
+
+                                  {/* Time Constraints */}
+                                  <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                      <label className="text-sm font-medium text-gray-300">
+                                        Time Constraints
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => addConstraint(team.id)}
+                                        className="flex items-center gap-1 text-xs text-[#E31837] hover:text-white transition-colors"
+                                      >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        Add Constraint
+                                      </button>
+                                    </div>
+
+                                    {getScheduleRequest(team.id).constraints.length === 0 && (
+                                      <p className="text-xs text-gray-500 italic">No time constraints added</p>
+                                    )}
+
+                                    <div className="space-y-2">
+                                      {getScheduleRequest(team.id).constraints.map((constraint, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="flex flex-wrap items-center gap-2 p-2.5 bg-white/5 rounded-lg"
+                                        >
+                                          <select
+                                            value={constraint.type}
+                                            onChange={(e) =>
+                                              updateConstraint(team.id, idx, {
+                                                type: e.target.value as TimeConstraint['type'],
+                                              })
+                                            }
+                                            className="px-2 py-1.5 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                          >
+                                            <option value="NOT_BEFORE">Not Before</option>
+                                            <option value="NOT_AFTER">Not After</option>
+                                            <option value="NOT_BETWEEN">Not Between</option>
+                                          </select>
+
+                                          <select
+                                            value={constraint.day}
+                                            onChange={(e) =>
+                                              updateConstraint(team.id, idx, {
+                                                day: e.target.value as TimeConstraint['day'],
+                                              })
+                                            }
+                                            className="px-2 py-1.5 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                          >
+                                            <option value="Friday">Friday</option>
+                                            <option value="Saturday">Saturday</option>
+                                            <option value="Sunday">Sunday</option>
+                                          </select>
+
+                                          <input
+                                            type="time"
+                                            value={constraint.time}
+                                            onChange={(e) =>
+                                              updateConstraint(team.id, idx, { time: e.target.value })
+                                            }
+                                            className="px-2 py-1.5 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                          />
+
+                                          {constraint.type === 'NOT_BETWEEN' && (
+                                            <>
+                                              <span className="text-gray-500 text-xs">to</span>
+                                              <input
+                                                type="time"
+                                                value={constraint.endTime || ''}
+                                                onChange={(e) =>
+                                                  updateConstraint(team.id, idx, { endTime: e.target.value })
+                                                }
+                                                className="px-2 py-1.5 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                              />
+                                            </>
+                                          )}
+
+                                          <button
+                                            type="button"
+                                            onClick={() => removeConstraint(team.id, idx)}
+                                            className="p-1 text-gray-500 hover:text-red-400 transition-colors flex-shrink-0 ml-auto"
+                                          >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                          </button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>

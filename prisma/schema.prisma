@@ -239,6 +239,9 @@ model Player {
   userId          String?   // User who manages this profile (legacy - use guardians)
   user            User?     @relation(fields: [userId], references: [id])
 
+  // Exposure Events Integration
+  exposureId      Int?      @unique // ID in Exposure Events system
+
   teamRosters     TeamRoster[]
   gameStats       GameStats[]
   achievements    Achievement[]
@@ -281,6 +284,9 @@ model Program {
 
   // Relations
   teams         Team[]
+
+  // Exposure Events Integration
+  exposureId      Int?      @unique // Organization ID in Exposure
 
   @@map("programs")
 }
@@ -327,6 +333,9 @@ model Team {
   homeGames   Game[]       @relation("HomeTeam")
   awayGames   Game[]       @relation("AwayTeam")
   eventTeams  EventTeam[]
+
+  // Exposure Events Integration
+  exposureId      Int?      @unique // Team ID in Exposure
 
   @@map("teams")
 }
@@ -395,6 +404,9 @@ model Event {
   brackets    Bracket[]
   constraints ScheduleConstraint[]
 
+  // Exposure Events Integration
+  exposureId      Int?      @unique // Event ID in Exposure
+
   @@map("events")
 }
 
@@ -437,6 +449,9 @@ model EventTeam {
   pointsAgainst Int  @default(0)
 
   registeredAt DateTime @default(now())
+
+  // Director-submitted scheduling preferences
+  scheduleRequests Json?
 
   @@unique([eventId, teamId])
   @@map("event_teams")

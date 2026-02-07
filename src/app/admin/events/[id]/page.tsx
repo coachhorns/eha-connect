@@ -14,8 +14,9 @@ import {
   Edit,
   Eye,
   EyeOff,
+  Trophy,
 } from 'lucide-react'
-import { Card, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui'
+import { Card, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Modal, Select } from '@/components/ui'
 
 interface Event {
   id: string
@@ -44,6 +45,7 @@ interface Team {
   coachName: string | null
   ageGroup: string | null
   division: string | null
+  exposureId?: number | null
 }
 
 interface Game {
@@ -67,6 +69,95 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
   const [games, setGames] = useState<Game[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+
+  // Push to Exposure State
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
+  const [isPushModalOpen, setPushModalOpen] = useState(false)
+  const [pushDivisionId, setPushDivisionId] = useState('')
+  const [isPushing, setIsPushing] = useState(false)
+  const [pushError, setPushError] = useState('')
+  const [pushSuccessCount, setPushSuccessCount] = useState(0)
+  const [isBulkPush, setIsBulkPush] = useState(false)
+  const [selectedDivisionFilter, setSelectedDivisionFilter] = useState<string>('all')
+  const [selectedAgeGroupFilter, setSelectedAgeGroupFilter] = useState<string>('all')
+
+  const uniqueDivisions = Array.from(new Set(teams.map(t => t.division || 'Unassigned'))).sort()
+  const uniqueAgeGroups = Array.from(new Set(teams.map(t => t.ageGroup || 'Unassigned'))).sort()
+  const filteredTeams = teams.filter(t => {
+    const matchesDivision = selectedDivisionFilter === 'all' || (t.division || 'Unassigned') === selectedDivisionFilter
+    const matchesAgeGroup = selectedAgeGroupFilter === 'all' || (t.ageGroup || 'Unassigned') === selectedAgeGroupFilter
+    return matchesDivision && matchesAgeGroup
+  })
+
+  const handlePushTeam = async () => {
+    if (!pushDivisionId) return
+    setIsPushing(true)
+    setPushError('')
+    setPushSuccessCount(0)
+
+    try {
+      if (isBulkPush) {
+        // Bulk Push Logic
+        // Filter out teams that are already synced? Or allow re-sync?
+        // Let's assume re-sync is fine, but maybe prioritize unsynced.
+        // For now, push ALL displayed (filtered) teams.
+        let successCount = 0
+
+        for (const team of filteredTeams) {
+          try {
+            const res = await fetch(`/api/admin/events/${resolvedParams.id}/push-team`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                teamId: team.id,
+                divisionId: pushDivisionId
+              })
+            })
+            if (res.ok) successCount++
+          } catch (e) {
+            console.error(`Failed to push team ${team.name}`, e)
+          }
+        }
+
+        setPushSuccessCount(successCount)
+        if (successCount > 0) {
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500)
+        } else {
+          setPushError('Failed to push any teams.')
+        }
+
+      } else {
+        // Single Team Push
+        if (!selectedTeam) return
+
+        const res = await fetch(`/api/admin/events/${resolvedParams.id}/push-team`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            teamId: selectedTeam.id,
+            divisionId: pushDivisionId
+          })
+        })
+
+        const data = await res.json()
+
+        if (res.ok) {
+          setPushModalOpen(false)
+          setSelectedTeam(null)
+          setPushDivisionId('')
+          window.location.reload()
+        } else {
+          setPushError(data.error || 'Failed to push team')
+        }
+      }
+    } catch (err) {
+      setPushError('Network error occurred')
+    } finally {
+      setIsPushing(false)
+    }
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -306,6 +397,10 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
             <Gamepad2 className="w-4 h-4 mr-2 inline" />
             Games ({games.length})
           </TabsTrigger>
+          <TabsTrigger value="exposure">
+            <Trophy className="w-4 h-4 mr-2 inline" />
+            Exposure Sync
+          </TabsTrigger>
         </TabsList>
 
         {/* Teams Tab */}
@@ -450,7 +545,180 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
             )}
           </Card>
         </TabsContent>
+
+        {/* Exposure Sync Tab */}
+        <TabsContent value="exposure">
+          <Card className="overflow-hidden p-0 rounded-sm border border-white/5">
+            <div className="p-4 border-b border-white/5 bg-[#152e50]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wide">Exposure Integration</h3>
+                <p className="text-xs text-gray-400 mt-1">Push registered teams to the official Exposure Events schedule.</p>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="w-40">
+                  <Select
+                    options={[
+                      { value: 'all', label: 'All Divisions' },
+                      ...uniqueDivisions.map(d => ({ value: d, label: d }))
+                    ]}
+                    value={selectedDivisionFilter}
+                    onChange={(e) => setSelectedDivisionFilter(e.target.value)}
+                    className="py-1 text-xs"
+                  />
+                </div>
+                <div className="w-40">
+                  <Select
+                    options={[
+                      { value: 'all', label: 'All Age Groups' },
+                      ...uniqueAgeGroups.map(a => ({ value: a, label: a }))
+                    ]}
+                    value={selectedAgeGroupFilter}
+                    onChange={(e) => setSelectedAgeGroupFilter(e.target.value)}
+                    className="py-1 text-xs"
+                  />
+                </div>
+                {filteredTeams.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    onClick={() => {
+                      setIsBulkPush(true)
+                      setSelectedTeam(null)
+                      setPushModalOpen(true)
+                    }}
+                  >
+                    Push Filtered ({filteredTeams.length})
+                  </Button>
+                )}
+              </div>
+            </div>
+            {filteredTeams.length === 0 ? (
+              <div className="text-center py-12">
+                <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-2">No teams found</h3>
+                <p className="text-gray-500 text-sm">No teams match the selected filter.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-[#152e50]/50 border-b border-white/5">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Team</th>
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Division</th>
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Status</th>
+                      <th className="px-6 py-4 text-right text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {filteredTeams.map((team) => (
+                      <tr key={team.id} className="hover:bg-white/5 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-white uppercase tracking-wide">{team.name}</div>
+                          <div className="text-xs text-gray-500">{team.coachName || 'No Coach'}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {team.division ? (
+                            <Badge variant="default" size="sm">{team.division}</Badge>
+                          ) : (
+                            <span className="text-gray-600">-</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          {team.exposureId ? (
+                            <Badge variant="success" size="sm">Synced ({team.exposureId})</Badge>
+                          ) : (
+                            <Badge variant="warning" size="sm">Not Synced</Badge>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <Button
+                            size="sm"
+                            variant={team.exposureId ? 'secondary' : 'primary'}
+                            onClick={() => {
+                              setIsBulkPush(false)
+                              setSelectedTeam(team)
+                              setPushModalOpen(true)
+                            }}
+                          >
+                            {team.exposureId ? 'Re-Sync' : 'Push to Exposure'}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        </TabsContent>
       </Tabs>
+
+      {/* Push Modal */}
+      <Modal
+        isOpen={isPushModalOpen}
+        onClose={() => {
+          setPushModalOpen(false)
+          setSelectedTeam(null)
+          setPushError('')
+        }}
+        title={isBulkPush ? 'Push All Teams to Exposure' : `Push ${selectedTeam?.name} to Exposure`}
+      >
+        <div className="space-y-4">
+          {isBulkPush && (
+            <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400 text-sm">
+              <strong>Warning:</strong> You are about to push <strong>{filteredTeams.length} teams</strong> to the same Exposure Division.
+              Use this only if all teams belong to the same division (e.g., all 17U Gold).
+            </div>
+          )}
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+            <p className="text-blue-400 text-sm">
+              Enter the <strong>Exposure Division ID</strong> for this team. This will create or update the team in the live schedule.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Exposure Division ID</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="e.g. 1045"
+                value={pushDivisionId}
+                onChange={(e) => setPushDivisionId(e.target.value)}
+                className="flex-1 bg-white/5 border border-white/10 text-white px-4 py-2 rounded-sm focus:outline-none focus:border-eha-red"
+              />
+              <Button variant="secondary" onClick={() => window.open('https://exposureevents.com/admin/divisions', '_blank')}>
+                Find ID
+              </Button>
+            </div>
+          </div>
+
+          {pushError && (
+            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg">
+              {pushError}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setPushModalOpen(false)
+                setSelectedTeam(null)
+                setIsBulkPush(false)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handlePushTeam}
+              isLoading={isPushing}
+              disabled={!pushDivisionId}
+            >
+              Confirm Push
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

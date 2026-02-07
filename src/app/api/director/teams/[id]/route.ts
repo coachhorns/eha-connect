@@ -55,6 +55,17 @@ export async function GET(
             awayGames: true,
           },
         },
+        eventTeams: {
+          include: {
+            event: {
+              select: {
+                id: true,
+                name: true,
+                exposureId: true,
+              },
+            },
+          },
+        },
       },
     })
 

@@ -218,6 +218,54 @@ export default function AdminDashboard() {
           </div>
         </section>
 
+
+        {/* Exposure Events Integration Guide */}
+        <section className="mt-10">
+          <div className="bg-gradient-to-r from-amber-900/20 to-amber-800/20 border border-amber-500/30 rounded-lg p-6">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Trophy className="w-6 h-6 text-amber-500" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-2">Exposure Events Integration</h3>
+                <p className="text-gray-300 text-sm mb-4">
+                  This platform is integrated with Exposure Events. You can push registered teams and their rosters directly to the live tournament system.
+                </p>
+
+                <div className="grid sm:grid-cols-3 gap-4 mb-4">
+                  <div className="bg-black/20 p-3 rounded border border-white/5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-[10px] text-black font-bold">1</div>
+                      <span className="text-xs font-bold text-gray-400 uppercase">Review</span>
+                    </div>
+                    <p className="text-sm text-white font-medium">Check Roster Status</p>
+                  </div>
+                  <div className="bg-black/20 p-3 rounded border border-white/5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-[10px] text-black font-bold">2</div>
+                      <span className="text-xs font-bold text-gray-400 uppercase">Sync</span>
+                    </div>
+                    <p className="text-sm text-white font-medium">Use Event Dashboard</p>
+                  </div>
+                  <div className="bg-black/20 p-3 rounded border border-white/5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center text-[10px] text-black font-bold">3</div>
+                      <span className="text-xs font-bold text-gray-400 uppercase">Push</span>
+                    </div>
+                    <p className="text-sm text-white font-medium">Push to Live Event</p>
+                  </div>
+                </div>
+
+                <div className="bg-amber-500/5 p-3 rounded border border-amber-500/10 mb-4">
+                  <p className="text-xs text-amber-400">
+                    <strong>How to Push:</strong> Go to <Link href="/admin/events" className="underline hover:text-white">Manage Events</Link> {'>'} Select Event {'>'} <strong>Exposure Integration</strong> Tab.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </main>
     </div>
   )

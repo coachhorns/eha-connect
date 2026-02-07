@@ -103,6 +103,7 @@ export async function GET(request: NextRequest) {
               slug: true,
             },
           },
+          exposureId: true,
           eventTeams: {
             select: {
               eventId: true,
