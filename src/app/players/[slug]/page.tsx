@@ -12,6 +12,8 @@ import {
   Link as LinkIcon,
   UserPlus,
   FileText,
+  Globe,
+  PlayCircle,
 } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -23,6 +25,8 @@ import { canViewStats } from '@/lib/permissions'
 import StatsPaywall from '@/components/players/StatsPaywall'
 import ShareProfileButton from '@/components/players/ShareProfileButton'
 import RecruitingButton from '@/components/recruiting/RecruitingButton'
+import FilmRoomSection from '@/components/players/FilmRoomSection'
+import PhotoGallery from '@/components/players/PhotoGallery'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -143,6 +147,7 @@ export default async function PlayerProfilePage(props: PageProps) {
 
   const { player, careerStats } = data
   const currentTeam = player.teamRosters.find((r: any) => !r.leftAt)
+  const videos = player.media.filter((m: any) => m.type === 'VIDEO')
 
   // Check if user can view stats
   const session = await getServerSession(authOptions)
@@ -238,6 +243,44 @@ export default async function PlayerProfilePage(props: PageProps) {
                 )}
               </div>
 
+              {/* Recruiting Links */}
+              {(player.maxPrepsUrl || player.hudlUrl || player.youtubeUrl) && (
+                <div className="mt-5 flex flex-wrap items-center justify-center md:justify-start gap-3">
+                  {player.maxPrepsUrl && (
+                    <a
+                      href={player.maxPrepsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/10 hover:bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-widest rounded-sm transition-colors"
+                    >
+                      <Image src="/images/logos/maxpreps.png" alt="MaxPreps" width={16} height={16} className="w-4 h-4 object-contain" />
+                      MaxPreps
+                    </a>
+                  )}
+                  {player.hudlUrl && (
+                    <a
+                      href={player.hudlUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/10 hover:bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-widest rounded-sm transition-colors"
+                    >
+                      <Image src="/images/logos/hudl.png" alt="Hudl" width={16} height={16} className="w-4 h-4 object-contain" />
+                      Hudl
+                    </a>
+                  )}
+                  {player.youtubeUrl && (
+                    <a
+                      href={player.youtubeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/10 hover:bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-widest rounded-sm transition-colors"
+                    >
+                      <Image src="/images/logos/youtube.png" alt="YouTube" width={16} height={16} className="w-4 h-4 object-contain" />
+                      YouTube
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Actions */}
@@ -358,76 +401,42 @@ export default async function PlayerProfilePage(props: PageProps) {
             </section>
 
             {/* Film Room (Highlights) */}
-            {(player.hudlUrl || player.youtubeUrl || player.highlightUrl) && (
+            {(videos.length > 0 || player.hudlUrl || player.youtubeUrl || player.highlightUrl) && (
               <section>
                 <div className="flex items-baseline justify-between mb-8">
                   <h3 className="text-2xl text-white font-bold uppercase tracking-tight">Film Room</h3>
                 </div>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Mock Thumbnail 1 */}
-                  <a href={player.hudlUrl || player.youtubeUrl || '#'} target="_blank" className="group relative aspect-video bg-[#0A1D37] rounded-sm overflow-hidden border border-white/10 cursor-pointer">
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A1D37] to-transparent"></div>
-                    <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
-                      <div className="w-16 h-16 bg-eha-red rounded-full flex items-center justify-center text-white shadow-xl shadow-eha-red/20 transform group-hover:scale-110 transition-transform">
-                        <div className="w-0 h-0 border-t-8 border-t-transparent border-l-[16px] border-l-white border-b-8 border-b-transparent ml-1"></div>
+                {videos.length > 0 ? (
+                  <FilmRoomSection
+                    videos={videos.map((v: any) => ({
+                      id: v.id,
+                      url: v.url,
+                      title: v.title,
+                      thumbnail: v.thumbnail,
+                    }))}
+                  />
+                ) : (
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <a href={player.highlightUrl || player.youtubeUrl || player.hudlUrl || '#'} target="_blank" rel="noopener noreferrer" className="group relative aspect-video bg-[#0A1D37] rounded-sm overflow-hidden border border-white/10 cursor-pointer">
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0A1D37] to-transparent" />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                        <div className="w-16 h-16 bg-eha-red rounded-full flex items-center justify-center text-white shadow-xl shadow-eha-red/20 transform group-hover:scale-110 transition-transform">
+                          <div className="w-0 h-0 border-t-8 border-t-transparent border-l-[16px] border-l-white border-b-8 border-b-transparent ml-1" />
+                        </div>
                       </div>
-                    </div>
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <span className="inline-block text-[10px] font-extrabold text-eha-red uppercase tracking-widest bg-white px-2 py-0.5 rounded-sm mb-2">Featured</span>
-                      <p className="text-white font-bold truncate">Official Highlights Playlist</p>
-                    </div>
-                  </a>
-                </div>
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <span className="inline-block text-[10px] font-extrabold text-eha-red uppercase tracking-widest bg-white px-2 py-0.5 rounded-sm mb-2">Featured</span>
+                        <p className="text-white font-bold truncate">Official Highlights Playlist</p>
+                      </div>
+                    </a>
+                  </div>
+                )}
               </section>
             )}
           </div>
 
           {/* Sidebar Column */}
           <div className="lg:col-span-4 space-y-10">
-
-            {/* Recruitment Status (Placeholder Data) */}
-            <section className="bg-[#152e50] border border-white/5 p-8 rounded-sm shadow-xl">
-              <h4 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Recruitment Status</h4>
-              <div className="space-y-6">
-                <div className="flex justify-between items-center pb-6 border-b border-white/5">
-                  <span className="text-sm text-gray-400 font-medium">Player Tier</span>
-                  <span className="text-lg font-extrabold text-white">Prospect</span>
-                </div>
-                <div className="flex justify-between items-center pb-6 border-b border-white/5">
-                  <span className="text-sm text-gray-400 font-medium">Circuit Rank</span>
-                  <span className="text-lg font-extrabold text-white">Unranked</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-400 font-medium">Academic Eligibility</span>
-                  <span className="flex items-center gap-2 text-gray-400 font-bold uppercase text-xs">
-                    Pending
-                  </span>
-                </div>
-              </div>
-              <Button className="w-full mt-10 py-6 bg-eha-red text-white text-[10px] font-extrabold uppercase tracking-[0.2em] rounded-sm hover:bg-white hover:text-[#0A1D37] transition-all">
-                Request Scout Package
-              </Button>
-            </section>
-
-            {/* College Interest (Placeholder for now) */}
-            <section className="bg-white border border-white/10 rounded-sm shadow-lg p-8">
-              <h4 className="text-xs font-extrabold uppercase tracking-widest text-[#0A1D37] mb-8 flex items-center justify-between">
-                College Interest
-                <span className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-[10px] font-bold">0</span>
-              </h4>
-              <div className="text-center py-8">
-                <Trophy className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                <p className="text-sm text-slate-400 font-medium">No offers reported yet.</p>
-              </div>
-              <div className="mt-8 pt-8 border-t border-slate-100">
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4">Upcoming Visits</p>
-                <div className="flex gap-3">
-                  <div className="flex-1 p-3 bg-slate-50 border border-slate-100 rounded-sm text-center">
-                    <span className="text-xs text-slate-400 font-medium">None Scheduled</span>
-                  </div>
-                </div>
-              </div>
-            </section>
 
             {/* Athlete Bio/Info */}
             <section className="bg-white border border-white/10 rounded-sm p-8 shadow-lg">
@@ -480,18 +489,16 @@ export default async function PlayerProfilePage(props: PageProps) {
             {player.media.filter(m => m.type === 'PHOTO').length > 0 && (
               <section>
                 <h4 className="text-xs font-extrabold uppercase tracking-widest text-white mb-6">Photos</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  {player.media.filter(m => m.type === 'PHOTO').slice(0, 4).map((item) => (
-                    <div key={item.id} className="relative aspect-square rounded-sm overflow-hidden bg-white/5 border border-white/10">
-                      <Image
-                        src={item.url}
-                        alt="Player Photo"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
+                <PhotoGallery
+                  photos={player.media
+                    .filter((m: any) => m.type === 'PHOTO')
+                    .slice(0, 4)
+                    .map((item: any) => ({
+                      id: item.id,
+                      url: item.url,
+                      title: item.title,
+                    }))}
+                />
               </section>
             )}
 

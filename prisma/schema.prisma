@@ -229,6 +229,7 @@ model Player {
   hudlUrl         String?
   youtubeUrl      String?
   highlightUrl    String?
+  maxPrepsUrl     String?
 
   // Status
   isActive        Boolean   @default(true)

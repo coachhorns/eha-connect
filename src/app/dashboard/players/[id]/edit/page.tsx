@@ -19,6 +19,8 @@ import {
   Trash2,
   Plus,
   Link as LinkIcon,
+  Video,
+  Check,
   ZoomIn,
   ZoomOut,
   RotateCw,
@@ -28,6 +30,7 @@ import {
 } from 'lucide-react'
 import { Card, Button, Input } from '@/components/ui'
 import { formatHeight, formatPosition } from '@/lib/utils'
+import { extractYouTubeId, getYouTubeThumbnail } from '@/lib/video'
 
 function createImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -108,6 +111,7 @@ interface PlayerData {
   hudlUrl: string | null
   youtubeUrl: string | null
   highlightUrl: string | null
+  maxPrepsUrl: string | null
   gpa: number | null
   transcriptUrl: string | null
   media: MediaItem[]
@@ -126,6 +130,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
   const [isUploadingMedia, setIsUploadingMedia] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false)
 
   const photoInputRef = useRef<HTMLInputElement>(null)
   const mediaInputRef = useRef<HTMLInputElement>(null)
@@ -149,9 +154,14 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
   const [hudlUrl, setHudlUrl] = useState('')
   const [youtubeUrl, setYoutubeUrl] = useState('')
   const [highlightUrl, setHighlightUrl] = useState('')
+  const [maxPrepsUrl, setMaxPrepsUrl] = useState('')
   const [gpa, setGpa] = useState('')
   const [transcriptUrl, setTranscriptUrl] = useState('')
   const [isUploadingTranscript, setIsUploadingTranscript] = useState(false)
+  const [videoUrl, setVideoUrl] = useState('')
+  const [videoTitle, setVideoTitle] = useState('')
+  const [isAddingVideo, setIsAddingVideo] = useState(false)
+  const [showAddVideo, setShowAddVideo] = useState(false)
   const transcriptInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -175,6 +185,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           setHudlUrl(p.hudlUrl || '')
           setYoutubeUrl(p.youtubeUrl || '')
           setHighlightUrl(p.highlightUrl || '')
+          setMaxPrepsUrl(p.maxPrepsUrl || '')
           setGpa(p.gpa ? String(p.gpa) : '')
           setTranscriptUrl(p.transcriptUrl || '')
         } else if (res.status === 404 || res.status === 403) {
@@ -347,16 +358,13 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
     }
   }
 
-  const handleTranscriptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (file.type !== 'application/pdf') {
-      setError('Please select a PDF file')
+  const processTranscriptFile = async (file: File) => {
+    if (file.type !== 'application/pdf' && file.type !== 'image/png') {
+      setError('Please select a PDF or PNG file')
       return
     }
     if (file.size > 10 * 1024 * 1024) {
-      setError('PDF must be less than 10MB')
+      setError('File must be less than 10MB')
       return
     }
 
@@ -382,7 +390,6 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       const { url } = await uploadRes.json()
       setTranscriptUrl(url)
 
-      // Save immediately to the player record
       const updateRes = await fetch(`/api/user/players/${resolvedParams.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -405,6 +412,17 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
     }
   }
 
+  const handleTranscriptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) processTranscriptFile(file)
+  }
+
+  const handleTranscriptDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    if (file) processTranscriptFile(file)
+  }
+
   const handleRemoveTranscript = async () => {
     try {
       const res = await fetch(`/api/user/players/${resolvedParams.id}`, {
@@ -422,6 +440,47 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
     } catch (err) {
       console.error('Error removing transcript:', err)
       setError('Failed to remove transcript')
+    }
+  }
+
+  const handleAddVideo = async () => {
+    if (!videoUrl.trim()) return
+
+    setIsAddingVideo(true)
+    setError('')
+
+    try {
+      let thumbnail: string | null = null
+      const ytId = extractYouTubeId(videoUrl)
+      if (ytId) {
+        thumbnail = getYouTubeThumbnail(ytId)
+      }
+
+      const mediaRes = await fetch(`/api/user/players/${resolvedParams.id}/media`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: videoUrl.trim(),
+          type: 'VIDEO',
+          title: videoTitle.trim() || null,
+          thumbnail,
+        }),
+      })
+
+      if (mediaRes.ok) {
+        const data = await mediaRes.json()
+        setPlayer(prev => prev ? { ...prev, media: [data.media, ...prev.media] } : null)
+        setVideoUrl('')
+        setVideoTitle('')
+        setShowAddVideo(false)
+      } else {
+        setError('Failed to add video')
+      }
+    } catch (err) {
+      console.error('Error adding video:', err)
+      setError('Failed to add video')
+    } finally {
+      setIsAddingVideo(false)
     }
   }
 
@@ -443,13 +502,14 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           hudlUrl: hudlUrl.trim() || null,
           youtubeUrl: youtubeUrl.trim() || null,
           highlightUrl: highlightUrl.trim() || null,
+          maxPrepsUrl: maxPrepsUrl.trim() || null,
           gpa: gpa ? parseFloat(gpa) : null,
         }),
       })
 
       if (res.ok) {
-        setSuccess('Profile updated successfully')
-        setTimeout(() => setSuccess(''), 3000)
+        setShowSaveSuccess(true)
+        setTimeout(() => setShowSaveSuccess(false), 1500)
       } else {
         const data = await res.json()
         setError(data.error || 'Failed to update profile')
@@ -490,6 +550,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
   const currentTeam = player.teamRosters.find((r: any) => !r.leftAt)
   const photos = player.media.filter(m => m.type === 'PHOTO')
+  const videos = player.media.filter(m => m.type === 'VIDEO')
 
   return (
     <div className="min-h-screen">
@@ -662,7 +723,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             <p className="text-red-400 text-sm">{error}</p>
           </div>
         )}
-        {success && (
+        {success && success !== '' && (
           <div className="mb-6 bg-green-500/10 border border-green-500/20 rounded-sm p-4">
             <p className="text-green-400 text-sm">{success}</p>
           </div>
@@ -734,17 +795,15 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
               </div>
             </Card>
 
-            {/* Highlights & Media Links */}
+            {/* Recruiting Links */}
             <Card className="rounded-sm p-0">
               <div className="p-4 border-b border-white/5">
-                <h2 className="text-2xl text-white uppercase tracking-tight font-bold">Highlights & Media</h2>
+                <h2 className="text-2xl text-white uppercase tracking-tight font-bold">Recruiting Links</h2>
               </div>
               <div className="p-4 space-y-4">
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 3.993L9 16z" />
-                    </svg>
+                    <Image src="/images/logos/hudl.png" alt="Hudl" width={20} height={20} className="w-5 h-5 object-contain" />
                     Hudl Profile
                   </label>
                   <Input
@@ -752,6 +811,18 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     placeholder="https://www.hudl.com/profile/..."
                     value={hudlUrl}
                     onChange={(e) => setHudlUrl(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                    <Image src="/images/logos/maxpreps.png" alt="MaxPreps" width={20} height={20} className="w-5 h-5 object-contain" />
+                    MaxPreps Profile
+                  </label>
+                  <Input
+                    type="url"
+                    placeholder="https://www.maxpreps.com/athlete/..."
+                    value={maxPrepsUrl}
+                    onChange={(e) => setMaxPrepsUrl(e.target.value)}
                   />
                 </div>
                 <div>
@@ -844,6 +915,8 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   ) : (
                     <div
                       onClick={() => transcriptInputRef.current?.click()}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={handleTranscriptDrop}
                       className={`relative border-2 border-dashed rounded-sm cursor-pointer transition-colors border-white/10 hover:border-eha-red/50 ${isUploadingTranscript ? 'pointer-events-none opacity-50' : ''}`}
                     >
                       <div className="flex flex-col items-center justify-center p-6">
@@ -856,9 +929,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                           <>
                             <Upload className="w-8 h-8 text-gray-500 mb-2" />
                             <p className="text-sm text-gray-400 text-center">
-                              Click to upload transcript PDF
+                              Click or drag to upload transcript
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">Max 10MB</p>
+                            <p className="text-xs text-gray-500 mt-1">PDF or PNG, max 10MB</p>
                           </>
                         )}
                       </div>
@@ -867,7 +940,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   <input
                     ref={transcriptInputRef}
                     type="file"
-                    accept="application/pdf"
+                    accept="application/pdf,image/png"
                     className="hidden"
                     onChange={handleTranscriptUpload}
                   />
@@ -876,24 +949,137 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             </Card>
           </div>
 
-          {/* Save Button */}
-          <div className="flex gap-4 mt-6">
+        </form>
+
+        {/* Film Room */}
+        <Card className="mt-6 rounded-sm p-0">
+          <div className="p-4 border-b border-white/5 flex items-center justify-between">
+            <h2 className="text-2xl text-white uppercase tracking-tight font-bold flex items-center gap-2">
+              <Video className="w-5 h-5 text-eha-red" />
+              Film Room
+            </h2>
             <Button
               type="button"
-              variant="ghost"
-              onClick={() => router.push('/dashboard')}
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAddVideo(!showAddVideo)}
+              className="flex items-center gap-1"
             >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              isLoading={isSubmitting}
-              className="flex-1 max-w-xs"
-            >
-              Save Changes
+              <Plus className="w-4 h-4" />
+              Add Video
             </Button>
           </div>
-        </form>
+          <div className="p-4">
+            {/* Add Video Form */}
+            {showAddVideo && (
+              <div className="mb-6 p-4 bg-[#0a1628] border border-white/5 rounded-sm space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Video URL
+                  </label>
+                  <Input
+                    type="url"
+                    placeholder="https://youtube.com/watch?v=..."
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Paste a YouTube or Hudl video link
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Title (optional)
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Season Highlights 2025"
+                    value={videoTitle}
+                    onChange={(e) => setVideoTitle(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setShowAddVideo(false)
+                      setVideoUrl('')
+                      setVideoTitle('')
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleAddVideo}
+                    disabled={!videoUrl.trim() || isAddingVideo}
+                    isLoading={isAddingVideo}
+                  >
+                    Save Video
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Video Grid */}
+            {videos.length === 0 ? (
+              <div className="text-center py-8">
+                <Video className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400">No videos yet</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Add YouTube or Hudl highlight videos
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {videos.map((item) => {
+                  const ytId = extractYouTubeId(item.url)
+                  const thumbUrl = item.thumbnail || (ytId ? getYouTubeThumbnail(ytId) : null)
+
+                  return (
+                    <div key={item.id} className="relative group rounded-sm overflow-hidden bg-white/5 aspect-video border border-white/5">
+                      {thumbUrl ? (
+                        <Image
+                          src={thumbUrl}
+                          alt={item.title || 'Video'}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-[#0a1628]">
+                          <Video className="w-10 h-10 text-gray-600" />
+                        </div>
+                      )}
+                      {/* Play overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-10 h-10 bg-black/50 rounded-full flex items-center justify-center">
+                          <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-white border-b-[6px] border-b-transparent ml-0.5" />
+                        </div>
+                      </div>
+                      {/* Title */}
+                      {item.title && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                          <p className="text-white text-xs font-bold truncate">{item.title}</p>
+                        </div>
+                      )}
+                      {/* Delete button */}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteMedia(item.id)}
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-white" />
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </Card>
 
         {/* Media Gallery — outside the form */}
         <Card className="mt-6 rounded-sm p-0">
@@ -955,6 +1141,41 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           </div>
         </Card>
       </div>
+
+      {/* Sticky Save Bar */}
+      <div className="sticky bottom-0 z-50 bg-[#0A1D37] border-t border-white/10 p-4 flex justify-end gap-4">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => router.push('/dashboard')}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="button"
+          onClick={(e: React.MouseEvent) => {
+            e.preventDefault()
+            const form = document.querySelector('form')
+            if (form) form.requestSubmit()
+          }}
+          isLoading={isSubmitting}
+          className="min-w-[160px]"
+        >
+          Save Changes
+        </Button>
+      </div>
+
+      {/* Save Success Overlay */}
+      {showSaveSuccess && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
+          <div className="bg-[#0A1D37]/95 backdrop-blur-xl border border-green-500/30 rounded-sm p-8 flex flex-col items-center gap-3 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="w-14 h-14 bg-green-500/20 rounded-full flex items-center justify-center">
+              <Check className="w-8 h-8 text-green-400" />
+            </div>
+            <p className="text-white font-bold text-lg uppercase tracking-wider">Saved Successfully</p>
+          </div>
+        </div>
+      )}
 
       {/* Crop Modal */}
       {cropImageSrc && (

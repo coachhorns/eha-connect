@@ -91,6 +91,7 @@ export async function PUT(
       hudlUrl,
       youtubeUrl,
       highlightUrl,
+      maxPrepsUrl,
       gpa,
       transcriptUrl,
     } = body
@@ -127,6 +128,7 @@ export async function PUT(
         ...(hudlUrl !== undefined && { hudlUrl: hudlUrl?.trim() || null }),
         ...(youtubeUrl !== undefined && { youtubeUrl: youtubeUrl?.trim() || null }),
         ...(highlightUrl !== undefined && { highlightUrl: highlightUrl?.trim() || null }),
+        ...(maxPrepsUrl !== undefined && { maxPrepsUrl: maxPrepsUrl?.trim() || null }),
         ...(gpa !== undefined && { gpa: gpa ? parseFloat(String(gpa)) : null }),
         ...(transcriptUrl !== undefined && { transcriptUrl: transcriptUrl?.trim() || null }),
       },

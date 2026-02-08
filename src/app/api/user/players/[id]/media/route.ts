@@ -64,7 +64,7 @@ export async function POST(
     }
 
     const body = await request.json()
-    const { url, type, title } = body
+    const { url, type, title, thumbnail } = body
 
     if (!url || !type) {
       return NextResponse.json(
@@ -79,6 +79,7 @@ export async function POST(
         url,
         type,
         title: title || null,
+        thumbnail: thumbnail || null,
         isPublic: true,
       },
     })
