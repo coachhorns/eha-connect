@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, Plus, Users, Trophy, Trash2, UserPlus, Pencil, Upload, FileText, X, Check, ChevronDown, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Plus, Users, Trophy, Trash2, UserPlus, Pencil, Upload, FileText, X, Check, ChevronDown, AlertCircle, Link2 } from 'lucide-react'
 import { Button, Badge, Input, Modal } from '@/components/ui'
 
 interface ParsedPlayer {
@@ -17,6 +17,25 @@ interface ParsedPlayer {
   heightFeet: number | null
   heightInches: number | null
   school: string | null
+}
+
+interface PlayerMatch {
+  id: string
+  firstName: string
+  lastName: string
+  profilePhoto: string | null
+  school: string | null
+  graduationYear: number | null
+  primaryPosition: string | null
+  heightFeet: number | null
+  heightInches: number | null
+  currentTeams: Array<{
+    teamName: string
+    programName: string | null
+    ageGroup: string | null
+  }>
+  isOnTargetRoster: boolean
+  hasGuardian: boolean
 }
 
 const positionOptions = [
@@ -149,6 +168,16 @@ export default function DirectorTeamDetailPage() {
   const [parseError, setParseError] = useState('')
   const [uploadFileName, setUploadFileName] = useState('')
 
+  // Player dedup state (manual add)
+  const [duplicateMatches, setDuplicateMatches] = useState<PlayerMatch[]>([])
+  const [isSearchingDupes, setIsSearchingDupes] = useState(false)
+  const [duplicateDecision, setDuplicateDecision] = useState<string | null>(null) // null = undecided, playerId = use existing, 'new' = create new
+
+  // Player dedup state (batch import)
+  const [batchMatches, setBatchMatches] = useState<Map<number, PlayerMatch[]>>(new Map())
+  const [batchResolutions, setBatchResolutions] = useState<Map<number, { resolution: 'new' | 'existing'; playerId?: string }>>(new Map())
+  const [isCheckingBatchDupes, setIsCheckingBatchDupes] = useState(false)
+
   // Push to Exposure state
   const [isPushModalOpen, setIsPushModalOpen] = useState(false)
   const [isPushing, setIsPushing] = useState(false)
@@ -174,6 +203,48 @@ export default function DirectorTeamDetailPage() {
       fetchTeam()
     }
   }, [status, session, router, teamId])
+
+  // Debounced search for duplicate players when adding manually
+  useEffect(() => {
+    const firstName = playerForm.firstName.trim()
+    const lastName = playerForm.lastName.trim()
+
+    if (firstName.length < 2 || lastName.length < 2) {
+      setDuplicateMatches([])
+      setDuplicateDecision(null)
+      return
+    }
+
+    const controller = new AbortController()
+    const debounce = setTimeout(async () => {
+      setIsSearchingDupes(true)
+      try {
+        const res = await fetch(
+          `/api/director/players/search?q=${encodeURIComponent(firstName + ' ' + lastName)}&teamId=${teamId}`,
+          { signal: controller.signal }
+        )
+        const data = await res.json()
+        if (res.ok && data.players?.length > 0) {
+          setDuplicateMatches(data.players)
+          setDuplicateDecision(null)
+        } else {
+          setDuplicateMatches([])
+          setDuplicateDecision(null)
+        }
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') {
+          console.error('Error searching for duplicates:', err)
+        }
+      } finally {
+        setIsSearchingDupes(false)
+      }
+    }, 300)
+
+    return () => {
+      clearTimeout(debounce)
+      controller.abort()
+    }
+  }, [playerForm.firstName, playerForm.lastName, teamId])
 
   const fetchTeam = async () => {
     try {
@@ -237,39 +308,76 @@ export default function DirectorTeamDetailPage() {
     }
   }
 
+  const resetAddPlayerState = () => {
+    setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '', heightFeet: '', heightInches: '', school: '', graduationYear: '' })
+    setDuplicateMatches([])
+    setDuplicateDecision(null)
+    setError('')
+  }
+
   const handleAddPlayer = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    if (!playerForm.firstName.trim() || !playerForm.lastName.trim()) {
-      setError('First name and last name are required')
+    // If matches were found but director hasn't decided, block submit
+    if (duplicateMatches.length > 0 && duplicateDecision === null) {
+      setError('Please select an existing player or choose to create a new one')
       return
     }
 
     try {
       setIsSubmitting(true)
-      const res = await fetch(`/api/director/teams/${teamId}/roster`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName: playerForm.firstName.trim(),
-          lastName: playerForm.lastName.trim(),
-          jerseyNumber: playerForm.jerseyNumber.trim() || null,
-          primaryPosition: playerForm.primaryPosition || null,
-          heightFeet: playerForm.heightFeet || null,
-          heightInches: playerForm.heightInches || null,
-          school: playerForm.school.trim() || null,
-          graduationYear: playerForm.graduationYear || null,
-        }),
-      })
 
-      if (res.ok) {
-        setIsAddPlayerOpen(false)
-        setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '', heightFeet: '', heightInches: '', school: '', graduationYear: '' })
-        fetchTeam()
+      // If director chose an existing player, send playerId
+      if (duplicateDecision && duplicateDecision !== 'new') {
+        const res = await fetch(`/api/director/teams/${teamId}/roster`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            playerId: duplicateDecision,
+            jerseyNumber: playerForm.jerseyNumber.trim() || null,
+          }),
+        })
+
+        if (res.ok) {
+          setIsAddPlayerOpen(false)
+          resetAddPlayerState()
+          fetchTeam()
+        } else {
+          const data = await res.json()
+          setError(data.error || 'Failed to add player')
+        }
       } else {
-        const data = await res.json()
-        setError(data.error || 'Failed to add player')
+        // Create new player (original path)
+        if (!playerForm.firstName.trim() || !playerForm.lastName.trim()) {
+          setError('First name and last name are required')
+          setIsSubmitting(false)
+          return
+        }
+
+        const res = await fetch(`/api/director/teams/${teamId}/roster`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firstName: playerForm.firstName.trim(),
+            lastName: playerForm.lastName.trim(),
+            jerseyNumber: playerForm.jerseyNumber.trim() || null,
+            primaryPosition: playerForm.primaryPosition || null,
+            heightFeet: playerForm.heightFeet || null,
+            heightInches: playerForm.heightInches || null,
+            school: playerForm.school.trim() || null,
+            graduationYear: playerForm.graduationYear || null,
+          }),
+        })
+
+        if (res.ok) {
+          setIsAddPlayerOpen(false)
+          resetAddPlayerState()
+          fetchTeam()
+        } else {
+          const data = await res.json()
+          setError(data.error || 'Failed to add player')
+        }
       }
     } catch (err) {
       console.error('Error adding player:', err)
@@ -381,6 +489,44 @@ export default function DirectorTeamDetailPage() {
     }
   }
 
+  const checkBatchDuplicates = async (players: ParsedPlayer[]) => {
+    setIsCheckingBatchDupes(true)
+    try {
+      const res = await fetch('/api/director/players/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          players: players.map(p => ({ firstName: p.firstName, lastName: p.lastName })),
+          teamId,
+        }),
+      })
+
+      const data = await res.json()
+      const newMatchMap = new Map<number, PlayerMatch[]>()
+      const newResolutions = new Map<number, { resolution: 'new' | 'existing'; playerId?: string }>()
+
+      if (res.ok && data.matches) {
+        for (const match of data.matches) {
+          newMatchMap.set(match.index, match.players)
+          // Auto-select first non-already-on-roster match
+          const bestMatch = match.players.find((p: PlayerMatch) => !p.isOnTargetRoster)
+          if (bestMatch) {
+            newResolutions.set(match.index, { resolution: 'existing', playerId: bestMatch.id })
+          }
+        }
+      }
+
+      setBatchMatches(newMatchMap)
+      setBatchResolutions(newResolutions)
+    } catch (err) {
+      console.error('Error checking batch duplicates:', err)
+      setBatchMatches(new Map())
+      setBatchResolutions(new Map())
+    } finally {
+      setIsCheckingBatchDupes(false)
+    }
+  }
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -388,6 +534,8 @@ export default function DirectorTeamDetailPage() {
     setIsParsing(true)
     setParseError('')
     setParsedPlayers([])
+    setBatchMatches(new Map())
+    setBatchResolutions(new Map())
     setUploadFileName(file.name)
 
     try {
@@ -404,6 +552,8 @@ export default function DirectorTeamDetailPage() {
       if (res.ok) {
         if (data.players && data.players.length > 0) {
           setParsedPlayers(data.players)
+          // Check for duplicates after parsing
+          await checkBatchDuplicates(data.players)
         } else {
           setParseError('No players found in the file. Please check the format.')
         }
@@ -426,25 +576,76 @@ export default function DirectorTeamDetailPage() {
     setIsImporting(true)
     setParseError('')
 
-    try {
-      const res = await fetch(`/api/director/teams/${teamId}/roster/batch`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ players: parsedPlayers }),
-      })
+    // Split players into create-new and link-existing groups
+    const playersToCreate: ParsedPlayer[] = []
+    const playersToLink: Array<{ playerId: string; jerseyNumber: string | null }> = []
 
-      const data = await res.json()
-
-      if (res.ok) {
-        setIsAddPlayerOpen(false)
-        setParsedPlayers([])
-        setUploadFileName('')
-        setActiveTab('manual')
-        fetchTeam()
-        alert(data.message || `Successfully imported ${data.results?.added || 0} players`)
+    parsedPlayers.forEach((player, index) => {
+      const resolution = batchResolutions.get(index)
+      if (resolution?.resolution === 'existing' && resolution.playerId) {
+        playersToLink.push({
+          playerId: resolution.playerId,
+          jerseyNumber: player.jerseyNumber,
+        })
       } else {
-        setParseError(data.error || 'Failed to import players')
+        playersToCreate.push(player)
       }
+    })
+
+    try {
+      let created = 0
+      let linked = 0
+      let errors = 0
+
+      // Create new players via batch endpoint
+      if (playersToCreate.length > 0) {
+        const res = await fetch(`/api/director/teams/${teamId}/roster/batch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ players: playersToCreate }),
+        })
+
+        const data = await res.json()
+        if (res.ok) {
+          created = data.results?.added || 0
+        } else {
+          setParseError(data.error || 'Failed to import new players')
+          setIsImporting(false)
+          return
+        }
+      }
+
+      // Link existing players via individual roster calls
+      for (const link of playersToLink) {
+        try {
+          const res = await fetch(`/api/director/teams/${teamId}/roster`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(link),
+          })
+          if (res.ok) {
+            linked++
+          } else {
+            errors++
+          }
+        } catch {
+          errors++
+        }
+      }
+
+      setIsAddPlayerOpen(false)
+      setParsedPlayers([])
+      setBatchMatches(new Map())
+      setBatchResolutions(new Map())
+      setUploadFileName('')
+      setActiveTab('manual')
+      fetchTeam()
+
+      const parts: string[] = []
+      if (created > 0) parts.push(`Created ${created} new players`)
+      if (linked > 0) parts.push(`Linked ${linked} existing players`)
+      if (errors > 0) parts.push(`${errors} errors`)
+      alert(parts.join('. ') + '.')
     } catch (err) {
       console.error('Error importing players:', err)
       setParseError('Failed to import players')
@@ -791,12 +992,13 @@ export default function DirectorTeamDetailPage() {
           isOpen={isAddPlayerOpen}
           onClose={() => {
             setIsAddPlayerOpen(false)
-            setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '', heightFeet: '', heightInches: '', school: '', graduationYear: '' })
+            resetAddPlayerState()
             setParsedPlayers([])
             setParseError('')
             setUploadFileName('')
             setActiveTab('manual')
-            setError('')
+            setBatchMatches(new Map())
+            setBatchResolutions(new Map())
           }}
           title="Add Players to Roster"
         >
@@ -857,6 +1059,115 @@ export default function DirectorTeamDetailPage() {
                 </div>
               </div>
 
+              {/* Duplicate player detection panel */}
+              {isSearchingDupes && (
+                <div className="flex items-center gap-2 text-gray-400 text-sm py-2">
+                  <div className="animate-spin w-4 h-4 border-2 border-[#E31837] border-t-transparent rounded-full" />
+                  Checking for existing players...
+                </div>
+              )}
+
+              {duplicateMatches.length > 0 && !isSearchingDupes && (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center gap-2 text-amber-400 text-sm font-medium">
+                    <AlertCircle className="w-4 h-4" />
+                    {duplicateMatches.length === 1
+                      ? 'A player with this name already exists'
+                      : `${duplicateMatches.length} players with this name already exist`}
+                  </div>
+
+                  {duplicateMatches.map((match) => (
+                    <div
+                      key={match.id}
+                      className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                        match.isOnTargetRoster
+                          ? 'border-red-500/30 bg-red-500/5'
+                          : duplicateDecision === match.id
+                            ? 'border-green-500/30 bg-green-500/5'
+                            : 'border-white/10 bg-white/5'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
+                          {match.profilePhoto ? (
+                            <Image src={match.profilePhoto} alt="" width={40} height={40} className="rounded-full object-cover" />
+                          ) : (
+                            <span className="text-sm font-medium text-gray-400">
+                              {match.firstName.charAt(0)}{match.lastName.charAt(0)}
+                            </span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-white font-medium text-sm flex items-center gap-2">
+                            {match.firstName} {match.lastName}
+                            {match.hasGuardian && (
+                              <Badge variant="info" className="text-[10px] px-1.5 py-0">Claimed</Badge>
+                            )}
+                          </div>
+                          <div className="text-gray-400 text-xs flex items-center gap-2 flex-wrap">
+                            {match.primaryPosition && <span>{match.primaryPosition}</span>}
+                            {match.heightFeet && <span>{match.heightFeet}&apos;{match.heightInches || 0}&quot;</span>}
+                            {match.graduationYear && <span>Class {match.graduationYear}</span>}
+                          </div>
+                          {match.school && (
+                            <div className="text-gray-500 text-xs">{match.school}</div>
+                          )}
+                          {match.currentTeams.length > 0 && (
+                            <div className="text-gray-500 text-xs">
+                              {match.currentTeams.map(t => `${t.teamName}${t.programName ? ` (${t.programName})` : ''}`).join(', ')}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {match.isOnTargetRoster ? (
+                        <Badge variant="error" className="text-xs flex-shrink-0">Already on roster</Badge>
+                      ) : (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={duplicateDecision === match.id ? 'primary' : 'outline'}
+                          onClick={() => setDuplicateDecision(duplicateDecision === match.id ? null : match.id)}
+                          className={duplicateDecision === match.id
+                            ? ''
+                            : 'border-white/20 text-gray-300'}
+                        >
+                          <Link2 className="w-3 h-3 mr-1" />
+                          {duplicateDecision === match.id ? 'Selected' : 'Use This Player'}
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={() => setDuplicateDecision(duplicateDecision === 'new' ? null : 'new')}
+                    className={`w-full text-center text-sm py-2 rounded-lg border transition-colors ${
+                      duplicateDecision === 'new'
+                        ? 'border-blue-500/30 bg-blue-500/10 text-blue-400'
+                        : 'border-white/10 text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    {duplicateDecision === 'new' ? '+ Creating new player' : '+ Create new player instead'}
+                  </button>
+                </div>
+              )}
+
+              {/* Hide remaining fields when linking existing player */}
+              {duplicateDecision && duplicateDecision !== 'new' ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Jersey Number</label>
+                  <Input
+                    type="text"
+                    placeholder="23"
+                    value={playerForm.jerseyNumber}
+                    onChange={(e) => setPlayerForm(prev => ({ ...prev, jerseyNumber: e.target.value }))}
+                    maxLength={3}
+                  />
+                  <p className="text-gray-500 text-xs mt-2">Other details will be pulled from the existing player profile.</p>
+                </div>
+              ) : (
+              <>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Jersey Number</label>
@@ -929,6 +1240,8 @@ export default function DirectorTeamDetailPage() {
                   />
                 </div>
               </div>
+              </>
+              )}
 
               <div className="flex gap-3 pt-4">
                 <Button
@@ -937,8 +1250,7 @@ export default function DirectorTeamDetailPage() {
                   className="border-white/20 text-gray-300 hover:bg-white/10"
                   onClick={() => {
                     setIsAddPlayerOpen(false)
-                    setPlayerForm({ firstName: '', lastName: '', jerseyNumber: '', primaryPosition: '', heightFeet: '', heightInches: '', school: '', graduationYear: '' })
-                    setError('')
+                    resetAddPlayerState()
                   }}
                 >
                   Cancel
@@ -946,9 +1258,10 @@ export default function DirectorTeamDetailPage() {
                 <Button
                   type="submit"
                   isLoading={isSubmitting}
+                  disabled={duplicateMatches.length > 0 && duplicateDecision === null}
                   className="flex-1 bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530]"
                 >
-                  Add Player
+                  {duplicateDecision && duplicateDecision !== 'new' ? 'Add to Roster' : 'Add Player'}
                 </Button>
               </div>
             </form>
@@ -1000,7 +1313,14 @@ export default function DirectorTeamDetailPage() {
                 </div>
               )}
 
-              {parsedPlayers.length > 0 && !isParsing && (
+              {isCheckingBatchDupes && (
+                <div className="text-center py-4">
+                  <div className="animate-spin w-6 h-6 border-2 border-[#E31837] border-t-transparent rounded-full mx-auto mb-2" />
+                  <p className="text-gray-400 text-sm">Checking for existing players...</p>
+                </div>
+              )}
+
+              {parsedPlayers.length > 0 && !isParsing && !isCheckingBatchDupes && (
                 <>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -1011,11 +1331,18 @@ export default function DirectorTeamDetailPage() {
                       {uploadFileName && (
                         <span className="text-gray-400 text-sm">from {uploadFileName}</span>
                       )}
+                      {batchMatches.size > 0 && (
+                        <Badge variant="warning" className="text-xs">
+                          {batchMatches.size} possible {batchMatches.size === 1 ? 'match' : 'matches'}
+                        </Badge>
+                      )}
                     </div>
                     <button
                       onClick={() => {
                         setParsedPlayers([])
                         setUploadFileName('')
+                        setBatchMatches(new Map())
+                        setBatchResolutions(new Map())
                       }}
                       className="text-gray-400 hover:text-white text-sm"
                     >
@@ -1023,7 +1350,7 @@ export default function DirectorTeamDetailPage() {
                     </button>
                   </div>
 
-                  <div className="max-h-64 overflow-y-auto border border-white/10 rounded-xl">
+                  <div className="max-h-80 overflow-y-auto border border-white/10 rounded-xl">
                     <table className="w-full text-sm">
                       <thead className="bg-[#0a1628] sticky top-0">
                         <tr>
@@ -1031,69 +1358,129 @@ export default function DirectorTeamDetailPage() {
                           <th className="px-3 py-2 text-left text-gray-400 font-medium">#</th>
                           <th className="px-3 py-2 text-left text-gray-400 font-medium">Pos</th>
                           <th className="px-3 py-2 text-left text-gray-400 font-medium">Class</th>
+                          <th className="px-3 py-2 text-left text-gray-400 font-medium">Status</th>
                           <th className="px-3 py-2 text-right text-gray-400 font-medium"></th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
-                        {parsedPlayers.map((player, index) => (
-                          <tr key={index} className="hover:bg-white/5">
-                            <td className="px-3 py-2">
-                              <div className="flex gap-1">
+                        {parsedPlayers.map((player, index) => {
+                          const matches = batchMatches.get(index)
+                          const resolution = batchResolutions.get(index)
+                          const hasMatch = matches && matches.length > 0
+                          const linkedPlayer = hasMatch && resolution?.resolution === 'existing'
+                            ? matches.find(m => m.id === resolution.playerId)
+                            : null
+
+                          return (
+                            <tr key={index} className={`${hasMatch ? 'bg-amber-500/5' : ''} hover:bg-white/5`}>
+                              <td className="px-3 py-2">
+                                <div className="flex gap-1">
+                                  <input
+                                    type="text"
+                                    value={player.firstName}
+                                    onChange={(e) => updateParsedPlayer(index, 'firstName', e.target.value)}
+                                    className="w-20 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={player.lastName}
+                                    onChange={(e) => updateParsedPlayer(index, 'lastName', e.target.value)}
+                                    className="w-24 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  />
+                                </div>
+                              </td>
+                              <td className="px-3 py-2">
                                 <input
                                   type="text"
-                                  value={player.firstName}
-                                  onChange={(e) => updateParsedPlayer(index, 'firstName', e.target.value)}
-                                  className="w-20 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  value={player.jerseyNumber || ''}
+                                  onChange={(e) => updateParsedPlayer(index, 'jerseyNumber', e.target.value || null)}
+                                  className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  placeholder="-"
                                 />
+                              </td>
+                              <td className="px-3 py-2">
                                 <input
                                   type="text"
-                                  value={player.lastName}
-                                  onChange={(e) => updateParsedPlayer(index, 'lastName', e.target.value)}
-                                  className="w-24 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  value={player.primaryPosition || ''}
+                                  onChange={(e) => updateParsedPlayer(index, 'primaryPosition', e.target.value || null)}
+                                  className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  placeholder="-"
                                 />
-                              </div>
-                            </td>
-                            <td className="px-3 py-2">
-                              <input
-                                type="text"
-                                value={player.jerseyNumber || ''}
-                                onChange={(e) => updateParsedPlayer(index, 'jerseyNumber', e.target.value || null)}
-                                className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
-                                placeholder="-"
-                              />
-                            </td>
-                            <td className="px-3 py-2">
-                              <input
-                                type="text"
-                                value={player.primaryPosition || ''}
-                                onChange={(e) => updateParsedPlayer(index, 'primaryPosition', e.target.value || null)}
-                                className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
-                                placeholder="-"
-                              />
-                            </td>
-                            <td className="px-3 py-2">
-                              <input
-                                type="text"
-                                value={player.graduationYear || ''}
-                                onChange={(e) => updateParsedPlayer(index, 'graduationYear', e.target.value ? parseInt(e.target.value) : null)}
-                                className="w-12 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
-                                placeholder="-"
-                              />
-                            </td>
-                            <td className="px-3 py-2 text-right">
-                              <button
-                                onClick={() => removeParsedPlayer(index)}
-                                className="text-gray-400 hover:text-red-400 transition-colors"
-                                title="Remove player"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                              </td>
+                              <td className="px-3 py-2">
+                                <input
+                                  type="text"
+                                  value={player.graduationYear || ''}
+                                  onChange={(e) => updateParsedPlayer(index, 'graduationYear', e.target.value ? parseInt(e.target.value) : null)}
+                                  className="w-12 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  placeholder="-"
+                                />
+                              </td>
+                              <td className="px-3 py-2">
+                                {!hasMatch ? (
+                                  <span className="text-gray-500 text-xs">New</span>
+                                ) : linkedPlayer ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      // Toggle back to "create new"
+                                      setBatchResolutions(prev => {
+                                        const next = new Map(prev)
+                                        next.delete(index)
+                                        return next
+                                      })
+                                    }}
+                                    className="text-xs text-green-400 flex items-center gap-1 hover:text-green-300"
+                                    title={`Linking to ${linkedPlayer.firstName} ${linkedPlayer.lastName} on ${linkedPlayer.currentTeams[0]?.teamName || 'another team'}`}
+                                  >
+                                    <Link2 className="w-3 h-3" />
+                                    Linking
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const bestMatch = matches!.find(m => !m.isOnTargetRoster)
+                                      if (bestMatch) {
+                                        setBatchResolutions(prev => {
+                                          const next = new Map(prev)
+                                          next.set(index, { resolution: 'existing', playerId: bestMatch.id })
+                                          return next
+                                        })
+                                      }
+                                    }}
+                                    className="text-xs text-amber-400 flex items-center gap-1 hover:text-amber-300"
+                                    title={`Match found: ${matches![0].currentTeams[0]?.teamName || 'existing player'}${matches![0].school ? ` - ${matches![0].school}` : ''}${matches![0].graduationYear ? ` - Class ${matches![0].graduationYear}` : ''}`}
+                                  >
+                                    <AlertCircle className="w-3 h-3" />
+                                    Match
+                                  </button>
+                                )}
+                              </td>
+                              <td className="px-3 py-2 text-right">
+                                <button
+                                  onClick={() => removeParsedPlayer(index)}
+                                  className="text-gray-400 hover:text-red-400 transition-colors"
+                                  title="Remove player"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </td>
+                            </tr>
+                          )
+                        })}
                       </tbody>
                     </table>
                   </div>
+
+                  {batchMatches.size > 0 && (
+                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-xs text-amber-400">
+                      <AlertCircle className="w-3 h-3 inline-block mr-1" />
+                      {batchMatches.size} player{batchMatches.size !== 1 ? 's' : ''} matched existing profiles.
+                      Players marked &quot;Linking&quot; will be added to your roster from their existing profile.
+                      Click &quot;Linking&quot; to switch to creating a new profile, or &quot;Match&quot; to link instead.
+                    </div>
+                  )}
 
                   <div className="flex gap-3 pt-4">
                     <Button
@@ -1105,6 +1492,8 @@ export default function DirectorTeamDetailPage() {
                         setParsedPlayers([])
                         setUploadFileName('')
                         setActiveTab('manual')
+                        setBatchMatches(new Map())
+                        setBatchResolutions(new Map())
                       }}
                     >
                       Cancel

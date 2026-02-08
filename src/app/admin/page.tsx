@@ -223,8 +223,13 @@ export default function AdminDashboard() {
         <section className="mt-10">
           <div className="bg-gradient-to-r from-amber-900/20 to-amber-800/20 border border-amber-500/30 rounded-lg p-6">
             <div className="flex items-start gap-4">
-              <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                <Trophy className="w-6 h-6 text-amber-500" />
+              <div className="flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/exposure-logo.png"
+                  alt="Exposure Basketball"
+                  className="w-12 h-12 object-contain"
+                />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-2">Exposure Events Integration</h3>

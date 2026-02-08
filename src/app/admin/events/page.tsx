@@ -240,8 +240,11 @@ export default function AdminEventsPage() {
                 isLoading={isSyncing}
                 disabled={isSyncing}
               >
-                <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                {isSyncing ? 'Syncing...' : 'Sync from Exposure'}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/exposure-logo.png" alt="Exposure" className="w-5 h-5 object-contain" />
+                <span className={isSyncing ? 'animate-pulse' : ''}>
+                  {isSyncing ? 'Syncing...' : 'Sync from Exposure'}
+                </span>
               </Button>
               <Link href="/admin/events/new">
                 <Button className="flex items-center gap-2"><Plus className="w-4 h-4" />Create Event</Button>

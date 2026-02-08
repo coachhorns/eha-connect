@@ -45,19 +45,43 @@ export async function POST(
     const body = await request.json()
     const { firstName, lastName, jerseyNumber, primaryPosition, playerId, heightFeet, heightInches, school, graduationYear } = body
 
-    // If playerId is provided, add existing player to roster
+    // If playerId is provided, add existing player to roster (transfer)
     if (playerId) {
-      // Check if player is already on this roster
+      console.log('[Roster] Linking existing player:', { playerId, teamId })
+
+      // Remove player from ALL other active rosters (transfer)
+      const removeResult = await prisma.teamRoster.updateMany({
+        where: {
+          playerId,
+          teamId: { not: teamId },
+          leftAt: null,
+        },
+        data: { leftAt: new Date() },
+      })
+      console.log('[Roster] Removed from other rosters:', removeResult.count)
+
+      // Check if player has any roster entry on this team (active or departed)
       const existingRoster = await prisma.teamRoster.findFirst({
         where: {
           teamId,
           playerId,
-          leftAt: null,
         },
       })
 
       if (existingRoster) {
-        return NextResponse.json({ error: 'Player is already on this roster' }, { status: 400 })
+        if (existingRoster.leftAt === null) {
+          return NextResponse.json({ error: 'Player is already on this roster' }, { status: 400 })
+        }
+
+        // Re-activate a player who previously left this roster
+        const rosterEntry = await prisma.teamRoster.update({
+          where: { id: existingRoster.id },
+          data: { leftAt: null, jerseyNumber: jerseyNumber || null },
+          include: { player: true },
+        })
+
+        console.log('[Roster] Re-activated on this team')
+        return NextResponse.json({ roster: rosterEntry }, { status: 201 })
       }
 
       const rosterEntry = await prisma.teamRoster.create({
@@ -71,6 +95,7 @@ export async function POST(
         },
       })
 
+      console.log('[Roster] Created new roster entry on this team')
       return NextResponse.json({ roster: rosterEntry }, { status: 201 })
     }
 

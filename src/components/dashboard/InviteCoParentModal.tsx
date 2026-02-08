@@ -9,7 +9,7 @@ interface Player {
   firstName: string
   lastName: string
   slug: string
-  guardianRole: 'PRIMARY' | 'SECONDARY'
+  guardianRole: 'PRIMARY' | 'SECONDARY' | 'SELF'
 }
 
 interface InviteCoParentModalProps {

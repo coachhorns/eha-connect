@@ -17,44 +17,38 @@ export const colors = {
 export const subscriptionPlans = {
   ANNUAL: {
     name: 'Annual Pass',
-    price: 75,
+    price: 50,
     interval: 'year',
-    description: 'Best value - Save $45',
+    description: 'Best value - Save $70/year',
     features: [
-      'Full player profile',
-      'Stats tracking for all events',
-      'Achievement badges',
-      'Photo/video gallery',
-      'College coach exposure',
-      'PDF profile download',
+      'Full player profile with bio & photos',
+      'Live stats tracked at every EHA event',
+      'Shareable recruiting profile URL',
+      'Email 10,000+ college coaches directly',
+      'Leaderboard rankings',
+      'Photo & video highlight gallery',
     ],
   },
   SEMI_ANNUAL: {
+    // Keeping for code compatibility, but effectively hidden or unused if frontend removes it
     name: 'Semi-Annual',
-    price: 50,
+    price: 35,
     interval: '6 months',
-    description: 'Great for one season',
-    features: [
-      'Full player profile',
-      'Stats tracking for all events',
-      'Achievement badges',
-      'Photo/video gallery',
-      'College coach exposure',
-      'PDF profile download',
-    ],
+    description: 'Seasonal Access',
+    features: [],
   },
   MONTHLY: {
     name: 'Monthly Plan',
     price: 10,
     interval: 'month',
-    description: '$10/month for 12 months',
+    description: 'Flexible month-to-month',
     features: [
-      'Full player profile',
-      'Stats tracking for all events',
-      'Achievement badges',
-      'Photo/video gallery',
-      'College coach exposure',
-      'PDF profile download',
+      'Full player profile with bio & photos',
+      'Live stats tracked at every EHA event',
+      'Shareable recruiting profile URL',
+      'Email 10,000+ college coaches directly',
+      'Leaderboard rankings',
+      'Photo & video highlight gallery',
     ],
   },
 }
@@ -63,14 +57,14 @@ export const subscriptionPlans = {
 export const familyPricing = {
   // Base prices in cents
   base: {
-    ANNUAL: 7500,      // $75
-    SEMI_ANNUAL: 5000, // $50
+    ANNUAL: 5000,      // $50
+    SEMI_ANNUAL: 3500, // $35
     MONTHLY: 1000,     // $10
   },
   // Additional child prices in cents
   additionalChild: {
-    ANNUAL: 5000,      // $50 per additional child per year
-    SEMI_ANNUAL: 3500, // $35 per additional child per 6 months
+    ANNUAL: 3500,      // $35 per additional child per year
+    SEMI_ANNUAL: 2500, // $25 per additional child per 6 months
     MONTHLY: 700,      // $7 per additional child per month
   },
 }

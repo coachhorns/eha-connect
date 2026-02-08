@@ -94,6 +94,14 @@ export async function getSubscriptionPrices(): Promise<{
 }
 
 /**
+ * Gets the Stripe Connect Account ID for split payments.
+ * Falls back to process.env.STRIPE_CONNECT_ID if not found in DB.
+ */
+export async function getStripeConnectId(): Promise<string | null> {
+  return await getSystemSetting('STRIPE_CONNECT_ID') || process.env.STRIPE_CONNECT_ID || null
+}
+
+/**
  * Invalidates the cached Stripe instance (use after updating settings)
  */
 export function invalidateStripeCache(): void {

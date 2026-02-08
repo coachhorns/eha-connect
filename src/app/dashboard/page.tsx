@@ -232,139 +232,139 @@ export default function DashboardPage() {
                       profile.user?.id === session?.user?.id ||
                       profile.guardians.some(g => g.user.id === session?.user?.id)
                     return (
-                    <div key={profile.id} className="relative group p-5 flex items-center justify-between hover:bg-white/5 transition-colors">
-                      {/* Clickable Card Link (Stretched Link) */}
-                      <Link href={`/players/${profile.slug}`} className="absolute inset-0 z-0">
-                        <span className="sr-only">View Profile</span>
-                      </Link>
+                      <div key={profile.id} className="relative group p-5 flex items-center justify-between hover:bg-white/5 transition-colors">
+                        {/* Clickable Card Link (Stretched Link) */}
+                        <Link href={`/players/${profile.slug}`} className="absolute inset-0 z-0">
+                          <span className="sr-only">View Profile</span>
+                        </Link>
 
-                      <div className="flex items-center gap-4 relative z-10 pointer-events-none">
-                        <Avatar
-                          src={profile.profilePhoto}
-                          fallback={`${profile.firstName} ${profile.lastName}`}
-                          size="lg"
-                        />
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-white uppercase tracking-wide">
-                              {profile.firstName} {profile.lastName}
-                            </h3>
-                            {profile.isVerified && (
-                              <Badge variant="success" size="sm">Verified</Badge>
-                            )}
-                          </div>
-                          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                            {profile.school && `${profile.school} • `}
-                            {profile.graduationYear && `Class of ${profile.graduationYear}`}
-                          </p>
-                          <div className="flex items-center gap-3 mt-2">
-                            <div className="bg-[#152e50]/50 border border-white/5 rounded-sm px-3 py-1.5 flex items-center gap-1.5">
-                              <BarChart3 className="w-3 h-3 text-gray-400" />
-                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{profile._count.gameStats} Games</span>
-                            </div>
-                            <div className="bg-[#152e50]/50 border border-white/5 rounded-sm px-3 py-1.5 flex items-center gap-1.5">
-                              <Trophy className="w-3 h-3 text-gray-400" />
-                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{profile._count.achievements} Awards</span>
-                            </div>
-                          </div>
-
-                          {/* Connected Users */}
-                          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-white/5">
-                            <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Access:</span>
+                        <div className="flex items-center gap-4 relative z-10 pointer-events-none">
+                          <Avatar
+                            src={profile.profilePhoto}
+                            fallback={`${profile.firstName} ${profile.lastName}`}
+                            size="lg"
+                          />
+                          <div>
                             <div className="flex items-center gap-2">
-                              {/* Creator/Primary User */}
-                              {profile.user && (
-                                <div className="relative group/access cursor-help pointer-events-auto">
-                                  <Avatar
-                                    src={profile.user.image}
-                                    fallback={profile.user.name || 'U'}
-                                    className="w-6 h-6 border border-white/10 ring-2 ring-[#0a1628]"
-                                  />
-                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-xs text-white rounded whitespace-nowrap opacity-0 group-hover/access:opacity-100 transition-opacity pointer-events-none z-10">
-                                    {profile.user.name} (Creator)
-                                  </div>
-                                </div>
+                              <h3 className="font-bold text-white uppercase tracking-wide">
+                                {profile.firstName} {profile.lastName}
+                              </h3>
+                              {profile.isVerified && (
+                                <Badge variant="success" size="sm">Verified</Badge>
                               )}
+                            </div>
+                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                              {profile.school && `${profile.school} • `}
+                              {profile.graduationYear && `Class of ${profile.graduationYear}`}
+                            </p>
+                            <div className="flex items-center gap-3 mt-2">
+                              <div className="bg-[#152e50]/50 border border-white/5 rounded-sm px-3 py-1.5 flex items-center gap-1.5">
+                                <BarChart3 className="w-3 h-3 text-gray-400" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{profile._count.gameStats} Games</span>
+                              </div>
+                              <div className="bg-[#152e50]/50 border border-white/5 rounded-sm px-3 py-1.5 flex items-center gap-1.5">
+                                <Trophy className="w-3 h-3 text-gray-400" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{profile._count.achievements} Awards</span>
+                              </div>
+                            </div>
 
-                              {/* Guardians & Player Access */}
-                              {profile.guardians.map((g) => (
-                                <div key={g.user.id} className="relative group/access cursor-help pointer-events-auto">
-                                  <Avatar
-                                    src={g.user.image}
-                                    fallback={g.user.name || 'U'}
-                                    className={`w-6 h-6 border border-white/10 ring-2 ring-[#0a1628] ${g.role === 'PLAYER' ? 'ring-eha-gold/50' : ''}`}
-                                  />
-                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-xs text-white rounded whitespace-nowrap opacity-0 group-hover/access:opacity-100 transition-opacity pointer-events-none z-10">
-                                    {g.user.name} ({g.role === 'PLAYER' ? 'Player Access' : 'Guardian'})
+                            {/* Connected Users */}
+                            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-white/5">
+                              <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Access:</span>
+                              <div className="flex items-center gap-2">
+                                {/* Creator/Primary User */}
+                                {profile.user && (
+                                  <div className="relative group/access cursor-help pointer-events-auto">
+                                    <Avatar
+                                      src={profile.user.image}
+                                      fallback={profile.user.name || 'U'}
+                                      className="w-6 h-6 border border-white/10 ring-2 ring-[#0a1628]"
+                                    />
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-xs text-white rounded whitespace-nowrap opacity-0 group-hover/access:opacity-100 transition-opacity pointer-events-none z-10">
+                                      {profile.user.name} (Creator)
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
+                                )}
+
+                                {/* Guardians & Player Access */}
+                                {profile.guardians.map((g) => (
+                                  <div key={g.user.id} className="relative group/access cursor-help pointer-events-auto">
+                                    <Avatar
+                                      src={g.user.image}
+                                      fallback={g.user.name || 'U'}
+                                      className={`w-6 h-6 border border-white/10 ring-2 ring-[#0a1628] ${g.role === 'PLAYER' ? 'ring-eha-gold/50' : ''}`}
+                                    />
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-xs text-white rounded whitespace-nowrap opacity-0 group-hover/access:opacity-100 transition-opacity pointer-events-none z-10">
+                                      {g.user.name} ({g.role === 'PLAYER' ? 'Player Access' : 'Guardian'})
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3 relative z-10">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            openInviteModal(profile.id, `${profile.firstName} ${profile.lastName}`, 'PARENT')
-                          }}
-                          className="flex items-center gap-2 hover:bg-white/10"
-                        >
-                          <UserPlus className="w-4 h-4" />
-                          <span className="hidden sm:inline">Add Parent</span>
-                        </Button>
-
-                        {/* Only show "Invite Player" if the user is NOT a player */}
-                        {session?.user.role !== 'PLAYER' && (
+                        <div className="flex items-center gap-3 relative z-10">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={(e) => {
                               e.preventDefault()
                               e.stopPropagation()
-                              openInviteModal(profile.id, `${profile.firstName} ${profile.lastName}`, 'PLAYER')
+                              openInviteModal(profile.id, `${profile.firstName} ${profile.lastName}`, 'PARENT')
                             }}
                             className="flex items-center gap-2 hover:bg-white/10"
                           >
-                            <Smartphone className="w-4 h-4" />
-                            <span className="hidden sm:inline">Player Access</span>
+                            <UserPlus className="w-4 h-4" />
+                            <span className="hidden sm:inline">Add Parent</span>
                           </Button>
-                        )}
 
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            router.push(`/players/${profile.slug}`)
-                          }}
-                          className="bg-white/5 hover:bg-white/10 border-white/10 text-white flex items-center gap-2"
-                        >
-                          <span>View Profile</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </Button>
+                          {/* Only show "Invite Player" if the user is NOT a player */}
+                          {session?.user.role !== 'PLAYER' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                openInviteModal(profile.id, `${profile.firstName} ${profile.lastName}`, 'PLAYER')
+                              }}
+                              className="flex items-center gap-2 hover:bg-white/10"
+                            >
+                              <Smartphone className="w-4 h-4" />
+                              <span className="hidden sm:inline">Player Access</span>
+                            </Button>
+                          )}
 
-                        {isOwner && (
                           <Button
-                            variant="primary"
+                            variant="outline"
                             size="sm"
                             onClick={(e) => {
                               e.preventDefault()
                               e.stopPropagation()
-                              router.push(`/dashboard/players/${profile.id}/edit`)
+                              router.push(`/players/${profile.slug}`)
                             }}
-                            className="flex items-center gap-2"
+                            className="bg-white/5 hover:bg-white/10 border-white/10 text-white flex items-center gap-2"
                           >
-                            <span>Edit</span>
+                            <span>View Profile</span>
+                            <ExternalLink className="w-3 h-3" />
                           </Button>
-                        )}
+
+                          {isOwner && (
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                router.push(`/dashboard/players/${profile.id}/edit`)
+                              }}
+                              className="flex items-center gap-2"
+                            >
+                              <span>Edit</span>
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                    </div>
                     )
                   })}
                 </div>

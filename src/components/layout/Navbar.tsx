@@ -114,74 +114,80 @@ export function Navbar() {
                       className="fixed inset-0 z-10"
                       onClick={() => setUserMenuOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-56 bg-dark-surface border border-eha-silver/20 rounded-xl shadow-xl z-20 py-2">
-                      <div className="px-4 py-2 border-b border-eha-silver/20">
-                        <p className="text-sm font-medium text-white truncate">
+                    <div className="absolute right-0 mt-2 w-64 bg-[#0A1D37] border border-white/10 rounded-sm shadow-2xl z-20 py-2">
+                      <div className="px-5 py-3 border-b border-white/10 bg-[#152e50]/30">
+                        <p className="text-sm font-heading font-bold text-white uppercase tracking-wider truncate">
                           {session.user.name || 'User'}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest truncate mt-0.5">
                           {session.user.email}
                         </p>
                       </div>
 
-                      {session.user.role === 'PROGRAM_DIRECTOR' ? (
-                        <Link
-                          href="/director/dashboard"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-eha-navy/50 transition-colors"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          <User className="w-4 h-4" />
-                          Director Dashboard
-                        </Link>
-                      ) : session.user.role !== 'ADMIN' && session.user.role !== 'SCOREKEEPER' ? (
-                        <Link
-                          href="/dashboard"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-eha-navy/50 transition-colors"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          <User className="w-4 h-4" />
-                          Dashboard
-                        </Link>
-                      ) : null}
+                      <div className="py-1">
+                        {session.user.role === 'PROGRAM_DIRECTOR' ? (
+                          <Link
+                            href="/director/dashboard"
+                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <User className="w-4 h-4" />
+                            Director Dashboard
+                          </Link>
+                        ) : session.user.role !== 'ADMIN' && session.user.role !== 'SCOREKEEPER' ? (
+                          <Link
+                            href="/dashboard"
+                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <User className="w-4 h-4" />
+                            Dashboard
+                          </Link>
+                        ) : null}
 
-                      <Link
-                        href="/dashboard/settings"
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-eha-navy/50 transition-colors"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <Settings className="w-4 h-4" />
-                        Settings
-                      </Link>
-
-                      {session.user.role === 'ADMIN' && (
                         <Link
-                          href="/admin"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-eha-red hover:bg-eha-navy/50 transition-colors"
+                          href="/dashboard/settings"
+                          className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           <Settings className="w-4 h-4" />
-                          Admin Panel
+                          Settings
                         </Link>
+                      </div>
+
+                      {session.user.role === 'ADMIN' && (
+                        <div className="border-t border-white/5 py-1">
+                          <Link
+                            href="/admin"
+                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-eha-red hover:bg-white/5 transition-colors"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <Settings className="w-4 h-4" />
+                            Admin Panel
+                          </Link>
+                        </div>
                       )}
 
                       {session.user.role === 'SCOREKEEPER' && (
-                        <Link
-                          href="/scorekeeper"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-eha-red hover:bg-eha-navy/50 transition-colors"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          <Settings className="w-4 h-4" />
-                          Scorekeeper
-                        </Link>
+                        <div className="border-t border-white/5 py-1">
+                          <Link
+                            href="/scorekeeper"
+                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-eha-red hover:bg-white/5 transition-colors"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <Settings className="w-4 h-4" />
+                            Scorekeeper
+                          </Link>
+                        </div>
                       )}
 
-                      <div className="border-t border-eha-silver/20 mt-2 pt-2">
+                      <div className="border-t border-white/10 mt-1 pt-1">
                         <button
                           onClick={() => {
                             setUserMenuOpen(false)
                             signOut()
                           }}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-eha-navy/50 transition-colors w-full"
+                          className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-400 hover:bg-white/5 transition-colors w-full"
                         >
                           <LogOut className="w-4 h-4" />
                           Sign Out

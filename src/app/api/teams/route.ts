@@ -49,7 +49,7 @@ export async function GET(request: Request) {
             },
           },
           _count: {
-            select: { roster: true },
+            select: { roster: { where: { leftAt: null } } },
           },
         },
       }),

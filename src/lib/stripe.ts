@@ -11,7 +11,7 @@ export const SUBSCRIPTION_PRICES = {
 }
 
 export const PRICE_AMOUNTS = {
-  ANNUAL: 7500, // $75.00
-  SEMI_ANNUAL: 5000, // $50.00
+  ANNUAL: 5000, // $50.00
+  SEMI_ANNUAL: 3500, // $35.00
   MONTHLY: 1000, // $10.00
 }

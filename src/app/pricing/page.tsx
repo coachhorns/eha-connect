@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Check, Star, Zap } from 'lucide-react'
-import { Button, Card, Badge } from '@/components/ui'
+import { Check, Star, Crown } from 'lucide-react'
+import { Button, Badge } from '@/components/ui'
 import { subscriptionPlans } from '@/lib/constants'
 
 function BouncingBasketball() {
@@ -19,7 +19,7 @@ function BouncingBasketball() {
           xmlns="http://www.w3.org/2000/svg"
           className="drop-shadow-lg"
         >
-          <circle cx="12" cy="12" r="10" fill="#FF6B00" />
+          <circle cx="12" cy="12" r="10" fill="#E41937" />
           <path
             d="M12 2C12 2 12 22 12 22"
             stroke="#000"
@@ -61,18 +61,13 @@ export default function PricingPage() {
 
   const plans = [
     {
-      key: 'MONTHLY',
-      ...subscriptionPlans.MONTHLY,
-      popular: false,
-    },
-    {
       key: 'ANNUAL',
       ...subscriptionPlans.ANNUAL,
       popular: true,
     },
     {
-      key: 'SEMI_ANNUAL',
-      ...subscriptionPlans.SEMI_ANNUAL,
+      key: 'MONTHLY',
+      ...subscriptionPlans.MONTHLY,
       popular: false,
     },
   ]
@@ -80,13 +75,11 @@ export default function PricingPage() {
   const handleGetStarted = async (planKey: string) => {
     setError(null)
 
-    // If not logged in, redirect to role selection
     if (status === 'unauthenticated' || !session) {
       router.push('/auth/role-selection')
       return
     }
 
-    // User is logged in, proceed to checkout
     setCheckingOutPlan(planKey)
 
     try {
@@ -114,153 +107,163 @@ export default function PricingPage() {
   const isCheckingOut = checkingOutPlan !== null
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      {/* Header */}
-      <div className="text-center mb-16">
-        <Badge variant="orange" className="mb-4">
-          <Zap className="w-3 h-3 mr-1" />
-          Simple Pricing
-        </Badge>
-        <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-          Get Your EHA Connect Pass
-        </h1>
-        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-          Choose the plan that works best for you. All plans include full access to every feature.
-        </p>
+    <div className="min-h-screen bg-dark-base">
+      {/* Header Section */}
+      <div className="bg-gradient-to-br from-[#0A1D37] to-[#152e50] pt-40 pb-20 px-4 sm:px-6 lg:px-8 border-b border-white/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="font-heading font-bold text-5xl lg:text-7xl uppercase tracking-tighter text-white mb-6">
+            Get Connected
+          </h1>
+          <p className="text-blue-200/80 text-xl max-w-2xl mx-auto font-sans leading-relaxed">
+            Your player profile, live stats, and direct access to 10,000+ college coaches.
+          </p>
+        </div>
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="max-w-md mx-auto mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-center">
-          {error}
-        </div>
-      )}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Error Message */}
+        {error && (
+          <div className="max-w-md mx-auto mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-center">
+            {error}
+          </div>
+        )}
 
-      {/* Pricing Cards */}
-      <div className="grid md:grid-cols-3 gap-8 mb-16">
-        {plans.map((plan) => (
-          <Card
-            key={plan.key}
-            variant={plan.popular ? 'highlight' : 'default'}
-            className={`relative p-8 ${plan.popular ? 'scale-105' : ''}`}
-          >
-            {plan.popular && (
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <Badge variant="gold" className="flex items-center gap-1">
-                  <Star className="w-3 h-3" />
-                  Most Popular
-                </Badge>
-              </div>
-            )}
-
-            <div className="text-center mb-6">
-              <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
-              <p className="text-sm text-gray-400">{plan.description}</p>
-            </div>
-
-            <div className="text-center mb-8">
-              <span className="text-5xl font-bold text-white">${plan.price}</span>
-              <span className="text-gray-400">/{plan.interval}</span>
-            </div>
-
-            <ul className="space-y-3 mb-8">
-              {plan.features.map((feature) => (
-                <li key={feature} className="flex items-start gap-3">
-                  <div className="w-5 h-5 bg-[#FF6B00]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Check className="w-3 h-3 text-white" />
-                  </div>
-                  <span className="text-gray-300 text-sm">{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <Button
-              variant={plan.popular ? 'primary' : 'outline'}
-              className="w-full"
-              size="lg"
-              onClick={() => handleGetStarted(plan.key)}
-              disabled={isCheckingOut}
+        {/* Pricing Cards */}
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 mb-24 items-start">
+          {plans.map((plan) => (
+            <div
+              key={plan.key}
+              className={`bg-dark-surface border relative overflow-hidden rounded-xl p-8 lg:p-10 transition-all duration-300 shadow-2xl ${plan.popular
+                ? 'border-eha-red/50 scale-105 z-10 shadow-eha-red/10'
+                : 'border-white/5 opacity-95 hover:opacity-100 hover:border-white/10'
+                }`}
             >
-              {checkingOutPlan === plan.key ? (
-                <BouncingBasketball />
-              ) : (
-                'Get Started'
+              {plan.popular && (
+                <div className="absolute top-0 right-0">
+                  <Badge variant="gold" className="rounded-none rounded-bl-lg flex items-center gap-1 px-4 py-2">
+                    <Crown className="w-3 h-3" />
+                    MOST POPULAR
+                  </Badge>
+                </div>
               )}
-            </Button>
-          </Card>
-        ))}
-      </div>
 
-      {/* FAQ */}
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-2xl font-bold text-white text-center mb-8">
-          Frequently Asked Questions
-        </h2>
+              <div className="mb-6">
+                <h3 className="font-heading text-xl font-bold text-white mb-1">{plan.name}</h3>
+                <p className="text-sm text-gray-400">{plan.description}</p>
+              </div>
 
-        <div className="space-y-4">
-          <Card className="p-6">
-            <h3 className="font-semibold text-white mb-2">
-              What does EHA Connect include?
-            </h3>
-            <p className="text-gray-400 text-sm">
-              EHA Connect includes a full player profile with photos and bio, live stats tracking
-              at all EHA events, achievement badges, leaderboard rankings, and a shareable profile
-              URL for college recruiting.
-            </p>
-          </Card>
+              <div className="mb-8">
+                <span className="text-6xl font-heading font-bold text-white">${plan.price}</span>
+                <span className="text-gray-400 text-lg ml-1">/{plan.interval}</span>
+              </div>
 
-          <Card className="p-6">
-            <h3 className="font-semibold text-white mb-2">
-              How are stats recorded?
-            </h3>
-            <p className="text-gray-400 text-sm">
-              Stats are recorded by official EHA scorekeepers at each court during events. They use
-              our tablet-optimized system to capture every point, rebound, assist, steal, and block
-              in real-time.
-            </p>
-          </Card>
+              <ul className="space-y-3 mb-8">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-eha-red flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-300 text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
 
-          <Card className="p-6">
-            <h3 className="font-semibold text-white mb-2">
-              Can college coaches see my profile?
-            </h3>
-            <p className="text-gray-400 text-sm">
-              Yes! All player profiles are publicly accessible. You get a professional profile URL
-              (ehacircuit.com/player/your-name) that you can share with college coaches. You can
-              also download your profile as a PDF for recruiting packets.
-            </p>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="font-semibold text-white mb-2">
-              Can I cancel my subscription?
-            </h3>
-            <p className="text-gray-400 text-sm">
-              Yes, you can cancel anytime from your account dashboard. Your access will continue
-              until the end of your current billing period.
-            </p>
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="font-semibold text-white mb-2">
-              What if I play for multiple teams?
-            </h3>
-            <p className="text-gray-400 text-sm">
-              Your EHA Connect pass follows you, not your team. All your stats from any EHA event
-              are tracked on your single player profile, regardless of which team you play for.
-            </p>
-          </Card>
+              <Button
+                variant={plan.popular ? 'primary' : 'outline'}
+                className="w-full py-6 font-extrabold uppercase tracking-widest"
+                onClick={() => handleGetStarted(plan.key)}
+                disabled={isCheckingOut}
+              >
+                {checkingOutPlan === plan.key ? (
+                  <BouncingBasketball />
+                ) : (
+                  'Get Started'
+                )}
+              </Button>
+            </div>
+          ))}
         </div>
-      </div>
 
-      {/* CTA */}
-      <div className="mt-16 text-center">
-        <p className="text-gray-400 mb-4">
-          Have questions? Contact us at{' '}
-          <a href="mailto:support@ehacircuit.com" className="text-white hover:underline">
-            support@ehacircuit.com
-          </a>
-        </p>
+        {/* FAQ Section */}
+        <div className="max-w-3xl mx-auto pb-20">
+          <h2 className="font-heading text-2xl font-bold text-white text-center mb-8 uppercase tracking-tight">
+            Frequently Asked Questions
+          </h2>
+
+          <div className="space-y-4">
+            <div className="bg-dark-surface rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-white mb-2">
+                What&apos;s included with the Connect Pass?
+              </h3>
+              <p className="text-gray-400 text-sm">
+                You get a full player profile with photos and bio, live stats tracked by official
+                scorekeepers at every EHA event, leaderboard rankings, a shareable profile URL for
+                recruiting, and direct email access to over 10,000 college coaches across all divisions.
+              </p>
+            </div>
+
+            <div className="bg-dark-surface rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-white mb-2">
+                How does the college recruiting tool work?
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Your Connect Pass gives you access to a database of 10,000+ college coaches across
+                NCAA Division I, II, III, NAIA, and JUCO programs. You can search by school, state,
+                or conference and email coaches directly from the platform with your profile link
+                included. When a coach replies, the response goes straight to the email on your player profile.
+              </p>
+            </div>
+
+            <div className="bg-dark-surface rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-white mb-2">
+                How are stats tracked during events?
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Official EHA scorekeepers are stationed at every court during events. They record
+                points, rebounds, assists, steals, blocks, and shooting stats in real-time using our
+                scoring system. Your stats automatically appear on your profile and the leaderboards.
+              </p>
+            </div>
+
+            <div className="bg-dark-surface rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-white mb-2">
+                What if my child plays for multiple teams?
+              </h3>
+              <p className="text-gray-400 text-sm">
+                The Connect Pass follows the player, not the team. All stats from every EHA event
+                are tracked on one profile regardless of which team they play for.
+              </p>
+            </div>
+
+            <div className="bg-dark-surface rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-white mb-2">
+                Do you offer family discounts?
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Yes! If you have multiple children playing in EHA events, additional players on your
+                account are discounted. Contact us for details on family pricing.
+              </p>
+            </div>
+
+            <div className="bg-dark-surface rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-white mb-2">
+                Can I cancel anytime?
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Absolutely. You can cancel your subscription from your account dashboard at any time.
+                Your access continues through the end of your current billing period.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="pb-16 text-center">
+          <p className="text-gray-400 mb-4">
+            Have questions? Contact us at{' '}
+            <a href="mailto:support@ehacircuit.com" className="text-white hover:underline">
+              support@ehacircuit.com
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   )

@@ -581,12 +581,15 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                   <Button
                     size="sm"
                     variant="primary"
+                    className="flex items-center gap-2"
                     onClick={() => {
                       setIsBulkPush(true)
                       setSelectedTeam(null)
                       setPushModalOpen(true)
                     }}
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/images/exposure-logo.png" alt="Exposure" className="w-4 h-4 object-contain" />
                     Push Filtered ({filteredTeams.length})
                   </Button>
                 )}

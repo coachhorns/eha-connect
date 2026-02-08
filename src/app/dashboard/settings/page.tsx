@@ -91,13 +91,20 @@ export default function SettingsPage() {
   const avatarSrc = selfPlayer?.profilePhoto || session.user.image
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-8">
-      <div className="mb-8">
-        <h1 className="text-5xl tracking-tighter font-bold text-white uppercase">Account Settings</h1>
-        <p className="mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Manage your profile and account preferences</p>
-      </div>
+    <div className="min-h-screen">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div>
+              <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">User Dashboard</span>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Account Settings</h1>
+              <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">Manage your profile and account preferences</p>
+            </div>
+          </div>
+        </div>
+      </header>
 
-      <div className="space-y-6">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
         {/* Profile Card */}
         <Card className="rounded-sm p-0">
           <div className="flex items-center gap-6 p-8 border-b border-white/5">
@@ -290,7 +297,7 @@ export default function SettingsPage() {
             </Button>
           </Card>
         )}
-      </div>
+      </main>
 
       {/* Invite Co-Parent Modal */}
       <InviteCoParentModal

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { getStripeServer } from '@/lib/stripe-dynamic'
+import { getStripeServer, getStripeConnectId } from '@/lib/stripe-dynamic'
 import { calculateFamilyPrice, familyPricing } from '@/lib/constants'
 import prisma from '@/lib/prisma'
 
@@ -22,8 +22,9 @@ export async function POST(request: Request) {
     // Validate childCount
     const validChildCount = Math.min(Math.max(1, parseInt(childCount) || 1), 10)
 
-    // Get Stripe client from database settings
+    // Get Stripe client and Connect ID from database settings
     const stripe = await getStripeServer()
+    const connectId = await getStripeConnectId()
 
     // Check if user already has an active subscription
     const existingSubscription = await prisma.subscription.findUnique({
@@ -85,7 +86,8 @@ export async function POST(request: Request) {
     })
 
     // Create Stripe checkout session
-    const checkoutSession = await stripe.checkout.sessions.create({
+    // Explicitly type the config to allow extension with transfer_data
+    const sessionConfig: any = {
       customer: stripeCustomerId,
       mode: 'subscription',
       payment_method_types: ['card'],
@@ -109,7 +111,21 @@ export async function POST(request: Request) {
           childCount: validChildCount.toString(),
         },
       },
-    })
+    }
+
+    // Apply Split Payment (Stripe Connect) if Connect ID is configured
+    if (connectId) {
+      // Calculate 60% amount for application fee visualization (Stripe handles the actual split via percent)
+      // For transfer_data with destination, the platform pays the fees unless on_behalf_of is used.
+      // EHA (Platform) is the merchant of record.
+      // We transfer 60% to the Connected Account.
+      sessionConfig.subscription_data.transfer_data = {
+        destination: connectId,
+        amount_percent: 60,
+      }
+    }
+
+    const checkoutSession = await stripe.checkout.sessions.create(sessionConfig)
 
     return NextResponse.json({ url: checkoutSession.url })
   } catch (error) {

@@ -22,6 +22,7 @@ async function getTeam(slug: string) {
         },
       },
       roster: {
+        where: { leftAt: null },
         include: {
           player: {
             select: {
