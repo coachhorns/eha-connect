@@ -51,6 +51,18 @@ interface Pagination {
   totalPages: number
 }
 
+interface ExposurePreviewEvent {
+  exposureId: number
+  name: string
+  startDate: string
+  endDate: string
+  location: string | null
+  city: string | null
+  state: string | null
+  image: string | null
+  alreadyImported: boolean
+}
+
 const eventTypeOptions = [
   { value: '', label: 'All Types' },
   { value: 'TOURNAMENT', label: 'Tournament' },
@@ -85,23 +97,87 @@ export default function AdminEventsPage() {
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<{ created?: number; updated?: number; venuesCreated?: number; error?: string } | null>(null)
 
-  const handleSyncFromExposure = async () => {
+  // Exposure preview modal state
+  const [exposureModal, setExposureModal] = useState<{
+    isOpen: boolean
+    isLoading: boolean
+    events: ExposurePreviewEvent[]
+    error: string | null
+  }>({ isOpen: false, isLoading: false, events: [], error: null })
+  const [selectedExposureIds, setSelectedExposureIds] = useState<Set<number>>(new Set())
+
+  const handleOpenExposureModal = async () => {
+    setExposureModal({ isOpen: true, isLoading: true, events: [], error: null })
+    setSelectedExposureIds(new Set())
+
+    try {
+      const res = await fetch('/api/admin/exposure/preview-events')
+      const data = await res.json()
+
+      if (res.ok) {
+        // Pre-select events that are NOT already imported
+        const newIds = new Set(
+          data.events
+            .filter((e: ExposurePreviewEvent) => !e.alreadyImported)
+            .map((e: ExposurePreviewEvent) => e.exposureId)
+        )
+        setSelectedExposureIds(newIds)
+        setExposureModal({ isOpen: true, isLoading: false, events: data.events, error: null })
+      } else {
+        setExposureModal({ isOpen: true, isLoading: false, events: [], error: data.error || 'Failed to fetch events' })
+      }
+    } catch {
+      setExposureModal({ isOpen: true, isLoading: false, events: [], error: 'Network error occurred' })
+    }
+  }
+
+  const handleImportSelected = async () => {
+    const ids = Array.from(selectedExposureIds)
+    if (ids.length === 0) return
+
     setIsSyncing(true)
     setSyncResult(null)
+    setExposureModal(prev => ({ ...prev, isOpen: false }))
+
     try {
-      const res = await fetch('/api/admin/exposure/sync-events', { method: 'POST' })
+      const res = await fetch('/api/admin/exposure/sync-events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ exposureIds: ids }),
+      })
       const data = await res.json()
 
       if (res.ok) {
         setSyncResult({ created: data.created, updated: data.updated, venuesCreated: data.venuesCreated })
-        fetchEvents() // Refresh list
+        fetchEvents()
       } else {
         setSyncResult({ error: data.error || 'Failed to sync' })
       }
-    } catch (err) {
+    } catch {
       setSyncResult({ error: 'Network error occurred' })
     } finally {
       setIsSyncing(false)
+    }
+  }
+
+  const toggleExposureSelection = (exposureId: number) => {
+    setSelectedExposureIds(prev => {
+      const next = new Set(prev)
+      if (next.has(exposureId)) {
+        next.delete(exposureId)
+      } else {
+        next.add(exposureId)
+      }
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    const selectable = exposureModal.events.filter(e => !e.alreadyImported)
+    if (selectedExposureIds.size === selectable.length) {
+      setSelectedExposureIds(new Set())
+    } else {
+      setSelectedExposureIds(new Set(selectable.map(e => e.exposureId)))
     }
   }
 
@@ -236,15 +312,12 @@ export default function AdminEventsPage() {
               <Button
                 variant="secondary"
                 className="flex items-center gap-2"
-                onClick={handleSyncFromExposure}
-                isLoading={isSyncing}
+                onClick={handleOpenExposureModal}
                 disabled={isSyncing}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/exposure-logo.png" alt="Exposure" className="w-5 h-5 object-contain" />
-                <span className={isSyncing ? 'animate-pulse' : ''}>
-                  {isSyncing ? 'Syncing...' : 'Sync from Exposure'}
-                </span>
+                <span>{isSyncing ? 'Syncing...' : 'Sync from Exposure'}</span>
               </Button>
               <Link href="/admin/events/new">
                 <Button className="flex items-center gap-2"><Plus className="w-4 h-4" />Create Event</Button>
@@ -571,6 +644,122 @@ export default function AdminEventsPage() {
                 Delete
               </Button>
             </div>
+          </div>
+        </Modal>
+
+        {/* Exposure Import Modal */}
+        <Modal
+          isOpen={exposureModal.isOpen}
+          onClose={() => setExposureModal(prev => ({ ...prev, isOpen: false }))}
+          title="Import from Exposure"
+          size="xl"
+        >
+          <div className="space-y-4">
+            {exposureModal.isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
+                <span className="ml-3 text-gray-400">Fetching events from Exposure...</span>
+              </div>
+            ) : exposureModal.error ? (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                <p className="text-red-400 text-sm">{exposureModal.error}</p>
+              </div>
+            ) : exposureModal.events.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-400">No upcoming events found in Exposure.</p>
+              </div>
+            ) : (
+              <>
+                {/* Select All header */}
+                <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={
+                        selectedExposureIds.size ===
+                        exposureModal.events.filter(e => !e.alreadyImported).length &&
+                        selectedExposureIds.size > 0
+                      }
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 rounded border-white/20 bg-white/5 text-eha-red focus:ring-eha-red focus:ring-offset-0"
+                    />
+                    <span className="text-sm text-gray-400 font-semibold uppercase tracking-wider">
+                      Select All ({selectedExposureIds.size} of{' '}
+                      {exposureModal.events.filter(e => !e.alreadyImported).length} new)
+                    </span>
+                  </label>
+                  <span className="text-xs text-gray-500">
+                    {exposureModal.events.length} upcoming events
+                  </span>
+                </div>
+
+                {/* Event list */}
+                <div className="max-h-[400px] overflow-y-auto space-y-2 pr-1">
+                  {exposureModal.events.map(event => (
+                    <label
+                      key={event.exposureId}
+                      className={`flex items-center gap-4 p-3 rounded-lg border transition-colors ${
+                        event.alreadyImported
+                          ? 'border-white/5 bg-white/[0.02] opacity-60 cursor-default'
+                          : selectedExposureIds.has(event.exposureId)
+                          ? 'border-eha-red/30 bg-eha-red/5 cursor-pointer'
+                          : 'border-white/10 bg-white/5 hover:border-white/20 cursor-pointer'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={event.alreadyImported || selectedExposureIds.has(event.exposureId)}
+                        disabled={event.alreadyImported}
+                        onChange={() => toggleExposureSelection(event.exposureId)}
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-eha-red focus:ring-eha-red focus:ring-offset-0 disabled:opacity-50"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-white truncate">{event.name}</span>
+                          {event.alreadyImported && (
+                            <Badge variant="success" size="sm">Already Synced</Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {event.startDate} - {event.endDate}
+                          </span>
+                          {(event.location || event.city) && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {event.location ? `${event.location}, ` : ''}
+                              {event.city}{event.state ? `, ${event.state}` : ''}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+
+                {/* Footer actions */}
+                <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                  <p className="text-sm text-gray-500">
+                    {selectedExposureIds.size} event{selectedExposureIds.size !== 1 ? 's' : ''} selected for import
+                  </p>
+                  <div className="flex gap-3">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setExposureModal(prev => ({ ...prev, isOpen: false }))}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleImportSelected}
+                      disabled={selectedExposureIds.size === 0}
+                    >
+                      Import Selected
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </Modal>
 

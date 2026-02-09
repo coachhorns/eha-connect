@@ -19,38 +19,59 @@ function formatTimeTo12Hour(time: string): string {
 }
 
 /**
+ * Extracts the events array from the Exposure API response,
+ * which may come in different shapes depending on the endpoint/version.
+ */
+export function extractEventsArray(response: any): any[] {
+    if (Array.isArray(response)) {
+        return response
+    } else if (Array.isArray(response?.Events?.Results)) {
+        return response.Events.Results
+    } else if (Array.isArray(response?.Events)) {
+        return response.Events
+    } else if (Array.isArray(response?.Results)) {
+        return response.Results
+    } else {
+        console.error('Invalid Exposure API response structure:', JSON.stringify(response, null, 2).slice(0, 500))
+        throw new Error('Invalid Exposure API response: could not find events array')
+    }
+}
+
+/**
+ * Fetches upcoming events from Exposure and returns the raw array (no DB writes).
+ */
+export async function fetchUpcomingExposureEvents(): Promise<any[]> {
+    const response = await exposureClient.getEvents()
+    const all = extractEventsArray(response)
+    const now = new Date()
+    return all.filter((e: any) => new Date(e.EndDate) >= now)
+}
+
+/**
  * SYNC EVENTS (Read-Only)
  * Fetches events from Exposure and upserts them to the local DB.
  * New events are created as unpublished (isPublished: false).
  * Existing events: slug, isPublished, isActive are NOT overwritten.
+ * If exposureIds is provided, only those specific events are imported.
  */
-export async function syncEvents() {
+export async function syncEvents(exposureIds?: number[]) {
     console.log('Starting Exposure Event Sync...')
-    const response = await exposureClient.getEvents()
 
-    // Response shape: { Events: { Results: [...] } }
-    const r = response as any
     let events: any[]
-    if (Array.isArray(r)) {
-        events = r
-    } else if (Array.isArray(r?.Events?.Results)) {
-        events = r.Events.Results
-    } else if (Array.isArray(r?.Events)) {
-        events = r.Events
-    } else if (Array.isArray(r?.Results)) {
-        events = r.Results
-    } else {
-        events = []
+    try {
+        events = await fetchUpcomingExposureEvents()
+    } catch (err) {
+        console.error('Exposure API call failed:', err)
+        throw err
     }
 
-    // Filter to upcoming events only (end date in the future)
-    const now = new Date()
-    events = events.filter(e => {
-        const endDate = new Date(e.EndDate)
-        return endDate >= now
-    })
+    // If specific IDs were requested, filter to just those
+    if (exposureIds && exposureIds.length > 0) {
+        const idSet = new Set(exposureIds)
+        events = events.filter(e => idSet.has(e.Id))
+    }
 
-    console.log(`Found ${events.length} upcoming events in Exposure.`)
+    console.log(`Found ${events.length} events to sync.`)
 
     let created = 0
     let updated = 0
