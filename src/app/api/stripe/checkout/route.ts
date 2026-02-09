@@ -114,24 +114,33 @@ export async function POST(request: Request) {
     }
 
     // Apply Split Payment (Stripe Connect) if Connect ID is configured
+    // Try with transfer_data first; if the connected account isn't ready, retry without it
     if (connectId) {
-      // Calculate 60% amount for application fee visualization (Stripe handles the actual split via percent)
-      // For transfer_data with destination, the platform pays the fees unless on_behalf_of is used.
-      // EHA (Platform) is the merchant of record.
-      // We transfer 60% to the Connected Account.
       sessionConfig.subscription_data.transfer_data = {
         destination: connectId,
         amount_percent: 60,
       }
     }
 
-    const checkoutSession = await stripe.checkout.sessions.create(sessionConfig)
+    let checkoutSession
+    try {
+      checkoutSession = await stripe.checkout.sessions.create(sessionConfig)
+    } catch (connectError: any) {
+      if (connectId && connectError?.code === 'insufficient_capabilities_for_transfer') {
+        console.warn(`Connect account ${connectId} not ready for transfers. Proceeding without split payment.`)
+        delete sessionConfig.subscription_data.transfer_data
+        checkoutSession = await stripe.checkout.sessions.create(sessionConfig)
+      } else {
+        throw connectError
+      }
+    }
 
     return NextResponse.json({ url: checkoutSession.url })
   } catch (error) {
-    console.error('Error creating checkout session:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Error creating checkout session:', message, error)
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
+      { error: message || 'Failed to create checkout session' },
       { status: 500 }
     )
   }
