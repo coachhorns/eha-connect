@@ -31,9 +31,10 @@ export class ExposureClient {
     private async request<T>(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET', body?: any): Promise<T> {
         const timestamp = new Date().toISOString()
 
-        // Clean up URI for signature (must match exactly what is sent)
-        // Docs example uses /api/v1/events
-        const uri = endpoint.startsWith('/') ? `/api${endpoint}` : `/api/${endpoint}`
+        // Strip query string from the URI used for signing — Exposure only
+        // signs the path portion. The full endpoint (with query) is used for the URL.
+        const pathOnly = endpoint.split('?')[0]
+        const uri = pathOnly.startsWith('/') ? `/api${pathOnly}` : `/api/${pathOnly}`
 
         const signature = this.generateSignature(method, uri, timestamp)
 
@@ -91,7 +92,8 @@ export class ExposureClient {
     // --- Schedule ---
 
     async getSchedule(eventId: string) {
-        return this.request<any>(`/v1/events/${eventId}/games`)
+        // status=all includes scheduled (unplayed) games, not just completed ones
+        return this.request<any>(`/v1/games?eventId=${eventId}&status=all`)
     }
 }
 

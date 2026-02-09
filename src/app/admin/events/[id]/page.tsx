@@ -15,6 +15,7 @@ import {
   Eye,
   EyeOff,
   Trophy,
+  RefreshCw,
 } from 'lucide-react'
 import { Card, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Modal, Select } from '@/components/ui'
 
@@ -80,6 +81,11 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
   const [isBulkPush, setIsBulkPush] = useState(false)
   const [selectedDivisionFilter, setSelectedDivisionFilter] = useState<string>('all')
   const [selectedAgeGroupFilter, setSelectedAgeGroupFilter] = useState<string>('all')
+
+  // Schedule Sync State
+  const [isSyncingSchedule, setIsSyncingSchedule] = useState(false)
+  const [syncScheduleError, setSyncScheduleError] = useState('')
+  const [syncScheduleSuccess, setSyncScheduleSuccess] = useState('')
 
   const uniqueDivisions = Array.from(new Set(teams.map(t => t.division || 'Unassigned'))).sort()
   const uniqueAgeGroups = Array.from(new Set(teams.map(t => t.ageGroup || 'Unassigned'))).sort()
@@ -159,6 +165,48 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
     }
   }
 
+  const handleSyncSchedule = async () => {
+    setIsSyncingSchedule(true)
+    setSyncScheduleError('')
+    setSyncScheduleSuccess('')
+
+    try {
+      const res = await fetch('/api/admin/exposure/sync-schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: resolvedParams.id }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setSyncScheduleError(data.error || 'Failed to sync schedule')
+        return
+      }
+
+      const parts: string[] = []
+      if (data.created > 0) parts.push(`${data.created} created`)
+      if (data.updated > 0) parts.push(`${data.updated} updated`)
+      if (data.skipped > 0) parts.push(`${data.skipped} skipped`)
+      if (data.courtsCreated > 0) parts.push(`${data.courtsCreated} courts added`)
+      if (data.eventTeamsCreated > 0) parts.push(`${data.eventTeamsCreated} teams linked`)
+
+      setSyncScheduleSuccess(
+        parts.length > 0
+          ? `Synced ${data.total} games — ${parts.join(', ')}.`
+          : 'No games found in Exposure for this event.'
+      )
+
+      if (data.created > 0 || data.updated > 0) {
+        setTimeout(() => window.location.reload(), 2000)
+      }
+    } catch {
+      setSyncScheduleError('Network error — could not reach the server.')
+    } finally {
+      setIsSyncingSchedule(false)
+    }
+  }
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push(`/auth/signin?callbackUrl=/admin/events/${resolvedParams.id}`)
@@ -189,7 +237,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         }
 
         // Fetch games for this event
-        const gamesRes = await fetch(`/api/scorekeeper/games?eventId=${resolvedParams.id}&limit=100`)
+        const gamesRes = await fetch(`/api/admin/games?eventId=${resolvedParams.id}&limit=100`)
         if (gamesRes.ok) {
           const gamesData = await gamesRes.json()
           setGames(gamesData.games || [])
@@ -548,6 +596,42 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
         {/* Exposure Sync Tab */}
         <TabsContent value="exposure">
+          {/* Schedule Sync Card */}
+          <Card className="rounded-sm border border-white/5 mb-6 overflow-hidden">
+            <div className="p-4 border-b border-white/5 bg-[#152e50]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wide">Schedule Sync</h3>
+                <p className="text-xs text-gray-400 mt-1">Pull latest game times, scores, and matchups from Exposure.</p>
+              </div>
+              <Button
+                size="sm"
+                variant="primary"
+                className="flex items-center gap-2"
+                onClick={handleSyncSchedule}
+                isLoading={isSyncingSchedule}
+                disabled={isSyncingSchedule}
+              >
+                <RefreshCw className={`w-4 h-4 ${isSyncingSchedule ? 'animate-spin' : ''}`} />
+                Sync Schedule
+              </Button>
+            </div>
+            {(syncScheduleSuccess || syncScheduleError) && (
+              <div className="p-4">
+                {syncScheduleSuccess && (
+                  <div className="p-3 bg-green-500/10 border border-green-500/20 text-green-400 text-sm rounded-sm">
+                    {syncScheduleSuccess}
+                  </div>
+                )}
+                {syncScheduleError && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-sm">
+                    {syncScheduleError}
+                  </div>
+                )}
+              </div>
+            )}
+          </Card>
+
+          {/* Push Teams Card */}
           <Card className="overflow-hidden p-0 rounded-sm border border-white/5">
             <div className="p-4 border-b border-white/5 bg-[#152e50]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>

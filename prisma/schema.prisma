@@ -642,6 +642,11 @@ model Game {
   statLog     StatLog[]
   bracketSlot BracketSlot?
 
+  // Exposure Events Integration
+  exposureId      String?    @unique
+  homeTeamLabel   String?    // Descriptive text for bracket games (e.g. "1st in A", "W1 (Championship)")
+  awayTeamLabel   String?
+
   @@map("games")
 }
 

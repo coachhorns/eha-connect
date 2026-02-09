@@ -247,3 +247,281 @@ export async function pushTeamToExposure(
 
     return { success: true, exposureId: result.Id }
 }
+
+/**
+ * Extracts the games array from an Exposure schedule response.
+ */
+function extractGamesArray(response: any): any[] {
+    if (Array.isArray(response)) return response
+    if (Array.isArray(response?.Games?.Results)) return response.Games.Results
+    if (Array.isArray(response?.Games)) return response.Games
+    if (Array.isArray(response?.Results)) return response.Results
+    // Exposure returns { Games: null } when no games are scheduled yet
+    if (response?.Games === null || response?.Games?.Results === null) return []
+    console.error('Unexpected schedule response shape:', JSON.stringify(response, null, 2).slice(0, 500))
+    throw new Error('Invalid Exposure schedule response: could not find games array')
+}
+
+/**
+ * Maps an Exposure game to our GameStatus enum.
+ * Exposure doesn't provide an explicit status field — we infer from scores.
+ */
+function mapGameStatus(expGame: any): 'SCHEDULED' | 'IN_PROGRESS' | 'FINAL' {
+    // Check explicit status field first (some responses may include it)
+    const status = (expGame.Status || '').toLowerCase()
+    if (status === 'final' || status === 'completed' || expGame.IsFinal) return 'FINAL'
+    if (status === 'in progress' || status === 'inprogress' || status === 'live') return 'IN_PROGRESS'
+
+    // Infer: if both teams have scores > 0, treat as FINAL
+    const homeScore = expGame.HomeTeam?.Score ?? 0
+    const awayScore = expGame.AwayTeam?.Score ?? 0
+    if (homeScore > 0 || awayScore > 0) return 'FINAL'
+
+    return 'SCHEDULED'
+}
+
+/**
+ * Parses Exposure's separate Date ("11/29/2025") and Time ("8:00 AM") into a Date.
+ */
+function parseExposureDateTime(date: string, time: string): Date {
+    // Try combining "MM/DD/YYYY" + "H:MM AM/PM"
+    const combined = `${date} ${time}`
+    const parsed = new Date(combined)
+    if (!isNaN(parsed.getTime())) return parsed
+
+    // Fallback: parse date alone
+    return new Date(date)
+}
+
+/**
+ * SYNC SCHEDULE (Read-Only)
+ * Pulls the game schedule from Exposure for a given EHA event
+ * and upserts Game records in the local DB.
+ */
+export async function syncSchedule(eventId: string) {
+    const event = await prisma.event.findUnique({
+        where: { id: eventId },
+        include: { venues: { include: { courts: true } } },
+    })
+
+    if (!event) throw new Error('Event not found')
+    if (!event.exposureId) {
+        throw new Error('Event does not have an Exposure ID. Sync the event from Exposure first.')
+    }
+
+    console.log(`Syncing schedule for "${event.name}" (Exposure ID: ${event.exposureId})...`)
+
+    const response = await exposureClient.getSchedule(String(event.exposureId))
+    console.log('DEBUG: Exposure Schedule Response Keys:', Object.keys(response))
+    if (response.Games) console.log('DEBUG: response.Games Keys:', Object.keys(response.Games))
+    
+    const expGames = extractGamesArray(response)
+
+    console.log(`Found ${expGames.length} games from Exposure.`)
+
+    // Build a lookup of Exposure team ID -> EHA team ID for quick matching.
+    // Search ALL teams with an exposureId (not just those already linked to this event),
+    // since EventTeam records may not exist yet on the first sync.
+    const teamsWithExposureId = await prisma.team.findMany({
+        where: { exposureId: { not: null } },
+        select: { id: true, exposureId: true },
+    })
+    const teamByExposureId = new Map(
+        teamsWithExposureId.map(t => [t.exposureId!, t.id])
+    )
+
+    // Build a court lookup from the event's venues: lowercase name -> court record
+    const courtByName = new Map<string, { id: string }>()
+    const primaryVenue = event.venues[0] // fallback venue for creating new courts
+    for (const venue of event.venues) {
+        for (const court of venue.courts) {
+            courtByName.set(court.name.toLowerCase(), court)
+        }
+    }
+
+    // Find or create a "TBD" placeholder team for bracket games with unassigned teams
+    let tbdTeam = await prisma.team.findFirst({ where: { slug: 'tbd' } })
+    if (!tbdTeam) {
+        tbdTeam = await prisma.team.create({
+            data: { name: 'TBD', slug: 'tbd', isActive: true },
+        })
+        console.log('Created TBD placeholder team')
+    }
+
+    let created = 0
+    let updated = 0
+    let skipped = 0
+    let courtsCreated = 0
+
+    for (const expGame of expGames) {
+        const gameExposureId = String(expGame.Id)
+
+        // Resolve home/away teams — Exposure uses TeamId inside HomeTeam/AwayTeam
+        const homeExpId = expGame.HomeTeam?.TeamId ?? expGame.HomeTeamId
+        const awayExpId = expGame.AwayTeam?.TeamId ?? expGame.AwayTeamId
+
+        let homeTeamId = homeExpId != null ? teamByExposureId.get(homeExpId) : undefined
+        let awayTeamId = awayExpId != null ? teamByExposureId.get(awayExpId) : undefined
+
+        // For bracket games with TBD teams, use the placeholder
+        const isBracketType = (expGame.Type ?? 1) !== 1
+        if (!homeTeamId || !awayTeamId) {
+            if (isBracketType) {
+                homeTeamId = homeTeamId || tbdTeam.id
+                awayTeamId = awayTeamId || tbdTeam.id
+            } else {
+                console.log(`Skipping Exposure game ${gameExposureId}: missing team mapping (home=${homeExpId}, away=${awayExpId})`)
+                skipped++
+                continue
+            }
+        }
+
+        // Parse scheduled time — Exposure sends separate Date and Time strings
+        const scheduledAt = parseExposureDateTime(expGame.Date || '', expGame.Time || '')
+        if (isNaN(scheduledAt.getTime())) {
+            console.log(`Skipping Exposure game ${gameExposureId}: invalid date (${expGame.Date} ${expGame.Time})`)
+            skipped++
+            continue
+        }
+
+        // Resolve court — Exposure nests under VenueCourt.Court.Name
+        const courtName: string | null = expGame.VenueCourt?.Court?.Name || null
+        let courtId: string | null = null
+        if (courtName) {
+            const existing = courtByName.get(courtName.toLowerCase())
+            if (existing) {
+                courtId = existing.id
+            } else if (primaryVenue) {
+                const newCourt = await prisma.court.create({
+                    data: { name: courtName, venueId: primaryVenue.id },
+                })
+                courtByName.set(courtName.toLowerCase(), newCourt)
+                courtId = newCourt.id
+                courtsCreated++
+                console.log(`Created court: ${courtName}`)
+            }
+        }
+
+        // Map game type — Exposure Type: 1=Pool, 2=Bracket, etc.
+        // Also check Round for bracket-stage games
+        const expType = expGame.Type
+        const roundNum = expGame.Round
+        let gameType: 'POOL' | 'BRACKET' | 'CHAMPIONSHIP' | 'CONSOLATION' = 'POOL'
+        if (expType === 2 || expType === 3) {
+            gameType = 'BRACKET'
+        }
+        // Refine bracket games by round name if present
+        const roundLabel = (expGame.RoundName || '').toLowerCase()
+        if (roundLabel.includes('championship') || roundLabel.includes('final')) {
+            gameType = 'CHAMPIONSHIP'
+        } else if (roundLabel.includes('consolation')) {
+            gameType = 'CONSOLATION'
+        }
+
+        const status = mapGameStatus(expGame)
+        const homeScore = expGame.HomeTeam?.Score ?? 0
+        const awayScore = expGame.AwayTeam?.Score ?? 0
+        const poolName = expGame.HomeTeam?.PoolName || expGame.AwayTeam?.PoolName || null
+
+        // Only set bracketRound for actual bracket games, not pool play
+        const isBracketGame = gameType !== 'POOL'
+
+        // For bracket games, capture descriptive team labels from Exposure
+        // (e.g. "3rd in A", "W1 (Championship)", "1st in A")
+        const homeTeamLabel = isBracketGame ? (expGame.HomeTeam?.Name || null) : null
+        const awayTeamLabel = isBracketGame ? (expGame.AwayTeam?.Name || null) : null
+
+        // Use BracketName from Exposure (e.g. "Championship", "Consolation") if available
+        const bracketName = expGame.BracketName || null
+        let bracketRound: string | null = null
+        if (isBracketGame) {
+            if (bracketName && roundNum) {
+                bracketRound = `${bracketName} Round ${roundNum}`
+            } else if (bracketName) {
+                bracketRound = bracketName
+            } else if (roundNum) {
+                bracketRound = `Round ${roundNum}`
+            }
+        }
+
+        const data = {
+            eventId,
+            homeTeamId,
+            awayTeamId,
+            scheduledAt,
+            status,
+            homeScore: status === 'FINAL' || status === 'IN_PROGRESS' ? homeScore : 0,
+            awayScore: status === 'FINAL' || status === 'IN_PROGRESS' ? awayScore : 0,
+            courtId,
+            court: courtName,
+            gameType,
+            poolCode: poolName,
+            bracketRound,
+            division: expGame.Division?.Name || null,
+            homeTeamLabel,
+            awayTeamLabel,
+        }
+
+        const existingGame = await prisma.game.findUnique({
+            where: { exposureId: gameExposureId },
+        })
+
+        if (existingGame) {
+            await prisma.game.update({
+                where: { id: existingGame.id },
+                data,
+            })
+            updated++
+        } else {
+            await prisma.game.create({
+                data: { ...data, exposureId: gameExposureId },
+            })
+            created++
+        }
+    }
+
+    // Ensure EventTeam records exist for every team that appeared in games.
+    // This links teams to the event with pool info so the frontend can display standings.
+    const teamPoolMap = new Map<string, string | null>() // EHA teamId -> pool label
+    for (const expGame of expGames) {
+        const homeExpId = expGame.HomeTeam?.TeamId ?? expGame.HomeTeamId
+        const awayExpId = expGame.AwayTeam?.TeamId ?? expGame.AwayTeamId
+        const homeTeamId = homeExpId != null ? teamByExposureId.get(homeExpId) : undefined
+        const awayTeamId = awayExpId != null ? teamByExposureId.get(awayExpId) : undefined
+        const poolName = expGame.HomeTeam?.PoolName || expGame.AwayTeam?.PoolName || null
+        const divisionName = expGame.Division?.Name || null
+
+        // Include division in pool label to distinguish e.g. "EPL 17 — Pool A" from "EPL 16 — Pool A"
+        let pool: string | null = null
+        if (poolName && divisionName) {
+            pool = `${divisionName} — Pool ${poolName}`
+        } else if (poolName) {
+            pool = `Pool ${poolName}`
+        }
+
+        if (homeTeamId && !teamPoolMap.has(homeTeamId)) teamPoolMap.set(homeTeamId, pool)
+        if (awayTeamId && !teamPoolMap.has(awayTeamId)) teamPoolMap.set(awayTeamId, pool)
+    }
+
+    let eventTeamsCreated = 0
+    for (const [teamId, pool] of teamPoolMap) {
+        const existing = await prisma.eventTeam.findUnique({
+            where: { eventId_teamId: { eventId, teamId } },
+        })
+        if (!existing) {
+            await prisma.eventTeam.create({
+                data: { eventId, teamId, pool },
+            })
+            eventTeamsCreated++
+        } else if (pool && existing.pool !== pool) {
+            // Update pool assignment if it changed or was previously unset
+            await prisma.eventTeam.update({
+                where: { id: existing.id },
+                data: { pool },
+            })
+        }
+    }
+
+    console.log(`Schedule sync complete: ${created} created, ${updated} updated, ${skipped} skipped, ${courtsCreated} courts created, ${eventTeamsCreated} event-team links added.`)
+    return { created, updated, skipped, courtsCreated, eventTeamsCreated, total: expGames.length }
+}

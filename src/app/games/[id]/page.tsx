@@ -67,6 +67,7 @@ interface Team {
   slug: string
   name: string
   logo: string | null
+  program?: { logo: string | null } | null
 }
 
 interface Event {
@@ -227,6 +228,14 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
           <div className="flex items-center justify-center gap-6 py-6">
             {/* Away Team */}
             <div className={`text-center flex-1 max-w-xs ${awayWon ? 'opacity-100' : isFinal ? 'opacity-60' : ''}`}>
+              {(game.awayTeam.logo || game.awayTeam.program?.logo) ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={(game.awayTeam.logo || game.awayTeam.program?.logo)!} alt={game.awayTeam.name} className="w-16 h-16 object-contain mx-auto mb-2" />
+              ) : (
+                <div className="w-16 h-16 bg-white/10 rounded-full mx-auto mb-2 flex items-center justify-center text-2xl font-bold text-gray-500">
+                  {game.awayTeam.name.charAt(0)}
+                </div>
+              )}
               <div className="text-lg font-semibold text-white mb-2">{game.awayTeam.name}</div>
               <div className={`text-5xl md:text-6xl font-bold ${awayWon ? 'text-white' : 'text-white'}`}>
                 {game.homeScore > 0 || game.awayScore > 0 || isLive || isFinal ? game.awayScore : '-'}
@@ -240,6 +249,14 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
 
             {/* Home Team */}
             <div className={`text-center flex-1 max-w-xs ${homeWon ? 'opacity-100' : isFinal ? 'opacity-60' : ''}`}>
+              {(game.homeTeam.logo || game.homeTeam.program?.logo) ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={(game.homeTeam.logo || game.homeTeam.program?.logo)!} alt={game.homeTeam.name} className="w-16 h-16 object-contain mx-auto mb-2" />
+              ) : (
+                <div className="w-16 h-16 bg-white/10 rounded-full mx-auto mb-2 flex items-center justify-center text-2xl font-bold text-gray-500">
+                  {game.homeTeam.name.charAt(0)}
+                </div>
+              )}
               <div className="text-lg font-semibold text-white mb-2">{game.homeTeam.name}</div>
               <div className={`text-5xl md:text-6xl font-bold ${homeWon ? 'text-white' : 'text-white'}`}>
                 {game.homeScore > 0 || game.awayScore > 0 || isLive || isFinal ? game.homeScore : '-'}

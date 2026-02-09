@@ -17,6 +17,9 @@ export async function GET(
             slug: true,
             name: true,
             logo: true,
+            program: {
+              select: { logo: true },
+            },
           },
         },
         awayTeam: {
@@ -25,6 +28,9 @@ export async function GET(
             slug: true,
             name: true,
             logo: true,
+            program: {
+              select: { logo: true },
+            },
           },
         },
         event: {

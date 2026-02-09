@@ -47,10 +47,10 @@ export async function GET(
         games: {
           include: {
             homeTeam: {
-              select: { id: true, name: true, slug: true },
+              select: { id: true, name: true, slug: true, logo: true },
             },
             awayTeam: {
-              select: { id: true, name: true, slug: true },
+              select: { id: true, name: true, slug: true, logo: true },
             },
           },
           orderBy: { scheduledAt: 'asc' },

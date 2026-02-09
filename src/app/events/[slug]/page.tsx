@@ -52,6 +52,8 @@ interface Game {
   division: string | null
   gameType: string
   bracketRound: string | null
+  homeTeamLabel: string | null
+  awayTeamLabel: string | null
 }
 
 interface EventTeam {
@@ -292,9 +294,12 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
     return a.localeCompare(b)
   })
 
-  // Group bracket games by round (with filters applied)
-  const bracketGames = applyGameFilters(event.games.filter(g => g.gameType === 'BRACKET' || g.bracketRound))
+  // Group bracket games by division, then by round (with filters applied)
+  const bracketGames = applyGameFilters(
+    event.games.filter(g => g.gameType !== 'POOL' || g.bracketRound)
+  )
   const bracketRounds = [...new Set(bracketGames.map(g => g.bracketRound).filter(Boolean))]
+  const bracketDivisions = [...new Set(bracketGames.map(g => g.division).filter(Boolean))]
 
   const hasActiveFilters = selectedAgeGroup || selectedDivision
 
@@ -557,7 +562,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   <List className="w-4 h-4" />
                   Teams & Standings
                 </button>
-                {event.games.some(g => g.gameType === 'BRACKET' || g.bracketRound) && (
+                {event.games.some(g => g.gameType !== 'POOL' || g.bracketRound) && (
                   <button
                     onClick={() => setActiveTab('bracket')}
                     className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
@@ -828,8 +833,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
               {/* Bracket Tab */}
               {activeTab === 'bracket' && (
-                <div className="space-y-6">
-                  {bracketRounds.length === 0 ? (
+                <div className="space-y-8">
+                  {bracketGames.length === 0 ? (
                     <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
                       <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <Grid3X3 className="w-10 h-10 text-gray-500" />
@@ -844,22 +849,205 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                       </p>
                     </div>
                   ) : (
-                    <div className="grid md:grid-cols-2 gap-6">
-                      {bracketRounds.map(round => (
-                        <div key={round}>
-                          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-3">
-                            <Badge variant="gold" className="text-sm">{round}</Badge>
-                          </h3>
-                          <div className="space-y-3">
-                            {bracketGames
-                              .filter(g => g.bracketRound === round)
-                              .map(game => (
-                                <GameCard key={game.id} game={game} />
-                              ))}
+                    (bracketDivisions.length > 0 ? bracketDivisions : [null]).map(division => {
+                      const divGames = division
+                        ? bracketGames.filter(g => g.division === division)
+                        : bracketGames
+                      const divRounds = [...new Set(divGames.map(g => g.bracketRound).filter(Boolean))].sort()
+
+                      return (
+                        <div key={division || 'all'}>
+                          {/* Division Header */}
+                          {division && bracketDivisions.length > 1 && (
+                            <div className="flex items-center gap-3 mb-4">
+                              <Trophy className="w-5 h-5 text-amber-400" />
+                              <h3 className="text-lg font-heading font-bold text-white">{division} Bracket</h3>
+                            </div>
+                          )}
+
+                          <div className="overflow-x-auto pb-4">
+                            <div className="flex gap-0 min-w-fit items-start">
+                              {divRounds.map((round, roundIdx) => {
+                                const roundGames = divGames
+                                  .filter(g => g.bracketRound === round)
+                                  .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())
+                                const isLastRound = roundIdx === divRounds.length - 1
+                                const isChampionship = round?.toLowerCase().includes('championship') && isLastRound
+
+                                // Determine round display label
+                                let roundLabel = round || 'Round'
+                                if (round?.match(/^Championship Round \d+$/)) {
+                                  const rNum = parseInt(round.replace('Championship Round ', ''))
+                                  if (isLastRound) {
+                                    roundLabel = 'Championship'
+                                  } else {
+                                    roundLabel = rNum === 1 ? 'Semifinal' : `Round ${rNum}`
+                                  }
+                                }
+
+                                return (
+                                  <div key={round} className="flex">
+                                    <div className="flex flex-col">
+                                      {/* Round Header */}
+                                      <div className="text-center mb-4 px-2">
+                                        <Badge variant={isChampionship ? 'gold' : 'default'} className="text-sm">
+                                          {roundLabel}
+                                        </Badge>
+                                      </div>
+
+                                      {/* Games in this round */}
+                                      <div className="flex flex-col justify-around flex-1 gap-4">
+                                        {roundGames.map(game => {
+                                          const isFinalStatus = game.status === 'FINAL'
+                                          const isLiveStatus = game.status === 'IN_PROGRESS' || game.status === 'HALFTIME'
+                                          const homeWins = isFinalStatus && game.homeScore > game.awayScore
+                                          const awayWins = isFinalStatus && game.awayScore > game.homeScore
+                                          const isTbdHome = game.homeTeam.name === 'TBD'
+                                          const isTbdAway = game.awayTeam.name === 'TBD'
+                                          const isConsolation = game.gameType === 'CONSOLATION'
+
+                                          return (
+                                            <Link key={game.id} href={`/games/${game.id}`}>
+                                              <div className={`w-72 border rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
+                                                isLiveStatus
+                                                  ? 'border-green-500/50 bg-green-500/5'
+                                                  : isChampionship
+                                                    ? 'border-amber-500/30 bg-amber-500/5'
+                                                    : isConsolation
+                                                      ? 'border-blue-500/20 bg-blue-500/5'
+                                                      : 'border-white/10 bg-white/5'
+                                              } hover:bg-white/10`}>
+                                                {/* Game meta bar */}
+                                                <div className="px-3 py-1.5 border-b border-white/5 flex items-center justify-between">
+                                                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                                                    {isConsolation && (
+                                                      <Badge size="sm" variant="info">Consolation</Badge>
+                                                    )}
+                                                    {game.court && (
+                                                      <span className="flex items-center gap-1">
+                                                        <MapPin className="w-3 h-3" />
+                                                        {game.court}
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                  <div>
+                                                    {isLiveStatus ? (
+                                                      <Badge variant="success" size="sm" className="flex items-center gap-1">
+                                                        <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                                                        LIVE
+                                                      </Badge>
+                                                    ) : isFinalStatus ? (
+                                                      <span className="text-xs text-gray-500 font-medium">FINAL</span>
+                                                    ) : (
+                                                      <span className="text-xs text-gray-500">
+                                                        {format(new Date(game.scheduledAt), 'EEE h:mm a')}
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                </div>
+
+                                                {/* Away team row */}
+                                                <div className={`flex items-center justify-between px-3 py-2.5 ${
+                                                  awayWins ? 'bg-white/5' : ''
+                                                }`}>
+                                                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                                                    {awayWins && <span className="w-1 h-4 bg-[#E31837] rounded-full flex-shrink-0" />}
+                                                    <div className="min-w-0 flex-1">
+                                                      <span className={`text-sm truncate block ${
+                                                        isTbdAway ? 'text-gray-500 italic' :
+                                                        awayWins ? 'text-white font-semibold' :
+                                                        isFinalStatus && !awayWins ? 'text-gray-500' : 'text-white'
+                                                      }`}>
+                                                        {isTbdAway && game.awayTeamLabel
+                                                          ? game.awayTeamLabel
+                                                          : game.awayTeam.name}
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                  {(isFinalStatus || isLiveStatus) && (
+                                                    <span className={`text-sm font-bold font-mono ml-2 ${
+                                                      awayWins ? 'text-white' : 'text-gray-500'
+                                                    }`}>
+                                                      {game.awayScore}
+                                                    </span>
+                                                  )}
+                                                </div>
+
+                                                {/* Divider */}
+                                                <div className="border-t border-white/5" />
+
+                                                {/* Home team row */}
+                                                <div className={`flex items-center justify-between px-3 py-2.5 ${
+                                                  homeWins ? 'bg-white/5' : ''
+                                                }`}>
+                                                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                                                    {homeWins && <span className="w-1 h-4 bg-[#E31837] rounded-full flex-shrink-0" />}
+                                                    <div className="min-w-0 flex-1">
+                                                      <span className={`text-sm truncate block ${
+                                                        isTbdHome ? 'text-gray-500 italic' :
+                                                        homeWins ? 'text-white font-semibold' :
+                                                        isFinalStatus && !homeWins ? 'text-gray-500' : 'text-white'
+                                                      }`}>
+                                                        {isTbdHome && game.homeTeamLabel
+                                                          ? game.homeTeamLabel
+                                                          : game.homeTeam.name}
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                  {(isFinalStatus || isLiveStatus) && (
+                                                    <span className={`text-sm font-bold font-mono ml-2 ${
+                                                      homeWins ? 'text-white' : 'text-gray-500'
+                                                    }`}>
+                                                      {game.homeScore}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </Link>
+                                          )
+                                        })}
+                                      </div>
+                                    </div>
+
+                                    {/* Connector lines between rounds */}
+                                    {!isLastRound && roundGames.length > 0 && (
+                                      <div className="flex items-center px-3 self-stretch" style={{ marginTop: '2rem' }}>
+                                        <svg
+                                          width="32"
+                                          className="text-white/20 flex-shrink-0"
+                                          style={{ height: '100%', minHeight: `${roundGames.length * 96}px` }}
+                                          viewBox={`0 0 32 ${roundGames.length * 96}`}
+                                          fill="none"
+                                          preserveAspectRatio="none"
+                                        >
+                                          {Array.from({ length: Math.ceil(roundGames.length / 2) }).map((_, pairIdx) => {
+                                            const totalHeight = roundGames.length * 96
+                                            const pairSpacing = totalHeight / Math.ceil(roundGames.length / 2)
+                                            const topY = pairIdx * pairSpacing + pairSpacing * 0.25
+                                            const bottomY = pairIdx * pairSpacing + pairSpacing * 0.75
+                                            const midY = (topY + bottomY) / 2
+
+                                            return (
+                                              <g key={pairIdx}>
+                                                <line x1="0" y1={topY} x2="16" y2={topY} stroke="currentColor" strokeWidth="2" />
+                                                <line x1="16" y1={topY} x2="16" y2={midY} stroke="currentColor" strokeWidth="2" />
+                                                <line x1="0" y1={bottomY} x2="16" y2={bottomY} stroke="currentColor" strokeWidth="2" />
+                                                <line x1="16" y1={bottomY} x2="16" y2={midY} stroke="currentColor" strokeWidth="2" />
+                                                <line x1="16" y1={midY} x2="32" y2={midY} stroke="currentColor" strokeWidth="2" />
+                                              </g>
+                                            )
+                                          })}
+                                        </svg>
+                                      </div>
+                                    )}
+                                  </div>
+                                )
+                              })}
+                            </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      )
+                    })
                   )}
                 </div>
               )}
