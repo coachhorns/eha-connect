@@ -16,6 +16,7 @@ import {
   EyeOff,
   Trophy,
   RefreshCw,
+  Download,
 } from 'lucide-react'
 import { Card, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Modal, Select } from '@/components/ui'
 
@@ -662,20 +663,49 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                   />
                 </div>
                 {filteredTeams.length > 0 && (
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    className="flex items-center gap-2"
-                    onClick={() => {
-                      setIsBulkPush(true)
-                      setSelectedTeam(null)
-                      setPushModalOpen(true)
-                    }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/images/exposure-logo.png" alt="Exposure" className="w-4 h-4 object-contain" />
-                    Push Filtered ({filteredTeams.length})
-                  </Button>
+                  <>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="flex items-center gap-2"
+                      onClick={async () => {
+                        try {
+                          const res = await fetch(`/api/admin/events/${resolvedParams.id}/export-restrictions`)
+                          if (!res.ok) {
+                            const err = await res.json()
+                            alert(err.error || 'Failed to export restrictions')
+                            return
+                          }
+                          const blob = await res.blob()
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = res.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') || 'restrictions.csv'
+                          a.click()
+                          URL.revokeObjectURL(url)
+                        } catch {
+                          alert('Failed to download restrictions CSV')
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4" />
+                      Restrictions CSV
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      className="flex items-center gap-2"
+                      onClick={() => {
+                        setIsBulkPush(true)
+                        setSelectedTeam(null)
+                        setPushModalOpen(true)
+                      }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/images/exposure-logo.png" alt="Exposure" className="w-4 h-4 object-contain" />
+                      Push Filtered ({filteredTeams.length})
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
