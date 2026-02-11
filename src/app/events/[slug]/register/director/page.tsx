@@ -570,7 +570,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                               >
                                 <div className="flex items-center gap-2 text-sm">
                                   <Clock className="w-4 h-4 text-[#E31837]" />
-                                  <span className="text-gray-300 font-medium">Schedule Requests</span>
+                                  <span className="text-gray-300 font-medium">Scheduling Restrictions</span>
                                   {(() => {
                                     const sr = getScheduleRequest(team.id)
                                     const count = (sr.coachConflict ? 1 : 0)
@@ -609,9 +609,9 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                       )}
                                     </div>
                                     <div>
-                                      <span className="text-sm text-white">Check for Coach Conflicts</span>
+                                      <span className="text-sm text-white">Coach has another team in this event</span>
                                       <p className="text-xs text-gray-500">
-                                        Flag if this coach also coaches another registered team
+                                        Avoid scheduling conflicts with another team this coach runs
                                       </p>
                                     </div>
                                   </label>
@@ -619,7 +619,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                   {/* Max Games Per Day */}
                                   <div>
                                     <label className="block text-sm font-medium text-gray-300 mb-1.5">
-                                      Max Games Per Day
+                                      Game Restrictions (Max Per Day)
                                     </label>
                                     <input
                                       type="number"
@@ -640,7 +640,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                   <div>
                                     <div className="flex items-center justify-between mb-2">
                                       <label className="text-sm font-medium text-gray-300">
-                                        Time Constraints
+                                        Date/Time Restrictions
                                       </label>
                                       <button
                                         type="button"
@@ -648,12 +648,12 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                         className="flex items-center gap-1 text-xs text-[#E31837] hover:text-white transition-colors"
                                       >
                                         <Plus className="w-3.5 h-3.5" />
-                                        Add Constraint
+                                        Add Restriction
                                       </button>
                                     </div>
 
                                     {getScheduleRequest(team.id).constraints.length === 0 && (
-                                      <p className="text-xs text-gray-500 italic">No time constraints added</p>
+                                      <p className="text-xs text-gray-500 italic">No date/time restrictions added</p>
                                     )}
 
                                     <div className="space-y-2">

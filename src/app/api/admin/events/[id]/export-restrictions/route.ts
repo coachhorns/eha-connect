@@ -128,6 +128,7 @@ export async function GET(
         })
 
         // Build coach conflict lookup: coachName -> list of team names+divisions
+        // Auto-detect when a coach has multiple teams in this event
         const coachTeams = new Map<string, { name: string; division: string }[]>()
         for (const et of eventTeams) {
             const coach = et.team.coachName?.trim().toLowerCase()
@@ -145,8 +146,7 @@ export async function GET(
         const rows: string[] = []
 
         for (const et of eventTeams) {
-            const reqs = et.scheduleRequests as any
-            if (!reqs) continue
+            const reqs = (et.scheduleRequests as any) || {}
 
             const division = et.team.division || ''
             const teamName = et.team.name
@@ -179,23 +179,21 @@ export async function GET(
             }
 
             // Coach conflict → TEAMRESTRICTIONS
-            if (reqs.coachConflict && et.team.coachName) {
+            // Auto-detect: if this coach has multiple teams in the event, add restrictions
+            // Also honors explicit coachConflict flag from scheduleRequests
+            if (et.team.coachName) {
                 const coachKey = et.team.coachName.trim().toLowerCase()
-                const otherTeams = coachTeams.get(coachKey) || []
-                for (const other of otherTeams) {
-                    if (other.name === teamName && other.division === division) continue
-                    // Format: Division|TeamName (pipe-separated)
-                    if (other.division) {
-                        teamRestrictions.push(`${other.division}|${other.name}`)
-                    } else {
-                        teamRestrictions.push(other.name)
+                const coachAllTeams = coachTeams.get(coachKey) || []
+                if (coachAllTeams.length > 1) {
+                    for (const other of coachAllTeams) {
+                        if (other.name === teamName && other.division === division) continue
+                        if (other.division) {
+                            teamRestrictions.push(`${other.division}|${other.name}`)
+                        } else {
+                            teamRestrictions.push(other.name)
+                        }
                     }
                 }
-            }
-
-            // Skip row if no restrictions at all
-            if (dateTimeRestrictions.length === 0 && gameRestrictions.length === 0 && teamRestrictions.length === 0) {
-                continue
             }
 
             // Build row matching the exact template column order
