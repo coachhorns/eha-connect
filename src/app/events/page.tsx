@@ -32,7 +32,6 @@ interface Event {
   state?: string | null
   startDate: string
   endDate: string
-  ageGroups: string[]
   bannerImage?: string | null
   _count: {
     teams: number
@@ -117,10 +116,8 @@ const EventCard = ({
             <div className="flex items-center gap-3">
               <Users className="w-5 h-5 text-gray-400" />
               <div>
-                <p className="text-xs font-bold text-white">
-                  {event.ageGroups.length > 0 ? event.ageGroups[0] : 'All Ages'}
-                </p>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Divisions</p>
+                <p className="text-xs font-bold text-white">{event._count.teams} Teams</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Registered</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

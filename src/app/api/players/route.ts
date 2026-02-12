@@ -59,7 +59,6 @@ export async function GET(request: Request) {
                 select: {
                   name: true,
                   slug: true,
-                  ageGroup: true,
                   division: true,
                   program: {
                     select: { name: true },
@@ -104,24 +103,25 @@ export async function GET(request: Request) {
       ) || false
     }
 
-    // Helper to get the best age group (EPL team first, then highest age)
+    // Helper to get the best age from division (EPL team first, then highest age)
     const getPlayerAgeGroup = (player: any): number => {
       if (!player.teamRosters || player.teamRosters.length === 0) return 0
 
       // First, try to get age from EPL team
-      const eplRoster = player.teamRosters.find((roster: any) =>
-        roster.team?.division === 'EPL' || roster.team?.division === 'EHA Premier League'
-      )
-      if (eplRoster?.team?.ageGroup) {
-        const match = eplRoster.team.ageGroup.match(/(\d+)/)
+      const eplRoster = player.teamRosters.find((roster: any) => {
+        const div = roster.team?.division?.toLowerCase() || ''
+        return div.startsWith('epl') || div.startsWith('eha premier')
+      })
+      if (eplRoster?.team?.division) {
+        const match = eplRoster.team.division.match(/(\d+)/)
         if (match) return parseInt(match[1], 10)
       }
 
-      // Otherwise, get highest age from any team
+      // Otherwise, get highest age from any team's division
       let maxAge = 0
       for (const roster of player.teamRosters) {
-        if (roster.team?.ageGroup) {
-          const match = roster.team.ageGroup.match(/(\d+)/)
+        if (roster.team?.division) {
+          const match = roster.team.division.match(/(\d+)/)
           if (match) {
             const age = parseInt(match[1], 10)
             if (age > maxAge) maxAge = age

@@ -67,7 +67,6 @@ export async function POST(request: NextRequest) {
       homeTeam: game.homeTeam,
       awayTeam: game.awayTeam,
       gameType: game.gameType as UnscheduledGame['gameType'],
-      ageGroup: game.ageGroup,
       division: game.division,
       bracketRound: game.bracketRound,
       bracketPosition: game.bracketPosition,
@@ -186,7 +185,6 @@ export async function POST(request: NextRequest) {
         homeTeam: s.game.homeTeam.name,
         awayTeam: s.game.awayTeam.name,
         gameType: s.game.gameType,
-        ageGroup: s.game.ageGroup,
         division: s.game.division,
       })),
       unscheduled: result.unscheduled.map((u) => ({

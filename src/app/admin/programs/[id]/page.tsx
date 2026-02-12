@@ -21,7 +21,6 @@ interface Team {
   id: string
   name: string
   slug: string
-  ageGroup: string | null
   division: string | null
   coachName: string | null
   wins: number
@@ -263,7 +262,6 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
                 <thead>
                   <tr className="border-b border-[#1a3a6e]">
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Team</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Age</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Division</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Coach</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Players</th>
@@ -279,13 +277,6 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
                     >
                       <td className="px-3 py-3">
                         <span className="text-white font-medium">{team.name}</span>
-                      </td>
-                      <td className="px-3 py-3">
-                        {team.ageGroup ? (
-                          <Badge variant="info" size="sm">{team.ageGroup}</Badge>
-                        ) : (
-                          <span className="text-gray-600">-</span>
-                        )}
                       </td>
                       <td className="px-3 py-3">
                         {team.division ? (

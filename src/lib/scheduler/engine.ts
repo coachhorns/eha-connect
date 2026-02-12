@@ -13,7 +13,6 @@ export interface UnscheduledGame {
   homeTeam: { id: string; name: string }
   awayTeam: { id: string; name: string }
   gameType: 'POOL' | 'BRACKET' | 'CONSOLATION' | 'CHAMPIONSHIP' | 'EXHIBITION'
-  ageGroup?: string | null
   division?: string | null
   bracketRound?: string | null
   bracketPosition?: number | null

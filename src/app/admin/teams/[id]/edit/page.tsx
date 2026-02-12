@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Card, Button, Input, Select } from '@/components/ui'
+import { divisions } from '@/lib/constants'
 
 interface Team {
   id: string
@@ -13,33 +14,15 @@ interface Team {
   coachName: string | null
   coachEmail: string | null
   coachPhone: string | null
-  ageGroup: string | null
   division: string | null
   city: string | null
   state: string | null
   programId: string | null
 }
 
-const ageGroupOptions = [
-  { value: '', label: 'Select Age Group' },
-  { value: '8U', label: '8U' },
-  { value: '9U', label: '9U' },
-  { value: '10U', label: '10U' },
-  { value: '11U', label: '11U' },
-  { value: '12U', label: '12U' },
-  { value: '13U', label: '13U' },
-  { value: '14U', label: '14U' },
-  { value: '15U', label: '15U' },
-  { value: '16U', label: '16U' },
-  { value: '17U', label: '17U' },
-  { value: '18U', label: '18U' },
-]
-
 const divisionOptions = [
   { value: '', label: 'Select Division' },
-  { value: 'EPL', label: 'EHA Premier League (EPL)' },
-  { value: 'Gold', label: 'Gold' },
-  { value: 'Silver', label: 'Silver' },
+  ...divisions.map(d => ({ value: d, label: d })),
 ]
 
 export default function EditTeamPage({ params }: { params: Promise<{ id: string }> }) {
@@ -55,7 +38,6 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
     coachName: '',
     coachEmail: '',
     coachPhone: '',
-    ageGroup: '',
     division: '',
     city: '',
     state: '',
@@ -81,7 +63,6 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
             coachName: team.coachName || '',
             coachEmail: team.coachEmail || '',
             coachPhone: team.coachPhone || '',
-            ageGroup: team.ageGroup || '',
             division: team.division || '',
             city: team.city || '',
             state: team.state || '',
@@ -126,7 +107,6 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
           coachName: formData.coachName.trim() || null,
           coachEmail: formData.coachEmail.trim() || null,
           coachPhone: formData.coachPhone.trim() || null,
-          ageGroup: formData.ageGroup || null,
           division: formData.division || null,
           city: formData.city.trim() || null,
           state: formData.state.trim() || null,
@@ -214,28 +194,16 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
             />
           </div>
 
-          {/* Age Group & Division */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Age Group
-              </label>
-              <Select
-                options={ageGroupOptions}
-                value={formData.ageGroup}
-                onChange={(e) => handleChange('ageGroup', e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Division
-              </label>
-              <Select
-                options={divisionOptions}
-                value={formData.division}
-                onChange={(e) => handleChange('division', e.target.value)}
-              />
-            </div>
+          {/* Division */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Division
+            </label>
+            <Select
+              options={divisionOptions}
+              value={formData.division}
+              onChange={(e) => handleChange('division', e.target.value)}
+            />
           </div>
 
           {/* Location */}

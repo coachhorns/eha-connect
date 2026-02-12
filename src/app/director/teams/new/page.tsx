@@ -6,26 +6,11 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Building2, AlertCircle, ChevronDown } from 'lucide-react'
 import { Button, Input, Badge } from '@/components/ui'
-
-const ageGroupOptions = [
-  { value: '', label: 'Select Age Group' },
-  { value: '8U', label: '8U' },
-  { value: '9U', label: '9U' },
-  { value: '10U', label: '10U' },
-  { value: '11U', label: '11U' },
-  { value: '12U', label: '12U' },
-  { value: '13U', label: '13U' },
-  { value: '14U', label: '14U' },
-  { value: '15U', label: '15U' },
-  { value: '16U', label: '16U' },
-  { value: '17U', label: '17U' },
-]
+import { divisions } from '@/lib/constants'
 
 const divisionOptions = [
   { value: '', label: 'Select Division' },
-  { value: 'EPL', label: 'EHA Premier League (EPL)' },
-  { value: 'Gold', label: 'Gold' },
-  { value: 'Silver', label: 'Silver' },
+  ...divisions.map(d => ({ value: d, label: d })),
 ]
 
 interface Program {
@@ -45,7 +30,6 @@ function DirectorNewTeamContent() {
 
   const [formData, setFormData] = useState({
     name: '',
-    ageGroup: '',
     division: '',
     coachName: '',
   })
@@ -118,7 +102,6 @@ function DirectorNewTeamContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name.trim(),
-          ageGroup: formData.ageGroup || null,
           division: formData.division || null,
           coachName: formData.coachName.trim() || null,
           programId: program.id,
@@ -217,45 +200,24 @@ function DirectorNewTeamContent() {
               />
             </div>
 
-            {/* Age Group & Division */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Age Group
-                </label>
-                <div className="relative">
-                  <select
-                    value={formData.ageGroup}
-                    onChange={(e) => handleChange('ageGroup', e.target.value)}
-                    className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
-                  >
-                    {ageGroupOptions.map((option) => (
-                      <option key={option.value} value={option.value} className="bg-[#0a1628]">
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Division
-                </label>
-                <div className="relative">
-                  <select
-                    value={formData.division}
-                    onChange={(e) => handleChange('division', e.target.value)}
-                    className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
-                  >
-                    {divisionOptions.map((option) => (
-                      <option key={option.value} value={option.value} className="bg-[#0a1628]">
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                </div>
+            {/* Division */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Division
+              </label>
+              <div className="relative">
+                <select
+                  value={formData.division}
+                  onChange={(e) => handleChange('division', e.target.value)}
+                  className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
+                >
+                  {divisionOptions.map((option) => (
+                    <option key={option.value} value={option.value} className="bg-[#0a1628]">
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
               </div>
             </div>
 

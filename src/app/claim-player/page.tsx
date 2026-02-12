@@ -34,7 +34,6 @@ interface PlayerResult {
     id: string
     name: string
     slug: string
-    ageGroup: string | null
     division: string | null
     program: {
       id: string
@@ -306,9 +305,9 @@ function ClaimPlayerContent() {
                           )}
 
                           <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-2 flex-wrap">
-                            {directPlayer.currentTeam?.ageGroup && (
+                            {directPlayer.currentTeam?.division && (
                               <span className="bg-white/5 px-2 py-1 rounded-sm font-bold uppercase tracking-wider">
-                                {directPlayer.currentTeam.ageGroup}
+                                {directPlayer.currentTeam.division}
                               </span>
                             )}
                             {directPlayer.primaryPosition && (
@@ -554,11 +553,6 @@ function ClaimPlayerContent() {
                             )}
 
                             <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-1 flex-wrap">
-                              {player.currentTeam?.ageGroup && (
-                                <span className="bg-white/5 px-2 py-0.5 rounded-sm font-bold uppercase tracking-wider">
-                                  {player.currentTeam.ageGroup}
-                                </span>
-                              )}
                               {player.currentTeam?.division && (
                                 <span className="bg-white/5 px-2 py-0.5 rounded-sm font-bold uppercase tracking-wider">
                                   {player.currentTeam.division}

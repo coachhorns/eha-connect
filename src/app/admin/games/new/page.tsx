@@ -17,7 +17,6 @@ interface Event {
 interface Team {
   id: string
   name: string
-  ageGroup: string | null
   division: string | null
 }
 
@@ -174,7 +173,7 @@ export default function NewGamePage() {
     { value: '', label: 'Select Team' },
     ...filteredTeams.map(team => ({
       value: team.id,
-      label: `${team.name}${team.ageGroup ? ` (${team.ageGroup})` : ''}`,
+      label: `${team.name}${team.division ? ` (${team.division})` : ''}`,
     })),
   ]
 
@@ -184,7 +183,7 @@ export default function NewGamePage() {
       .filter(team => team.id !== formData.homeTeamId)
       .map(team => ({
         value: team.id,
-        label: `${team.name}${team.ageGroup ? ` (${team.ageGroup})` : ''}`,
+        label: `${team.name}${team.division ? ` (${team.division})` : ''}`,
       })),
   ]
 

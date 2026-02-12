@@ -29,7 +29,6 @@ interface Team {
   id: string
   slug: string
   name: string
-  ageGroup: string | null
   division: string | null
   coachName: string | null
   rosterCount: number
@@ -53,7 +52,6 @@ interface Event {
   state: string | null
   startDate: string
   endDate: string
-  ageGroups: string[]
   divisions: string[]
   entryFee: number | null
   isPublished: boolean
@@ -166,13 +164,6 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
     const alreadyRegistered = event.teams.some(et => et.team.id === team.id)
     if (alreadyRegistered) {
       return { eligible: false, reason: 'Already registered' }
-    }
-
-    // Check age group compatibility
-    if (event.ageGroups.length > 0 && team.ageGroup) {
-      if (!event.ageGroups.includes(team.ageGroup)) {
-        return { eligible: false, reason: `Age group ${team.ageGroup} not accepted` }
-      }
     }
 
     // Check division compatibility
@@ -365,11 +356,9 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                   <CheckCircle className="w-5 h-5 text-green-400" />
                   <div>
                     <div className="font-medium text-white">{team.name}</div>
-                    <div className="text-sm text-gray-400">
-                      {team.ageGroup && <span>{team.ageGroup}</span>}
-                      {team.ageGroup && team.division && <span> • </span>}
-                      {team.division && <span>{team.division}</span>}
-                    </div>
+                    {team.division && (
+                      <div className="text-sm text-gray-400">{team.division}</div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -516,7 +505,6 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                 )}
                               </div>
                               <div className="flex items-center gap-2 text-sm text-gray-400 mt-1">
-                                {team.ageGroup && <Badge size="sm">{team.ageGroup}</Badge>}
                                 {team.division && <Badge size="sm" variant="info">{team.division}</Badge>}
                                 {team.coachName && <span>Coach: {team.coachName}</span>}
                               </div>
@@ -898,11 +886,9 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                       <div key={team.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                         <div>
                           <div className="font-medium text-white">{team.name}</div>
-                          <div className="text-sm text-gray-400">
-                            {team.ageGroup && <span>{team.ageGroup}</span>}
-                            {team.ageGroup && team.division && <span> • </span>}
-                            {team.division && <span>{team.division}</span>}
-                          </div>
+                          {team.division && (
+                            <div className="text-sm text-gray-400">{team.division}</div>
+                          )}
                         </div>
                         {!isFreeEvent && event.entryFee && (
                           <div className="text-white font-medium">
@@ -996,19 +982,6 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                           {event.city}{event.state && `, ${event.state}`}
                         </div>
                       )}
-                    </div>
-                  </div>
-                )}
-
-                {event.ageGroups && event.ageGroups.length > 0 && (
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
-                      Age Groups
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {event.ageGroups.map(ag => (
-                        <Badge key={ag} size="sm">{ag}</Badge>
-                      ))}
                     </div>
                   </div>
                 )}

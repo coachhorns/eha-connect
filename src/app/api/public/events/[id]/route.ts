@@ -27,7 +27,6 @@ export async function GET(
                 name: true,
                 city: true,
                 state: true,
-                ageGroup: true,
                 logo: true,
                 program: {
                   select: {

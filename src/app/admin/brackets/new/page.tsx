@@ -43,7 +43,6 @@ interface Event {
 interface Team {
   id: string
   name: string
-  ageGroup: string | null
   division: string | null
   program?: { id: string; name: string } | null
   seed: number | null
@@ -100,10 +99,9 @@ function SortableTeamItem({ team, index }: { team: Team; index: number }) {
           <p className="text-xs text-gray-500">{team.program?.name}</p>
         )}
       </div>
-      {(team.ageGroup || team.division) && (
+      {team.division && (
         <div className="flex gap-1">
-          {team.ageGroup && <Badge size="sm">{team.ageGroup}</Badge>}
-          {team.division && <Badge size="sm">{team.division}</Badge>}
+          <Badge size="sm">{team.division}</Badge>
         </div>
       )}
     </div>
@@ -542,14 +540,9 @@ export default function NewBracketWizardPage() {
                           </p>
                         )}
                       </div>
-                      {(team.ageGroup || team.division) && (
+                      {team.division && (
                         <div className="flex gap-1">
-                          {team.ageGroup && (
-                            <Badge size="sm">{team.ageGroup}</Badge>
-                          )}
-                          {team.division && (
-                            <Badge size="sm">{team.division}</Badge>
-                          )}
+                          <Badge size="sm">{team.division}</Badge>
                         </div>
                       )}
                     </button>

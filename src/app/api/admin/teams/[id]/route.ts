@@ -98,7 +98,7 @@ export async function PUT(
     const { id } = await params
     const body = await request.json()
 
-    const { name, coachName, coachEmail, coachPhone, ageGroup, division, city, state, programId } = body
+    const { name, coachName, coachEmail, coachPhone, division, city, state, programId } = body
 
     const team = await prisma.team.update({
       where: { id },
@@ -107,7 +107,6 @@ export async function PUT(
         ...(coachName !== undefined && { coachName }),
         ...(coachEmail !== undefined && { coachEmail }),
         ...(coachPhone !== undefined && { coachPhone }),
-        ...(ageGroup !== undefined && { ageGroup }),
         ...(division !== undefined && { division }),
         ...(city !== undefined && { city }),
         ...(state !== undefined && { state }),

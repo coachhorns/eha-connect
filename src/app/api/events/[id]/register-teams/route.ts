@@ -111,7 +111,6 @@ export async function POST(
         isPublished: true,
         isActive: true,
         startDate: true,
-        ageGroups: true,
         divisions: true,
         teams: {
           select: {
@@ -153,7 +152,6 @@ export async function POST(
           select: {
             id: true,
             name: true,
-            ageGroup: true,
             division: true,
           },
         },
@@ -191,20 +189,10 @@ export async function POST(
       )
     }
 
-    // Validate age group/division compatibility
+    // Validate division compatibility
     const incompatibleTeams: string[] = []
 
     for (const team of program.teams) {
-      // Check age group
-      if (event.ageGroups.length > 0 && team.ageGroup) {
-        if (!event.ageGroups.includes(team.ageGroup)) {
-          incompatibleTeams.push(
-            `${team.name} (age group ${team.ageGroup} not accepted)`
-          )
-          continue
-        }
-      }
-
       // Check division
       if (event.divisions.length > 0 && team.division) {
         if (!event.divisions.includes(team.division)) {
@@ -251,7 +239,6 @@ export async function POST(
               select: {
                 id: true,
                 name: true,
-                ageGroup: true,
                 division: true,
               },
             },

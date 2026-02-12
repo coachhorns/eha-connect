@@ -32,7 +32,7 @@ interface Game {
   court?: string
   currentPeriod?: number
   event?: { id: string; name: string }
-  ageGroup?: string
+  division?: string
   gameType?: string
 }
 
@@ -244,10 +244,10 @@ export default function ScorekeeperHub() {
                   </span>
                 </>
               )}
-              {game.ageGroup && (
+              {game.division && (
                 <>
                   <span>•</span>
-                  <Badge size="sm">{game.ageGroup}</Badge>
+                  <Badge size="sm">{game.division}</Badge>
                 </>
               )}
             </div>

@@ -55,7 +55,6 @@ const matchups = [
 ]
 
 export default function StandingsPage() {
-  const [ageGroup, setAgeGroup] = useState('17U')
   const [division, setDivision] = useState('All Divisions')
   const [teams, setTeams] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -64,7 +63,7 @@ export default function StandingsPage() {
     const fetchStandings = async () => {
       setIsLoading(true)
       try {
-        const res = await fetch(`/api/standings?ageGroup=${ageGroup}&division=${division}`)
+        const res = await fetch(`/api/standings?division=${division}`)
         const data = await res.json()
         if (data.teams) {
           setTeams(data.teams)
@@ -79,7 +78,7 @@ export default function StandingsPage() {
       }
     }
     fetchStandings()
-  }, [ageGroup, division])
+  }, [division])
 
   return (
     <div className="min-h-screen bg-[#0A1D37] text-white font-sans selection:bg-eha-red selection:text-white">
@@ -97,26 +96,6 @@ export default function StandingsPage() {
             </div>
 
             <div className="flex gap-4">
-              <div className="relative">
-                <select
-                  className="appearance-none bg-[#0a1628] border border-white/10 pl-4 pr-10 py-3 text-[11px] font-extrabold uppercase tracking-widest rounded-sm focus:outline-none focus:border-eha-red text-white min-w-[180px]"
-                  value={ageGroup}
-                  onChange={(e) => setAgeGroup(e.target.value)}
-                >
-                  <option value="All">All Ages</option>
-                  <option value="17U">17U</option>
-                  <option value="16U">16U</option>
-                  <option value="15U">15U</option>
-                  <option value="14U">14U</option>
-                  <option value="13U">13U</option>
-                  <option value="12U">12U</option>
-                  <option value="11U">11U</option>
-                  <option value="10U">10U</option>
-                  <option value="9U">9U</option>
-                  <option value="8U">8U</option>
-                </select>
-                <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              </div>
               <div className="relative">
                 <select
                   className="appearance-none bg-[#0a1628] border border-white/10 pl-4 pr-10 py-3 text-[11px] font-extrabold uppercase tracking-widest rounded-sm focus:outline-none focus:border-eha-red text-white min-w-[180px]"

@@ -21,7 +21,6 @@ export async function GET() {
             id: true,
             slug: true,
             name: true,
-            ageGroup: true,
             division: true,
             coachName: true,
             wins: true,

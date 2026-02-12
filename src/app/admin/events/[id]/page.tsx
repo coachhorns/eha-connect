@@ -31,7 +31,6 @@ interface Event {
   state: string | null
   startDate: string
   endDate: string
-  ageGroups: string[]
   divisions: string[]
   isPublished: boolean
   isActive: boolean
@@ -45,7 +44,6 @@ interface Team {
   id: string
   name: string
   coachName: string | null
-  ageGroup: string | null
   division: string | null
   exposureId?: number | null
 }
@@ -81,7 +79,6 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
   const [pushSuccessCount, setPushSuccessCount] = useState(0)
   const [isBulkPush, setIsBulkPush] = useState(false)
   const [selectedDivisionFilter, setSelectedDivisionFilter] = useState<string>('all')
-  const [selectedAgeGroupFilter, setSelectedAgeGroupFilter] = useState<string>('all')
 
   // Schedule Sync State
   const [isSyncingSchedule, setIsSyncingSchedule] = useState(false)
@@ -89,11 +86,9 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
   const [syncScheduleSuccess, setSyncScheduleSuccess] = useState('')
 
   const uniqueDivisions = Array.from(new Set(teams.map(t => t.division || 'Unassigned'))).sort()
-  const uniqueAgeGroups = Array.from(new Set(teams.map(t => t.ageGroup || 'Unassigned'))).sort()
   const filteredTeams = teams.filter(t => {
     const matchesDivision = selectedDivisionFilter === 'all' || (t.division || 'Unassigned') === selectedDivisionFilter
-    const matchesAgeGroup = selectedAgeGroupFilter === 'all' || (t.ageGroup || 'Unassigned') === selectedAgeGroupFilter
-    return matchesDivision && matchesAgeGroup
+    return matchesDivision
   })
 
   const handlePushTeam = async () => {
@@ -473,9 +468,6 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                         Coach
                       </th>
                       <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
-                        Age Group
-                      </th>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
                         Division
                       </th>
                     </tr>
@@ -488,13 +480,6 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                         </td>
                         <td className="px-6 py-4 text-gray-400 text-sm">
                           {team.coachName || '-'}
-                        </td>
-                        <td className="px-6 py-4">
-                          {team.ageGroup ? (
-                            <Badge variant="info" size="sm">{team.ageGroup}</Badge>
-                          ) : (
-                            <span className="text-gray-600">-</span>
-                          )}
                         </td>
                         <td className="px-6 py-4">
                           {team.division ? (
@@ -648,17 +633,6 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                     ]}
                     value={selectedDivisionFilter}
                     onChange={(e) => setSelectedDivisionFilter(e.target.value)}
-                    className="py-1 text-xs"
-                  />
-                </div>
-                <div className="w-40">
-                  <Select
-                    options={[
-                      { value: 'all', label: 'All Age Groups' },
-                      ...uniqueAgeGroups.map(a => ({ value: a, label: a }))
-                    ]}
-                    value={selectedAgeGroupFilter}
-                    onChange={(e) => setSelectedAgeGroupFilter(e.target.value)}
                     className="py-1 text-xs"
                   />
                 </div>

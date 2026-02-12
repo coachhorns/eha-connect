@@ -6,7 +6,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const stat = searchParams.get('stat') || 'points'
     const eventId = searchParams.get('eventId')
-    const ageGroup = searchParams.get('ageGroup')
     const division = searchParams.get('division')
     const limit = parseInt(searchParams.get('limit') || '25')
 
@@ -17,10 +16,6 @@ export async function GET(request: Request) {
 
     if (eventId) {
       gameWhere.eventId = eventId
-    }
-
-    if (ageGroup) {
-      gameWhere.ageGroup = ageGroup
     }
 
     if (division) {
@@ -72,7 +67,7 @@ export async function GET(request: Request) {
             teamRosters: {
               where: { leftAt: null },
               include: {
-                team: { select: { name: true, logo: true, slug: true, ageGroup: true, program: { select: { logo: true } } } },
+                team: { select: { name: true, logo: true, slug: true, program: { select: { logo: true } } } },
               },
               take: 1,
             },

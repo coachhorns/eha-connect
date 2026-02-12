@@ -25,7 +25,6 @@ interface Team {
   id: string
   slug: string
   name: string
-  ageGroup: string | null
   division: string | null
   coachName: string | null
   wins: number
@@ -58,23 +57,8 @@ export default function DirectorDashboardPage() {
   const sortOptions = [
     { value: 'priority', label: 'Priority' },
     { value: 'division', label: 'Division' },
-    { value: 'age', label: 'Age Group' },
     { value: 'name', label: 'Name' },
   ]
-
-  const getAgeNumber = (ageGroup: string | null): number => {
-    if (!ageGroup) return 0
-    const match = ageGroup.match(/(\d+)/)
-    return match ? parseInt(match[1], 10) : 0
-  }
-
-  const getDivisionPriority = (division: string | null): number => {
-    if (!division) return 999
-    if (division === 'EPL' || division.includes('Premier')) return 0
-    if (division === 'Gold') return 1
-    if (division === 'Silver') return 2
-    return 3
-  }
 
   const getSortedTeams = (teams: Team[]): Team[] => {
     return [...teams].sort((a, b) => {
@@ -85,20 +69,9 @@ export default function DirectorDashboardPage() {
           const divCompare = (a.division || '').localeCompare(b.division || '')
           if (divCompare !== 0) return divCompare
           return (a.name || '').localeCompare(b.name || '')
-        case 'age':
-          const ageA = getAgeNumber(a.ageGroup)
-          const ageB = getAgeNumber(b.ageGroup)
-          if (ageA !== ageB) return ageB - ageA
-          return (a.name || '').localeCompare(b.name || '')
         case 'priority':
         default:
-          const divPriorityA = getDivisionPriority(a.division)
-          const divPriorityB = getDivisionPriority(b.division)
-          if (divPriorityA !== divPriorityB) return divPriorityA - divPriorityB
-          const priorityAgeA = getAgeNumber(a.ageGroup)
-          const priorityAgeB = getAgeNumber(b.ageGroup)
-          if (priorityAgeA !== priorityAgeB) return priorityAgeB - priorityAgeA
-          return (a.name || '').localeCompare(b.name || '')
+          return (a.division || '').localeCompare(b.division || '') || (a.name || '').localeCompare(b.name || '')
       }
     })
   }
@@ -393,9 +366,6 @@ export default function DirectorDashboardPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {team.ageGroup && (
-                      <Badge variant="info" size="sm">{team.ageGroup}</Badge>
-                    )}
                     {team.division && (
                       <Badge variant="default" size="sm">{team.division}</Badge>
                     )}

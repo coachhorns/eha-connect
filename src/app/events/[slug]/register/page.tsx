@@ -16,7 +16,7 @@ import {
   ShieldAlert,
 } from 'lucide-react'
 import { Button, Input, Select, Badge } from '@/components/ui'
-import { states, ageGroups as ageGroupOptions, divisions as divisionOptions } from '@/lib/constants'
+import { states, divisions as divisionOptions } from '@/lib/constants'
 
 interface Event {
   id: string
@@ -29,7 +29,6 @@ interface Event {
   state: string | null
   startDate: string
   endDate: string
-  ageGroups: string[]
   divisions: string[]
   entryFee: number | null
   isPublished: boolean
@@ -49,7 +48,6 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
 
   const [formData, setFormData] = useState({
     teamName: '',
-    ageGroup: '',
     division: '',
     city: '',
     state: '',
@@ -151,10 +149,6 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
     } else if (!/\S+@\S+\.\S+/.test(formData.coachEmail)) {
       errors.coachEmail = 'Please enter a valid email'
     }
-    if (event?.ageGroups.length && !formData.ageGroup) {
-      errors.ageGroup = 'Please select an age group'
-    }
-
     setFormErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -320,12 +314,9 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
 
   const registrationClosed = event && new Date() > new Date(event.startDate)
   const stateOptions = [{ value: '', label: 'Select State' }, ...states]
-  const ageOptions = event && event.ageGroups && event.ageGroups.length > 0
-    ? [{ value: '', label: 'Select Age Group' }, ...event.ageGroups.map(ag => ({ value: ag, label: ag }))]
-    : [{ value: '', label: 'Select Age Group' }, ...ageGroupOptions.map(ag => ({ value: ag, label: ag }))]
   const divisionOpts = event && event.divisions && event.divisions.length > 0
-    ? [{ value: '', label: 'Select Division (optional)' }, ...event.divisions.map(d => ({ value: d, label: d }))]
-    : [{ value: '', label: 'Select Division (optional)' }, ...divisionOptions.map(d => ({ value: d, label: d }))]
+    ? [{ value: '', label: 'Select Division' }, ...event.divisions.map(d => ({ value: d, label: d }))]
+    : [{ value: '', label: 'Select Division' }, ...divisionOptions.map(d => ({ value: d, label: d }))]
 
   return (
     <div className="min-h-screen bg-[#0a1628]">
@@ -404,40 +395,20 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                         <p className="text-red-400 text-xs mt-1">{formErrors.teamName}</p>
                       )}
                     </div>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
-                          Age Group
-                        </label>
-                        <select
-                          name="ageGroup"
-                          value={formData.ageGroup}
-                          onChange={handleChange}
-                          className="w-full bg-[#0a1628] border border-white/10 rounded-sm px-4 py-3 text-white focus:outline-none focus:border-eha-red/50 transition-colors"
-                        >
-                          {ageOptions.map(opt => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                          ))}
-                        </select>
-                        {formErrors.ageGroup && (
-                          <p className="text-red-400 text-xs mt-1">{formErrors.ageGroup}</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
-                          Division
-                        </label>
-                        <select
-                          name="division"
-                          value={formData.division}
-                          onChange={handleChange}
-                          className="w-full bg-[#0a1628] border border-white/10 rounded-sm px-4 py-3 text-white focus:outline-none focus:border-eha-red/50 transition-colors"
-                        >
-                          {divisionOpts.map(opt => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                          ))}
-                        </select>
-                      </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                        Division
+                      </label>
+                      <select
+                        name="division"
+                        value={formData.division}
+                        onChange={handleChange}
+                        className="w-full bg-[#0a1628] border border-white/10 rounded-sm px-4 py-3 text-white focus:outline-none focus:border-eha-red/50 transition-colors"
+                      >
+                        {divisionOpts.map(opt => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
@@ -572,19 +543,6 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                           {event.city}{event.state && `, ${event.state}`}
                         </div>
                       )}
-                    </div>
-                  </div>
-                )}
-
-                {event && event.ageGroups && event.ageGroups.length > 0 && (
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
-                      Age Groups
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {event.ageGroups.map(ag => (
-                        <Badge key={ag} size="sm">{ag}</Badge>
-                      ))}
                     </div>
                   </div>
                 )}

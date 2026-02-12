@@ -20,12 +20,11 @@ import {
   Upload,
 } from 'lucide-react'
 import { Card, Button, Input, Badge } from '@/components/ui'
-import { ageGroups, divisions } from '@/lib/constants'
+import { divisions } from '@/lib/constants'
 
 interface TeamData {
   id: string
   name: string
-  ageGroup: string
   division: string
   coachName: string
 }
@@ -69,7 +68,7 @@ function OnboardingContent() {
 
   // Step 2: Teams data
   const [teams, setTeams] = useState<TeamData[]>([
-    { id: '1', name: '', ageGroup: '', division: '', coachName: '' },
+    { id: '1', name: '', division: '', coachName: '' },
   ])
 
   // Step 3: Rosters data (keyed by team index)
@@ -103,7 +102,6 @@ function OnboardingContent() {
               const existingTeams = data.program.teams.map((t: any, i: number) => ({
                 id: t.id,
                 name: t.name,
-                ageGroup: t.ageGroup || '',
                 division: t.division || '',
                 coachName: t.coachName || '',
               }))
@@ -201,7 +199,7 @@ function OnboardingContent() {
   }
 
   const addTeam = () => {
-    setTeams([...teams, { id: String(Date.now()), name: '', ageGroup: '', division: '', coachName: '' }])
+    setTeams([...teams, { id: String(Date.now()), name: '', division: '', coachName: '' }])
   }
 
   const removeTeam = (index: number) => {
@@ -355,7 +353,6 @@ function OnboardingContent() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: team.name.trim(),
-            ageGroup: team.ageGroup || null,
             division: team.division || null,
             coachName: team.coachName.trim() || null,
             programId,
@@ -644,29 +641,16 @@ function OnboardingContent() {
                       onChange={(e) => handleTeamChange(index, 'name', e.target.value)}
                     />
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <select
-                        value={team.ageGroup}
-                        onChange={(e) => handleTeamChange(index, 'ageGroup', e.target.value)}
-                        className="w-full bg-[#0a1628] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#E31837]"
-                      >
-                        <option value="">Age Group</option>
-                        {ageGroups.map(ag => (
-                          <option key={ag} value={ag}>{ag}</option>
-                        ))}
-                      </select>
-
-                      <select
-                        value={team.division}
-                        onChange={(e) => handleTeamChange(index, 'division', e.target.value)}
-                        className="w-full bg-[#0a1628] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#E31837]"
-                      >
-                        <option value="">Division</option>
-                        {divisions.map(d => (
-                          <option key={d} value={d}>{d}</option>
-                        ))}
-                      </select>
-                    </div>
+                    <select
+                      value={team.division}
+                      onChange={(e) => handleTeamChange(index, 'division', e.target.value)}
+                      className="w-full bg-[#0a1628] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#E31837]"
+                    >
+                      <option value="">Division</option>
+                      {divisions.map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
 
                     <Input
                       type="text"

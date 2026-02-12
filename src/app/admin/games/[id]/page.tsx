@@ -49,7 +49,6 @@ interface Team {
   name: string
   slug: string
   coachName: string | null
-  ageGroup: string | null
   division: string | null
 }
 
@@ -71,7 +70,6 @@ interface Game {
   awayScore: number
   court: string | null
   gameType: string
-  ageGroup: string | null
   division: string | null
   homeTeam: Team
   awayTeam: Team
@@ -282,9 +280,6 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
               </div>
             )}
             <div className="pt-2 border-t border-[#1a3a6e]">
-              {game.ageGroup && (
-                <Badge variant="info" size="sm" className="mr-2">{game.ageGroup}</Badge>
-              )}
               {game.division && (
                 <Badge variant="default" size="sm" className="mr-2">{game.division}</Badge>
               )}

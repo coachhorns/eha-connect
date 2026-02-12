@@ -25,7 +25,6 @@ interface Game {
   homeScore: number
   awayScore: number
   court: string | null
-  ageGroup: string | null
   division: string | null
   homeTeam: {
     id: string

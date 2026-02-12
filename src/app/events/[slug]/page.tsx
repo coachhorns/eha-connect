@@ -48,7 +48,6 @@ interface Game {
   status: string
   court: string | null
   currentPeriod: number
-  ageGroup: string | null
   division: string | null
   gameType: string
   bracketRound: string | null
@@ -70,7 +69,6 @@ interface EventTeam {
     name: string
     city: string | null
     state: string | null
-    ageGroup: string | null
     logo: string | null
     program?: {
       id: string
@@ -92,7 +90,6 @@ interface Event {
   state: string | null
   startDate: string
   endDate: string
-  ageGroups: string[]
   divisions: string[]
   entryFee: string | null
   bannerImage: string | null
@@ -114,7 +111,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<'schedule' | 'teams' | 'bracket'>('schedule')
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>('')
   const [selectedDivision, setSelectedDivision] = useState<string>('')
   const [showBlockingModal, setShowBlockingModal] = useState(false)
   const [isCheckingDirector, setIsCheckingDirector] = useState(false)
@@ -261,7 +257,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   // Apply global filters to games
   const applyGameFilters = (games: Game[]) => {
     return games.filter(g => {
-      if (selectedAgeGroup && g.ageGroup !== selectedAgeGroup) return false
       if (selectedDivision && g.division !== selectedDivision) return false
       return true
     })
@@ -275,10 +270,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   )
 
   // Filter teams by global filters
-  const filteredTeams = event.teams.filter(et => {
-    if (selectedAgeGroup && et.team.ageGroup !== selectedAgeGroup) return false
-    return true
-  })
+  const filteredTeams = event.teams
 
   // Group filtered teams by pool
   const filteredTeamsByPool = filteredTeams.reduce((acc, et) => {
@@ -301,7 +293,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   const bracketRounds = [...new Set(bracketGames.map(g => g.bracketRound).filter(Boolean))]
   const bracketDivisions = [...new Set(bracketGames.map(g => g.division).filter(Boolean))]
 
-  const hasActiveFilters = selectedAgeGroup || selectedDivision
+  const hasActiveFilters = selectedDivision
 
   const getStatusBadge = (game: Game) => {
     switch (game.status) {
@@ -342,7 +334,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   {game.court}
                 </span>
               )}
-              {game.ageGroup && <Badge size="sm">{game.ageGroup}</Badge>}
               {game.bracketRound && (
                 <Badge size="sm" variant="gold">{game.bracketRound}</Badge>
               )}
@@ -578,30 +569,13 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               </div>
 
               {/* Filter Bar */}
-              {(event.ageGroups.length > 0 || event.divisions.length > 0) && (
+              {event.divisions.length > 0 && (
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
                   <div className="flex flex-wrap items-center gap-4">
                     <div className="flex items-center gap-2 text-gray-400">
                       <Filter className="w-4 h-4" />
                       <span className="text-sm font-medium uppercase tracking-wider">Filter</span>
                     </div>
-
-                    {/* Age Group Filter */}
-                    {event.ageGroups.length > 0 && (
-                      <div className="relative">
-                        <select
-                          value={selectedAgeGroup}
-                          onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                          className="appearance-none bg-[#0a1628] border border-white/10 text-white px-4 py-2 pr-10 rounded-lg text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
-                        >
-                          <option value="">All Age Groups</option>
-                          {event.ageGroups.map(ag => (
-                            <option key={ag} value={ag}>{ag}</option>
-                          ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                      </div>
-                    )}
 
                     {/* Division Filter */}
                     {event.divisions.length > 0 && (
@@ -635,7 +609,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                     {hasActiveFilters && (
                       <button
                         onClick={() => {
-                          setSelectedAgeGroup('')
                           setSelectedDivision('')
                         }}
                         className="text-[#E31837] hover:text-white text-sm font-medium transition-colors"
@@ -708,7 +681,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                             variant="outline"
                             className="border-white/20 text-gray-300 hover:bg-white/5"
                             onClick={() => {
-                              setSelectedAgeGroup('')
                               setSelectedDivision('')
                             }}
                           >
@@ -799,12 +771,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                         <div>
                                           <div className="font-medium text-white">{et.team.name}</div>
                                           <div className="text-xs text-gray-500 flex items-center gap-2">
-                                            {et.team.ageGroup && <span>{et.team.ageGroup}</span>}
                                             {et.team.city && et.team.state && (
-                                              <>
-                                                <span className="text-gray-600">•</span>
-                                                <span>{et.team.city}, {et.team.state}</span>
-                                              </>
+                                              <span>{et.team.city}, {et.team.state}</span>
                                             )}
                                           </div>
                                         </div>
@@ -1115,16 +1083,6 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   </h3>
                 </div>
                 <div className="p-5 space-y-4">
-                  {event.ageGroups.length > 0 && (
-                    <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Age Groups</div>
-                      <div className="flex flex-wrap gap-2">
-                        {event.ageGroups.map(ag => (
-                          <Badge key={ag} variant="default" size="sm">{ag}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                   {event.divisions.length > 0 && (
                     <div>
                       <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Divisions</div>

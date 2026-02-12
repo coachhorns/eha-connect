@@ -16,13 +16,11 @@ import {
   X,
 } from 'lucide-react'
 import { Card, Button, Input, Select, Badge, Modal } from '@/components/ui'
-import { ageGroups as ageGroupOptions } from '@/lib/constants'
 
 interface Team {
   id: string
   name: string
   slug: string
-  ageGroup: string | null
   division: string | null
   city: string | null
   state: string | null
@@ -330,8 +328,8 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                             {et.team.program && (
                               <span>{et.team.program.name}</span>
                             )}
-                            {et.team.ageGroup && (
-                              <Badge size="sm" variant="default">{et.team.ageGroup}</Badge>
+                            {et.team.division && (
+                              <Badge size="sm" variant="default">{et.team.division}</Badge>
                             )}
                             {et.team.city && et.team.state && (
                               <span className="flex items-center gap-1">
@@ -430,7 +428,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                       <div className="font-medium text-white">{team.name}</div>
                       <div className="flex items-center gap-2 text-sm text-gray-500">
                         {team.program && <span>{team.program.name}</span>}
-                        {team.ageGroup && <Badge size="sm">{team.ageGroup}</Badge>}
+                        {team.division && <Badge size="sm">{team.division}</Badge>}
                       </div>
                     </div>
                   </label>

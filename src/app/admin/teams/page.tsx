@@ -18,7 +18,6 @@ interface Team {
   id: string
   name: string
   coachName: string | null
-  ageGroup: string | null
   division: string | null
   isActive: boolean
 }
@@ -175,9 +174,6 @@ export default function AdminTeamsPage() {
                     Coach
                   </th>
                   <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
-                    Age Group
-                  </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
                     Division
                   </th>
                   <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
@@ -202,15 +198,6 @@ export default function AdminTeamsPage() {
                       {team.coachName || '-'}
                     </td>
                     <td className="px-6 py-4">
-                      {team.ageGroup ? (
-                        <Badge variant="info" size="sm">
-                          {team.ageGroup}
-                        </Badge>
-                      ) : (
-                        <span className="text-gray-600">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
                       {team.division ? (
                         <Badge variant="default" size="sm">
                           {team.division}
@@ -223,7 +210,7 @@ export default function AdminTeamsPage() {
                       {team.isActive ? (
                         <Badge variant="success" size="sm">Active</Badge>
                       ) : (
-                        <Badge variant="danger" size="sm">Inactive</Badge>
+                        <Badge variant="error" size="sm">Inactive</Badge>
                       )}
                     </td>
                     <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>

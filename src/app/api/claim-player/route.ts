@@ -30,7 +30,6 @@ export async function GET(request: NextRequest) {
                   id: true,
                   name: true,
                   slug: true,
-                  ageGroup: true,
                   division: true,
                   program: {
                     select: {
@@ -67,7 +66,6 @@ export async function GET(request: NextRequest) {
               id: activeRoster.team.id,
               name: activeRoster.team.name,
               slug: activeRoster.team.slug,
-              ageGroup: activeRoster.team.ageGroup,
               division: activeRoster.team.division,
               program: activeRoster.team.program,
             }
@@ -105,7 +103,6 @@ export async function GET(request: NextRequest) {
                 id: true,
                 name: true,
                 slug: true,
-                ageGroup: true,
                 division: true,
                 program: {
                   select: {
@@ -141,7 +138,6 @@ export async function GET(request: NextRequest) {
               id: activeRoster.team.id,
               name: activeRoster.team.name,
               slug: activeRoster.team.slug,
-              ageGroup: activeRoster.team.ageGroup,
               division: activeRoster.team.division,
               program: activeRoster.team.program,
             }

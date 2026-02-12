@@ -20,12 +20,11 @@ interface PlayerCardProps {
     city?: string | null
     state?: string | null
     graduationYear?: number | null
-    ageGroup?: string | null
     isVerified: boolean
     userId?: string | null
     guardians?: { id: string }[]
     achievements?: { type: string }[]
-    teamRosters?: { team: { name: string; ageGroup?: string | null; division?: string | null } }[]
+    teamRosters?: { team: { name: string; division?: string | null } }[]
     careerStats?: {
       gamesPlayed: number
       ppg: number
@@ -38,11 +37,10 @@ interface PlayerCardProps {
 export function PlayerCard({ player }: PlayerCardProps) {
   const currentTeam = player.teamRosters?.[0]?.team
   const teamName = currentTeam?.name
-  const ageGroup = player.ageGroup || currentTeam?.ageGroup
 
   // Get division - prioritize EPL team if player is on multiple teams
   const division = player.teamRosters?.find(
-    (r) => r.team?.division === 'EPL' || r.team?.division === 'EHA Premier League'
+    (r) => r.team?.division?.startsWith('EPL')
   )?.team?.division || currentTeam?.division
 
   // Verified = has guardians or userId
@@ -100,9 +98,6 @@ export function PlayerCard({ player }: PlayerCardProps) {
                 {teamName || 'Unassigned'}
               </span>
             </div>
-            {ageGroup && (
-              <Badge variant="info" size="sm">{ageGroup}</Badge>
-            )}
             {division && (
               <Badge variant="orange" size="sm">{division}</Badge>
             )}

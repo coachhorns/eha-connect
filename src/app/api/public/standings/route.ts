@@ -5,7 +5,6 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const eventId = searchParams.get('eventId')
-    const ageGroup = searchParams.get('ageGroup')
     const division = searchParams.get('division')
 
     if (eventId) {
@@ -19,7 +18,6 @@ export async function GET(request: Request) {
               slug: true,
               name: true,
               logo: true,
-              ageGroup: true,
               division: true,
               city: true,
               state: true,
@@ -44,7 +42,6 @@ export async function GET(request: Request) {
           teamSlug: et.team.slug,
           teamName: et.team.name,
           teamLogo: et.team.logo || (et.team as any).program?.logo,
-          ageGroup: et.team.ageGroup,
           city: et.team.city,
           state: et.team.state,
           wins: et.eventWins,
@@ -70,7 +67,6 @@ export async function GET(request: Request) {
 
     // Overall standings (team records)
     const whereClause: any = { isActive: true }
-    if (ageGroup) whereClause.ageGroup = ageGroup
     if (division) whereClause.division = division
 
     const teams = await prisma.team.findMany({
@@ -80,7 +76,6 @@ export async function GET(request: Request) {
         slug: true,
         name: true,
         logo: true,
-        ageGroup: true,
         division: true,
         city: true,
         state: true,
@@ -96,9 +91,9 @@ export async function GET(request: Request) {
       ],
     })
 
-    // Group by age group
-    const byAgeGroup = teams.reduce((acc, team) => {
-      const group = team.ageGroup || 'Other'
+    // Group by division
+    const byDivision = teams.reduce((acc, team) => {
+      const group = team.division || 'Other'
       if (!acc[group]) acc[group] = []
       acc[group].push({
         teamId: team.id,
@@ -118,12 +113,6 @@ export async function GET(request: Request) {
     }, {} as Record<string, any[]>)
 
     // Get available filters
-    const ageGroups = await prisma.team.findMany({
-      where: { isActive: true, ageGroup: { not: null } },
-      select: { ageGroup: true },
-      distinct: ['ageGroup'],
-    })
-
     const divisions = await prisma.team.findMany({
       where: { isActive: true, division: { not: null } },
       select: { division: true },
@@ -139,10 +128,9 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json({
-      standings: byAgeGroup,
+      standings: byDivision,
       type: 'overall',
       filters: {
-        ageGroups: ageGroups.map(a => a.ageGroup).filter(Boolean),
         divisions: divisions.map(d => d.division).filter(Boolean),
         events,
       },

@@ -88,7 +88,6 @@ interface Game {
   status: string
   court: string | null
   currentPeriod: number
-  ageGroup: string | null
   division: string | null
   gameType: string
   bracketRound: string | null
@@ -220,7 +219,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
           {/* Game Info */}
           <div className="flex flex-wrap items-center gap-3 mb-4">
             {getStatusDisplay()}
-            {game.ageGroup && <Badge>{game.ageGroup}</Badge>}
+            {game.division && <Badge>{game.division}</Badge>}
             {game.bracketRound && <Badge variant="gold">{game.bracketRound}</Badge>}
           </div>
 

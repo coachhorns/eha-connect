@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Search, Users, ChevronLeft, ChevronRight, SlidersHorizontal, X } from 'lucide-react'
-import { ageGroups, states, divisions } from '@/lib/constants'
+import { states, divisions } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 interface Team {
@@ -14,7 +14,6 @@ interface Team {
   logo?: string | null
   city?: string | null
   state?: string | null
-  ageGroup?: string | null
   division?: string | null
   wins: number
   losses: number
@@ -36,7 +35,6 @@ interface Team {
 interface FilterSidebarProps {
   filters: {
     division: string
-    ageGroup: string
     state: string
     performanceTier: string[]
   }
@@ -103,22 +101,6 @@ function FilterSidebar({ filters, setFilters, onReset, onClose, isMobile = false
           </select>
         </div>
 
-        {/* Age Group Filter */}
-        <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Age Group</label>
-          <select
-            className="w-full text-sm font-semibold border border-white/10 bg-[#153361] text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none transition-all"
-            style={selectStyle}
-            value={filters.ageGroup}
-            onChange={(e) => setFilters(prev => ({ ...prev, ageGroup: e.target.value }))}
-          >
-            <option value="">All Age Groups</option>
-            {ageGroups.map(ag => (
-              <option key={ag} value={ag}>{ag}</option>
-            ))}
-          </select>
-        </div>
-
         {/* Region/State Filter */}
         <div>
           <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Region / State</label>
@@ -168,7 +150,7 @@ interface TeamCardProps {
 function TeamCard({ team }: TeamCardProps) {
   const record = `${team.wins}-${team.losses}`
   const location = [team.city, team.state].filter(Boolean).join(', ')
-  const programName = team.program?.name || team.ageGroup || 'EHA Team'
+  const programName = team.program?.name || 'EHA Team'
   const logoUrl = team.logo || team.program?.logo
 
   return (
@@ -207,11 +189,6 @@ function TeamCard({ team }: TeamCardProps) {
             {team.division && (
               <span className="text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest bg-[#0A1D37]">
                 {team.division}
-              </span>
-            )}
-            {team.ageGroup && (
-              <span className="text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest bg-eha-red">
-                {team.ageGroup}
               </span>
             )}
           </div>
@@ -327,7 +304,6 @@ export default function TeamsPage() {
 
   const [filters, setFilters] = useState({
     division: '',
-    ageGroup: '',
     state: '',
     performanceTier: [] as string[]
   })
@@ -337,7 +313,6 @@ export default function TeamsPage() {
     try {
       const params = new URLSearchParams()
       if (search) params.set('search', search)
-      if (filters.ageGroup) params.set('ageGroup', filters.ageGroup)
       if (filters.division) params.set('division', filters.division)
       if (filters.state) params.set('state', filters.state)
       if (sortBy && sortBy !== 'priority') params.set('sort', sortBy)
@@ -371,7 +346,7 @@ export default function TeamsPage() {
 
   useEffect(() => {
     fetchTeams()
-  }, [page, filters.ageGroup, filters.division, filters.state, sortBy])
+  }, [page, filters.division, filters.state, sortBy])
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -385,7 +360,6 @@ export default function TeamsPage() {
     setSearch('')
     setFilters({
       division: '',
-      ageGroup: '',
       state: '',
       performanceTier: []
     })
@@ -393,7 +367,7 @@ export default function TeamsPage() {
     setPage(1)
   }
 
-  const hasActiveFilters = filters.division || filters.ageGroup || filters.state || filters.performanceTier.length > 0 || search
+  const hasActiveFilters = filters.division || filters.state || filters.performanceTier.length > 0 || search
 
   // Generate page numbers for pagination
   const getPageNumbers = () => {

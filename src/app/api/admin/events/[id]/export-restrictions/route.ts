@@ -48,7 +48,6 @@ function escapeCSV(value: string): string {
 const TEMPLATE_COLUMNS = [
     'DIVISION',
     'TEAMNAME',
-    'AGE',
     'GENDER',
     'CITY',
     'STATEREGION',
@@ -86,7 +85,6 @@ export async function GET(
                         id: true,
                         name: true,
                         division: true,
-                        ageGroup: true,
                         gender: true,
                         coachName: true,
                         city: true,
@@ -95,21 +93,6 @@ export async function GET(
                 },
             },
         })
-
-        // Build team → Exposure division name from Game records.
-        // Games store the actual Exposure division name (e.g. "EPL 16")
-        // which differs from EHA's internal division (e.g. "EPL", "Gold").
-        const exposureDivisionMap = new Map<string, string>()
-        const games = await prisma.game.findMany({
-            where: { eventId },
-            select: { homeTeamId: true, awayTeamId: true, division: true },
-        })
-        for (const g of games) {
-            if (g.division) {
-                if (!exposureDivisionMap.has(g.homeTeamId)) exposureDivisionMap.set(g.homeTeamId, g.division)
-                if (!exposureDivisionMap.has(g.awayTeamId)) exposureDivisionMap.set(g.awayTeamId, g.division)
-            }
-        }
 
         // Build coach conflict lookup: coachName -> list of team names
         const coachTeams = new Map<string, { name: string; teamId: string }[]>()
@@ -131,8 +114,7 @@ export async function GET(
         for (const et of eventTeams) {
             const reqs = (et.scheduleRequests as any) || {}
 
-            // Use Exposure division name (from synced games), fall back to EHA division
-            const division = exposureDivisionMap.get(et.team.id) || et.team.division || ''
+            const division = et.team.division || ''
             const teamName = et.team.name
 
             const dateTimeRestrictions: string[] = []
@@ -179,7 +161,6 @@ export async function GET(
             const rowData: Record<string, string> = {
                 'DIVISION': division,
                 'TEAMNAME': teamName,
-                'AGE': et.team.ageGroup || '',
                 'GENDER': et.team.gender || '',
                 'CITY': et.team.city || '',
                 'STATEREGION': et.team.state || '',

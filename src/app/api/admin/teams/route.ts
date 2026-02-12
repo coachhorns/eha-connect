@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, division, coachName, gender, ageGroup, programId } = body
+    const { name, division, coachName, gender, programId } = body
 
     if (!name || typeof name !== 'string' || !name.trim()) {
       return NextResponse.json({ error: 'Team name is required' }, { status: 400 })
@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
         name: name.trim(),
         slug,
         division: division?.trim() || null,
-        ageGroup: ageGroup?.trim() || null,
         coachName: coachName?.trim() || null,
         gender: gender || 'Boys', // Default to Boys if not provided
         programId: programId || null,
@@ -92,7 +91,6 @@ export async function GET(request: NextRequest) {
           id: true,
           name: true,
           coachName: true,
-          ageGroup: true,
           division: true,
           programId: true,
           isActive: true,

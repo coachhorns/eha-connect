@@ -93,7 +93,6 @@ export async function POST(request: NextRequest) {
       scheduledAt,
       court,
       gameType,
-      ageGroup,
       division,
     } = body
 
@@ -119,7 +118,6 @@ export async function POST(request: NextRequest) {
         scheduledAt: new Date(scheduledAt),
         court: court || null,
         gameType: gameType || 'POOL',
-        ageGroup: ageGroup || null,
         division: division || null,
         status: 'SCHEDULED',
       },

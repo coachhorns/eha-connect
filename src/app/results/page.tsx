@@ -40,7 +40,6 @@ interface Game {
   status: string
   court: string | null
   currentPeriod: number
-  ageGroup: string | null
   division: string | null
   gameType: string
   bracketRound: string | null
@@ -55,7 +54,6 @@ interface EventFilter {
 
 interface Filters {
   events: EventFilter[]
-  ageGroups: string[]
   divisions: string[]
   dates: string[]
 }
@@ -70,7 +68,7 @@ function GameCard({ game }: { game: Game }) {
   const homeWon = isFinal && game.homeScore > game.awayScore
   const awayWon = isFinal && game.awayScore > game.homeScore
 
-  const category = [game.ageGroup, game.division].filter(Boolean).join(' • ')
+  const category = game.division || ''
 
   return (
     <Link href={`/games/${game.id}`}>
@@ -276,7 +274,6 @@ export default function ResultsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedEvent, setSelectedEvent] = useState<string>('')
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>('')
   const [selectedDivision, setSelectedDivision] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<string>('')
   const [sortBy, setSortBy] = useState<string>('date')
@@ -289,7 +286,6 @@ export default function ResultsPage() {
     try {
       const params = new URLSearchParams()
       if (selectedEvent) params.append('eventId', selectedEvent)
-      if (selectedAgeGroup) params.append('ageGroup', selectedAgeGroup)
       if (selectedDivision) params.append('division', selectedDivision)
       if (selectedDate) params.append('date', selectedDate)
 
@@ -313,7 +309,7 @@ export default function ResultsPage() {
   // Initial fetch and refetch when filters change (shows loading spinner)
   useEffect(() => {
     fetchResults(false)
-  }, [selectedEvent, selectedAgeGroup, selectedDivision, selectedDate])
+  }, [selectedEvent, selectedDivision, selectedDate])
 
   // Auto-refresh every 5 seconds (silent - no loading spinner)
   useEffect(() => {
@@ -322,7 +318,7 @@ export default function ResultsPage() {
     }, 5000)
 
     return () => clearInterval(intervalId)
-  }, [selectedEvent, selectedAgeGroup, selectedDivision, selectedDate])
+  }, [selectedEvent, selectedDivision, selectedDate])
 
   // Filter games by search query
   const filteredGames = games.filter((game) => {
@@ -343,11 +339,6 @@ export default function ResultsPage() {
         const divB = b.division || ''
         if (divA !== divB) return divA.localeCompare(divB)
         return new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime()
-      case 'ageGroup':
-        const ageA = a.ageGroup || ''
-        const ageB = b.ageGroup || ''
-        if (ageA !== ageB) return ageB.localeCompare(ageA) // 17U before 16U etc.
-        return new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime()
       case 'event':
         const eventA = a.event?.name || ''
         const eventB = b.event?.name || ''
@@ -364,13 +355,6 @@ export default function ResultsPage() {
     if (sortBy === 'division') {
       return sortedGames.reduce((acc, game) => {
         const key = game.division || 'Unspecified'
-        if (!acc[key]) acc[key] = []
-        acc[key].push(game)
-        return acc
-      }, {} as Record<string, Game[]>)
-    } else if (sortBy === 'ageGroup') {
-      return sortedGames.reduce((acc, game) => {
-        const key = game.ageGroup || 'Unspecified'
         if (!acc[key]) acc[key] = []
         acc[key].push(game)
         return acc
@@ -397,8 +381,6 @@ export default function ResultsPage() {
   const sortedKeys = Object.keys(gamesByGroup).sort((a, b) => {
     if (sortBy === 'date') {
       return b.localeCompare(a) // Dates descending
-    } else if (sortBy === 'ageGroup') {
-      return b.localeCompare(a) // 17U before 16U etc.
     } else {
       return a.localeCompare(b) // Alphabetical for division/event
     }
@@ -414,11 +396,10 @@ export default function ResultsPage() {
     return key
   }
 
-  const hasFilters = selectedEvent || selectedAgeGroup || selectedDivision || selectedDate
+  const hasFilters = selectedEvent || selectedDivision || selectedDate
 
   const clearFilters = () => {
     setSelectedEvent('')
-    setSelectedAgeGroup('')
     setSelectedDivision('')
     setSelectedDate('')
     setSearchQuery('')
@@ -517,23 +498,6 @@ export default function ResultsPage() {
                 </select>
               )}
 
-              {/* Age Group Filter */}
-              {filters?.ageGroups && filters.ageGroups.length > 0 && (
-                <select
-                  value={selectedAgeGroup}
-                  onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                  style={selectStyle}
-                  className="pl-4 pr-10 py-2.5 bg-[#0a1628] border border-white/10 rounded-sm text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:border-eha-red hover:bg-white/5 min-w-[120px] text-white"
-                >
-                  <option value="">All Ages</option>
-                  {filters.ageGroups.map((ag) => (
-                    <option key={ag} value={ag}>
-                      {ag}
-                    </option>
-                  ))}
-                </select>
-              )}
-
               {/* Date Filter */}
               {filters?.dates && filters.dates.length > 0 && (
                 <select
@@ -573,7 +537,6 @@ export default function ResultsPage() {
                 >
                   <option value="date">Date</option>
                   <option value="division">Division</option>
-                  <option value="ageGroup">Age Group</option>
                   <option value="event">Event</option>
                 </select>
               </div>

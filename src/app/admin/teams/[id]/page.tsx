@@ -63,7 +63,6 @@ interface Team {
   coachName: string | null
   coachEmail: string | null
   coachPhone: string | null
-  ageGroup: string | null
   division: string | null
   city: string | null
   state: string | null
@@ -166,7 +165,6 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
           <div>
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-3xl font-bold text-white uppercase tracking-wider">{team.name}</h1>
-              {team.ageGroup && <Badge variant="info">{team.ageGroup}</Badge>}
               {team.division && <Badge variant="default">{team.division}</Badge>}
             </div>
             {team.program && (

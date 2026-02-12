@@ -37,7 +37,6 @@ interface Game {
   awayScore: number
   status: string
   currentPeriod: number
-  ageGroup?: string
   division?: string
   event?: { name: string }
   court?: string
@@ -739,7 +738,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
           {/* VS / Period */}
           <div className="flex flex-col items-center justify-center px-4">
             <p className="text-2xl font-bold text-gray-600">VS</p>
-            {game.ageGroup && <Badge className="mt-2">{game.ageGroup}</Badge>}
+            {game.division && <Badge className="mt-2">{game.division}</Badge>}
           </div>
 
           {/* Home Team Score */}

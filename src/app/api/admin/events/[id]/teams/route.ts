@@ -24,7 +24,6 @@ export async function GET(
           select: {
             id: true,
             name: true,
-            ageGroup: true,
             division: true,
             program: {
               select: {

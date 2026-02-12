@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import Link from 'next/link'
 import { X, Plus, Save, ArrowLeft, Users } from 'lucide-react'
 import { Card, Button, Input, Select, Badge, ImageUpload } from '@/components/ui'
-import { states, ageGroups as ageGroupOptions, divisions as divisionOptions } from '@/lib/constants'
+import { states, divisions as divisionOptions } from '@/lib/constants'
 
 interface Venue {
   id: string
@@ -28,7 +28,6 @@ interface EventFormData {
   startDate: string
   endDate: string
   registrationDeadline: string
-  ageGroups: string[]
   divisions: string[]
   entryFee: string
   bannerImage: string
@@ -48,7 +47,6 @@ interface EventInput {
   startDate?: string | Date
   endDate?: string | Date
   registrationDeadline?: string | Date | null
-  ageGroups?: string[]
   divisions?: string[]
   entryFee?: number | string | null
   bannerImage?: string | null
@@ -86,7 +84,6 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
     startDate: '',
     endDate: '',
     registrationDeadline: '',
-    ageGroups: [],
     divisions: [],
     entryFee: '',
     bannerImage: '',
@@ -132,8 +129,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
         registrationDeadline: initialData.registrationDeadline
           ? format(new Date(initialData.registrationDeadline), 'yyyy-MM-dd')
           : '',
-        ageGroups: initialData.ageGroups || [],
-        divisions: (initialData.divisions || []).filter(d => divisionOptions.includes(d)),
+        divisions: initialData.divisions || [],
         entryFee: initialData.entryFee?.toString() || '',
         bannerImage: initialData.bannerImage || '',
         flyerImage: initialData.flyerImage || '',
@@ -167,15 +163,6 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }))
     }
-  }
-
-  const handleToggleAgeGroup = (ageGroup: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      ageGroups: prev.ageGroups.includes(ageGroup)
-        ? prev.ageGroups.filter((ag) => ag !== ageGroup)
-        : [...prev.ageGroups, ageGroup],
-    }))
   }
 
   const handleToggleDivision = (division: string) => {
@@ -433,30 +420,6 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
         {/* Sidebar */}
         <div className="space-y-6">
           <Card className="rounded-sm border border-white/5">
-            <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Age Groups</h2>
-            <div className="flex flex-wrap gap-2">
-              {ageGroupOptions.map((ageGroup) => (
-                <button
-                  key={ageGroup}
-                  type="button"
-                  onClick={() => handleToggleAgeGroup(ageGroup)}
-                  className={`px-3 py-1.5 rounded-sm text-sm font-bold uppercase tracking-wide transition-colors ${formData.ageGroups.includes(ageGroup)
-                      ? 'bg-eha-red text-white'
-                      : 'bg-[#152e50]/50 border border-white/5 text-gray-400 hover:text-white hover:bg-white/5'
-                    }`}
-                >
-                  {ageGroup}
-                </button>
-              ))}
-            </div>
-            {formData.ageGroups.length > 0 && (
-              <p className="mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                Selected: {formData.ageGroups.join(', ')}
-              </p>
-            )}
-          </Card>
-
-          <Card className="rounded-sm border border-white/5">
             <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Divisions</h2>
             <div className="flex flex-wrap gap-2">
               {divisionOptions.map((division) => (
@@ -472,6 +435,54 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   {division}
                 </button>
               ))}
+              {/* Show custom divisions that aren't in the standard list */}
+              {formData.divisions
+                .filter((d) => !divisionOptions.includes(d))
+                .map((division) => (
+                  <button
+                    key={division}
+                    type="button"
+                    onClick={() => handleToggleDivision(division)}
+                    className="px-3 py-1.5 rounded-sm text-sm font-bold uppercase tracking-wide transition-colors bg-eha-red text-white"
+                  >
+                    {division}
+                  </button>
+                ))}
+            </div>
+            {/* Custom Division Input */}
+            <div className="mt-4 flex gap-2">
+              <input
+                type="text"
+                placeholder="Custom division name..."
+                id="customDivisionInput"
+                className="flex-1 px-3 py-1.5 bg-[#0A1D37] border border-white/10 rounded-sm text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    const input = e.target as HTMLInputElement
+                    const val = input.value.trim()
+                    if (val && !formData.divisions.includes(val)) {
+                      handleToggleDivision(val)
+                      input.value = ''
+                    }
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const input = document.getElementById('customDivisionInput') as HTMLInputElement
+                  const val = input?.value.trim()
+                  if (val && !formData.divisions.includes(val)) {
+                    handleToggleDivision(val)
+                    input.value = ''
+                  }
+                }}
+                className="px-3 py-1.5 rounded-sm text-sm font-bold uppercase tracking-wide bg-[#152e50]/50 border border-white/5 text-gray-400 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1"
+              >
+                <Plus className="w-3 h-3" />
+                Add
+              </button>
             </div>
             {formData.divisions.length > 0 && (
               <p className="mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">

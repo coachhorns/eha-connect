@@ -12,7 +12,6 @@ interface GenerateRequest {
   teams: string[] // Array of team IDs
   settings?: {
     poolCode?: string // e.g., "A", "B" for pool identification
-    ageGroup?: string
     division?: string
     seeds?: string[] // For brackets: ordered team IDs by seed
   }
@@ -156,7 +155,6 @@ export async function POST(request: NextRequest) {
               status: 'SCHEDULED',
               gameType: 'POOL',
               poolCode: settings?.poolCode || null,
-              ageGroup: settings?.ageGroup || null,
               division: settings?.division || null,
               courtId: null, // Will be assigned in scheduling grid
             },
@@ -219,7 +217,6 @@ export async function POST(request: NextRequest) {
               gameType: 'BRACKET',
               bracketRound: getRoundName(slot.round, rounds),
               bracketPosition: slot.position,
-              ageGroup: settings?.ageGroup || null,
               division: settings?.division || null,
               courtId: null,
             },

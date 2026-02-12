@@ -7,6 +7,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, Plus, Users, Trophy, Trash2, UserPlus, Pencil, Upload, FileText, X, Check, ChevronDown, AlertCircle, Link2 } from 'lucide-react'
 import { Button, Badge, Input, Modal } from '@/components/ui'
+import { divisions } from '@/lib/constants'
 
 interface ParsedPlayer {
   firstName: string
@@ -32,7 +33,6 @@ interface PlayerMatch {
   currentTeams: Array<{
     teamName: string
     programName: string | null
-    ageGroup: string | null
   }>
   isOnTargetRoster: boolean
   hasGuardian: boolean
@@ -47,25 +47,9 @@ const positionOptions = [
   { value: 'C', label: 'Center (C)' },
 ]
 
-const ageGroupOptions = [
-  { value: '', label: 'Select Age Group' },
-  { value: '8U', label: '8U' },
-  { value: '9U', label: '9U' },
-  { value: '10U', label: '10U' },
-  { value: '11U', label: '11U' },
-  { value: '12U', label: '12U' },
-  { value: '13U', label: '13U' },
-  { value: '14U', label: '14U' },
-  { value: '15U', label: '15U' },
-  { value: '16U', label: '16U' },
-  { value: '17U', label: '17U' },
-]
-
 const divisionOptions = [
   { value: '', label: 'Select Division' },
-  { value: 'EPL', label: 'EHA Premier League (EPL)' },
-  { value: 'Gold', label: 'Gold' },
-  { value: 'Silver', label: 'Silver' },
+  ...divisions.map(d => ({ value: d, label: d })),
 ]
 
 interface Player {
@@ -93,7 +77,6 @@ interface Team {
   slug: string
   name: string
   logo: string | null
-  ageGroup: string | null
   division: string | null
   coachName: string | null
   wins: number
@@ -140,7 +123,6 @@ export default function DirectorTeamDetailPage() {
   const [isEditSubmitting, setIsEditSubmitting] = useState(false)
   const [editForm, setEditForm] = useState({
     name: '',
-    ageGroup: '',
     division: '',
     coachName: '',
   })
@@ -413,7 +395,6 @@ export default function DirectorTeamDetailPage() {
     if (team) {
       setEditForm({
         name: team.name,
-        ageGroup: team.ageGroup || '',
         division: team.division || '',
         coachName: team.coachName || '',
       })
@@ -682,7 +663,6 @@ export default function DirectorTeamDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: editForm.name.trim(),
-          ageGroup: editForm.ageGroup || null,
           division: editForm.division || null,
           coachName: editForm.coachName.trim() || null,
         }),
@@ -692,7 +672,6 @@ export default function DirectorTeamDetailPage() {
         setTeam(prev => prev ? {
           ...prev,
           name: editForm.name.trim(),
-          ageGroup: editForm.ageGroup || null,
           division: editForm.division || null,
           coachName: editForm.coachName.trim() || null,
         } : null)
@@ -806,8 +785,7 @@ export default function DirectorTeamDetailPage() {
                   </button>
                 </div>
                 <div className="flex items-center gap-3 mt-2">
-                  {team.ageGroup && <Badge variant="info">{team.ageGroup}</Badge>}
-                  {team.division && <Badge variant="default">{team.division}</Badge>}
+                  {team.division && <Badge variant="info">{team.division}</Badge>}
                   <span className="text-gray-400">{team.program.name}</span>
                 </div>
               </div>
@@ -1556,36 +1534,19 @@ export default function DirectorTeamDetailPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Age Group</label>
-                <div className="relative">
-                  <select
-                    value={editForm.ageGroup}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, ageGroup: e.target.value }))}
-                    className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
-                  >
-                    {ageGroupOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value} className="bg-[#0a1628]">{opt.label}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Division</label>
-                <div className="relative">
-                  <select
-                    value={editForm.division}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, division: e.target.value }))}
-                    className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
-                  >
-                    {divisionOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value} className="bg-[#0a1628]">{opt.label}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Division</label>
+              <div className="relative">
+                <select
+                  value={editForm.division}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, division: e.target.value }))}
+                  className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
+                >
+                  {divisionOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-[#0a1628]">{opt.label}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
               </div>
             </div>
 

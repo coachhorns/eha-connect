@@ -20,7 +20,6 @@ export async function POST(
     const {
       // Team details (for new team or verification)
       teamName,
-      ageGroup,
       division,
       city,
       state,
@@ -41,7 +40,6 @@ export async function POST(
         isPublished: true,
         isActive: true,
         startDate: true,
-        ageGroups: true,
         divisions: true,
       },
     })
@@ -68,14 +66,6 @@ export async function POST(
         return NextResponse.json({ error: 'Team not found' }, { status: 404 })
       }
 
-      // Check if team age group matches event
-      if (event.ageGroups.length > 0 && team.ageGroup && !event.ageGroups.includes(team.ageGroup)) {
-        return NextResponse.json(
-          { error: `This event is only for ${event.ageGroups.join(', ')} age groups` },
-          { status: 400 }
-        )
-      }
-
       teamId = existingTeamId
 
       // Update coach contact info if provided
@@ -99,14 +89,6 @@ export async function POST(
         return NextResponse.json({ error: 'Coach name and email are required' }, { status: 400 })
       }
 
-      // Check age group requirement
-      if (event.ageGroups.length > 0 && ageGroup && !event.ageGroups.includes(ageGroup)) {
-        return NextResponse.json(
-          { error: `This event is only for ${event.ageGroups.join(', ')} age groups` },
-          { status: 400 }
-        )
-      }
-
       // Generate unique slug
       let slug = generateSlug(teamName)
       let slugExists = await prisma.team.findUnique({ where: { slug } })
@@ -121,7 +103,6 @@ export async function POST(
         data: {
           name: teamName,
           slug,
-          ageGroup: ageGroup || null,
           division: division || null,
           city: city || null,
           state: state || null,

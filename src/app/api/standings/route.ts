@@ -6,15 +6,10 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url)
-        const ageGroup = searchParams.get('ageGroup')
         const division = searchParams.get('division')
 
         const where: any = {
             isActive: true,
-        }
-
-        if (ageGroup && ageGroup !== 'All') {
-            where.ageGroup = ageGroup
         }
 
         if (division && division !== 'All Divisions') {
@@ -27,7 +22,6 @@ export async function GET(request: Request) {
                 id: true,
                 name: true,
                 logo: true,
-                ageGroup: true,
                 division: true,
                 city: true,
                 state: true,
@@ -54,7 +48,6 @@ export async function GET(request: Request) {
                 streakType: 'N',
                 lastTen: '-', // Needs game history
                 division: team.division,
-                ageGroup: team.ageGroup,
                 logo: team.logo
             }
         })

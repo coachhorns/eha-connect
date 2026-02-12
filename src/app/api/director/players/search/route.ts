@@ -11,7 +11,6 @@ const playerInclude = {
         select: {
           id: true,
           name: true,
-          ageGroup: true,
           program: { select: { name: true } },
         },
       },
@@ -37,7 +36,6 @@ function mapPlayer(player: any, teamId?: string) {
     currentTeams: player.teamRosters.map((r: any) => ({
       teamName: r.team.name,
       programName: r.team.program?.name || null,
-      ageGroup: r.team.ageGroup || null,
     })),
     isOnTargetRoster: teamId
       ? player.teamRosters.some((r: any) => r.team.id === teamId)

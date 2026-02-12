@@ -86,11 +86,27 @@ export const positions = [
   { value: 'C', label: 'Center' },
 ]
 
-// Age groups
-export const ageGroups = ['17U', '16U', '15U', '14U', '13U', '12U', '11U', '10U', '9U', '8U']
+// Combined divisions (age group + tier in one field, matching Exposure EventDivision names)
+export const divisions = [
+  // 15U-17U top tier
+  'EPL 17', 'EPL 16', 'EPL 15',
+  // 15U-17U lower tier
+  '17U', '16U', '15U',
+  // 14U and below: Gold/Silver/Bronze
+  '14U Gold', '14U Silver', '14U Bronze',
+  '13U Gold', '13U Silver', '13U Bronze',
+  '12U Gold', '12U Silver', '12U Bronze',
+  '11U Gold', '11U Silver', '11U Bronze',
+  '10U Gold', '10U Silver', '10U Bronze',
+  '9U Gold', '9U Silver', '9U Bronze',
+  '8U Gold', '8U Silver', '8U Bronze',
+]
 
-// Divisions
-export const divisions = ['EPL', 'Gold', 'Silver']
+/** Extract age number from a combined division string (e.g. "EPL 17" -> 17, "14U Gold" -> 14) */
+export function getAgeFromDivision(division: string): number | null {
+  const match = division.match(/(\d+)/)
+  return match ? parseInt(match[1], 10) : null
+}
 
 // States
 export const states = [

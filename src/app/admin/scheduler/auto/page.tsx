@@ -44,7 +44,6 @@ interface ScheduledGame {
   homeTeam: string
   awayTeam: string
   gameType: string
-  ageGroup?: string
   division?: string
 }
 

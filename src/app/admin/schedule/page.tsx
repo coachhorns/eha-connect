@@ -58,7 +58,6 @@ interface Game {
   scheduledAt: string
   courtId: string | null
   assignedCourt: (Court & { venue: { id: string; name: string } }) | null
-  ageGroup: string | null
   division: string | null
 }
 
@@ -96,18 +95,11 @@ function DraggableGameCard({
           <p className="text-sm font-medium text-white truncate">
             {game.awayTeam.name}
           </p>
-          {(game.ageGroup || game.division) && (
+          {game.division && (
             <div className="flex gap-1 mt-1">
-              {game.ageGroup && (
-                <Badge size="sm" variant="default">
-                  {game.ageGroup}
-                </Badge>
-              )}
-              {game.division && (
-                <Badge size="sm" variant="default">
-                  {game.division}
-                </Badge>
-              )}
+              <Badge size="sm" variant="default">
+                {game.division}
+              </Badge>
             </div>
           )}
         </div>

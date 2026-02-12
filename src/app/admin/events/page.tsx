@@ -34,7 +34,6 @@ interface Event {
   state: string | null
   startDate: string
   endDate: string
-  ageGroups: string[]
   divisions: string[]
   isPublished: boolean
   isActive: boolean
@@ -453,9 +452,9 @@ export default function AdminEventsPage() {
                         <td className="px-6 py-4">
                           <div>
                             <div className="font-medium text-white">{event.name}</div>
-                            {event.ageGroups.length > 0 && (
+                            {event.divisions.length > 0 && (
                               <div className="text-sm text-gray-500 mt-1">
-                                {event.ageGroups.join(', ')}
+                                {event.divisions.join(', ')}
                               </div>
                             )}
                           </div>

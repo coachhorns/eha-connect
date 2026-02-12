@@ -307,9 +307,8 @@ model Team {
   city        String?
   state       String?
 
-  // Division/Classification
-  ageGroup    String?  // e.g., "17U", "15U"
-  division    String?  // e.g., "Elite", "Select"
+  // Division/Classification (combined, e.g. "EPL 17", "14U Gold", "17U")
+  division    String?
   gender      String?  // "Boys" or "Girls"
 
   // Season Record
@@ -384,8 +383,7 @@ model Event {
   registrationDeadline DateTime?
 
   // Details
-  ageGroups   String[]    // e.g., ["17U", "16U", "15U"]
-  divisions   String[]    // e.g., ["Elite", "Select"]
+  divisions   String[]    // e.g., ["EPL 17", "EPL 16", "14U Gold"]
   entryFee    Decimal?    @db.Decimal(10, 2)
 
   // Media
@@ -621,8 +619,7 @@ model Game {
   currentPeriod Int      @default(0)
   periodScores  Json?    // Store period-by-period scores
 
-  // Division/Classification
-  ageGroup    String?
+  // Division/Classification (combined, e.g. "EPL 17", "14U Gold")
   division    String?
   gameType    GameType   @default(POOL)
   poolCode    String?    // e.g., "A", "B" for pool play

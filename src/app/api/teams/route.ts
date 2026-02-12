@@ -5,7 +5,6 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
-    const ageGroup = searchParams.get('ageGroup') || ''
     const division = searchParams.get('division') || ''
     const state = searchParams.get('state') || ''
     const sort = searchParams.get('sort') || ''
@@ -22,10 +21,6 @@ export async function GET(request: Request) {
         { name: { contains: search, mode: 'insensitive' } },
         { program: { name: { contains: search, mode: 'insensitive' } } },
       ]
-    }
-
-    if (ageGroup) {
-      where.ageGroup = ageGroup
     }
 
     if (division) {
@@ -56,19 +51,20 @@ export async function GET(request: Request) {
       prisma.team.count({ where }),
     ])
 
-    // Helper to extract numeric age from age group (e.g., "17U" -> 17)
-    const getAgeNumber = (ageGroup: string | null): number => {
-      if (!ageGroup) return 0
-      const match = ageGroup.match(/(\d+)/)
+    // Helper to extract numeric age from division string (e.g., "EPL 17" -> 17, "Gold 14" -> 14)
+    const getAgeNumber = (division: string | null): number => {
+      if (!division) return 0
+      const match = division.match(/(\d+)/)
       return match ? parseInt(match[1], 10) : 0
     }
 
     // Helper to get division priority (EPL first, then others alphabetically)
     const getDivisionPriority = (division: string | null): number => {
       if (!division) return 999
-      if (division === 'EPL' || division === 'EHA Premier League') return 0
-      if (division === 'Gold') return 1
-      if (division === 'Silver') return 2
+      const lower = division.toLowerCase()
+      if (lower.startsWith('epl') || lower.startsWith('eha premier')) return 0
+      if (lower.startsWith('gold')) return 1
+      if (lower.startsWith('silver')) return 2
       return 3
     }
 
@@ -87,9 +83,9 @@ export async function GET(request: Request) {
           return (a.name || '').localeCompare(b.name || '')
 
         case 'age':
-          // Sort by age group (descending), then name
-          const ageA = getAgeNumber(a.ageGroup)
-          const ageB = getAgeNumber(b.ageGroup)
+          // Sort by age (descending), then name
+          const ageA = getAgeNumber(a.division)
+          const ageB = getAgeNumber(b.division)
           if (ageA !== ageB) return ageB - ageA
           return (a.name || '').localeCompare(b.name || '')
 
@@ -99,8 +95,8 @@ export async function GET(request: Request) {
           const divPriorityB = getDivisionPriority(b.division)
           if (divPriorityA !== divPriorityB) return divPriorityA - divPriorityB
 
-          const defaultAgeA = getAgeNumber(a.ageGroup)
-          const defaultAgeB = getAgeNumber(b.ageGroup)
+          const defaultAgeA = getAgeNumber(a.division)
+          const defaultAgeB = getAgeNumber(b.division)
           if (defaultAgeA !== defaultAgeB) return defaultAgeB - defaultAgeA
 
           return (a.name || '').localeCompare(b.name || '')

@@ -18,7 +18,6 @@ interface Event {
   startDate: string
   endDate: string
   registrationDeadline: string | null
-  ageGroups: string[]
   divisions: string[]
   entryFee: number | null
   bannerImage: string | null
