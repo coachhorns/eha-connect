@@ -69,6 +69,7 @@ interface ScheduleRequest {
   coachConflict: boolean
   maxGamesPerDay: number | null
   constraints: TimeConstraint[]
+  matchupRestrictions: string[]
 }
 
 type RegistrationStep = 'teams' | 'rosters' | 'payment' | 'complete'
@@ -182,6 +183,15 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
       newSelected.delete(teamId)
       const newMap = new Map(scheduleRequests)
       newMap.delete(teamId)
+      // Remove this team from other teams' matchup restrictions
+      for (const [otherId, sr] of newMap) {
+        if (sr.matchupRestrictions.includes(teamId)) {
+          newMap.set(otherId, {
+            ...sr,
+            matchupRestrictions: sr.matchupRestrictions.filter(id => id !== teamId),
+          })
+        }
+      }
       setScheduleRequests(newMap)
       const newExpanded = new Set(expandedScheduleIds)
       newExpanded.delete(teamId)
@@ -217,6 +227,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
       coachConflict: false,
       maxGamesPerDay: null,
       constraints: [],
+      matchupRestrictions: [],
     }
   }
 
@@ -250,6 +261,33 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
     updateScheduleRequest(teamId, { constraints: newConstraints })
   }
 
+  const toggleMatchupRestriction = (teamId: string, otherTeamId: string) => {
+    const newMap = new Map(scheduleRequests)
+
+    // Toggle on this team
+    const current = getScheduleRequest(teamId)
+    const hasOther = current.matchupRestrictions.includes(otherTeamId)
+    const updatedRestrictions = hasOther
+      ? current.matchupRestrictions.filter(id => id !== otherTeamId)
+      : [...current.matchupRestrictions, otherTeamId]
+    newMap.set(teamId, { ...current, matchupRestrictions: updatedRestrictions })
+
+    // Reciprocal: toggle on the other team too
+    const otherCurrent = newMap.get(otherTeamId) || {
+      coachConflict: false,
+      maxGamesPerDay: null,
+      constraints: [],
+      matchupRestrictions: [],
+    }
+    const otherHasThis = otherCurrent.matchupRestrictions.includes(teamId)
+    const otherUpdated = otherHasThis
+      ? otherCurrent.matchupRestrictions.filter(id => id !== teamId)
+      : [...otherCurrent.matchupRestrictions, teamId]
+    newMap.set(otherTeamId, { ...otherCurrent, matchupRestrictions: otherUpdated })
+
+    setScheduleRequests(newMap)
+  }
+
   const selectedTeams = program?.teams.filter(t => selectedTeamIds.has(t.id)) || []
   const totalFee = event?.entryFee ? Number(event.entryFee) * selectedTeams.length : 0
   const isFreeEvent = !event?.entryFee || Number(event.entryFee) === 0
@@ -265,7 +303,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
       const scheduleRequestsPayload: Record<string, ScheduleRequest> = {}
       for (const teamId of selectedTeamIds) {
         const sr = scheduleRequests.get(teamId)
-        if (sr && (sr.coachConflict || sr.maxGamesPerDay !== null || sr.constraints.length > 0)) {
+        if (sr && (sr.coachConflict || sr.maxGamesPerDay !== null || sr.constraints.length > 0 || sr.matchupRestrictions.length > 0)) {
           scheduleRequestsPayload[teamId] = sr
         }
       }
@@ -564,6 +602,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                     const count = (sr.coachConflict ? 1 : 0)
                                       + (sr.maxGamesPerDay !== null ? 1 : 0)
                                       + sr.constraints.length
+                                      + sr.matchupRestrictions.length
                                     return count > 0 ? (
                                       <Badge size="sm" variant="orange">{count}</Badge>
                                     ) : null
@@ -711,6 +750,57 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                         </div>
                                       ))}
                                     </div>
+                                  </div>
+
+                                  {/* Matchup Restrictions */}
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                                      Matchup Restrictions
+                                    </label>
+                                    <p className="text-xs text-gray-500 mb-2">
+                                      Prevent this team from playing against your other teams
+                                    </p>
+                                    {selectedTeams.filter(t => t.id !== team.id).length === 0 ? (
+                                      <p className="text-xs text-gray-500 italic">
+                                        Select multiple teams to add matchup restrictions
+                                      </p>
+                                    ) : (
+                                      <div className="space-y-2">
+                                        {selectedTeams
+                                          .filter(t => t.id !== team.id)
+                                          .map(otherTeam => {
+                                            const isRestricted = getScheduleRequest(team.id).matchupRestrictions.includes(otherTeam.id)
+                                            return (
+                                              <label
+                                                key={otherTeam.id}
+                                                className="flex items-center gap-3 cursor-pointer p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-all duration-200"
+                                              >
+                                                <div
+                                                  className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
+                                                    isRestricted
+                                                      ? 'border-[#E31837] bg-[#E31837]'
+                                                      : 'border-white/30 hover:border-white/50'
+                                                  }`}
+                                                  onClick={(e) => {
+                                                    e.preventDefault()
+                                                    toggleMatchupRestriction(team.id, otherTeam.id)
+                                                  }}
+                                                >
+                                                  {isRestricted && (
+                                                    <Check className="w-3 h-3 text-white" />
+                                                  )}
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                  <span className="text-sm text-white">{otherTeam.name}</span>
+                                                  {otherTeam.division && (
+                                                    <Badge size="sm" variant="info">{otherTeam.division}</Badge>
+                                                  )}
+                                                </div>
+                                              </label>
+                                            )
+                                          })}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               )}

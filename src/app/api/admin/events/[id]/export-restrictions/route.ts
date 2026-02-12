@@ -54,6 +54,7 @@ const TEMPLATE_COLUMNS = [
     'TEAMRESTRICTIONS',
     'DATETIMERESTRICTIONS',
     'GAMERESTRICTIONS',
+    'MATCHUPRESTRICTIONS',
 ]
 
 export async function GET(
@@ -129,6 +130,12 @@ export async function GET(
             }
         }
 
+        // Build teamId -> team info lookup for matchup restrictions
+        const teamLookup = new Map<string, { name: string; id: string }>();
+        for (const et of eventTeams) {
+            teamLookup.set(et.team.id, { name: et.team.name, id: et.team.id })
+        }
+
         const eventDays = getEventDayAbbrs(event.startDate, event.endDate)
 
         const rows: string[] = []
@@ -189,6 +196,22 @@ export async function GET(
                 }
             }
 
+            // Matchup Restrictions → MATCHUPRESTRICTIONS
+            const matchupRestrictions: string[] = []
+            if (Array.isArray(reqs.matchupRestrictions)) {
+                for (const restrictedTeamId of reqs.matchupRestrictions) {
+                    const restricted = teamLookup.get(restrictedTeamId)
+                    if (restricted) {
+                        const restrictedDiv = exposureDivisionMap.get(restrictedTeamId) || ehaDivisionMap.get(restrictedTeamId) || ''
+                        if (restricted.name === teamName) {
+                            matchupRestrictions.push(restrictedDiv)
+                        } else {
+                            matchupRestrictions.push(`${restrictedDiv}|${restricted.name}`)
+                        }
+                    }
+                }
+            }
+
             // Build row — array columns use comma-separated values inside quotes
             const rowData: Record<string, string> = {
                 'DIVISION': division,
@@ -199,6 +222,7 @@ export async function GET(
                 'TEAMRESTRICTIONS': teamRestrictions.join(','),
                 'DATETIMERESTRICTIONS': dateTimeRestrictions.join(','),
                 'GAMERESTRICTIONS': gameRestrictions.join(','),
+                'MATCHUPRESTRICTIONS': matchupRestrictions.join(','),
             }
 
             const cells = TEMPLATE_COLUMNS.map(col => escapeCSV(rowData[col] || ''))

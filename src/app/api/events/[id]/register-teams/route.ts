@@ -14,6 +14,7 @@ interface ScheduleRequestData {
   coachConflict: boolean
   maxGamesPerDay: number | null
   constraints: TimeConstraint[]
+  matchupRestrictions?: string[]
 }
 
 function validateScheduleRequests(
@@ -62,6 +63,24 @@ function validateScheduleRequests(
       }
       if (c.type === 'NOT_BETWEEN' && (!c.endTime || !timeRegex.test(c.endTime))) {
         return { valid: false, error: 'NOT_BETWEEN requires a valid endTime' }
+      }
+    }
+
+    // Validate matchup restrictions
+    if (sr.matchupRestrictions !== undefined) {
+      if (!Array.isArray(sr.matchupRestrictions)) {
+        return { valid: false, error: 'matchupRestrictions must be an array' }
+      }
+      for (const restrictedId of sr.matchupRestrictions as string[]) {
+        if (typeof restrictedId !== 'string') {
+          return { valid: false, error: 'matchupRestrictions must contain team IDs' }
+        }
+        if (restrictedId === teamId) {
+          return { valid: false, error: 'A team cannot have a matchup restriction against itself' }
+        }
+        if (!validSet.has(restrictedId)) {
+          return { valid: false, error: `Matchup restriction references unknown team: ${restrictedId}` }
+        }
       }
     }
   }
@@ -231,7 +250,7 @@ export async function POST(
             eventId,
             teamId,
             ...(scheduleRequests?.[teamId]
-              ? { scheduleRequests: scheduleRequests[teamId] }
+              ? { scheduleRequests: JSON.parse(JSON.stringify(scheduleRequests[teamId])) }
               : {}),
           },
           include: {
