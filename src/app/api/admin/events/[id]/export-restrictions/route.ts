@@ -40,53 +40,21 @@ function getEventDayAbbrs(startDate: Date, endDate: Date): string[] {
 }
 
 function escapeCSV(value: string): string {
-    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-        return `"${value.replace(/"/g, '""')}"`
-    }
-    return value
+    // Exposure requires all values to be quoted
+    return `"${value.replace(/"/g, '""')}"`
 }
 
-// Exact column order from Exposure's official restrictions import template
+// Only include columns we actually populate — optional columns can be removed per Exposure docs
 const TEMPLATE_COLUMNS = [
     'DIVISION',
     'TEAMNAME',
     'AGE',
-    'GRADE',
-    'POOLNAME',
-    'POOLNUMBER',
+    'GENDER',
+    'CITY',
+    'STATEREGION',
     'TEAMRESTRICTIONS',
     'DATETIMERESTRICTIONS',
     'GAMERESTRICTIONS',
-    'EXHIBITIONRESTRICTION',
-    'TEAMID',
-    'GENDER',
-    'SEASONSTARTYEAR',
-    'SEASONENDYEAR',
-    'SEASONSESSION',
-    'CITY',
-    'STATEREGION',
-    'POSTALCODE',
-    'ABBREVIATION',
-    'WEBSITE',
-    'TWITTERHANDLE',
-    'INSTAGRAMHANDLE',
-    'FACEBOOKPAGE',
-    'AAUCLUBID',
-    'CONTACTFIRSTNAME',
-    'CONTACTLASTNAME',
-    'CONTACTEMAIL',
-    'CONTACTHOMEPHONE',
-    'CONTACTMOBILEPHONE',
-    'CONTACTMOBILEPHONECARRIER',
-    'CONTACTWORKPHONE',
-    'CONTACTFAXPHONE',
-    'CONTACTSTREETADDRESS',
-    'CONTACTEXTENDEDADDRESS',
-    'CONTACTCITY',
-    'CONTACTSTATEREGION',
-    'CONTACTPOSTALCODE',
-    'CONTACTUSABLICENSENUMBER',
-    'CONTACTAAUMEMBERSHIPID',
 ]
 
 export async function GET(
@@ -180,23 +148,18 @@ export async function GET(
 
             // Coach conflict → TEAMRESTRICTIONS
             // Auto-detect: if this coach has multiple teams in the event, add restrictions
-            // Also honors explicit coachConflict flag from scheduleRequests
             if (et.team.coachName) {
                 const coachKey = et.team.coachName.trim().toLowerCase()
                 const coachAllTeams = coachTeams.get(coachKey) || []
                 if (coachAllTeams.length > 1) {
                     for (const other of coachAllTeams) {
                         if (other.name === teamName && other.division === division) continue
-                        if (other.division) {
-                            teamRestrictions.push(`${other.division}|${other.name}`)
-                        } else {
-                            teamRestrictions.push(other.name)
-                        }
+                        teamRestrictions.push(other.name)
                     }
                 }
             }
 
-            // Build row matching the exact template column order
+            // Build row — array columns use comma-separated values inside quotes
             const rowData: Record<string, string> = {
                 'DIVISION': division,
                 'TEAMNAME': teamName,
@@ -204,10 +167,9 @@ export async function GET(
                 'GENDER': et.team.gender || '',
                 'CITY': et.team.city || '',
                 'STATEREGION': et.team.state || '',
-                'POOLNAME': et.pool || '',
-                'TEAMRESTRICTIONS': teamRestrictions.join(', '),
-                'DATETIMERESTRICTIONS': dateTimeRestrictions.join(', '),
-                'GAMERESTRICTIONS': gameRestrictions.join(', '),
+                'TEAMRESTRICTIONS': teamRestrictions.join(','),
+                'DATETIMERESTRICTIONS': dateTimeRestrictions.join(','),
+                'GAMERESTRICTIONS': gameRestrictions.join(','),
             }
 
             const cells = TEMPLATE_COLUMNS.map(col => escapeCSV(rowData[col] || ''))
