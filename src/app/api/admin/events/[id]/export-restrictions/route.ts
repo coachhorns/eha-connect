@@ -83,6 +83,7 @@ export async function GET(
             include: {
                 team: {
                     select: {
+                        id: true,
                         name: true,
                         division: true,
                         ageGroup: true,
@@ -95,13 +96,27 @@ export async function GET(
             },
         })
 
-        // Build coach conflict lookup: coachName -> list of team names+divisions
-        // Auto-detect when a coach has multiple teams in this event
-        const coachTeams = new Map<string, { name: string; division: string }[]>()
+        // Build team → Exposure division name from Game records.
+        // Games store the actual Exposure division name (e.g. "EPL 16")
+        // which differs from EHA's internal division (e.g. "EPL", "Gold").
+        const exposureDivisionMap = new Map<string, string>()
+        const games = await prisma.game.findMany({
+            where: { eventId },
+            select: { homeTeamId: true, awayTeamId: true, division: true },
+        })
+        for (const g of games) {
+            if (g.division) {
+                if (!exposureDivisionMap.has(g.homeTeamId)) exposureDivisionMap.set(g.homeTeamId, g.division)
+                if (!exposureDivisionMap.has(g.awayTeamId)) exposureDivisionMap.set(g.awayTeamId, g.division)
+            }
+        }
+
+        // Build coach conflict lookup: coachName -> list of team names
+        const coachTeams = new Map<string, { name: string; teamId: string }[]>()
         for (const et of eventTeams) {
             const coach = et.team.coachName?.trim().toLowerCase()
             if (!coach) continue
-            const entry = { name: et.team.name, division: et.team.division || '' }
+            const entry = { name: et.team.name, teamId: et.team.id }
             if (!coachTeams.has(coach)) {
                 coachTeams.set(coach, [entry])
             } else {
@@ -116,7 +131,8 @@ export async function GET(
         for (const et of eventTeams) {
             const reqs = (et.scheduleRequests as any) || {}
 
-            const division = et.team.division || ''
+            // Use Exposure division name (from synced games), fall back to EHA division
+            const division = exposureDivisionMap.get(et.team.id) || et.team.division || ''
             const teamName = et.team.name
 
             const dateTimeRestrictions: string[] = []
@@ -153,7 +169,7 @@ export async function GET(
                 const coachAllTeams = coachTeams.get(coachKey) || []
                 if (coachAllTeams.length > 1) {
                     for (const other of coachAllTeams) {
-                        if (other.name === teamName && other.division === division) continue
+                        if (other.teamId === et.team.id) continue
                         teamRestrictions.push(other.name)
                     }
                 }
