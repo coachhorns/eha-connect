@@ -94,6 +94,22 @@ export async function GET(
             },
         })
 
+        // Build team → Exposure division name from Game records.
+        // The admin may push teams to different Exposure divisions than their EHA division
+        // (e.g. a "16U" team in EHA might be in "EPL 16" in Exposure).
+        // Games store the actual Exposure division name from the schedule sync.
+        const exposureDivisionMap = new Map<string, string>()
+        const games = await prisma.game.findMany({
+            where: { eventId },
+            select: { homeTeamId: true, awayTeamId: true, division: true },
+        })
+        for (const g of games) {
+            if (g.division) {
+                if (!exposureDivisionMap.has(g.homeTeamId)) exposureDivisionMap.set(g.homeTeamId, g.division)
+                if (!exposureDivisionMap.has(g.awayTeamId)) exposureDivisionMap.set(g.awayTeamId, g.division)
+            }
+        }
+
         // Build coach conflict lookup: coachName -> list of team names
         const coachTeams = new Map<string, { name: string; teamId: string }[]>()
         for (const et of eventTeams) {
@@ -114,7 +130,8 @@ export async function GET(
         for (const et of eventTeams) {
             const reqs = (et.scheduleRequests as any) || {}
 
-            const division = et.team.division || ''
+            // Use Exposure division (from synced games) if available, fall back to EHA division
+            const division = exposureDivisionMap.get(et.team.id) || et.team.division || ''
             const teamName = et.team.name
 
             const dateTimeRestrictions: string[] = []
