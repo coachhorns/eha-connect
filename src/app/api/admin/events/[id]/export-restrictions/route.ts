@@ -110,6 +110,12 @@ export async function GET(
             }
         }
 
+        // Build teamId -> EHA division fallback map
+        const ehaDivisionMap = new Map<string, string>()
+        for (const et of eventTeams) {
+            if (et.team.division) ehaDivisionMap.set(et.team.id, et.team.division)
+        }
+
         // Build coach conflict lookup: coachName -> list of team names
         const coachTeams = new Map<string, { name: string; teamId: string }[]>()
         for (const et of eventTeams) {
@@ -162,6 +168,8 @@ export async function GET(
             }
 
             // Coach conflict → TEAMRESTRICTIONS
+            // Exposure format: "DivisionName|TeamName" (pipe-separated)
+            // If team name is same across divisions, just "DivisionName" suffices
             // Auto-detect: if this coach has multiple teams in the event, add restrictions
             if (et.team.coachName) {
                 const coachKey = et.team.coachName.trim().toLowerCase()
@@ -169,7 +177,14 @@ export async function GET(
                 if (coachAllTeams.length > 1) {
                     for (const other of coachAllTeams) {
                         if (other.teamId === et.team.id) continue
-                        teamRestrictions.push(other.name)
+                        const otherDiv = exposureDivisionMap.get(other.teamId) || ehaDivisionMap.get(other.teamId) || ''
+                        if (other.name === teamName) {
+                            // Same team name in different division — just division name
+                            teamRestrictions.push(otherDiv)
+                        } else {
+                            // Different team name — Division|TeamName
+                            teamRestrictions.push(`${otherDiv}|${other.name}`)
+                        }
                     }
                 }
             }
