@@ -312,7 +312,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
     )
   }
 
-  const registrationClosed = event && new Date() > new Date(event.startDate)
+  const registrationClosed = event && new Date() > new Date(event.registrationDeadline || event.startDate)
   const stateOptions = [{ value: '', label: 'Select State' }, ...states]
   const divisionOpts = event && event.divisions && event.divisions.length > 0
     ? [{ value: '', label: 'Select Division' }, ...event.divisions.map(d => ({ value: d, label: d }))]

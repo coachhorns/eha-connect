@@ -40,6 +40,7 @@ export async function POST(
         isPublished: true,
         isActive: true,
         startDate: true,
+        registrationDeadline: true,
         divisions: true,
       },
     })
@@ -52,8 +53,9 @@ export async function POST(
       return NextResponse.json({ error: 'Event is not open for registration' }, { status: 400 })
     }
 
-    // Check if registration is still open (event hasn't started)
-    if (new Date() > new Date(event.startDate)) {
+    // Check if registration is still open
+    const registrationCutoff = event.registrationDeadline || event.startDate
+    if (new Date() > new Date(registrationCutoff)) {
       return NextResponse.json({ error: 'Registration has closed for this event' }, { status: 400 })
     }
 

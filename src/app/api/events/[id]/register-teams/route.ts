@@ -130,6 +130,7 @@ export async function POST(
         isPublished: true,
         isActive: true,
         startDate: true,
+        registrationDeadline: true,
         divisions: true,
         teams: {
           select: {
@@ -150,7 +151,8 @@ export async function POST(
       )
     }
 
-    if (new Date() > new Date(event.startDate)) {
+    const registrationCutoff = event.registrationDeadline || event.startDate
+    if (new Date() > new Date(registrationCutoff)) {
       return NextResponse.json(
         { error: 'Registration has closed for this event' },
         { status: 400 }
