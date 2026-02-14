@@ -147,7 +147,7 @@ export default function StandingsPage() {
                 </div>
               ) : teams.length === 0 ? (
                 <div className="text-center py-20 border border-border-default rounded-sm bg-page-bg-alt">
-                  <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4 opacity-50" />
+                  <Trophy className="w-16 h-16 text-text-muted mx-auto mb-4 opacity-50" />
                   <h3 className="text-xl font-bold text-text-primary mb-2">No Teams Found</h3>
                   <p className="text-text-muted">No teams found for the selected filters.</p>
                 </div>
@@ -247,7 +247,7 @@ const StandingsTable = ({ division, teams }: { division: string, teams: any[] })
                 <td className="px-6 py-5 font-bold text-text-primary">{team.pos}</td>
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-surface-overlay rounded-full flex items-center justify-center text-[10px] font-black text-white">
+                    <div className="w-8 h-8 bg-surface-overlay rounded-full flex items-center justify-center text-[10px] font-black text-text-primary">
                       {team.abbr}
                     </div>
                     <span className="font-bold text-text-primary group-hover:text-eha-red transition-colors">
@@ -311,7 +311,7 @@ const MatchupCard = ({ matchup }: { matchup: any }) => {
       </div>
 
       <div className="mt-4 pt-4 border-t border-border-subtle">
-        <button className="w-full py-2 bg-surface-glass text-[10px] font-extrabold text-white uppercase tracking-widest rounded-sm hover:bg-eha-red hover:text-white transition-all">
+        <button className="w-full py-2 bg-surface-glass text-[10px] font-extrabold text-text-primary uppercase tracking-widest rounded-sm hover:bg-eha-red hover:text-white transition-all">
           {matchup.buttonText}
         </button>
       </div>

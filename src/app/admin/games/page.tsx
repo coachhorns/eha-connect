@@ -186,7 +186,7 @@ export default function AdminGamesPage() {
               placeholder="Search by team or event name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+              className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-text-muted rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
             />
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function AdminGamesPage() {
           </div>
         ) : games.length === 0 ? (
           <div className="text-center py-12">
-            <Gamepad2 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+            <Gamepad2 className="w-12 h-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">No games found</h3>
             <p className="text-text-muted mb-4">Get started by scheduling your first game</p>
             <Link href="/admin/games/new">
@@ -287,7 +287,7 @@ export default function AdminGamesPage() {
                         {game.event ? (
                           <span className="text-sm text-text-muted">{game.event.name}</span>
                         ) : (
-                          <span className="text-gray-600">-</span>
+                          <span className="text-text-muted">-</span>
                         )}
                       </td>
                       <td className="px-6 py-4">

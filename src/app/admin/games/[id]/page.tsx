@@ -223,7 +223,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
 
           {/* VS / Period */}
           <div className="flex flex-col items-center px-8">
-            <p className="text-3xl font-bold text-gray-600">VS</p>
+            <p className="text-3xl font-bold text-text-muted">VS</p>
             {game.status === 'IN_PROGRESS' && (
               <Badge variant="success" className="mt-2">
                 Q{game.currentPeriod}
@@ -249,7 +249,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
         {/* Game Info */}
         <Card className="p-6">
           <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
-            <Gamepad2 className="w-5 h-5 text-white" />
+            <Gamepad2 className="w-5 h-5 text-text-primary" />
             Game Info
           </h2>
           <div className="space-y-4">
@@ -291,7 +291,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
         {/* Quick Stats */}
         <Card className="p-6 lg:col-span-2">
           <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-white" />
+            <Users className="w-5 h-5 text-text-primary" />
             Team Stats
           </h2>
           <div className="grid grid-cols-2 gap-4">

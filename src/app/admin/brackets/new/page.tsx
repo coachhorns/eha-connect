@@ -395,7 +395,7 @@ export default function NewBracketWizardPage() {
             <div className="space-y-3">
               {events.length === 0 ? (
                 <div className="text-center py-8">
-                  <Calendar className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                  <Calendar className="w-12 h-12 text-text-muted mx-auto mb-3" />
                   <p className="text-text-muted">No active events found</p>
                   <Link href="/admin/events/new">
                     <Button variant="outline" className="mt-4">
@@ -501,7 +501,7 @@ export default function NewBracketWizardPage() {
               </div>
             ) : teams.length === 0 ? (
               <div className="text-center py-8">
-                <Users className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <Users className="w-12 h-12 text-text-muted mx-auto mb-3" />
                 <p className="text-text-muted">No teams registered for this event</p>
                 <Link href="/admin/teams">
                   <Button variant="outline" className="mt-4">
@@ -527,7 +527,7 @@ export default function NewBracketWizardPage() {
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                           isSelected
                             ? 'bg-eha-red border-eha-red'
-                            : 'border-gray-500'
+                            : 'border-border-default'
                         }`}
                       >
                         {isSelected && <Check className="w-3 h-3 text-white" />}

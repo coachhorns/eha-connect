@@ -76,7 +76,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
           {/* Position Badge */}
           {player.primaryPosition && (
             <div className="absolute top-3 left-3">
-              <Badge variant="default" size="sm" className="bg-surface-raised/90 text-white border-border-default">
+              <Badge variant="default" size="sm" className="bg-eha-navy/90 text-white border-border-default">
                 {player.primaryPosition}
               </Badge>
             </div>
@@ -93,7 +93,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
           {/* Team & Age Group - Prominent Display */}
           <div className="mt-2 flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1.5 text-sm">
-              <Users className="w-3.5 h-3.5 text-white" />
+              <Users className="w-3.5 h-3.5 text-text-muted" />
               <span className={teamName ? 'text-text-primary font-medium' : 'text-text-muted italic'}>
                 {teamName || 'Unassigned'}
               </span>

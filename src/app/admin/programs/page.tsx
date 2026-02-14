@@ -147,7 +147,7 @@ export default function AdminProgramsPage() {
                 placeholder="Search programs..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-text-muted rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
               />
             </div>
           </div>
@@ -164,7 +164,7 @@ export default function AdminProgramsPage() {
           </div>
         ) : programs.length === 0 ? (
           <div className="text-center py-12">
-            <Building2 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+            <Building2 className="w-12 h-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">No programs found</h3>
             <p className="text-text-muted">No programs match your search criteria</p>
           </div>
@@ -223,7 +223,7 @@ export default function AdminProgramsPage() {
                           <span>{program.city}{program.city && program.state ? ', ' : ''}{program.state}</span>
                         </div>
                       ) : (
-                        <span className="text-gray-600">-</span>
+                        <span className="text-text-muted">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4">

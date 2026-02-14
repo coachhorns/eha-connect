@@ -72,7 +72,7 @@ const LeaderCard = ({ title, playerName, teamName, stat, statLabel, isPrimary, i
         <div className="flex items-center gap-6">
             <div className={`w-20 h-20 rounded-full flex items-center justify-center border-2 ${isPrimary ? 'bg-surface-glass border-eha-red' : 'bg-surface-glass border-border-default'
                 }`}>
-                {Icon ? <Icon className={`w-8 h-8 ${isPrimary ? 'text-white' : 'text-text-muted'}`} /> : <User className={`w-8 h-8 ${isPrimary ? 'text-white' : 'text-text-muted'}`} />}
+                {Icon ? <Icon className={`w-8 h-8 ${isPrimary ? 'text-text-primary' : 'text-text-muted'}`} /> : <User className={`w-8 h-8 ${isPrimary ? 'text-text-primary' : 'text-text-muted'}`} />}
             </div>
             <div className="z-10">
                 <h3 className="text-2xl font-bold font-heading text-text-primary leading-none mb-1">{playerName}</h3>
@@ -94,7 +94,7 @@ const LeaderboardRow = ({ rank, player, onClick }: any) => (
         <td className="px-8 py-6 font-black text-text-primary text-lg font-heading">{rank}</td>
         <td className="px-8 py-6">
             <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-surface-raised rounded-full flex items-center justify-center font-bold text-xs text-white border border-border-default group-hover:border-eha-red/50 transition-colors">
+                <div className="w-10 h-10 bg-surface-raised rounded-full flex items-center justify-center font-bold text-xs text-text-primary border border-border-default group-hover:border-eha-red/50 transition-colors">
                     {player.initials}
                 </div>
                 <div>

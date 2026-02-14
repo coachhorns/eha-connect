@@ -164,7 +164,7 @@ function GameCard({ game }: { game: Game }) {
               <span
                 className={cn(
                   "text-2xl font-black font-stats",
-                  isLive || awayWon ? "text-white" : "text-text-muted"
+                  isLive || awayWon ? "text-text-primary" : "text-text-muted"
                 )}
               >
                 {game.awayScore}
@@ -196,7 +196,7 @@ function GameCard({ game }: { game: Game }) {
               <span
                 className={cn(
                   "text-2xl font-black font-stats",
-                  isLive || homeWon ? "text-white" : "text-text-muted"
+                  isLive || homeWon ? "text-text-primary" : "text-text-muted"
                 )}
               >
                 {game.homeScore}
@@ -431,7 +431,7 @@ export default function ResultsPage() {
               {/* Live Badge */}
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-overlay rounded-full border border-border-default backdrop-blur-sm">
                 <span className="w-2 h-2 rounded-full bg-eha-red animate-pulse" />
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-white">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-text-primary">
                   Live Updates Enabled
                 </span>
               </div>
@@ -452,7 +452,7 @@ export default function ResultsPage() {
                 placeholder="Search team or event..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full lg:w-80 pl-12 pr-4 py-4 bg-surface-glass border border-border-default rounded-lg text-text-primary placeholder-gray-400 text-sm focus:outline-none focus:bg-surface-overlay focus:border-eha-red/50 transition-all"
+                className="w-full lg:w-80 pl-12 pr-4 py-4 bg-surface-glass border border-border-default rounded-lg text-text-primary placeholder-text-muted text-sm focus:outline-none focus:bg-surface-overlay focus:border-eha-red/50 transition-all"
               />
             </div>
           </div>
@@ -559,7 +559,7 @@ export default function ResultsPage() {
             </div>
           ) : sortedGames.length === 0 ? (
             <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
-              <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <Trophy className="w-16 h-16 text-text-muted mx-auto mb-4" />
               <h3 className="text-xl font-bold text-text-primary mb-2">No Results Yet</h3>
               <p className="text-text-muted max-w-md mx-auto">
                 There are no completed or live games to display with the current filters.
@@ -581,7 +581,7 @@ export default function ResultsPage() {
                   <h2 className="text-sm font-bold text-text-muted uppercase tracking-widest mb-6 flex items-center gap-4">
                     <Calendar className="w-4 h-4" />
                     <span>{formatGroupHeader(groupKey)}</span>
-                    <span className="text-gray-600">
+                    <span className="text-text-muted">
                       ({gamesByGroup[groupKey].length} {gamesByGroup[groupKey].length === 1 ? 'game' : 'games'})
                     </span>
                     <div className="h-px bg-surface-overlay flex-grow" />

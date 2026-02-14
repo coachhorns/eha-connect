@@ -250,7 +250,7 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
 
           {program.teams.length === 0 ? (
             <div className="text-center py-8">
-              <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+              <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
               <p className="text-text-muted mb-4">No teams in this program</p>
               <Link href={`/admin/teams/new?programId=${program.id}`}>
                 <Button size="sm">Add First Team</Button>
@@ -282,7 +282,7 @@ export default function ProgramDetailPage({ params }: { params: Promise<{ id: st
                         {team.division ? (
                           <Badge variant="default" size="sm">{team.division}</Badge>
                         ) : (
-                          <span className="text-gray-600">-</span>
+                          <span className="text-text-muted">-</span>
                         )}
                       </td>
                       <td className="px-3 py-3 text-text-muted">

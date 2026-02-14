@@ -184,7 +184,7 @@ export default function LeaderboardsPage() {
             </div>
           ) : sortedPlayers.length === 0 ? (
             <div className="text-center py-32 bg-page-bg-alt border border-border-subtle rounded-sm">
-              <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4 opacity-50" />
+              <Trophy className="w-16 h-16 text-text-muted mx-auto mb-4 opacity-50" />
               <h3 className="text-xl font-bold text-text-primary mb-2">No Stats Recorded Yet</h3>
               <p className="text-text-muted max-w-md mx-auto">There are no players matching your criteria, or no games have been played yet for this season.</p>
             </div>

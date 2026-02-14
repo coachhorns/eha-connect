@@ -145,7 +145,7 @@ export default function AdminPlayersPage() {
             placeholder="Search players..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+            className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-text-muted rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
           />
         </div>
       </div>
@@ -246,9 +246,9 @@ export default function AdminPlayersPage() {
                           title={isPlayerVerified(player) ? 'Remove verification' : 'Verify player'}
                         >
                           {isPlayerVerified(player) ? (
-                            <ShieldOff className="w-4 h-4 text-white" />
+                            <ShieldOff className="w-4 h-4 text-text-primary" />
                           ) : (
-                            <Shield className="w-4 h-4 text-white" />
+                            <Shield className="w-4 h-4 text-text-primary" />
                           )}
                         </Button>
                         <Link href={`/admin/players/${player.id}/edit`}>

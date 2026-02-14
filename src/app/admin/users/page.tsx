@@ -290,7 +290,7 @@ export default function AdminUsersPage() {
                 placeholder="Search by name or email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-text-muted rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
               />
             </div>
           </div>
@@ -323,7 +323,7 @@ export default function AdminUsersPage() {
             </div>
           ) : users.length === 0 ? (
             <div className="text-center py-16">
-              <Users className="w-12 h-12 text-white/20 mx-auto mb-4" />
+              <Users className="w-12 h-12 text-text-primary/20 mx-auto mb-4" />
               <h3 className="font-heading text-lg font-bold text-text-primary mb-2">No users found</h3>
               <p className="text-text-muted text-sm uppercase tracking-widest">Try adjusting your search or filters</p>
             </div>
@@ -397,7 +397,7 @@ export default function AdminUsersPage() {
                               </div>
                             )}
                             {user.ownedPrograms.length === 0 && user.guardians.length === 0 && (
-                              <span className="text-gray-600 text-sm">None</span>
+                              <span className="text-text-muted text-sm">None</span>
                             )}
                           </div>
                         </td>
@@ -515,7 +515,7 @@ export default function AdminUsersPage() {
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                   placeholder="User's display name"
-                  className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                  className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-text-muted rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
                 />
               </div>
 
@@ -541,7 +541,7 @@ export default function AdminUsersPage() {
                   value={editForm.password}
                   onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
                   placeholder="Leave empty to keep current password"
-                  className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                  className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-text-muted rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
                 />
                 <p className="mt-2 text-[10px] text-text-muted font-bold uppercase tracking-widest flex items-center gap-1">
                   <Key className="w-3 h-3" />

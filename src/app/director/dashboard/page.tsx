@@ -266,7 +266,7 @@ export default function DirectorDashboardPage() {
                     </h2>
                     {(program.city || program.state) && (
                       <div className="flex items-center gap-2 text-text-muted mt-2">
-                        <MapPin className="w-4 h-4 text-white" />
+                        <MapPin className="w-4 h-4 text-text-muted" />
                         <span>
                           {[program.city, program.state].filter(Boolean).join(', ')}
                         </span>
@@ -304,7 +304,7 @@ export default function DirectorDashboardPage() {
             <div className="p-5 border-r border-b lg:border-b-0 border-border-default">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                  <Users className="w-6 h-6 text-white" />
+                  <Users className="w-6 h-6 text-text-muted" />
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Teams</div>
@@ -317,7 +317,7 @@ export default function DirectorDashboardPage() {
             <div className="p-5 border-b lg:border-b-0 lg:border-r border-border-default">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                  <Trophy className="w-6 h-6 text-white" />
+                  <Trophy className="w-6 h-6 text-text-muted" />
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Combined Record</div>
@@ -332,7 +332,7 @@ export default function DirectorDashboardPage() {
             <div className="p-5 border-r border-border-default">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                  <Users className="w-6 h-6 text-white" />
+                  <Users className="w-6 h-6 text-text-muted" />
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Total Players</div>
@@ -345,7 +345,7 @@ export default function DirectorDashboardPage() {
             <div className="p-5">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-white" />
+                  <TrendingUp className="w-6 h-6 text-text-muted" />
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Win Rate</div>
@@ -373,7 +373,7 @@ export default function DirectorDashboardPage() {
           {program.teams.length === 0 ? (
             <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-12 text-center">
               <div className="w-20 h-20 bg-surface-overlay rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Users className="w-10 h-10 text-white" />
+                <Users className="w-10 h-10 text-text-muted" />
               </div>
               <h3 className="text-xl font-heading font-bold text-text-primary mb-2">No Teams Yet</h3>
               <p className="text-text-muted mb-6 max-w-md mx-auto">
@@ -397,7 +397,7 @@ export default function DirectorDashboardPage() {
                     {team.division && (
                       <span className="text-[10px] text-text-muted">{team.division}</span>
                     )}
-                    <ChevronRight className="w-3.5 h-3.5 text-gray-600 group-hover:text-text-muted transition-colors" />
+                    <ChevronRight className="w-3.5 h-3.5 text-text-muted group-hover:text-text-muted transition-colors" />
                   </div>
                 </Link>
               ))}
@@ -412,7 +412,7 @@ export default function DirectorDashboardPage() {
               <div className="bg-surface-glass border border-border-default rounded-xl p-6 hover:bg-surface-overlay hover:border-border-default transition-all duration-300 group h-full">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                    <ArrowLeftRight className="w-6 h-6 text-white" />
+                    <ArrowLeftRight className="w-6 h-6 text-text-muted" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-text-primary mb-1">Roster Manager</h3>
@@ -428,7 +428,7 @@ export default function DirectorDashboardPage() {
             <div className="bg-gradient-to-br from-[#E31837]/20 to-transparent border border-[#E31837]/30 rounded-xl p-6 hover:border-[#E31837]/50 transition-all duration-300 group h-full">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-white" />
+                  <Calendar className="w-6 h-6 text-text-muted" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-text-primary mb-1">Browse Events</h3>

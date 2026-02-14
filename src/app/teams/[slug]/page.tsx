@@ -213,7 +213,7 @@ export default async function TeamPage({ params }: PageProps) {
                 <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                   Overall Record
                 </span>
-                <span className="text-3xl sm:text-4xl font-black text-white font-heading">
+                <span className="text-3xl sm:text-4xl font-black text-text-primary font-heading">
                   {team.wins}-{team.losses}
                 </span>
               </div>

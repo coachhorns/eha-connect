@@ -457,18 +457,18 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
           {/* Progress Steps */}
           <div className="flex items-center gap-2 mt-6">
             <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${step === 'teams' ? 'bg-[#E31837]' : 'bg-surface-overlay'}`}>
-              <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">1</span>
-              <span className="text-sm font-medium text-white">Select Teams</span>
+              <span className={`w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold ${step === 'teams' ? 'text-white' : 'text-text-primary'}`}>1</span>
+              <span className={`text-sm font-medium ${step === 'teams' ? 'text-white' : 'text-text-primary'}`}>Select Teams</span>
             </div>
             <div className="w-4 h-0.5 bg-white/20" />
             <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${step === 'rosters' ? 'bg-[#E31837]' : 'bg-surface-overlay'}`}>
-              <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">2</span>
-              <span className="text-sm font-medium text-white">Verify Rosters</span>
+              <span className={`w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold ${step === 'rosters' ? 'text-white' : 'text-text-primary'}`}>2</span>
+              <span className={`text-sm font-medium ${step === 'rosters' ? 'text-white' : 'text-text-primary'}`}>Verify Rosters</span>
             </div>
             <div className="w-4 h-0.5 bg-white/20" />
             <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${step === 'payment' ? 'bg-[#E31837]' : 'bg-surface-overlay'}`}>
-              <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">3</span>
-              <span className="text-sm font-medium text-white">{isFreeEvent ? 'Confirm' : 'Payment'}</span>
+              <span className={`w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold ${step === 'payment' ? 'text-white' : 'text-text-primary'}`}>3</span>
+              <span className={`text-sm font-medium ${step === 'payment' ? 'text-white' : 'text-text-primary'}`}>{isFreeEvent ? 'Confirm' : 'Payment'}</span>
             </div>
           </div>
         </div>
@@ -511,7 +511,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                           key={team.id}
                           className={`border rounded-xl overflow-hidden transition-all ${
                             isAlreadyRegistered
-                              ? 'border-gray-600 bg-gray-800/30 opacity-60'
+                              ? 'border-border-default bg-eha-navy/30 opacity-60'
                               : !eligible
                               ? 'border-amber-500/30 bg-amber-500/5'
                               : isSelected
@@ -529,7 +529,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                             <div
                               className={`w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${
                                 isAlreadyRegistered
-                                  ? 'border-gray-500 bg-gray-700'
+                                  ? 'border-border-default bg-eha-navy'
                                   : !eligible
                                   ? 'border-amber-500/50 bg-amber-500/10'
                                   : isSelected
@@ -566,7 +566,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                             {/* Eligibility Status */}
                             <div className="flex-shrink-0">
                               {isAlreadyRegistered ? (
-                                <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-full bg-eha-navy flex items-center justify-center">
                                   <Check className="w-5 h-5 text-text-muted" />
                                 </div>
                               ) : eligible ? (
@@ -666,7 +666,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                           maxGamesPerDay: e.target.value ? parseInt(e.target.value) : null,
                                         })
                                       }
-                                      className="w-full max-w-[200px] px-3 py-2 bg-input-bg border border-[#A2AAAD]/20 rounded-lg text-text-primary placeholder-gray-500 text-sm transition-all duration-200 focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                      className="w-full max-w-[200px] px-3 py-2 bg-input-bg border border-[#A2AAAD]/20 rounded-lg text-text-primary placeholder-text-muted text-sm transition-all duration-200 focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
                                     />
                                   </div>
 

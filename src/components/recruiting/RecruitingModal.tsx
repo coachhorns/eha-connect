@@ -540,7 +540,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                         type="text"
                         value={emailSubject}
                         onChange={(e) => setEmailSubject(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200"
+                        className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-text-primary text-sm placeholder-text-muted focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200"
                       />
                     </div>
 
@@ -552,7 +552,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                         value={emailBody}
                         onChange={(e) => setEmailBody(e.target.value)}
                         rows={8}
-                        className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200 resize-none"
+                        className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-text-primary text-sm placeholder-text-muted focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200 resize-none"
                       />
                       <p className="text-xs text-text-muted mt-1.5">
                         {isMultiPlayer
@@ -596,7 +596,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                   </div>
                 ) : selectedCollege.coaches.length === 0 ? (
                   <div className="p-8 text-center">
-                    <GraduationCap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                    <GraduationCap className="w-12 h-12 text-text-muted mx-auto mb-3" />
                     <p className="text-text-primary font-medium mb-1">No Coaches Listed</p>
                     <p className="text-xs text-text-muted">
                       No coaching staff data is available for this school yet.
@@ -653,7 +653,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                       placeholder="Type a school name..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-input-bg border border-eha-silver/20 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200"
+                      className="w-full bg-input-bg border border-eha-silver/20 rounded-lg pl-10 pr-4 py-2.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -667,7 +667,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                       </div>
                     ) : searchResults.length === 0 ? (
                       <div className="p-8 text-center">
-                        <Building2 className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                        <Building2 className="w-12 h-12 text-text-muted mx-auto mb-3" />
                         <p className="text-text-primary font-medium mb-1">No Schools Found</p>
                         <p className="text-xs text-text-muted">
                           No results for &ldquo;{searchQuery}&rdquo;. Try a different name or use the filters below.
@@ -750,7 +750,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                         </div>
                       ) : !selectedDivision && !selectedState ? (
                         <div className="p-8 text-center">
-                          <Search className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                          <Search className="w-12 h-12 text-text-muted mx-auto mb-3" />
                           <p className="text-text-primary font-medium mb-1">Select Filters</p>
                           <p className="text-xs text-text-muted">
                             Choose a division or state to find colleges
@@ -758,7 +758,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                         </div>
                       ) : colleges.length === 0 ? (
                         <div className="p-8 text-center">
-                          <Building2 className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                          <Building2 className="w-12 h-12 text-text-muted mx-auto mb-3" />
                           <p className="text-text-primary font-medium mb-1">No Colleges Found</p>
                           <p className="text-xs text-text-muted">
                             Try adjusting your filters

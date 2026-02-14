@@ -792,7 +792,7 @@ export default function DirectorTeamDetailPage() {
             </div>
 
             <div className="flex items-center gap-2 bg-surface-overlay px-4 py-2.5 rounded-xl">
-              <Trophy className="w-5 h-5 text-white" />
+              <Trophy className="w-5 h-5 text-text-muted" />
               <span className="text-xl font-bold text-text-primary font-mono">
                 {team.wins}-{team.losses}
               </span>
@@ -816,7 +816,7 @@ export default function DirectorTeamDetailPage() {
           <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-white" />
+                <Users className="w-6 h-6 text-text-muted" />
               </div>
               <div>
                 <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Coach</div>
@@ -827,7 +827,7 @@ export default function DirectorTeamDetailPage() {
           <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-white" />
+                <Users className="w-6 h-6 text-text-muted" />
               </div>
               <div>
                 <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Roster Size</div>
@@ -838,7 +838,7 @@ export default function DirectorTeamDetailPage() {
           <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                <Trophy className="w-6 h-6 text-white" />
+                <Trophy className="w-6 h-6 text-text-muted" />
               </div>
               <div>
                 <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Total Games</div>
@@ -863,7 +863,7 @@ export default function DirectorTeamDetailPage() {
         {team.roster.length === 0 ? (
           <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-12 text-center">
             <div className="w-20 h-20 bg-surface-overlay rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Users className="w-10 h-10 text-white" />
+              <Users className="w-10 h-10 text-text-muted" />
             </div>
             <h3 className="text-xl font-heading font-bold text-text-primary mb-2">No Players Yet</h3>
             <p className="text-text-muted mb-6 max-w-md mx-auto">
@@ -986,7 +986,7 @@ export default function DirectorTeamDetailPage() {
               type="button"
               onClick={() => setActiveTab('manual')}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'manual'
-                ? 'border-[#E31837] text-white'
+                ? 'border-[#E31837] text-eha-red'
                 : 'border-transparent text-text-muted hover:text-text-primary'
                 }`}
             >
@@ -996,7 +996,7 @@ export default function DirectorTeamDetailPage() {
               type="button"
               onClick={() => setActiveTab('upload')}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'upload'
-                ? 'border-[#E31837] text-white'
+                ? 'border-[#E31837] text-eha-red'
                 : 'border-transparent text-text-muted hover:text-text-primary'
                 }`}
             >
@@ -1264,7 +1264,7 @@ export default function DirectorTeamDetailPage() {
                     className="hidden"
                   />
                   <label htmlFor="roster-upload" className="cursor-pointer">
-                    <Upload className="w-12 h-12 text-white mx-auto mb-3" />
+                    <Upload className="w-12 h-12 text-text-muted mx-auto mb-3" />
                     <p className="text-text-secondary text-sm mb-1">
                       Include: First Name, Last Name, Number, Position, Height, Grad Year, School
                     </p>
@@ -1302,7 +1302,7 @@ export default function DirectorTeamDetailPage() {
                 <>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-white" />
+                      <FileText className="w-4 h-4 text-text-muted" />
                       <span className="text-text-primary font-medium">
                         {parsedPlayers.length} players found
                       </span>
@@ -1357,13 +1357,13 @@ export default function DirectorTeamDetailPage() {
                                     type="text"
                                     value={player.firstName}
                                     onChange={(e) => updateParsedPlayer(index, 'firstName', e.target.value)}
-                                    className="w-20 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
+                                    className="w-20 bg-transparent border-b border-transparent hover:border-border-default focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   />
                                   <input
                                     type="text"
                                     value={player.lastName}
                                     onChange={(e) => updateParsedPlayer(index, 'lastName', e.target.value)}
-                                    className="w-24 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
+                                    className="w-24 bg-transparent border-b border-transparent hover:border-border-default focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   />
                                 </div>
                               </td>
@@ -1372,7 +1372,7 @@ export default function DirectorTeamDetailPage() {
                                   type="text"
                                   value={player.jerseyNumber || ''}
                                   onChange={(e) => updateParsedPlayer(index, 'jerseyNumber', e.target.value || null)}
-                                  className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
+                                  className="w-10 bg-transparent border-b border-transparent hover:border-border-default focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   placeholder="-"
                                 />
                               </td>
@@ -1381,7 +1381,7 @@ export default function DirectorTeamDetailPage() {
                                   type="text"
                                   value={player.primaryPosition || ''}
                                   onChange={(e) => updateParsedPlayer(index, 'primaryPosition', e.target.value || null)}
-                                  className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
+                                  className="w-10 bg-transparent border-b border-transparent hover:border-border-default focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   placeholder="-"
                                 />
                               </td>
@@ -1390,7 +1390,7 @@ export default function DirectorTeamDetailPage() {
                                   type="text"
                                   value={player.graduationYear || ''}
                                   onChange={(e) => updateParsedPlayer(index, 'graduationYear', e.target.value ? parseInt(e.target.value) : null)}
-                                  className="w-12 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
+                                  className="w-12 bg-transparent border-b border-transparent hover:border-border-default focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   placeholder="-"
                                 />
                               </td>

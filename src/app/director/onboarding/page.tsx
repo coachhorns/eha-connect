@@ -481,12 +481,12 @@ function OnboardingContent() {
               <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">1</span>
               Program
             </div>
-            <ChevronRight className="w-4 h-4 text-gray-600" />
+            <ChevronRight className="w-4 h-4 text-text-muted" />
             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${currentStep === 'teams' ? 'bg-[#E31837] text-white' : 'bg-surface-overlay text-text-muted'}`}>
               <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">2</span>
               Teams
             </div>
-            <ChevronRight className="w-4 h-4 text-gray-600" />
+            <ChevronRight className="w-4 h-4 text-text-muted" />
             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${currentStep === 'rosters' ? 'bg-[#E31837] text-white' : 'bg-surface-overlay text-text-muted'}`}>
               <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">3</span>
               Rosters

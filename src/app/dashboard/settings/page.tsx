@@ -200,7 +200,7 @@ export default function SettingsPage() {
             </div>
           ) : players.length === 0 ? (
             <div className="text-center p-8">
-              <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+              <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
               <h4 className="text-text-primary font-bold uppercase tracking-wide mb-2">No Players Linked</h4>
               <p className="text-text-muted uppercase tracking-widest text-xs font-bold mb-4">
                 Link your account to a player profile to track their stats and achievements

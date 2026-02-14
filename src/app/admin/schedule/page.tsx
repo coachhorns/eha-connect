@@ -522,7 +522,7 @@ export default function SchedulingGridPage() {
             {allCourts.length === 0 ? (
               <div className="flex items-center justify-center h-full">
                 <div className="bg-surface-raised/30 border border-border-subtle rounded-sm p-8 text-center max-w-md">
-                  <AlertCircle className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                  <AlertCircle className="w-12 h-12 text-text-muted mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-text-primary mb-2">
                     No Courts Available
                   </h3>

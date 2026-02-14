@@ -238,7 +238,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
           <div className="bg-page-bg border border-border-default rounded-xl p-8">
             <div className="space-y-6">
               <div className="bg-surface-glass border border-border-default rounded-lg p-5">
-                <h3 className="text-lg font-semibold text-white mb-2">Are you a coach or club director?</h3>
+                <h3 className="text-lg font-semibold text-text-primary mb-2">Are you a coach or club director?</h3>
                 <p className="text-text-muted mb-4">
                   Create a Director Account to manage your program and register teams for events.
                 </p>
@@ -250,7 +250,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
               </div>
 
               <div className="bg-surface-glass border border-border-default rounded-lg p-5">
-                <h3 className="text-lg font-semibold text-white mb-2">Are you a parent or player?</h3>
+                <h3 className="text-lg font-semibold text-text-primary mb-2">Are you a parent or player?</h3>
                 <p className="text-text-muted">
                   Contact your team's director to register for this event. They will need to log in with their Program Director account to complete the registration.
                 </p>
@@ -289,7 +289,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
               Registration Complete!
             </h1>
             <p className="text-text-muted text-lg">
-              Your team has been registered for <span className="text-white font-semibold">{event?.name}</span>
+              Your team has been registered for <span className="text-text-primary font-semibold">{event?.name}</span>
             </p>
           </div>
         </div>
@@ -297,7 +297,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
         <div className="max-w-2xl mx-auto px-4 py-12">
           <div className="bg-page-bg border border-border-default rounded-sm p-8 text-center">
             <p className="text-text-muted mb-6">
-              You will receive a confirmation email at <span className="text-white">{formData.coachEmail}</span>.
+              You will receive a confirmation email at <span className="text-text-primary">{formData.coachEmail}</span>.
             </p>
             <div className="flex gap-3 justify-center">
               <Link href={`/events/${event?.slug}`}>
@@ -352,7 +352,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
             Team Registration
           </h1>
           <p className="text-text-muted text-lg">
-            Register your team for <span className="text-white">{event?.name}</span>
+            Register your team for <span className="text-text-primary">{event?.name}</span>
           </p>
         </div>
       </div>
@@ -365,7 +365,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
             {registrationClosed ? (
               <div className="bg-page-bg border border-border-default rounded-sm p-8 text-center">
                 <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-                <h2 className="text-xl font-heading font-bold text-white mb-2">Registration Closed</h2>
+                <h2 className="text-xl font-heading font-bold text-text-primary mb-2">Registration Closed</h2>
                 <p className="text-text-muted">
                   This event has already started. Registration is no longer available.
                 </p>
@@ -383,7 +383,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
 
                 {/* Team Information */}
                 <div className="bg-page-bg border border-border-default rounded-sm p-6">
-                  <h2 className="text-lg font-heading font-semibold text-white mb-6 flex items-center gap-2">
+                  <h2 className="text-lg font-heading font-semibold text-text-primary mb-6 flex items-center gap-2">
                     <Users className="w-5 h-5 text-eha-red" />
                     Team Information
                   </h2>
@@ -398,7 +398,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                         value={formData.teamName}
                         onChange={handleChange}
                         placeholder="e.g., Dallas Elite 17U"
-                        className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-eha-red/50 transition-colors"
+                        className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:border-eha-red/50 transition-colors"
                       />
                       {formErrors.teamName && (
                         <p className="text-red-400 text-xs mt-1">{formErrors.teamName}</p>
@@ -412,7 +412,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                         name="division"
                         value={formData.division}
                         onChange={handleChange}
-                        className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-white focus:outline-none focus:border-eha-red/50 transition-colors"
+                        className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-text-primary focus:outline-none focus:border-eha-red/50 transition-colors"
                       >
                         {divisionOpts.map(opt => (
                           <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -430,7 +430,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                           value={formData.city}
                           onChange={handleChange}
                           placeholder="City"
-                          className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-eha-red/50 transition-colors"
+                          className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:border-eha-red/50 transition-colors"
                         />
                       </div>
                       <div>
@@ -441,7 +441,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                           name="state"
                           value={formData.state}
                           onChange={handleChange}
-                          className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-white focus:outline-none focus:border-eha-red/50 transition-colors"
+                          className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-text-primary focus:outline-none focus:border-eha-red/50 transition-colors"
                         >
                           {stateOptions.map(opt => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -454,7 +454,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
 
                 {/* Coach Information */}
                 <div className="bg-page-bg border border-border-default rounded-sm p-6">
-                  <h2 className="text-lg font-heading font-semibold text-white mb-6 flex items-center gap-2">
+                  <h2 className="text-lg font-heading font-semibold text-text-primary mb-6 flex items-center gap-2">
                     <User className="w-5 h-5 text-eha-red" />
                     Coach Information
                   </h2>
@@ -469,7 +469,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                         value={formData.coachName}
                         onChange={handleChange}
                         placeholder="Full name"
-                        className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-eha-red/50 transition-colors"
+                        className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:border-eha-red/50 transition-colors"
                       />
                       {formErrors.coachName && (
                         <p className="text-red-400 text-xs mt-1">{formErrors.coachName}</p>
@@ -486,7 +486,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                           value={formData.coachEmail}
                           onChange={handleChange}
                           placeholder="coach@example.com"
-                          className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-eha-red/50 transition-colors"
+                          className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:border-eha-red/50 transition-colors"
                         />
                         {formErrors.coachEmail && (
                           <p className="text-red-400 text-xs mt-1">{formErrors.coachEmail}</p>
@@ -502,7 +502,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                           value={formData.coachPhone}
                           onChange={handleChange}
                           placeholder="(555) 123-4567"
-                          className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-eha-red/50 transition-colors"
+                          className="w-full bg-page-bg-alt border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:border-eha-red/50 transition-colors"
                         />
                       </div>
                     </div>
@@ -528,7 +528,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
 
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-heading font-semibold text-white text-lg">{event?.name}</h3>
+                  <h3 className="font-heading font-semibold text-text-primary text-lg">{event?.name}</h3>
                   <Badge variant="orange" className="mt-2">{event?.type}</Badge>
                 </div>
 
@@ -574,7 +574,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
                     <div className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
                       Entry Fee
                     </div>
-                    <div className="text-3xl font-heading font-bold text-white">
+                    <div className="text-3xl font-heading font-bold text-text-primary">
                       ${parseFloat(event.entryFee.toString()).toFixed(0)}
                     </div>
                     <div className="text-xs text-text-muted">per team</div>

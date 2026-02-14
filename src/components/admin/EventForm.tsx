@@ -347,7 +347,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   value={formData.description}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-4 py-2.5 bg-page-bg border border-border-default rounded-sm text-text-primary placeholder-gray-500 transition-colors duration-200 resize-none focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="w-full px-4 py-2.5 bg-page-bg border border-border-default rounded-sm text-text-primary placeholder-text-muted transition-colors duration-200 resize-none focus:outline-none focus:ring-2 focus:ring-eha-red"
                   placeholder="Describe the event..."
                 />
               </div>
@@ -456,7 +456,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                 type="text"
                 placeholder="Custom division name..."
                 id="customDivisionInput"
-                className="flex-1 px-3 py-1.5 bg-page-bg border border-border-default rounded-sm text-text-primary placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                className="flex-1 px-3 py-1.5 bg-page-bg border border-border-default rounded-sm text-text-primary placeholder-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()

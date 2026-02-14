@@ -89,7 +89,7 @@ function FilterSidebar({ filters, setFilters, onReset, onClose, isMobile = false
         <div>
           <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">Division</label>
           <select
-            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none transition-all"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-text-primary px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none transition-all"
             style={selectStyle}
             value={filters.division}
             onChange={(e) => setFilters(prev => ({ ...prev, division: e.target.value }))}
@@ -105,7 +105,7 @@ function FilterSidebar({ filters, setFilters, onReset, onClose, isMobile = false
         <div>
           <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">Region / State</label>
           <select
-            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none transition-all"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-text-primary px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none transition-all"
             style={selectStyle}
             value={filters.state}
             onChange={(e) => setFilters(prev => ({ ...prev, state: e.target.value }))}
@@ -187,7 +187,7 @@ function TeamCard({ team }: TeamCardProps) {
           {/* Badges */}
           <div className="absolute top-4 left-4 flex flex-col gap-2">
             {team.division && (
-              <span className="text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest bg-page-bg">
+              <span className="text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest bg-eha-navy">
                 {team.division}
               </span>
             )}
@@ -227,11 +227,11 @@ function TeamCard({ team }: TeamCardProps) {
           <div className="grid grid-cols-3 gap-4 border-t border-border-default pt-4">
             <div>
               <span className="block text-[8px] font-bold text-text-muted uppercase tracking-widest">Record</span>
-              <span className="text-sm font-black text-white font-stats">{record}</span>
+              <span className="text-sm font-black text-text-primary font-stats">{record}</span>
             </div>
             <div>
               <span className="block text-[8px] font-bold text-text-muted uppercase tracking-widest">Roster</span>
-              <span className="text-sm font-black text-white font-stats">{team._count.roster}</span>
+              <span className="text-sm font-black text-text-primary font-stats">{team._count.roster}</span>
             </div>
             <div>
               <span className="block text-[8px] font-bold text-text-muted uppercase tracking-widest">Win %</span>
@@ -251,7 +251,7 @@ function TeamCard({ team }: TeamCardProps) {
 
           {/* View Team Button */}
           <div className="mt-5 flex gap-2">
-            <span className="flex-1 text-center text-white text-[10px] font-black uppercase tracking-widest py-3 bg-surface-raised group-hover:bg-eha-red transition-colors rounded-sm">
+            <span className="flex-1 text-center text-text-primary text-[10px] font-black uppercase tracking-widest py-3 bg-surface-raised group-hover:bg-eha-red group-hover:text-white transition-colors rounded-sm">
               View Team
             </span>
           </div>
@@ -404,7 +404,7 @@ export default function TeamsPage() {
             {/* Breadcrumb */}
             <div className="flex items-center gap-3">
               <span className="w-12 h-[2px] bg-eha-red" />
-              <span className="text-[10px] font-black tracking-[0.3em] uppercase text-white/60">
+              <span className="text-[10px] font-black tracking-[0.3em] uppercase text-text-muted">
                 League Database
               </span>
             </div>
@@ -420,7 +420,7 @@ export default function TeamsPage() {
               <input
                 type="text"
                 placeholder="Search by team name, program, or location..."
-                className="w-full bg-surface-overlay border border-border-default rounded-full py-4 pl-14 pr-8 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
+                className="w-full bg-surface-overlay border border-border-default rounded-full py-4 pl-14 pr-8 text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -454,7 +454,7 @@ export default function TeamsPage() {
                   {/* Mobile Filter Toggle */}
                   <button
                     onClick={() => setShowMobileFilters(true)}
-                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-surface-raised border border-border-default rounded-sm text-white text-xs font-bold uppercase tracking-widest"
+                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-surface-raised border border-border-default rounded-sm text-text-primary text-xs font-bold uppercase tracking-widest"
                   >
                     <SlidersHorizontal className="w-4 h-4" />
                     Filters
@@ -469,7 +469,7 @@ export default function TeamsPage() {
                       Sort By
                     </span>
                     <select
-                      className="text-xs font-bold border-none bg-transparent text-white focus:ring-0 cursor-pointer"
+                      className="text-xs font-bold border-none bg-transparent text-text-primary focus:ring-0 cursor-pointer"
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
                     >
@@ -491,7 +491,7 @@ export default function TeamsPage() {
                 </div>
               ) : teams.length === 0 ? (
                 <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
-                  <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                  <Users className="w-16 h-16 text-text-muted mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-text-primary mb-2">No Teams Found</h3>
                   <p className="text-text-muted text-sm mb-4">Try adjusting your filters</p>
                   <button
@@ -513,7 +513,7 @@ export default function TeamsPage() {
               {totalPages > 1 && !isLoading && teams.length > 0 && (
                 <div className="mt-12 flex justify-center items-center gap-2">
                   <button
-                    className="w-10 h-10 flex items-center justify-center border border-border-default text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
+                    className="w-10 h-10 flex items-center justify-center border border-border-default text-text-primary hover:bg-eha-red hover:text-white hover:border-eha-red transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
                   >
@@ -528,7 +528,7 @@ export default function TeamsPage() {
                           "w-10 h-10 flex items-center justify-center font-bold transition-all rounded-sm",
                           page === p
                             ? 'bg-eha-red text-white border border-eha-red'
-                            : 'border border-border-default text-white hover:bg-surface-glass'
+                            : 'border border-border-default text-text-primary hover:bg-surface-glass'
                         )}
                         onClick={() => setPage(p)}
                       >
@@ -540,7 +540,7 @@ export default function TeamsPage() {
                   ))}
 
                   <button
-                    className="w-10 h-10 flex items-center justify-center border border-border-default text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
+                    className="w-10 h-10 flex items-center justify-center border border-border-default text-text-primary hover:bg-eha-red hover:text-white hover:border-eha-red transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
                   >

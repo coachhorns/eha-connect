@@ -157,7 +157,7 @@ function PlayerCard({ entry }: { entry: RosterEntry }) {
       <div className={cn("p-5", isConnected && "border-t-4 border-eha-red")}>
         <div className="flex justify-between items-start mb-1">
           <div className="flex items-center gap-1.5">
-            <h3 className="font-black text-lg uppercase leading-tight text-white font-heading">
+            <h3 className="font-black text-lg uppercase leading-tight text-text-primary font-heading">
               {player.firstName} {player.lastName}
             </h3>
             {isConnected && <VerifiedBadge size="sm" />}
@@ -177,15 +177,15 @@ function PlayerCard({ entry }: { entry: RosterEntry }) {
         {/* Stats Grid */}
         <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border-default">
           <div className="text-center">
-            <span className="block text-xs font-black text-white font-stats">{ppg}</span>
+            <span className="block text-xs font-black text-text-primary font-stats">{ppg}</span>
             <span className="block text-[8px] font-bold text-text-muted uppercase">PPG</span>
           </div>
           <div className="text-center">
-            <span className="block text-xs font-black text-white font-stats">{rpg}</span>
+            <span className="block text-xs font-black text-text-primary font-stats">{rpg}</span>
             <span className="block text-[8px] font-bold text-text-muted uppercase">RPG</span>
           </div>
           <div className="text-center">
-            <span className="block text-xs font-black text-white font-stats">{apg}</span>
+            <span className="block text-xs font-black text-text-primary font-stats">{apg}</span>
             <span className="block text-[8px] font-bold text-text-muted uppercase">APG</span>
           </div>
         </div>
@@ -216,7 +216,7 @@ function PositionFilter({ active, onChange }: { active: string; onChange: (v: st
             "px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
             active === pos.value
               ? "bg-white text-page-bg"
-              : "bg-page-bg-alt border border-border-default text-white hover:bg-surface-glass"
+              : "bg-page-bg-alt border border-border-default text-text-primary hover:bg-surface-glass"
           )}
         >
           {pos.label}
@@ -276,8 +276,8 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
       <TabsContent value="roster" className="mt-8">
         {roster.length === 0 ? (
           <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
-            <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">No Players on Roster</h3>
+            <Users className="w-16 h-16 text-text-muted mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-text-primary mb-2">No Players on Roster</h3>
             <p className="text-text-muted">This team hasn't added any players yet.</p>
           </div>
         ) : (
@@ -289,7 +289,7 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
               <div className="flex items-center gap-4">
                 <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Sort By:</span>
                 <select
-                  className="text-xs font-bold border border-border-default bg-page-bg-alt text-white px-4 py-2 rounded-sm focus:ring-1 focus:ring-eha-red outline-none"
+                  className="text-xs font-bold border border-border-default bg-page-bg-alt text-text-primary px-4 py-2 rounded-sm focus:ring-1 focus:ring-eha-red outline-none"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -309,7 +309,7 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
               {/* Roster Info Card */}
               <div className="flex flex-col items-center justify-center p-8 text-center bg-page-bg-alt border border-border-default rounded-sm">
                 <UsersRound className="w-12 h-12 text-eha-red mb-6" />
-                <h3 className="text-xl font-black uppercase tracking-tight mb-2 text-white font-heading">
+                <h3 className="text-xl font-black uppercase tracking-tight mb-2 text-text-primary font-heading">
                   Team Roster
                 </h3>
                 <p className="text-xs text-text-muted mb-6">
@@ -327,8 +327,8 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
       <TabsContent value="schedule" className="mt-8">
         {games.length === 0 ? (
           <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
-            <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">No Games Scheduled</h3>
+            <Calendar className="w-16 h-16 text-text-muted mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-text-primary mb-2">No Games Scheduled</h3>
             <p className="text-text-muted">This team hasn't been scheduled for any games yet.</p>
           </div>
         ) : (
@@ -353,7 +353,7 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
                         <span className="text-text-muted text-sm font-bold w-8">{prefix}</span>
                         <Link
                           href={`/teams/${opponent.slug}`}
-                          className="text-white font-bold hover:text-eha-red transition-colors"
+                          className="text-text-primary font-bold hover:text-eha-red transition-colors"
                         >
                           {opponent.name}
                         </Link>
@@ -363,7 +363,7 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
                         <span>{formatDate(game.scheduledAt)}</span>
                         {game.event && (
                           <>
-                            <span className="text-gray-600">•</span>
+                            <span className="text-text-muted">•</span>
                             <span>{game.event.name}</span>
                           </>
                         )}
@@ -379,7 +379,7 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
                           >
                             {didWin ? 'W' : 'L'}
                           </Badge>
-                          <span className="text-white font-stats font-bold text-lg">
+                          <span className="text-text-primary font-stats font-bold text-lg">
                             {teamScore}-{opponentScore}
                           </span>
                         </div>

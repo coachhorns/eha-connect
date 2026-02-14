@@ -77,7 +77,7 @@ const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
             #{String(rank).padStart(2, '0')}
           </span>
           {player.primaryPosition && (
-            <span className="bg-page-bg text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest">
+            <span className="bg-eha-navy text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest">
               {player.primaryPosition}
             </span>
           )}
@@ -128,7 +128,7 @@ const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
 
         {/* Actions */}
         <div className="mt-5 flex gap-2">
-          <span className="flex-1 bg-surface-raised text-white text-[10px] font-black uppercase tracking-widest py-3 group-hover:bg-eha-red transition-colors rounded-sm text-center">
+          <span className="flex-1 bg-surface-raised text-text-primary text-[10px] font-black uppercase tracking-widest py-3 group-hover:bg-eha-red group-hover:text-white transition-colors rounded-sm text-center">
             View Profile
           </span>
           <span className="w-11 border border-border-default flex items-center justify-center group-hover:bg-surface-glass rounded-sm transition-colors">
@@ -192,7 +192,7 @@ const FilterSidebar = ({
           <select
             value={filters.position}
             onChange={(e) => setFilters({ ...filters, position: e.target.value })}
-            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-text-primary px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
             style={{
               backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
               backgroundRepeat: 'no-repeat',
@@ -215,7 +215,7 @@ const FilterSidebar = ({
           <select
             value={filters.year}
             onChange={(e) => setFilters({ ...filters, year: e.target.value })}
-            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-text-primary px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
             style={{
               backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
               backgroundRepeat: 'no-repeat',
@@ -238,7 +238,7 @@ const FilterSidebar = ({
           <select
             value={filters.state}
             onChange={(e) => setFilters({ ...filters, state: e.target.value })}
-            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-text-primary px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
             style={{
               backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
               backgroundRepeat: 'no-repeat',
@@ -261,7 +261,7 @@ const FilterSidebar = ({
           <select
             value={filters.division}
             onChange={(e) => setFilters({ ...filters, division: e.target.value })}
-            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-text-primary px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
             style={{
               backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
               backgroundRepeat: 'no-repeat',
@@ -381,7 +381,7 @@ export default function PlayersPage() {
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-3">
               <span className="w-12 h-[2px] bg-eha-red" />
-              <span className="text-[10px] font-black tracking-[0.3em] uppercase text-white/60">
+              <span className="text-[10px] font-black tracking-[0.3em] uppercase text-text-muted">
                 Talent Database
               </span>
             </div>
@@ -398,7 +398,7 @@ export default function PlayersPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by player name, school, or state..."
-                className="w-full bg-surface-overlay border border-border-default rounded-full py-4 pl-14 pr-8 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
+                className="w-full bg-surface-overlay border border-border-default rounded-full py-4 pl-14 pr-8 text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
               />
             </div>
           </div>
@@ -430,7 +430,7 @@ export default function PlayersPage() {
                   {/* Mobile Filter Toggle */}
                   <button
                     onClick={() => setShowMobileFilters(true)}
-                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-surface-raised border border-border-default rounded-sm text-white text-xs font-bold uppercase tracking-widest"
+                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-surface-raised border border-border-default rounded-sm text-text-primary text-xs font-bold uppercase tracking-widest"
                   >
                     <SlidersHorizontal className="w-4 h-4" />
                     Filters
@@ -450,7 +450,7 @@ export default function PlayersPage() {
                         setSortBy(e.target.value)
                         setPage(1)
                       }}
-                      className="text-xs font-bold border-none bg-transparent text-white focus:ring-0 cursor-pointer"
+                      className="text-xs font-bold border-none bg-transparent text-text-primary focus:ring-0 cursor-pointer"
                     >
                       <option value="priority">Verified + EPL First</option>
                       <option value="name">Name: A to Z</option>
@@ -485,7 +485,7 @@ export default function PlayersPage() {
               ) : players.length === 0 ? (
                 /* Empty State */
                 <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
-                  <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                  <Users className="w-16 h-16 text-text-muted mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-text-primary mb-2">No Players Found</h3>
                   <p className="text-text-muted max-w-md mx-auto mb-6">
                     {hasActiveFilters
@@ -517,7 +517,7 @@ export default function PlayersPage() {
                       <button
                         onClick={() => setPage(Math.max(1, page - 1))}
                         disabled={page === 1}
-                        className="w-10 h-10 flex items-center justify-center border border-border-default text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border-default rounded-sm"
+                        className="w-10 h-10 flex items-center justify-center border border-border-default text-text-primary hover:bg-eha-red hover:text-white hover:border-eha-red transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border-default rounded-sm"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
@@ -531,7 +531,7 @@ export default function PlayersPage() {
                               "w-10 h-10 flex items-center justify-center font-bold text-sm rounded-sm transition-colors",
                               page === p
                                 ? "bg-eha-red text-white"
-                                : "border border-border-default text-white hover:bg-surface-glass"
+                                : "border border-border-default text-text-primary hover:bg-surface-glass"
                             )}
                           >
                             {p}
@@ -544,7 +544,7 @@ export default function PlayersPage() {
                       <button
                         onClick={() => setPage(Math.min(totalPages, page + 1))}
                         disabled={page === totalPages}
-                        className="w-10 h-10 flex items-center justify-center border border-border-default text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border-default rounded-sm"
+                        className="w-10 h-10 flex items-center justify-center border border-border-default text-text-primary hover:bg-eha-red hover:text-white hover:border-eha-red transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border-default rounded-sm"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>

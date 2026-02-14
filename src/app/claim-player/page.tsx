@@ -397,7 +397,7 @@ function ClaimPlayerContent() {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="John"
-                      className="w-full bg-surface-raised border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
+                      className="w-full bg-surface-raised border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
                     />
                   </div>
                   <div>
@@ -409,7 +409,7 @@ function ClaimPlayerContent() {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Smith"
-                      className="w-full bg-surface-raised border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
+                      className="w-full bg-surface-raised border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
                     />
                   </div>
                 </div>
@@ -670,7 +670,7 @@ function ClaimPlayerContent() {
 export default function ClaimPlayerPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg-alt flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-[#E31837]" />
       </div>
     }>

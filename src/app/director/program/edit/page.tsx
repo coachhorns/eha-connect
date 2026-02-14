@@ -286,9 +286,9 @@ export default function EditProgramPage() {
                   }`}
                 >
                   {isUploading ? (
-                    <Loader2 className="w-8 h-8 text-white animate-spin mx-auto" />
+                    <Loader2 className="w-8 h-8 text-text-muted animate-spin mx-auto" />
                   ) : (
-                    <ImageIcon className="w-8 h-8 text-white mx-auto mb-2" />
+                    <ImageIcon className="w-8 h-8 text-text-muted mx-auto mb-2" />
                   )}
                   <p className="text-sm text-text-muted">Click to upload logo</p>
                 </div>

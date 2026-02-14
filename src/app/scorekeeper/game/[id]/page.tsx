@@ -580,7 +580,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+          <AlertCircle className="w-12 h-12 text-text-muted mx-auto mb-4" />
           <p className="text-text-muted text-lg mb-4">Game not found</p>
           <Link href="/scorekeeper">
             <Button>Back to Dashboard</Button>
@@ -737,7 +737,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
 
           {/* VS / Period */}
           <div className="flex flex-col items-center justify-center px-4">
-            <p className="text-2xl font-bold text-gray-600">VS</p>
+            <p className="text-2xl font-bold text-text-muted">VS</p>
             {game.division && <Badge className="mt-2">{game.division}</Badge>}
           </div>
 
@@ -860,7 +860,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                 <p className="text-xs text-text-muted mb-2">Recent Actions</p>
                 <div className="space-y-1 max-h-24 overflow-y-auto">
                   {actionLog.length === 0 ? (
-                    <p className="text-gray-600 text-sm text-center py-2">No actions yet</p>
+                    <p className="text-text-muted text-sm text-center py-2">No actions yet</p>
                   ) : (
                     actionLog.slice(0, 5).map(action => (
                       <div

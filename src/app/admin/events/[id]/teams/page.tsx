@@ -287,7 +287,7 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
       {/* Teams by Pool */}
       {eventTeams.length === 0 ? (
         <Card className="p-12 text-center">
-          <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+          <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-text-primary mb-2">No teams registered</h3>
           <p className="text-text-muted mb-4">Add teams to this event to get started</p>
           <Button onClick={() => setShowAddModal(true)}>Add First Team</Button>

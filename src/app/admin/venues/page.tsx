@@ -89,7 +89,7 @@ export default function VenuesPage() {
                     placeholder="Search venues..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                    className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-text-muted rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
                 />
             </div>
 
@@ -101,7 +101,7 @@ export default function VenuesPage() {
                 </div>
             ) : venues.length === 0 ? (
                 <div className="text-center py-12 bg-surface-raised/30 rounded-sm border border-dashed border-border-default">
-                    <MapPin className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                    <MapPin className="w-12 h-12 text-text-muted mx-auto mb-3" />
                     <h3 className="text-lg font-medium text-text-secondary">No venues found</h3>
                     <p className="text-text-muted mt-1">Get started by adding your first venue.</p>
                 </div>

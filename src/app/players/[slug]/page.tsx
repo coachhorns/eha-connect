@@ -321,19 +321,19 @@ export default async function PlayerProfilePage(props: PageProps) {
                   {/* Points */}
                   <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all group relative overflow-hidden">
                     <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Points</span>
-                    <span className="text-4xl font-extrabold text-white">{careerStats.averages.ppg.toFixed(1)}</span>
+                    <span className="text-4xl font-extrabold text-text-primary">{careerStats.averages.ppg.toFixed(1)}</span>
                     <div className="mt-2 text-[10px] font-bold text-eha-red/80 uppercase">Per Game</div>
                   </div>
                   {/* Assists */}
                   <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
                     <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Assists</span>
-                    <span className="text-4xl font-extrabold text-white">{careerStats.averages.apg.toFixed(1)}</span>
+                    <span className="text-4xl font-extrabold text-text-primary">{careerStats.averages.apg.toFixed(1)}</span>
                     <div className="mt-2 text-[10px] font-bold text-text-muted uppercase">Per Game</div>
                   </div>
                   {/* Rebounds */}
                   <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
                     <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Rebounds</span>
-                    <span className="text-4xl font-extrabold text-white">{careerStats.averages.rpg.toFixed(1)}</span>
+                    <span className="text-4xl font-extrabold text-text-primary">{careerStats.averages.rpg.toFixed(1)}</span>
                     <div className="mt-2 text-[10px] font-bold text-text-muted uppercase">Per Game</div>
                   </div>
                   {/* Efficiency (Mock for now, using FG%) */}
@@ -368,13 +368,13 @@ export default async function PlayerProfilePage(props: PageProps) {
                     <tbody className="divide-y divide-white/5">
                       {player.gameStats.length > 0 ? player.gameStats.map((stat) => (
                         <tr key={stat.id} className="hover:bg-surface-glass transition-colors">
-                          <td className="px-6 py-5 text-sm font-bold text-white">{formatDate(stat.game.scheduledAt)}</td>
+                          <td className="px-6 py-5 text-sm font-bold text-text-primary">{formatDate(stat.game.scheduledAt)}</td>
                           <td className="px-6 py-5 text-sm text-text-muted">
                             {stat.game.homeTeamId === currentTeam?.teamId
                               ? `vs ${stat.game.awayTeam?.name || 'Opponent'}`
                               : `@ ${stat.game.homeTeam?.name || 'Opponent'}`}
                           </td>
-                          <td className="px-6 py-5 text-sm font-bold text-white">{stat.points}</td>
+                          <td className="px-6 py-5 text-sm font-bold text-text-primary">{stat.points}</td>
                           <td className="px-6 py-5 text-sm text-text-muted">{stat.assists}</td>
                           <td className="px-6 py-5 text-sm text-text-muted">{stat.rebounds}</td>
                         </tr>
@@ -457,7 +457,7 @@ export default async function PlayerProfilePage(props: PageProps) {
                       href={player.transcriptUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full py-3 bg-page-bg hover:bg-eha-red text-white text-xs font-extrabold uppercase tracking-widest rounded-sm transition-colors"
+                      className="flex items-center justify-center gap-2 w-full py-3 bg-eha-navy hover:bg-eha-red text-white text-xs font-extrabold uppercase tracking-widest rounded-sm transition-colors"
                     >
                       <FileText className="w-4 h-4" />
                       Download Transcript (PDF)

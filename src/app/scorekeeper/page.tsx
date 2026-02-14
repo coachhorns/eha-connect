@@ -293,7 +293,7 @@ export default function ScorekeeperHub() {
             )}
           </div>
 
-          <ChevronRight className="w-6 h-6 text-gray-600 ml-2 flex-shrink-0" />
+          <ChevronRight className="w-6 h-6 text-text-muted ml-2 flex-shrink-0" />
         </div>
       </Card>
     </Link>
@@ -390,7 +390,7 @@ export default function ScorekeeperHub() {
           <button
             onClick={() => setStatusFilter('FINAL')}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${statusFilter === 'FINAL'
-                ? 'bg-gray-600 text-white'
+                ? 'bg-surface-raised text-white'
                 : 'bg-surface-glass text-text-muted hover:text-text-primary'
               }`}
           >
@@ -405,7 +405,7 @@ export default function ScorekeeperHub() {
           </div>
         ) : games.length === 0 ? (
           <Card className="p-8 text-center">
-            <Calendar className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+            <Calendar className="w-12 h-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">No games found</h3>
             <p className="text-text-muted">
               {statusFilter

@@ -742,7 +742,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Write a short bio about the player..."
                   rows={4}
-                  className="w-full bg-page-bg-alt border border-border-subtle rounded-sm px-4 py-3 text-text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 resize-none"
+                  className="w-full bg-page-bg-alt border border-border-subtle rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 resize-none"
                 />
               </div>
             </Card>
@@ -1027,7 +1027,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             {/* Video Grid */}
             {videos.length === 0 ? (
               <div className="text-center py-8">
-                <Video className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <Video className="w-12 h-12 text-text-muted mx-auto mb-3" />
                 <p className="text-text-muted">No videos yet</p>
                 <p className="text-sm text-text-muted mt-1">
                   Add YouTube or Hudl highlight videos
@@ -1050,7 +1050,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center bg-page-bg-alt">
-                          <Video className="w-10 h-10 text-gray-600" />
+                          <Video className="w-10 h-10 text-text-muted" />
                         </div>
                       )}
                       {/* Play overlay */}
@@ -1111,7 +1111,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           <div className="p-4">
             {photos.length === 0 ? (
               <div className="text-center py-8">
-                <Camera className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <Camera className="w-12 h-12 text-text-muted mx-auto mb-3" />
                 <p className="text-text-muted">No photos yet</p>
                 <p className="text-sm text-text-muted mt-1">
                   Upload action shots, game photos, and more

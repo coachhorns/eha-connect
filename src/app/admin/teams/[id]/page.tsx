@@ -288,7 +288,7 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
 
           {team.roster.length === 0 ? (
             <div className="text-center py-8">
-              <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+              <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
               <p className="text-text-muted mb-4">No players on roster</p>
               <Link href={`/admin/players/new?teamId=${team.id}`}>
                 <Button size="sm">Add First Player</Button>

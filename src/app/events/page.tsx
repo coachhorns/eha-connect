@@ -99,7 +99,7 @@ const EventCard = ({
               </h4>
             </div>
             <div className="text-right hidden sm:block">
-              <span className="block text-xl font-black text-white">{event._count.teams}</span>
+              <span className="block text-xl font-black text-text-primary">{event._count.teams}</span>
               <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Teams</span>
             </div>
           </div>
@@ -108,7 +108,7 @@ const EventCard = ({
             <div className="flex items-center gap-3">
               <MapPin className="w-5 h-5 text-text-muted" />
               <div>
-                <p className="text-xs font-bold text-white">{event.venue || 'TBD'}</p>
+                <p className="text-xs font-bold text-text-primary">{event.venue || 'TBD'}</p>
                 <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">
                   {[event.city, event.state].filter(Boolean).join(', ')}
                 </p>
@@ -117,14 +117,14 @@ const EventCard = ({
             <div className="flex items-center gap-3">
               <Users className="w-5 h-5 text-text-muted" />
               <div>
-                <p className="text-xs font-bold text-white">{event._count.teams} Teams</p>
+                <p className="text-xs font-bold text-text-primary">{event._count.teams} Teams</p>
                 <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Registered</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Eye className="w-5 h-5 text-text-muted" />
               <div>
-                <p className="text-xs font-bold text-white">Verified</p>
+                <p className="text-xs font-bold text-text-primary">Verified</p>
                 <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Scouts attending</p>
               </div>
             </div>
@@ -155,7 +155,7 @@ const UpcomingEventRow = ({ event }: { event: Event }) => {
     <Link href={`/events/${event.slug}`} className="block">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-6 bg-page-bg-alt border border-border-subtle hover:bg-surface-raised hover:border-border-default transition-all group rounded-lg mb-4">
         <div className="md:col-span-2 flex md:block items-center justify-between">
-          <span className="block text-sm font-bold text-white">
+          <span className="block text-sm font-bold text-text-primary">
             {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
           </span>
           <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-2 md:ml-0">
@@ -163,7 +163,7 @@ const UpcomingEventRow = ({ event }: { event: Event }) => {
           </span>
         </div>
         <div className="md:col-span-4">
-          <h5 className="text-sm font-bold text-white group-hover:text-eha-red transition-colors font-heading text-lg md:text-sm">
+          <h5 className="text-sm font-bold text-text-primary group-hover:text-eha-red transition-colors font-heading text-lg md:text-sm">
             {event.name}
           </h5>
           <p className="text-xs text-text-muted">
@@ -171,7 +171,7 @@ const UpcomingEventRow = ({ event }: { event: Event }) => {
           </p>
         </div>
         <div className="md:col-span-2 hidden md:block">
-          <span className="text-[10px] font-extrabold text-gray-600 uppercase tracking-widest block mb-1">Status</span>
+          <span className="text-[10px] font-extrabold text-text-muted uppercase tracking-widest block mb-1">Status</span>
           <span className="text-xs font-bold uppercase text-eha-red">Open</span>
         </div>
         <div className="md:col-span-2 hidden md:flex gap-3">
@@ -180,7 +180,7 @@ const UpcomingEventRow = ({ event }: { event: Event }) => {
           <Medal className="w-4 h-4 text-text-muted" />
         </div>
         <div className="col-span-12 md:col-span-2 text-right mt-4 md:mt-0">
-          <span className="text-[10px] font-black uppercase tracking-[0.15em] text-white group-hover:text-eha-red underline underline-offset-4 decoration-eha-red/50">
+          <span className="text-[10px] font-black uppercase tracking-[0.15em] text-text-primary group-hover:text-eha-red underline underline-offset-4 decoration-eha-red/50">
             View Event
           </span>
         </div>
@@ -288,7 +288,7 @@ export default function EventsPage() {
               <input
                 type="text"
                 placeholder="Search event or city..."
-                className="w-full pl-12 pr-4 py-4 bg-page-bg-alt border border-border-default text-white text-sm focus:outline-none focus:border-eha-red/50 focus:ring-1 focus:ring-eha-red/50 rounded-none transition-all placeholder:text-gray-600"
+                className="w-full pl-12 pr-4 py-4 bg-page-bg-alt border border-border-default text-text-primary text-sm focus:outline-none focus:border-eha-red/50 focus:ring-1 focus:ring-eha-red/50 rounded-none transition-all placeholder:text-text-muted"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -352,10 +352,10 @@ export default function EventsPage() {
                   {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </h3>
                 <div className="flex gap-2">
-                  <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-surface-glass rounded-full text-white transition-colors">
+                  <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-surface-glass rounded-full text-text-primary transition-colors">
                     <ChevronDown className="w-6 h-6 rotate-90" />
                   </button>
-                  <button onClick={() => changeMonth(1)} className="p-2 hover:bg-surface-glass rounded-full text-white transition-colors">
+                  <button onClick={() => changeMonth(1)} className="p-2 hover:bg-surface-glass rounded-full text-text-primary transition-colors">
                     <ChevronDown className="w-6 h-6 -rotate-90" />
                   </button>
                 </div>

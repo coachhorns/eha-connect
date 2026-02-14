@@ -331,7 +331,7 @@ export default function AutoSchedulerPage() {
                   ? 'bg-eha-red text-white'
                   : idx < ['config', 'preview', 'complete'].indexOf(step)
                   ? 'bg-green-500 text-white'
-                  : 'bg-gray-700 text-text-muted'
+                  : 'bg-eha-navy text-text-muted'
               }`}
             >
               {idx < ['config', 'preview', 'complete'].indexOf(step) ? (
@@ -349,7 +349,7 @@ export default function AutoSchedulerPage() {
               {s === 'preview' && 'Preview'}
               {s === 'complete' && 'Complete'}
             </span>
-            {idx < 2 && <ChevronRight className="w-5 h-5 text-gray-600 ml-4" />}
+            {idx < 2 && <ChevronRight className="w-5 h-5 text-text-muted ml-4" />}
           </div>
         ))}
       </div>
@@ -432,7 +432,7 @@ export default function AutoSchedulerPage() {
                             setSelectedVenueIds(selectedVenueIds.filter((id) => id !== venue.id))
                           }
                         }}
-                        className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-700 text-eha-red focus:ring-eha-red focus:ring-offset-0"
+                        className="mt-1 w-4 h-4 rounded border-border-default bg-eha-navy text-eha-red focus:ring-eha-red focus:ring-offset-0"
                       />
                       <div className="flex-1">
                         <p className="text-text-primary font-medium">{venue.name}</p>

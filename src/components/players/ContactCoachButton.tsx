@@ -93,7 +93,7 @@ export default function ContactCoachButton({ playerName, profileUrl }: ContactCo
                   placeholder="Search by coach name or school..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-surface-glass border border-border-default rounded-lg pl-10 pr-4 py-2.5 text-sm text-text-primary placeholder-gray-500 focus:outline-none focus:border-eha-red/50"
+                  className="w-full bg-surface-glass border border-border-default rounded-lg pl-10 pr-4 py-2.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-eha-red/50"
                 />
               </div>
             </div>
@@ -102,7 +102,7 @@ export default function ContactCoachButton({ playerName, profileUrl }: ContactCo
             <div className="max-h-[300px] overflow-y-auto">
               {coaches.length === 0 ? (
                 <div className="p-8 text-center">
-                  <GraduationCap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                  <GraduationCap className="w-12 h-12 text-text-muted mx-auto mb-3" />
                   <p className="text-text-primary font-medium mb-1">Coming Soon</p>
                   <p className="text-xs text-text-muted">
                     College coach directory is being built. Check back soon to connect with coaches directly!

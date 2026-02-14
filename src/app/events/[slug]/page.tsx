@@ -343,17 +343,17 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             {/* Teams & Scores */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-medium text-white truncate pr-2">{game.awayTeam.name}</span>
+                <span className="font-medium text-text-primary truncate pr-2">{game.awayTeam.name}</span>
                 {(game.status === 'IN_PROGRESS' || game.status === 'FINAL' || game.status === 'HALFTIME') && (
-                  <span className={`text-xl font-bold font-mono ${game.status === 'FINAL' && game.awayScore > game.homeScore ? 'text-[#E31837]' : 'text-white'}`}>
+                  <span className={`text-xl font-bold font-mono ${game.status === 'FINAL' && game.awayScore > game.homeScore ? 'text-[#E31837]' : 'text-text-primary'}`}>
                     {game.awayScore}
                   </span>
                 )}
               </div>
               <div className="flex items-center justify-between">
-                <span className="font-medium text-white truncate pr-2">{game.homeTeam.name}</span>
+                <span className="font-medium text-text-primary truncate pr-2">{game.homeTeam.name}</span>
                 {(game.status === 'IN_PROGRESS' || game.status === 'FINAL' || game.status === 'HALFTIME') && (
-                  <span className={`text-xl font-bold font-mono ${game.status === 'FINAL' && game.homeScore > game.awayScore ? 'text-[#E31837]' : 'text-white'}`}>
+                  <span className={`text-xl font-bold font-mono ${game.status === 'FINAL' && game.homeScore > game.awayScore ? 'text-[#E31837]' : 'text-text-primary'}`}>
                     {game.homeScore}
                   </span>
                 )}
@@ -365,7 +365,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             {getStatusBadge(game)}
           </div>
 
-          <ChevronRight className="w-5 h-5 text-gray-600 ml-2 flex-shrink-0" />
+          <ChevronRight className="w-5 h-5 text-text-muted ml-2 flex-shrink-0" />
         </div>
       </div>
     </Link>
@@ -471,7 +471,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Dates</div>
-                  <div className="text-white font-semibold">
+                  <div className="text-text-primary font-semibold">
                     {format(new Date(event.startDate), 'MMM d')} - {format(new Date(event.endDate), 'd, yyyy')}
                   </div>
                 </div>
@@ -486,7 +486,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Location</div>
-                  <div className="text-white font-semibold">
+                  <div className="text-text-primary font-semibold">
                     {event.venue || (event.city && event.state ? `${event.city}, ${event.state}` : 'TBA')}
                   </div>
                 </div>
@@ -501,7 +501,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Teams</div>
-                  <div className="text-white font-semibold">
+                  <div className="text-text-primary font-semibold">
                     <span className="text-2xl font-mono">{event._count.teams}</span>
                     <span className="text-text-muted text-sm ml-1">Registered</span>
                   </div>
@@ -517,7 +517,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Games</div>
-                  <div className="text-white font-semibold">
+                  <div className="text-text-primary font-semibold">
                     <span className="text-2xl font-mono">{event._count.games}</span>
                     <span className="text-text-muted text-sm ml-1">Scheduled</span>
                   </div>
@@ -584,7 +584,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                         <select
                           value={selectedDivision}
                           onChange={(e) => setSelectedDivision(e.target.value)}
-                          className="appearance-none bg-page-bg-alt border border-border-default text-white px-4 py-2 pr-10 rounded-lg text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                          className="appearance-none bg-page-bg-alt border border-border-default text-text-primary px-4 py-2 pr-10 rounded-lg text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
                         >
                           <option value="">All Divisions</option>
                           {event.divisions.map(div => (
@@ -735,7 +735,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                     filteredSortedPools.map(pool => (
                       <div key={pool} className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl overflow-hidden">
                         <div className="bg-page-bg-alt px-5 py-4 border-b border-border-default">
-                          <h3 className="font-semibold text-white flex items-center gap-3">
+                          <h3 className="font-semibold text-text-primary flex items-center gap-3">
                             {pool === 'Unassigned' ? (
                               <span className="text-text-muted">{pool}</span>
                             ) : (
@@ -770,7 +770,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                       <div className="flex items-center gap-4">
                                         <span className="text-text-muted text-sm font-mono w-5">{idx + 1}</span>
                                         <div>
-                                          <div className="font-medium text-white">{et.team.name}</div>
+                                          <div className="font-medium text-text-primary">{et.team.name}</div>
                                           <div className="text-xs text-text-muted flex items-center gap-2">
                                             {et.team.city && et.team.state && (
                                               <span>{et.team.city}, {et.team.state}</span>
@@ -779,8 +779,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                         </div>
                                       </div>
                                     </td>
-                                    <td className="text-center py-4 px-3 text-white font-semibold font-mono">{et.eventWins}</td>
-                                    <td className="text-center py-4 px-3 text-white font-semibold font-mono">{et.eventLosses}</td>
+                                    <td className="text-center py-4 px-3 text-text-primary font-semibold font-mono">{et.eventWins}</td>
+                                    <td className="text-center py-4 px-3 text-text-primary font-semibold font-mono">{et.eventLosses}</td>
                                     <td className="text-center py-4 px-3 text-text-muted font-mono">{et.pointsFor}</td>
                                     <td className="text-center py-4 px-3 text-text-muted font-mono">{et.pointsAgainst}</td>
                                     <td className={`text-center py-4 px-3 font-semibold font-mono ${
@@ -924,8 +924,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                                     <div className="min-w-0 flex-1">
                                                       <span className={`text-sm truncate block ${
                                                         isTbdAway ? 'text-text-muted italic' :
-                                                        awayWins ? 'text-white font-semibold' :
-                                                        isFinalStatus && !awayWins ? 'text-text-muted' : 'text-white'
+                                                        awayWins ? 'text-text-primary font-semibold' :
+                                                        isFinalStatus && !awayWins ? 'text-text-muted' : 'text-text-primary'
                                                       }`}>
                                                         {isTbdAway && game.awayTeamLabel
                                                           ? game.awayTeamLabel
@@ -935,7 +935,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                                   </div>
                                                   {(isFinalStatus || isLiveStatus) && (
                                                     <span className={`text-sm font-bold font-mono ml-2 ${
-                                                      awayWins ? 'text-white' : 'text-text-muted'
+                                                      awayWins ? 'text-text-primary' : 'text-text-muted'
                                                     }`}>
                                                       {game.awayScore}
                                                     </span>
@@ -954,8 +954,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                                     <div className="min-w-0 flex-1">
                                                       <span className={`text-sm truncate block ${
                                                         isTbdHome ? 'text-text-muted italic' :
-                                                        homeWins ? 'text-white font-semibold' :
-                                                        isFinalStatus && !homeWins ? 'text-text-muted' : 'text-white'
+                                                        homeWins ? 'text-text-primary font-semibold' :
+                                                        isFinalStatus && !homeWins ? 'text-text-muted' : 'text-text-primary'
                                                       }`}>
                                                         {isTbdHome && game.homeTeamLabel
                                                           ? game.homeTeamLabel
@@ -965,7 +965,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                                   </div>
                                                   {(isFinalStatus || isLiveStatus) && (
                                                     <span className={`text-sm font-bold font-mono ml-2 ${
-                                                      homeWins ? 'text-white' : 'text-text-muted'
+                                                      homeWins ? 'text-text-primary' : 'text-text-muted'
                                                     }`}>
                                                       {game.homeScore}
                                                     </span>
@@ -1038,7 +1038,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   <div className="h-40 bg-page-bg-alt relative">
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
-                        <MapPin className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                        <MapPin className="w-8 h-8 text-text-muted mx-auto mb-2" />
                         <span className="text-text-muted text-sm">Map View</span>
                       </div>
                     </div>
@@ -1048,7 +1048,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                     {event.venue && (
                       <div>
                         <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Venue</div>
-                        <div className="text-white font-medium">{event.venue}</div>
+                        <div className="text-text-primary font-medium">{event.venue}</div>
                       </div>
                     )}
                     {event.address && (
@@ -1097,7 +1097,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   {event.entryFee && (
                     <div>
                       <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Entry Fee</div>
-                      <div className="text-white font-semibold text-lg">{event.entryFee}</div>
+                      <div className="text-text-primary font-semibold text-lg">{event.entryFee}</div>
                     </div>
                   )}
                 </div>
@@ -1157,7 +1157,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               </p>
 
               <div className="bg-surface-glass border border-border-default rounded-xl p-4 mb-6 text-left">
-                <h3 className="text-sm font-semibold text-white mb-2">Are you a coach or club director?</h3>
+                <h3 className="text-sm font-semibold text-text-primary mb-2">Are you a coach or club director?</h3>
                 <p className="text-sm text-text-muted mb-3">
                   Create a Director Account to manage your program and register teams for events.
                 </p>
@@ -1170,7 +1170,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               </div>
 
               <div className="text-left">
-                <h3 className="text-sm font-semibold text-white mb-2">Are you a parent or player?</h3>
+                <h3 className="text-sm font-semibold text-text-primary mb-2">Are you a parent or player?</h3>
                 <p className="text-sm text-text-muted">
                   Contact your team's director to register for this event.
                 </p>

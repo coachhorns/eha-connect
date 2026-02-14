@@ -228,7 +228,7 @@ export default function PaymentSettingsPage() {
                       setFormData((prev) => ({ ...prev, STRIPE_SECRET_KEY: e.target.value }))
                     }
                     placeholder={settings?.STRIPE_SECRET_KEY?.hasValue ? '••••••••' : 'sk_live_...'}
-                    className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-text-primary placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 pr-12"
+                    className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-text-primary placeholder-text-muted transition-all duration-200 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 pr-12"
                   />
                   <button
                     type="button"
@@ -284,7 +284,7 @@ export default function PaymentSettingsPage() {
                       setFormData((prev) => ({ ...prev, STRIPE_WEBHOOK_SECRET: e.target.value }))
                     }
                     placeholder={settings?.STRIPE_WEBHOOK_SECRET?.hasValue ? '••••••••' : 'whsec_...'}
-                    className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-text-primary placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 pr-12"
+                    className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-text-primary placeholder-text-muted transition-all duration-200 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 pr-12"
                   />
                   <button
                     type="button"

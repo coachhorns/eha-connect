@@ -203,7 +203,7 @@ export default function BracketsPage() {
       {/* Content */}
       {brackets.length === 0 ? (
         <div className="bg-surface-raised/30 border border-border-subtle rounded-sm p-12 text-center">
-          <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <Trophy className="w-16 h-16 text-text-muted mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-text-primary mb-2">No Brackets Yet</h3>
           <p className="text-text-muted mb-6 max-w-md mx-auto">
             Create your first bracket or pool to start generating matchups for your tournament.

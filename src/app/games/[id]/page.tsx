@@ -149,7 +149,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
   if (error || !game) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <Trophy className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+        <Trophy className="w-12 h-12 text-text-muted mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-text-primary mb-2">Game Not Found</h1>
         <p className="text-text-muted mb-6">{error || 'The game you are looking for does not exist.'}</p>
         <Link href="/standings">
@@ -242,7 +242,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
             </div>
 
             {/* VS */}
-            <div className="text-2xl font-bold text-gray-600 px-4">
+            <div className="text-2xl font-bold text-text-muted px-4">
               {isFinal || isLive ? '-' : 'VS'}
             </div>
 
@@ -384,7 +384,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                       ))}
                     {/* Totals Row */}
                     <tr className="bg-surface-raised font-semibold">
-                      <td className="py-3 px-4 sticky left-0 bg-surface-raised text-white">TOTALS</td>
+                      <td className="py-3 px-4 sticky left-0 bg-surface-raised text-text-primary">TOTALS</td>
                       <td className="text-center py-3 px-2 text-text-muted">-</td>
                       <td className="text-center py-3 px-2 text-text-primary">{currentTotals.points}</td>
                       <td className="text-center py-3 px-2 text-text-secondary">{currentTotals.rebounds}</td>
@@ -417,7 +417,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                     {formatPercentage(currentTotals.fgMade, currentTotals.fgAttempted)}
                   </div>
                   <div className="text-sm text-text-muted">FG%</div>
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-text-muted">
                     {currentTotals.fgMade}/{currentTotals.fgAttempted}
                   </div>
                 </div>
@@ -426,7 +426,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                     {formatPercentage(currentTotals.fg3Made, currentTotals.fg3Attempted)}
                   </div>
                   <div className="text-sm text-text-muted">3PT%</div>
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-text-muted">
                     {currentTotals.fg3Made}/{currentTotals.fg3Attempted}
                   </div>
                 </div>
@@ -435,7 +435,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                     {formatPercentage(currentTotals.ftMade, currentTotals.ftAttempted)}
                   </div>
                   <div className="text-sm text-text-muted">FT%</div>
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-text-muted">
                     {currentTotals.ftMade}/{currentTotals.ftAttempted}
                   </div>
                 </div>
@@ -444,7 +444,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
           </>
         ) : (
           <Card className="p-8 text-center">
-            <Trophy className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+            <Trophy className="w-12 h-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">No Stats Available</h3>
             <p className="text-text-muted">
               {game.status === 'SCHEDULED'
@@ -472,21 +472,21 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 return (
                   <div key={stat.label}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className={`font-medium ${stat.home > stat.away ? 'text-white' : 'text-text-muted'}`}>
+                      <span className={`font-medium ${stat.home > stat.away ? 'text-text-primary' : 'text-text-muted'}`}>
                         {stat.home}
                       </span>
                       <span className="text-text-muted">{stat.label}</span>
-                      <span className={`font-medium ${stat.away > stat.home ? 'text-white' : 'text-text-muted'}`}>
+                      <span className={`font-medium ${stat.away > stat.home ? 'text-text-primary' : 'text-text-muted'}`}>
                         {stat.away}
                       </span>
                     </div>
                     <div className="h-2 bg-surface-raised rounded-full overflow-hidden flex">
                       <div
-                        className={`h-full ${stat.home > stat.away ? 'bg-eha-red' : 'bg-gray-600'}`}
+                        className={`h-full ${stat.home > stat.away ? 'bg-eha-red' : 'bg-surface-raised'}`}
                         style={{ width: `${homePercent}%` }}
                       />
                       <div
-                        className={`h-full ${stat.away > stat.home ? 'bg-eha-red' : 'bg-gray-600'}`}
+                        className={`h-full ${stat.away > stat.home ? 'bg-eha-red' : 'bg-surface-raised'}`}
                         style={{ width: `${100 - homePercent}%` }}
                       />
                     </div>

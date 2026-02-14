@@ -476,7 +476,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
           <Card className="overflow-hidden p-0 rounded-sm border border-border-subtle">
             {teams.length === 0 ? (
               <div className="text-center py-12">
-                <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
                 <h3 className="text-lg font-bold text-text-primary uppercase tracking-tight mb-2">No teams registered</h3>
                 <p className="text-text-muted text-sm">Teams will appear here once they register for this event</p>
               </div>
@@ -509,7 +509,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                           {team.division ? (
                             <Badge variant="default" size="sm">{team.division}</Badge>
                           ) : (
-                            <span className="text-gray-600">-</span>
+                            <span className="text-text-muted">-</span>
                           )}
                         </td>
                       </tr>
@@ -526,7 +526,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
           <Card className="overflow-hidden p-0 rounded-sm border border-border-subtle">
             {games.length === 0 ? (
               <div className="text-center py-12">
-                <Gamepad2 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                <Gamepad2 className="w-12 h-12 text-text-muted mx-auto mb-4" />
                 <h3 className="text-lg font-bold text-text-primary uppercase tracking-tight mb-2">No games scheduled</h3>
                 <p className="text-text-muted text-sm mb-4">Schedule games for this event</p>
                 <Link href="/admin/games/new">
@@ -709,7 +709,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
             </div>
             {filteredTeams.length === 0 ? (
               <div className="text-center py-12">
-                <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
                 <h3 className="text-lg font-bold text-text-primary uppercase tracking-tight mb-2">No teams found</h3>
                 <p className="text-text-muted text-sm">No teams match the selected filter.</p>
               </div>
@@ -735,7 +735,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                           {team.division ? (
                             <Badge variant="default" size="sm">{team.division}</Badge>
                           ) : (
-                            <span className="text-gray-600">-</span>
+                            <span className="text-text-muted">-</span>
                           )}
                         </td>
                         <td className="px-6 py-4">

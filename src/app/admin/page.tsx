@@ -191,7 +191,7 @@ export default function AdminDashboard() {
                       {link.count !== null && (
                         <Badge variant="default">{link.count}</Badge>
                       )}
-                      <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-eha-red transition-colors" />
+                      <ChevronRight className="w-4 h-4 text-text-muted group-hover:text-eha-red transition-colors" />
                     </div>
                   </div>
                 </div>
