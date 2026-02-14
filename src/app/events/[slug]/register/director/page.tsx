@@ -25,6 +25,12 @@ import {
 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 
+interface RosterPlayer {
+  firstName: string
+  lastName: string
+  jerseyNumber: string | null
+}
+
 interface Team {
   id: string
   slug: string
@@ -32,6 +38,7 @@ interface Team {
   division: string | null
   coachName: string | null
   rosterCount: number
+  roster: RosterPlayer[]
 }
 
 interface Program {
@@ -908,9 +915,19 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                   </Link>
                                 </div>
                               ) : (
-                                <div className="py-3 text-sm text-gray-400">
-                                  <p>Roster has {team.rosterCount} player{team.rosterCount !== 1 ? 's' : ''}.</p>
-                                  <p className="mt-1">Click "Edit Roster" to make changes.</p>
+                                <div className="py-3">
+                                  <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5">
+                                    {team.roster.map((player, idx) => (
+                                      <div key={idx} className="contents">
+                                        <span className="text-xs text-gray-500 font-mono text-right tabular-nums">
+                                          {player.jerseyNumber ? `#${player.jerseyNumber}` : '—'}
+                                        </span>
+                                        <span className="text-sm text-gray-300">
+                                          {player.firstName} {player.lastName}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
                               )}
                             </div>

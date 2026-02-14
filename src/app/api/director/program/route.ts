@@ -25,6 +25,20 @@ export async function GET() {
             coachName: true,
             wins: true,
             losses: true,
+            roster: {
+              where: { leftAt: null },
+              select: {
+                jerseyNumber: true,
+                player: {
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                    jerseyNumber: true,
+                  },
+                },
+              },
+              orderBy: { player: { lastName: 'asc' } },
+            },
             _count: {
               select: {
                 roster: true,
@@ -48,6 +62,11 @@ export async function GET() {
     const teams = program.teams.map(team => ({
       ...team,
       rosterCount: team._count.roster,
+      roster: team.roster.map(r => ({
+        jerseyNumber: r.jerseyNumber || r.player.jerseyNumber || null,
+        firstName: r.player.firstName,
+        lastName: r.player.lastName,
+      })),
       _count: undefined,
     }))
 
