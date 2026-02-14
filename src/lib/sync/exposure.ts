@@ -8,6 +8,20 @@ function generateSlug(name: string): string {
         .replace(/(^-|-$)/g, '')
 }
 
+/**
+ * Parses a date string from Exposure as a local-timezone date at noon,
+ * avoiding the off-by-one day shift caused by UTC midnight interpretation.
+ */
+function parseExposureDate(dateStr: string): Date {
+    const d = new Date(dateStr)
+    // If the string is date-only (e.g. "2025-02-14"), JS parses it as UTC midnight.
+    // Shift to noon UTC so it lands on the correct calendar day in any US timezone.
+    if (typeof dateStr === 'string' && !dateStr.includes('T') && !dateStr.includes(' ')) {
+        d.setUTCHours(12)
+    }
+    return d
+}
+
 function formatTimeTo12Hour(time: string): string {
     const [hourStr, minuteStr] = time.split(':')
     let hour = parseInt(hourStr, 10)
@@ -89,8 +103,8 @@ export async function syncEvents(exposureIds?: number[]) {
 
         const data = {
             name: expEvent.Name,
-            startDate: new Date(expEvent.StartDate),
-            endDate: new Date(expEvent.EndDate),
+            startDate: parseExposureDate(expEvent.StartDate),
+            endDate: parseExposureDate(expEvent.EndDate),
             city: venueCity,
             state: venueState,
             venue: venueName,
