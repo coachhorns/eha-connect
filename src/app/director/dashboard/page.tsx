@@ -17,9 +17,26 @@ import {
   Shield,
   Filter,
   ChevronDown,
+  GraduationCap,
+  Mail,
+  Crown,
+  Clock,
+  Check,
 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
+import RecruitingModal from '@/components/recruiting/RecruitingModal'
 
+
+interface RosterPlayer {
+  playerId: string
+  slug: string
+  firstName: string
+  lastName: string
+  jerseyNumber: string | null
+  graduationYear: number | null
+  profilePhoto: string | null
+  primaryPosition: string | null
+}
 
 interface Team {
   id: string
@@ -30,6 +47,7 @@ interface Team {
   wins: number
   losses: number
   rosterCount: number
+  roster: RosterPlayer[]
 }
 
 interface Program {
@@ -46,6 +64,15 @@ interface Program {
   totalLosses: number
 }
 
+interface EmailLogEntry {
+  id: string
+  coachName: string
+  coachEmail: string
+  collegeName: string
+  sentAt: string
+  players: Array<{ firstName: string; lastName: string }>
+}
+
 export default function DirectorDashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -53,6 +80,11 @@ export default function DirectorDashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [sortBy, setSortBy] = useState('priority')
+
+  // Recruiting state
+  const [selectedPlayerIds, setSelectedPlayerIds] = useState<string[]>([])
+  const [recruitingOpen, setRecruitingOpen] = useState(false)
+  const [emailLog, setEmailLog] = useState<EmailLogEntry[]>([])
 
   const sortOptions = [
     { value: 'priority', label: 'Priority' },
@@ -76,6 +108,22 @@ export default function DirectorDashboardPage() {
     })
   }
 
+  // Flatten all players from all teams (deduped by playerId)
+  const getAllPlayers = (): (RosterPlayer & { teamName: string })[] => {
+    if (!program) return []
+    const seen = new Set<string>()
+    const players: (RosterPlayer & { teamName: string })[] = []
+    for (const team of program.teams) {
+      for (const player of team.roster) {
+        if (!seen.has(player.playerId)) {
+          seen.add(player.playerId)
+          players.push({ ...player, teamName: team.name })
+        }
+      }
+    }
+    return players.sort((a, b) => a.lastName.localeCompare(b.lastName))
+  }
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/signin?callbackUrl=/director/dashboard')
@@ -89,6 +137,7 @@ export default function DirectorDashboardPage() {
 
     if (status === 'authenticated' && session?.user.role === 'PROGRAM_DIRECTOR') {
       fetchProgram()
+      fetchEmailLog()
     }
   }, [status, session, router])
 
@@ -112,6 +161,52 @@ export default function DirectorDashboardPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const fetchEmailLog = async () => {
+    try {
+      const res = await fetch('/api/recruiting/log')
+      if (res.ok) {
+        const data = await res.json()
+        setEmailLog(data.logs || [])
+      }
+    } catch (err) {
+      console.error('Failed to fetch email log:', err)
+    }
+  }
+
+  const togglePlayer = (playerId: string) => {
+    setSelectedPlayerIds((prev) =>
+      prev.includes(playerId)
+        ? prev.filter((id) => id !== playerId)
+        : [...prev, playerId]
+    )
+  }
+
+  const selectAll = () => {
+    const allPlayers = getAllPlayers()
+    if (selectedPlayerIds.length === allPlayers.length) {
+      setSelectedPlayerIds([])
+    } else {
+      setSelectedPlayerIds(allPlayers.map((p) => p.playerId))
+    }
+  }
+
+  const handleOpenRecruiting = () => {
+    if (selectedPlayerIds.length === 0) return
+    setRecruitingOpen(true)
+  }
+
+  const getSelectedPlayerObjects = () => {
+    const allPlayers = getAllPlayers()
+    return allPlayers
+      .filter((p) => selectedPlayerIds.includes(p.playerId))
+      .map((p) => ({
+        firstName: p.firstName,
+        lastName: p.lastName,
+        graduationYear: p.graduationYear,
+        slug: p.slug,
+      }))
   }
 
   if (status === 'loading' || isLoading) {
@@ -153,6 +248,8 @@ export default function DirectorDashboardPage() {
   const winRate = program.totalWins + program.totalLosses > 0
     ? Math.round((program.totalWins / (program.totalWins + program.totalLosses)) * 100)
     : 0
+
+  const allPlayers = getAllPlayers()
 
   return (
     <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
@@ -394,6 +491,141 @@ export default function DirectorDashboardPage() {
           </div>
         )}
 
+        {/* College Recruiting - Premium Card */}
+        {allPlayers.length > 0 && (
+          <div className="mt-8 relative rounded-2xl overflow-hidden">
+            {/* Gold gradient border effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/30 via-yellow-600/15 to-amber-500/30 rounded-2xl" />
+            <div className="absolute inset-[1px] bg-[#0a1628]/95 backdrop-blur-xl rounded-2xl" />
+
+            <div className="relative">
+              {/* Premium Header */}
+              <div className="p-6 border-b border-amber-500/10 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2.5">
+                      <GraduationCap className="w-5 h-5 text-amber-400" />
+                      College Recruiting
+                      <span className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.15em] text-amber-400/80 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
+                        <Crown className="w-3 h-3" />
+                        Premium
+                      </span>
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Select players and send their profiles to college coaches
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleOpenRecruiting}
+                    disabled={selectedPlayerIds.length === 0}
+                    className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-0 shadow-lg shadow-amber-900/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <Mail className="w-4 h-4" />
+                    Email Coaches
+                    {selectedPlayerIds.length > 0 && (
+                      <span className="bg-white/20 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                        {selectedPlayerIds.length}
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Select All */}
+              <div className="px-6 py-3 border-b border-white/5 flex items-center justify-between">
+                <button
+                  onClick={selectAll}
+                  className="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"
+                >
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                    selectedPlayerIds.length === allPlayers.length && allPlayers.length > 0
+                      ? 'bg-amber-500 border-amber-500'
+                      : 'border-white/20 hover:border-white/40'
+                  }`}>
+                    {selectedPlayerIds.length === allPlayers.length && allPlayers.length > 0 && (
+                      <Check className="w-3 h-3 text-white" />
+                    )}
+                  </div>
+                  <span className="font-semibold uppercase tracking-wider">
+                    {selectedPlayerIds.length === allPlayers.length && allPlayers.length > 0 ? 'Deselect All' : 'Select All'}
+                  </span>
+                </button>
+                <span className="text-xs text-gray-500">
+                  {selectedPlayerIds.length} of {allPlayers.length} selected
+                </span>
+              </div>
+
+              {/* Player List */}
+              <div className="max-h-[360px] overflow-y-auto divide-y divide-white/5">
+                {allPlayers.map((player) => {
+                  const isSelected = selectedPlayerIds.includes(player.playerId)
+                  return (
+                    <button
+                      key={player.playerId}
+                      onClick={() => togglePlayer(player.playerId)}
+                      className={`w-full flex items-center gap-3 px-6 py-3 text-left transition-colors ${
+                        isSelected ? 'bg-amber-500/5' : 'hover:bg-white/[0.02]'
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                        isSelected
+                          ? 'bg-amber-500 border-amber-500'
+                          : 'border-white/20'
+                      }`}>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">
+                          {player.firstName} {player.lastName}
+                        </p>
+                        <p className="text-[10px] text-gray-500 truncate">
+                          {player.teamName}
+                          {player.graduationYear ? ` • Class of ${player.graduationYear}` : ''}
+                          {player.primaryPosition ? ` • ${player.primaryPosition}` : ''}
+                        </p>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Sent Emails Log */}
+              <div className="border-t border-amber-500/10">
+                <div className="px-6 py-3 pb-2">
+                  <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-gray-500 flex items-center gap-1.5">
+                    <Clock className="w-3 h-3" />
+                    Sent Emails
+                  </h3>
+                </div>
+                {emailLog.length === 0 ? (
+                  <div className="px-6 pb-5">
+                    <p className="text-[11px] text-gray-600">No emails sent yet. Select players above and email a college coach.</p>
+                  </div>
+                ) : (
+                  <div className="px-6 pb-4 space-y-2">
+                    {emailLog.slice(0, 10).map((log) => (
+                      <div key={log.id} className="flex items-center justify-between py-2 px-3 bg-white/[0.02] rounded border border-white/5">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs text-white font-medium truncate">{log.coachName}</p>
+                          <p className="text-[10px] text-gray-500 truncate">
+                            {log.collegeName}
+                            {log.players.length > 0 && (
+                              <> &bull; {log.players.map(p => `${p.firstName} ${p.lastName}`).join(', ')}</>
+                            )}
+                          </p>
+                        </div>
+                        <span className="text-[10px] text-gray-500 font-mono shrink-0 ml-3">
+                          {new Date(log.sentAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Quick Actions */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link href="/events">
@@ -430,6 +662,16 @@ export default function DirectorDashboardPage() {
         {/* Documentation */}
 
       </div>
+
+      {/* Recruiting Modal */}
+      {recruitingOpen && (
+        <RecruitingModal
+          players={getSelectedPlayerObjects()}
+          isOpen={recruitingOpen}
+          onClose={() => setRecruitingOpen(false)}
+          onEmailSent={fetchEmailLog}
+        />
+      )}
     </div>
   )
 }

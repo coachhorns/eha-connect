@@ -42,6 +42,7 @@ model User {
   ownedPrograms Program[]        // Programs this user owns (program director)
   guardians     Guardian[]       // Players this user is guardian of
   sentInvites   GuardianInvite[] // Co-parent invites sent by this user
+  recruitingEmails RecruitingEmail[]
 
   @@map("users")
 }
@@ -249,6 +250,7 @@ model Player {
   media           Media[]
   guardians       Guardian[]       // Users who are guardians of this player
   guardianInvites GuardianInvite[] // Pending guardian invites for this player
+  recruitingEmailPlayers RecruitingEmailPlayer[]
 
   @@map("players")
 }
@@ -834,6 +836,7 @@ model College {
   logo        String?
 
   coaches     CollegeCoach[]
+  recruitingEmails RecruitingEmail[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -856,7 +859,44 @@ model CollegeCoach {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  recruitingEmails RecruitingEmail[]
+
   @@map("college_coaches")
 }
 
+// ============================================
+// RECRUITING EMAIL LOG
+// ============================================
 
+model RecruitingEmail {
+  id          String        @id @default(cuid())
+  sentById    String
+  sentBy      User          @relation(fields: [sentById], references: [id])
+  coachId     String?
+  coach       CollegeCoach? @relation(fields: [coachId], references: [id])
+  collegeId   String?
+  college     College?      @relation(fields: [collegeId], references: [id])
+
+  // Denormalized for display stability
+  coachName   String
+  coachEmail  String
+  collegeName String
+
+  sentAt      DateTime      @default(now())
+
+  // Players included in this email (supports multi-player for directors)
+  players     RecruitingEmailPlayer[]
+
+  @@map("recruiting_emails")
+}
+
+model RecruitingEmailPlayer {
+  id                String           @id @default(cuid())
+  recruitingEmailId String
+  recruitingEmail   RecruitingEmail  @relation(fields: [recruitingEmailId], references: [id], onDelete: Cascade)
+  playerId          String
+  player            Player           @relation(fields: [playerId], references: [id])
+
+  @@unique([recruitingEmailId, playerId])
+  @@map("recruiting_email_players")
+}

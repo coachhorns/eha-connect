@@ -24,7 +24,6 @@ import { achievementBadges } from '@/lib/constants'
 import { canViewStats } from '@/lib/permissions'
 import StatsPaywall from '@/components/players/StatsPaywall'
 import ShareProfileButton from '@/components/players/ShareProfileButton'
-import RecruitingButton from '@/components/recruiting/RecruitingButton'
 import FilmRoomSection from '@/components/players/FilmRoomSection'
 import PhotoGallery from '@/components/players/PhotoGallery'
 
@@ -295,15 +294,6 @@ export default async function PlayerProfilePage(props: PageProps) {
                 </Link>
               ) : (
                 <ShareProfileButton playerName={`${player.firstName} ${player.lastName}`} />
-              )}
-              {/* College Recruiting - visible to anyone who can view the profile */}
-              {canView && (
-                <RecruitingButton player={{
-                  firstName: player.firstName,
-                  lastName: player.lastName,
-                  graduationYear: player.graduationYear,
-                  slug: player.slug,
-                }} />
               )}
             </div>
           </div>

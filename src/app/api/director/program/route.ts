@@ -31,9 +31,14 @@ export async function GET() {
                 jerseyNumber: true,
                 player: {
                   select: {
+                    id: true,
+                    slug: true,
                     firstName: true,
                     lastName: true,
                     jerseyNumber: true,
+                    graduationYear: true,
+                    profilePhoto: true,
+                    primaryPosition: true,
                   },
                 },
               },
@@ -64,8 +69,13 @@ export async function GET() {
       rosterCount: team._count.roster,
       roster: team.roster.map(r => ({
         jerseyNumber: r.jerseyNumber || r.player.jerseyNumber || null,
+        playerId: r.player.id,
+        slug: r.player.slug,
         firstName: r.player.firstName,
         lastName: r.player.lastName,
+        graduationYear: r.player.graduationYear,
+        profilePhoto: r.player.profilePhoto,
+        primaryPosition: r.player.primaryPosition,
       })),
       _count: undefined,
     }))

@@ -12,14 +12,19 @@ import {
   Plus,
   ExternalLink,
   Calendar,
-  CreditCard,
   Search,
   UserPlus,
   Smartphone,
   ArrowRight,
+  GraduationCap,
+  Mail,
+  Crown,
+  Clock,
+  Check,
+  Star,
 } from 'lucide-react'
 import { Card, Button, Badge, Avatar, Modal } from '@/components/ui'
-import { formatDate } from '@/lib/utils'
+import RecruitingModal from '@/components/recruiting/RecruitingModal'
 
 interface PlayerProfile {
   id: string
@@ -62,6 +67,15 @@ interface Subscription {
   currentPeriodEnd: string
 }
 
+interface EmailLogEntry {
+  id: string
+  coachName: string
+  coachEmail: string
+  collegeName: string
+  sentAt: string
+  players: Array<{ firstName: string; lastName: string }>
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -72,6 +86,10 @@ export default function DashboardPage() {
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteStatus, setInviteStatus] = useState<{ success?: string; error?: string } | null>(null)
   const [isSending, setIsSending] = useState(false)
+
+  // Recruiting state
+  const [recruitingPlayer, setRecruitingPlayer] = useState<PlayerProfile | null>(null)
+  const [emailLog, setEmailLog] = useState<EmailLogEntry[]>([])
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -93,9 +111,10 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const [profilesRes, subscriptionRes] = await Promise.all([
+      const [profilesRes, subscriptionRes, logRes] = await Promise.all([
         fetch('/api/user/players'),
         fetch('/api/user/subscription'),
+        fetch('/api/recruiting/log'),
       ])
       const profilesData = await profilesRes.json()
       setProfiles(profilesData.players || [])
@@ -104,10 +123,27 @@ export default function DashboardPage() {
         const subscriptionData = await subscriptionRes.json()
         setSubscription(subscriptionData.subscription || null)
       }
+
+      if (logRes.ok) {
+        const logData = await logRes.json()
+        setEmailLog(logData.logs || [])
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const refreshEmailLog = async () => {
+    try {
+      const res = await fetch('/api/recruiting/log')
+      if (res.ok) {
+        const data = await res.json()
+        setEmailLog(data.logs || [])
+      }
+    } catch (err) {
+      console.error('Failed to refresh email log:', err)
     }
   }
 
@@ -372,6 +408,92 @@ export default function DashboardPage() {
             </Card>
           )}
 
+          {/* College Recruiting - Premium Card */}
+          {profiles.length > 0 && (
+            <div className="relative rounded-sm overflow-hidden">
+              {/* Gold gradient border effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 via-yellow-600/10 to-amber-500/20 rounded-sm" />
+              <div className="absolute inset-[1px] bg-[#0a1628] rounded-sm" />
+
+              <div className="relative">
+                {/* Premium Header */}
+                <div className="p-6 border-b border-amber-500/10 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-amber-400 flex items-center gap-2">
+                      <GraduationCap className="w-4 h-4 text-amber-400" />
+                      College Recruiting
+                    </h2>
+                    <span className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-[0.15em] text-amber-400/80 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
+                      <Crown className="w-3 h-3" />
+                      Premium
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-gray-500 mt-2">
+                    Send your player profile directly to college coaching staff
+                  </p>
+                </div>
+
+                {/* Player List */}
+                <div className="divide-y divide-white/5">
+                  {profiles.map((profile) => (
+                    <div key={profile.id} className="p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+                      <div className="flex items-center gap-3">
+                        <Avatar
+                          src={profile.profilePhoto}
+                          fallback={`${profile.firstName} ${profile.lastName}`}
+                          size="sm"
+                        />
+                        <div>
+                          <p className="text-sm font-bold text-white">{profile.firstName} {profile.lastName}</p>
+                          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                            {profile.graduationYear ? `Class of ${profile.graduationYear}` : 'No grad year'}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => setRecruitingPlayer(profile)}
+                        className="flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-0 shadow-lg shadow-amber-900/20"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        Email Coaches
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Sent Emails Log */}
+                <div className="border-t border-amber-500/10">
+                  <div className="p-4 pb-2">
+                    <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-gray-500 flex items-center gap-1.5">
+                      <Clock className="w-3 h-3" />
+                      Sent Emails
+                    </h3>
+                  </div>
+                  {emailLog.length === 0 ? (
+                    <div className="px-4 pb-5">
+                      <p className="text-[11px] text-gray-600">No emails sent yet. Start by emailing a college coach above.</p>
+                    </div>
+                  ) : (
+                    <div className="px-4 pb-4 space-y-2">
+                      {emailLog.slice(0, 10).map((log) => (
+                        <div key={log.id} className="flex items-center justify-between py-2 px-3 bg-white/[0.02] rounded border border-white/5">
+                          <div className="min-w-0">
+                            <p className="text-xs text-white font-medium truncate">{log.coachName}</p>
+                            <p className="text-[10px] text-gray-500 truncate">{log.collegeName}</p>
+                          </div>
+                          <span className="text-[10px] text-gray-500 font-mono shrink-0 ml-3">
+                            {new Date(log.sentAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Recent Activity */}
           <Card className="rounded-sm p-0">
             <div className="p-6 border-b border-white/5">
@@ -388,57 +510,66 @@ export default function DashboardPage() {
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-8">
-          {/* Subscription - only for non-admin users */}
-          {session?.user.role !== 'ADMIN' && (
-            <Card className="rounded-sm p-0">
-              <div className="p-6 border-b border-white/5">
-                <h4 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red flex items-center gap-2">
-                  <CreditCard className="w-4 h-4" />
-                  Subscription
-                </h4>
-              </div>
-              <div className="p-6">
-                {subscription ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between pb-4 border-b border-white/5">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</span>
-                      <Badge
-                        variant={subscription.status === 'active' ? 'success' : 'warning'}
-                        size="sm"
-                      >
-                        {subscription.status}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between pb-4 border-b border-white/5">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Plan</span>
-                      <span className="text-sm font-bold text-white">
-                        {subscription.plan.replace('_', ' ')}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Renewal</span>
-                      <span className="text-sm font-bold text-white">
-                        {formatDate(subscription.currentPeriodEnd)}
-                      </span>
-                    </div>
-                    <Link href="/dashboard/subscription" className="block mt-4">
-                      <Button variant="outline" size="sm" className="w-full">
-                        Manage Subscription
-                      </Button>
-                    </Link>
+          {/* Subscribe CTA - only shown for non-admin users WITHOUT an active subscription */}
+          {session?.user.role !== 'ADMIN' && !subscription && (
+            <div className="relative rounded-sm overflow-hidden">
+              {/* Gradient border effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-eha-red/30 via-amber-500/20 to-eha-red/30 rounded-sm" />
+              <div className="absolute inset-[1px] bg-gradient-to-br from-[#0a1628] to-[#0f1f3a] rounded-sm" />
+
+              <div className="relative">
+                {/* Header */}
+                <div className="p-6 pb-4 text-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-500/20 to-eha-red/20 rounded-full flex items-center justify-center mx-auto mb-3 border border-amber-500/20">
+                    <Star className="w-6 h-6 text-amber-400" />
                   </div>
-                ) : (
-                  <div className="text-center">
-                    <p className="text-gray-500 uppercase tracking-widest text-xs font-bold mb-4">No active subscription</p>
-                    <Link href="/pricing">
-                      <Button size="sm" className="w-full">
-                        Get EHA Connect
-                      </Button>
-                    </Link>
+                  <h4 className="text-lg font-extrabold uppercase tracking-tight text-white mb-1">
+                    Connect Pass
+                  </h4>
+                  <p className="text-[11px] text-gray-400">
+                    Unlock your full player experience
+                  </p>
+                </div>
+
+                {/* Features */}
+                <div className="px-6 pb-4">
+                  <ul className="space-y-2.5">
+                    {[
+                      'Full player profile with bio & photos',
+                      'Live stats at every EHA event',
+                      'Email 10,000+ college coaches',
+                      'Shareable recruiting profile URL',
+                      'Leaderboard rankings',
+                      'Photo & video highlight gallery',
+                    ].map((feature) => (
+                      <li key={feature} className="flex items-start gap-2.5">
+                        <Check className="w-4 h-4 text-eha-red flex-shrink-0 mt-0.5" />
+                        <span className="text-xs text-gray-300">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Pricing + CTA */}
+                <div className="px-6 pb-6">
+                  <div className="text-center mb-4">
+                    <span className="text-3xl font-extrabold text-white">$50</span>
+                    <span className="text-sm text-gray-400 ml-1">/year</span>
+                    <p className="text-[10px] text-amber-400/80 font-bold uppercase tracking-widest mt-1">
+                      Best Value — Save $70/year
+                    </p>
                   </div>
-                )}
+                  <Link href="/pricing" className="block">
+                    <Button className="w-full bg-gradient-to-r from-eha-red to-red-700 hover:from-red-600 hover:to-red-800 text-white font-extrabold uppercase tracking-widest text-xs py-3 border-0 shadow-lg shadow-red-900/30">
+                      Get Connected
+                    </Button>
+                  </Link>
+                  <p className="text-center text-[10px] text-gray-500 mt-2">
+                    Cancel anytime from account settings
+                  </p>
+                </div>
               </div>
-            </Card>
+            </div>
           )}
 
           {/* Quick Links */}
@@ -524,6 +655,21 @@ export default function DashboardPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Recruiting Modal */}
+      {recruitingPlayer && (
+        <RecruitingModal
+          players={[{
+            firstName: recruitingPlayer.firstName,
+            lastName: recruitingPlayer.lastName,
+            graduationYear: recruitingPlayer.graduationYear,
+            slug: recruitingPlayer.slug,
+          }]}
+          isOpen={!!recruitingPlayer}
+          onClose={() => setRecruitingPlayer(null)}
+          onEmailSent={refreshEmailLog}
+        />
+      )}
     </div>
   )
 }

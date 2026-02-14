@@ -33,12 +33,13 @@ interface CollegeDetail extends College {
 }
 
 interface RecruitingModalProps {
-  player: Player
+  players: Player[]
   isOpen: boolean
   onClose: () => void
+  onEmailSent?: () => void
 }
 
-export default function RecruitingModal({ player, isOpen, onClose }: RecruitingModalProps) {
+export default function RecruitingModal({ players, isOpen, onClose, onEmailSent }: RecruitingModalProps) {
   const [divisions, setDivisions] = useState<string[]>([])
   const [states, setStates] = useState<string[]>([])
 
@@ -64,6 +65,9 @@ export default function RecruitingModal({ player, isOpen, onClose }: RecruitingM
   const [isSending, setIsSending] = useState(false)
   const [sendError, setSendError] = useState('')
   const [sendSuccess, setSendSuccess] = useState(false)
+
+  const isMultiPlayer = players.length > 1
+  const playerNames = players.map(p => `${p.firstName} ${p.lastName}`).join(', ')
 
   // Fetch filter options on open
   useEffect(() => {
@@ -152,12 +156,23 @@ export default function RecruitingModal({ player, isOpen, onClose }: RecruitingM
 
   const handleStartCompose = (coach: Coach) => {
     setComposingCoach(coach)
-    setEmailSubject(
-      `Recruiting Profile: ${player.firstName} ${player.lastName} - ${player.graduationYear || ''}`
-    )
-    setEmailBody(
-      `Coach ${coach.lastName},\n\nI would like to introduce myself and express my interest in your basketball program.\n\nThank you for your time and consideration.\n\nSincerely,\n${player.firstName} ${player.lastName}`
-    )
+
+    if (isMultiPlayer) {
+      const names = players.map(p => `${p.firstName} ${p.lastName}`).join(', ')
+      setEmailSubject(`Recruiting Profiles: ${names}`)
+      setEmailBody(
+        `Coach ${coach.lastName},\n\nI would like to introduce the following players and express their interest in your basketball program:\n\n${players.map(p => `- ${p.firstName} ${p.lastName}${p.graduationYear ? ` (Class of ${p.graduationYear})` : ''}`).join('\n')}\n\nThank you for your time and consideration.`
+      )
+    } else {
+      const player = players[0]
+      setEmailSubject(
+        `Recruiting Profile: ${player.firstName} ${player.lastName} - ${player.graduationYear || ''}`
+      )
+      setEmailBody(
+        `Coach ${coach.lastName},\n\nI would like to introduce myself and express my interest in your basketball program.\n\nThank you for your time and consideration.\n\nSincerely,\n${player.firstName} ${player.lastName}`
+      )
+    }
+
     setSendError('')
     setSendSuccess(false)
   }
@@ -175,7 +190,10 @@ export default function RecruitingModal({ player, isOpen, onClose }: RecruitingM
         body: JSON.stringify({
           coachEmail: composingCoach.email,
           coachName: `${composingCoach.firstName} ${composingCoach.lastName}`,
-          playerSlug: player.slug,
+          coachId: composingCoach.id,
+          collegeId: selectedCollege?.id || null,
+          collegeName: selectedCollege?.name || '',
+          playerSlugs: players.map(p => p.slug),
           subject: emailSubject,
           message: emailBody,
         }),
@@ -189,6 +207,7 @@ export default function RecruitingModal({ player, isOpen, onClose }: RecruitingM
       }
 
       setSendSuccess(true)
+      onEmailSent?.()
       setTimeout(() => {
         setComposingCoach(null)
         setSendSuccess(false)
@@ -248,8 +267,10 @@ export default function RecruitingModal({ player, isOpen, onClose }: RecruitingM
       }
     }
     return {
-      title: 'Share Profile with College Coach',
-      subtitle: 'Find a college and email your profile to their coaching staff',
+      title: isMultiPlayer ? 'Share Profiles with College Coach' : 'Share Profile with College Coach',
+      subtitle: isMultiPlayer
+        ? `Sending ${players.length} player profiles`
+        : 'Find a college and email your profile to their coaching staff',
     }
   }
 
@@ -319,6 +340,17 @@ export default function RecruitingModal({ player, isOpen, onClose }: RecruitingM
                       </div>
                     </div>
 
+                    {isMultiPlayer && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                          Players Included
+                        </label>
+                        <div className="px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-400">
+                          {playerNames}
+                        </div>
+                      </div>
+                    )}
+
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-1.5">
                         Subject
@@ -342,7 +374,9 @@ export default function RecruitingModal({ player, isOpen, onClose }: RecruitingM
                         className="w-full px-4 py-2.5 bg-dark-surface border border-eha-silver/20 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200 resize-none"
                       />
                       <p className="text-xs text-gray-500 mt-1.5">
-                        A link to your player profile will be included automatically.
+                        {isMultiPlayer
+                          ? 'Links to all player profiles will be included automatically.'
+                          : 'A link to your player profile will be included automatically.'}
                       </p>
                     </div>
 

@@ -25,7 +25,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { coachEmail, coachName, playerSlug, subject, message } = await request.json()
+    const {
+      coachEmail,
+      coachName,
+      coachId,
+      collegeId,
+      collegeName,
+      playerSlugs,
+      playerSlug, // backwards compat
+      subject,
+      message,
+    } = await request.json()
 
     if (!coachEmail || !subject || !message) {
       return NextResponse.json(
@@ -34,13 +44,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fetch player data for the Player Card
-    const player = playerSlug
-      ? await prisma.player.findUnique({
-          where: { slug: playerSlug },
+    // Resolve slugs - support both array and single slug
+    const slugs: string[] = playerSlugs || (playerSlug ? [playerSlug] : [])
+
+    // Fetch all player data
+    const players = slugs.length > 0
+      ? await prisma.player.findMany({
+          where: { slug: { in: slugs } },
           select: {
+            id: true,
             firstName: true,
             lastName: true,
+            slug: true,
             email: true,
             primaryPosition: true,
             heightFeet: true,
@@ -56,45 +71,101 @@ export async function POST(request: NextRequest) {
             },
           },
         })
-      : null
+      : []
 
     const senderName = session.user.name || session.user.email
     const baseUrl = process.env.NEXTAUTH_URL || 'https://ehaconnect.com'
-    const profileUrl = `${baseUrl}/players/${playerSlug}?recruit=true`
+
+    // Build player cards HTML
+    const playerCardsHtml = players.map((player) => {
+      const playerName = `${player.firstName} ${player.lastName}`
+      const positionLabel = player.primaryPosition ? POSITION_LABELS[player.primaryPosition] || player.primaryPosition : null
+      const teamName = player.teamRosters?.[0]?.team?.name || null
+      const classYear = player.graduationYear ? `Class of ${player.graduationYear}` : null
+      const height = formatHeight(player.heightFeet, player.heightInches)
+      const profileUrl = `${baseUrl}/players/${player.slug}?recruit=true`
+      const photoUrl = player.profilePhoto || null
+
+      const photoHtml = photoUrl
+        ? `<img src="${photoUrl}" alt="${playerName}" width="64" height="64" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); display: block;" />`
+        : `<div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #E31837, #a01128); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; color: #ffffff; border: 2px solid rgba(255,255,255,0.2);">${player.firstName?.[0] || 'P'}${player.lastName?.[0] || ''}</div>`
+
+      const subtextParts: string[] = []
+      if (classYear) subtextParts.push(classYear)
+      if (height) subtextParts.push(height)
+      if (positionLabel) subtextParts.push(positionLabel)
+      const subtext = subtextParts.join(' &bull; ')
+
+      const academicBadge = player.gpa
+        ? `<span style="display: inline-block; font-size: 11px; font-weight: 700; color: #22c55e; background-color: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); padding: 4px 10px; border-radius: 12px; margin-left: 8px;">&#x2705; ${player.gpa.toFixed(1)} GPA</span>`
+        : ''
+
+      const teamBadge = teamName
+        ? `<span style="display: inline-block; font-size: 11px; font-weight: 700; color: #60a5fa; background-color: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.25); padding: 4px 10px; border-radius: 12px;">${teamName}</span>`
+        : ''
+
+      return `
+        <!-- Player Card -->
+        <tr>
+          <td style="padding: 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+              <tr>
+                <td style="padding: 28px 40px;">
+                  <table role="presentation" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="vertical-align: top; width: 64px; padding-right: 20px;">
+                        ${photoHtml}
+                      </td>
+                      <td style="vertical-align: top;">
+                        <p style="margin: 0 0 4px 0; font-size: 22px; font-weight: 800; color: #ffffff; line-height: 1.2; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
+                          ${playerName}
+                        </p>
+                        ${subtext ? `<p style="margin: 0 0 10px 0; font-size: 13px; color: #94a3b8; line-height: 1.4;">${subtext}</p>` : ''}
+                        <div>
+                          ${teamBadge}${academicBadge}
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- View Profile Button for this player -->
+        <tr>
+          <td style="padding: 16px 40px; text-align: center;">
+            <a href="${profileUrl}" style="display: inline-block; padding: 10px 32px; background: linear-gradient(to right, #E31837, #a01128); border-radius: 6px; color: #ffffff; text-decoration: none; font-size: 10px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; box-shadow: 0 2px 8px rgba(227, 24, 55, 0.25);">
+              View ${player.firstName}'s Profile
+            </a>
+          </td>
+        </tr>
+      `
+    }).join(`
+        <!-- Divider between players -->
+        <tr><td style="padding: 0 40px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td style="height: 1px; background-color: #E2E8F0;"></td></tr></table></td></tr>
+    `)
 
     // Build dynamic subject line
-    const playerName = player ? `${player.firstName} ${player.lastName}` : null
-    const positionLabel = player?.primaryPosition ? POSITION_LABELS[player.primaryPosition] || player.primaryPosition : null
-    const teamName = player?.teamRosters?.[0]?.team?.name || null
-    const classYear = player?.graduationYear ? `Class of ${player.graduationYear}` : null
-    const height = player ? formatHeight(player.heightFeet, player.heightInches) : null
+    const isMultiPlayer = players.length > 1
+    let dynamicSubject: string
 
-    const dynamicSubject = player
-      ? `Recruit: ${playerName}${classYear ? ` (${player.graduationYear}` : ''}${positionLabel ? `${classYear ? ' ' : ' ('}${positionLabel})` : classYear ? ')' : ''} - ${teamName || 'EHA'}`
-      : subject
+    if (isMultiPlayer) {
+      const names = players.map(p => `${p.firstName} ${p.lastName}`).join(', ')
+      dynamicSubject = `Recruit: ${names}`
+    } else if (players.length === 1) {
+      const player = players[0]
+      const playerName = `${player.firstName} ${player.lastName}`
+      const positionLabel = player.primaryPosition ? POSITION_LABELS[player.primaryPosition] || player.primaryPosition : null
+      const teamName = player.teamRosters?.[0]?.team?.name || null
+      const classYear = player.graduationYear ? `Class of ${player.graduationYear}` : null
+      dynamicSubject = `Recruit: ${playerName}${classYear ? ` (${player.graduationYear}` : ''}${positionLabel ? `${classYear ? ' ' : ' ('}${positionLabel})` : classYear ? ')' : ''} - ${teamName || 'EHA'}`
+    } else {
+      dynamicSubject = subject
+    }
 
-    // Fallback photo: a simple placeholder initial circle (handled inline)
-    const photoUrl = player?.profilePhoto || null
-    const photoHtml = photoUrl
-      ? `<img src="${photoUrl}" alt="${playerName}" width="64" height="64" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); display: block;" />`
-      : `<div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #E31837, #a01128); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; color: #ffffff; border: 2px solid rgba(255,255,255,0.2);">${player?.firstName?.[0] || 'P'}${player?.lastName?.[0] || ''}</div>`
-
-    // Build subtext parts
-    const subtextParts: string[] = []
-    if (classYear) subtextParts.push(classYear)
-    if (height) subtextParts.push(height)
-    if (positionLabel) subtextParts.push(positionLabel)
-    const subtext = subtextParts.join(' &bull; ')
-
-    // Academic badge
-    const academicBadge = player?.gpa
-      ? `<span style="display: inline-block; font-size: 11px; font-weight: 700; color: #22c55e; background-color: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); padding: 4px 10px; border-radius: 12px; margin-left: 8px;">&#x2705; ${player.gpa.toFixed(1)} GPA</span>`
-      : ''
-
-    // Team badge
-    const teamBadge = teamName
-      ? `<span style="display: inline-block; font-size: 11px; font-weight: 700; color: #60a5fa; background-color: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.25); padding: 4px 10px; border-radius: 12px;">${teamName}</span>`
-      : ''
+    // First player for reply-to
+    const firstPlayer = players[0] || null
 
     const sanitizedMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')
 
@@ -134,37 +205,7 @@ export async function POST(request: NextRequest) {
                     <!-- Card Body -->
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 0 0 12px 12px;">
 
-                      ${player ? `
-                      <!-- Player Card Header -->
-                      <tr>
-                        <td style="padding: 0;">
-                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
-                            <tr>
-                              <td style="padding: 28px 40px;">
-                                <table role="presentation" cellpadding="0" cellspacing="0">
-                                  <tr>
-                                    <!-- Player Photo -->
-                                    <td style="vertical-align: top; width: 64px; padding-right: 20px;">
-                                      ${photoHtml}
-                                    </td>
-                                    <!-- Player Info -->
-                                    <td style="vertical-align: top;">
-                                      <p style="margin: 0 0 4px 0; font-size: 22px; font-weight: 800; color: #ffffff; line-height: 1.2; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
-                                        ${playerName}
-                                      </p>
-                                      ${subtext ? `<p style="margin: 0 0 10px 0; font-size: 13px; color: #94a3b8; line-height: 1.4;">${subtext}</p>` : ''}
-                                      <div>
-                                        ${teamBadge}${academicBadge}
-                                      </div>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                      ` : ''}
+                      ${players.length > 0 ? playerCardsHtml : ''}
 
                       <tr>
                         <td style="padding: 44px 40px 40px 40px;">
@@ -174,23 +215,6 @@ export async function POST(request: NextRequest) {
                           <!-- Divider -->
                           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 32px 0;">
                             <tr><td style="height: 1px; background-color: #E2E8F0;"></td></tr>
-                          </table>
-
-                          <!-- CTA Button -->
-                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                              <td align="center">
-                                <table role="presentation" cellpadding="0" cellspacing="0">
-                                  <tr>
-                                    <td style="background: linear-gradient(to right, #E31837, #a01128); border-radius: 6px; box-shadow: 0 4px 14px rgba(227, 24, 55, 0.25);">
-                                      <a href="${profileUrl}" style="display: inline-block; padding: 16px 48px; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
-                                        View Player Profile
-                                      </a>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
                           </table>
                         </td>
                       </tr>
@@ -217,7 +241,7 @@ export async function POST(request: NextRequest) {
                 <tr>
                   <td style="padding: 24px 0 0 0; text-align: center;">
                     <p style="margin: 0 0 6px 0; font-size: 11px; color: #5a6a8a; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
-                      Reply directly to this email to respond to ${player?.email ? playerName : senderName}.
+                      Reply directly to this email to respond to ${firstPlayer?.email ? `${firstPlayer.firstName} ${firstPlayer.lastName}` : senderName}.
                     </p>
                     <p style="margin: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #3a4a6a;">
                       Elite Hoops Association
@@ -237,8 +261,8 @@ export async function POST(request: NextRequest) {
       to: coachEmail,
       subject: dynamicSubject,
       html,
-      replyTo: player?.email
-        ? (playerName ? `${playerName} <${player.email}>` : player.email)
+      replyTo: firstPlayer?.email
+        ? (`${firstPlayer.firstName} ${firstPlayer.lastName} <${firstPlayer.email}>`)
         : (session.user.name ? `${session.user.name} <${session.user.email}>` : session.user.email),
     })
 
@@ -247,6 +271,27 @@ export async function POST(request: NextRequest) {
         { error: result.error || 'Failed to send email' },
         { status: 500 }
       )
+    }
+
+    // Log the email
+    try {
+      await prisma.recruitingEmail.create({
+        data: {
+          sentById: session.user.id,
+          coachId: coachId || null,
+          collegeId: collegeId || null,
+          coachName: coachName || '',
+          coachEmail: coachEmail,
+          collegeName: collegeName || '',
+          players: {
+            create: players.map((p) => ({
+              playerId: p.id,
+            })),
+          },
+        },
+      })
+    } catch (logErr) {
+      console.error('Failed to log recruiting email:', logErr)
     }
 
     return NextResponse.json({ success: true, id: result.id })

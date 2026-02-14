@@ -28,7 +28,7 @@ export default function RecruitingButton({ player }: RecruitingButtonProps) {
       </Button>
 
       <RecruitingModal
-        player={player}
+        players={[player]}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       />
