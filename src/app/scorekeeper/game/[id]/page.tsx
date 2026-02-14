@@ -581,7 +581,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-400 text-lg mb-4">Game not found</p>
+          <p className="text-text-muted text-lg mb-4">Game not found</p>
           <Link href="/scorekeeper">
             <Button>Back to Dashboard</Button>
           </Link>
@@ -603,7 +603,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
         }}
         className={`relative p-4 min-h-20 rounded-xl text-left transition-all touch-manipulation ${isSelected
             ? 'bg-eha-red text-white ring-2 ring-eha-red ring-offset-2 ring-offset-dark-base'
-            : 'bg-dark-surface border border-eha-silver/20 text-gray-300 hover:border-eha-silver/40 active:bg-eha-navy/30'
+            : 'bg-input-bg border border-eha-silver/20 text-text-secondary hover:border-eha-silver/40 active:bg-eha-navy/30'
           }`}
       >
         <div className="flex items-center gap-3">
@@ -615,7 +615,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
           </span>
         </div>
         {stats.points > 0 && (
-          <div className={`text-xs mt-1 font-stats ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
+          <div className={`text-xs mt-1 font-stats ${isSelected ? 'text-white/80' : 'text-text-muted'}`}>
             {stats.points} pts
             {stats.rebounds > 0 && ` • ${stats.rebounds} reb`}
             {stats.assists > 0 && ` • ${stats.assists} ast`}
@@ -634,7 +634,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
   return (
     <div className="min-h-screen select-none">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-eha-navy/95 backdrop-blur-md border-b border-white/10">
+      <div className="sticky top-0 z-50 bg-eha-navy/95 backdrop-blur-md border-b border-border-default">
         <div className="max-w-[1600px] mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -644,7 +644,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                 </Button>
               </Link>
               <div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-text-muted">
                   {game.event?.name} {game.court && `• ${game.court}`}
                 </p>
                 <div className="flex items-center gap-2">
@@ -728,11 +728,11 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
             }}
             className={`flex-1 max-w-xs cursor-pointer rounded-2xl p-4 transition-all ${selectedTeam === 'away'
                 ? 'bg-gradient-to-br from-eha-red/30 to-eha-red/10 ring-2 ring-eha-red'
-                : 'bg-dark-surface border border-eha-silver/20 hover:border-eha-silver/40'
+                : 'bg-input-bg border border-eha-silver/20 hover:border-eha-silver/40'
               }`}
           >
-            <p className="text-base font-medium text-gray-400 text-center truncate">{game.awayTeam.name}</p>
-            <p className="text-8xl font-bold font-stats text-white text-center mt-2">{awayScore}</p>
+            <p className="text-base font-medium text-text-muted text-center truncate">{game.awayTeam.name}</p>
+            <p className="text-8xl font-bold font-stats text-text-primary text-center mt-2">{awayScore}</p>
           </div>
 
           {/* VS / Period */}
@@ -749,11 +749,11 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
             }}
             className={`flex-1 max-w-xs cursor-pointer rounded-2xl p-4 transition-all ${selectedTeam === 'home'
                 ? 'bg-gradient-to-br from-eha-red/30 to-eha-red/10 ring-2 ring-eha-red'
-                : 'bg-dark-surface border border-eha-silver/20 hover:border-eha-silver/40'
+                : 'bg-input-bg border border-eha-silver/20 hover:border-eha-silver/40'
               }`}
           >
-            <p className="text-base font-medium text-gray-400 text-center truncate">{game.homeTeam.name}</p>
-            <p className="text-8xl font-bold font-stats text-white text-center mt-2">{homeScore}</p>
+            <p className="text-base font-medium text-text-muted text-center truncate">{game.homeTeam.name}</p>
+            <p className="text-8xl font-bold font-stats text-text-primary text-center mt-2">{homeScore}</p>
           </div>
         </div>
 
@@ -761,15 +761,15 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
         <div className="grid grid-cols-12 gap-4">
           {/* Away Team Roster */}
           <div className="col-span-3">
-            <div className="bg-dark-surface rounded-xl p-3 border border-eha-silver/20">
-              <h3 className="font-semibold text-white mb-3 text-sm flex items-center gap-2">
+            <div className="bg-input-bg rounded-xl p-3 border border-eha-silver/20">
+              <h3 className="font-semibold text-text-primary mb-3 text-sm flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 {game.awayTeam.name}
               </h3>
               <div className="space-y-2 max-h-[calc(100vh-380px)] overflow-y-auto">
                 {game.awayTeam.players.map(player => renderPlayerButton(player, 'away'))}
                 {game.awayTeam.players.length === 0 && (
-                  <p className="text-gray-500 text-sm text-center py-4">No players on roster</p>
+                  <p className="text-text-muted text-sm text-center py-4">No players on roster</p>
                 )}
               </div>
             </div>
@@ -777,7 +777,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
 
           {/* Stat Buttons - Center */}
           <div className="col-span-6">
-            <div className="bg-dark-surface rounded-xl p-4 border border-eha-silver/20">
+            <div className="bg-input-bg rounded-xl p-4 border border-eha-silver/20">
               {/* Selected Player Display */}
               <div className="text-center mb-4">
                 {selectedPlayer ? (
@@ -785,21 +785,21 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                     <span className="text-eha-red font-bold text-lg">
                       #{selectedPlayer.jerseyNumber || '?'} {selectedPlayer.firstName} {selectedPlayer.lastName}
                     </span>
-                    <span className="text-gray-400 ml-2">
+                    <span className="text-text-muted ml-2">
                       ({selectedTeam === 'home' ? game.homeTeam.name : game.awayTeam.name})
                     </span>
                   </div>
                 ) : selectedTeam ? (
                   <div className="bg-eha-navy/50 rounded-lg py-2 px-4 inline-block">
-                    <span className="text-gray-300 font-medium">
+                    <span className="text-text-secondary font-medium">
                       {selectedTeam === 'home' ? game.homeTeam.name : game.awayTeam.name}
                     </span>
-                    <span className="text-gray-500 ml-2 text-sm">
+                    <span className="text-text-muted ml-2 text-sm">
                       (tap stat to assign player)
                     </span>
                   </div>
                 ) : (
-                  <p className="text-gray-500">Select a team to record stats</p>
+                  <p className="text-text-muted">Select a team to record stats</p>
                 )}
               </div>
 
@@ -809,7 +809,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                   onClick={() => setActiveTab('scoring')}
                   className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${activeTab === 'scoring'
                       ? 'bg-eha-red text-white'
-                      : 'bg-eha-navy/50 text-gray-400 hover:text-white'
+                      : 'bg-eha-navy/50 text-text-muted hover:text-text-primary'
                     }`}
                 >
                   Scoring
@@ -818,7 +818,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                   onClick={() => setActiveTab('stats')}
                   className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${activeTab === 'stats'
                       ? 'bg-eha-red text-white'
-                      : 'bg-eha-navy/50 text-gray-400 hover:text-white'
+                      : 'bg-eha-navy/50 text-text-muted hover:text-text-primary'
                     }`}
                 >
                   Other Stats
@@ -857,7 +857,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
 
               {/* Recent Actions */}
               <div className="mt-4 pt-4 border-t border-eha-silver/20">
-                <p className="text-xs text-gray-500 mb-2">Recent Actions</p>
+                <p className="text-xs text-text-muted mb-2">Recent Actions</p>
                 <div className="space-y-1 max-h-24 overflow-y-auto">
                   {actionLog.length === 0 ? (
                     <p className="text-gray-600 text-sm text-center py-2">No actions yet</p>
@@ -867,12 +867,12 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                         key={action.id}
                         className="flex items-center justify-between text-sm p-2 bg-eha-navy/30 rounded-lg"
                       >
-                        <span className="text-gray-300">
+                        <span className="text-text-secondary">
                           <span className="text-eha-red font-medium">#{action.playerNumber}</span>
                           {' '}{getStatLabel(action.statType)}
                         </span>
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-500 text-xs">{action.teamName}</span>
+                          <span className="text-text-muted text-xs">{action.teamName}</span>
                           {action.synced ? (
                             <CheckCircle className="w-4 h-4 text-green-500" />
                           ) : (
@@ -889,15 +889,15 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
 
           {/* Home Team Roster */}
           <div className="col-span-3">
-            <div className="bg-dark-surface rounded-xl p-3 border border-eha-silver/20">
-              <h3 className="font-semibold text-white mb-3 text-sm flex items-center gap-2">
+            <div className="bg-input-bg rounded-xl p-3 border border-eha-silver/20">
+              <h3 className="font-semibold text-text-primary mb-3 text-sm flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 {game.homeTeam.name}
               </h3>
               <div className="space-y-2 max-h-[calc(100vh-380px)] overflow-y-auto">
                 {game.homeTeam.players.map(player => renderPlayerButton(player, 'home'))}
                 {game.homeTeam.players.length === 0 && (
-                  <p className="text-gray-500 text-sm text-center py-4">No players on roster</p>
+                  <p className="text-text-muted text-sm text-center py-4">No players on roster</p>
                 )}
               </div>
             </div>
@@ -915,11 +915,11 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
         <div className="space-y-6">
           {/* Away Team */}
           <div>
-            <h3 className="font-semibold text-white mb-2">{game.awayTeam.name} - {awayScore}</h3>
+            <h3 className="font-semibold text-text-primary mb-2">{game.awayTeam.name} - {awayScore}</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-gray-500 border-b border-eha-silver/20">
+                  <tr className="text-text-muted border-b border-eha-silver/20">
                     <th className="text-left py-2 px-2">Player</th>
                     <th className="text-center py-2 px-1">PTS</th>
                     <th className="text-center py-2 px-1">REB</th>
@@ -938,19 +938,19 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                     const stats = getPlayerStats(player.id)
                     return (
                       <tr key={player.id} className="border-b border-eha-silver/20/50">
-                        <td className="py-2 px-2 text-white">
+                        <td className="py-2 px-2 text-text-primary">
                           #{player.jerseyNumber} {player.firstName[0]}. {player.lastName}
                         </td>
-                        <td className="text-center py-2 px-1 text-white font-medium">{stats.points}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.rebounds}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.assists}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.steals}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.blocks}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.turnovers}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.fouls}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.fgMade}-{stats.fgAttempted}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.fg3Made}-{stats.fg3Attempted}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.ftMade}-{stats.ftAttempted}</td>
+                        <td className="text-center py-2 px-1 text-text-primary font-medium">{stats.points}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.rebounds}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.assists}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.steals}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.blocks}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.turnovers}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.fouls}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.fgMade}-{stats.fgAttempted}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.fg3Made}-{stats.fg3Attempted}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.ftMade}-{stats.ftAttempted}</td>
                       </tr>
                     )
                   })}
@@ -961,11 +961,11 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
 
           {/* Home Team */}
           <div>
-            <h3 className="font-semibold text-white mb-2">{game.homeTeam.name} - {homeScore}</h3>
+            <h3 className="font-semibold text-text-primary mb-2">{game.homeTeam.name} - {homeScore}</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-gray-500 border-b border-eha-silver/20">
+                  <tr className="text-text-muted border-b border-eha-silver/20">
                     <th className="text-left py-2 px-2">Player</th>
                     <th className="text-center py-2 px-1">PTS</th>
                     <th className="text-center py-2 px-1">REB</th>
@@ -984,19 +984,19 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                     const stats = getPlayerStats(player.id)
                     return (
                       <tr key={player.id} className="border-b border-eha-silver/20/50">
-                        <td className="py-2 px-2 text-white">
+                        <td className="py-2 px-2 text-text-primary">
                           #{player.jerseyNumber} {player.firstName[0]}. {player.lastName}
                         </td>
-                        <td className="text-center py-2 px-1 text-white font-medium">{stats.points}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.rebounds}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.assists}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.steals}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.blocks}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.turnovers}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.fouls}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.fgMade}-{stats.fgAttempted}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.fg3Made}-{stats.fg3Attempted}</td>
-                        <td className="text-center py-2 px-1 text-gray-400">{stats.ftMade}-{stats.ftAttempted}</td>
+                        <td className="text-center py-2 px-1 text-text-primary font-medium">{stats.points}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.rebounds}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.assists}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.steals}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.blocks}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.turnovers}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.fouls}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.fgMade}-{stats.fgAttempted}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.fg3Made}-{stats.fg3Attempted}</td>
+                        <td className="text-center py-2 px-1 text-text-muted">{stats.ftMade}-{stats.ftAttempted}</td>
                       </tr>
                     )
                   })}
@@ -1014,19 +1014,19 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
         title="End Game"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
+          <p className="text-text-secondary">
             Are you sure you want to finalize this game?
           </p>
           <div className="bg-eha-navy/50 rounded-lg p-4 text-center">
             <div className="flex items-center justify-center gap-8">
               <div>
-                <p className="text-sm text-gray-400">{game.awayTeam.name}</p>
-                <p className="text-3xl font-bold text-white">{awayScore}</p>
+                <p className="text-sm text-text-muted">{game.awayTeam.name}</p>
+                <p className="text-3xl font-bold text-text-primary">{awayScore}</p>
               </div>
-              <div className="text-gray-500">-</div>
+              <div className="text-text-muted">-</div>
               <div>
-                <p className="text-sm text-gray-400">{game.homeTeam.name}</p>
-                <p className="text-3xl font-bold text-white">{homeScore}</p>
+                <p className="text-sm text-text-muted">{game.homeTeam.name}</p>
+                <p className="text-3xl font-bold text-text-primary">{homeScore}</p>
               </div>
             </div>
           </div>
@@ -1048,7 +1048,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
         title={`Assign ${pendingStat ? getStatLabel(pendingStat.statType) : 'Stat'}`}
       >
         <div className="space-y-4">
-          <p className="text-gray-400 text-sm">
+          <p className="text-text-muted text-sm">
             Select the player who made this play, or choose &quot;Team Stat&quot; if unknown.
           </p>
 
@@ -1064,7 +1064,7 @@ export default function ScorekeeperGamePage({ params }: { params: Promise<{ id: 
                   <span className="text-eha-red font-bold">
                     #{player.jerseyNumber || '?'}
                   </span>
-                  <span className="text-white font-medium truncate">
+                  <span className="text-text-primary font-medium truncate">
                     {player.firstName[0]}. {player.lastName}
                   </span>
                 </div>

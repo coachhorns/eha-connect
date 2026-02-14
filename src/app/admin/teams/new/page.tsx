@@ -124,20 +124,20 @@ export default function NewTeamPage() {
       <div className="mb-8">
         <Link
           href={programId ? `/admin/programs/${programId}` : '/admin/teams'}
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           {programId ? 'Back to Program' : 'Back to Teams'}
         </Link>
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">New Team</h1>
+        <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">New Team</h1>
         {program ? (
           <div className="mt-2 flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-400">Adding team to:</span>
+            <Building2 className="w-4 h-4 text-text-muted" />
+            <span className="text-text-muted">Adding team to:</span>
             <Badge variant="info">{program.name}</Badge>
           </div>
         ) : (
-          <p className="mt-2 text-gray-400">
+          <p className="mt-2 text-text-muted">
             Add a new team to the system
           </p>
         )}
@@ -153,7 +153,7 @@ export default function NewTeamPage() {
 
           {/* Team Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Team Name *
             </label>
             <Input
@@ -167,7 +167,7 @@ export default function NewTeamPage() {
 
           {/* Division */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Division
             </label>
             <Select
@@ -179,7 +179,7 @@ export default function NewTeamPage() {
 
           {/* Coach Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Coach Name
             </label>
             <Input

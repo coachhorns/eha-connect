@@ -130,7 +130,7 @@ function OnboardingContent() {
   // Strict auth check
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A1D37]">
+      <div className="min-h-screen flex items-center justify-center bg-page-bg">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
@@ -449,7 +449,7 @@ function OnboardingContent() {
   const currentRoster = rosters[currentTeamId] || []
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -477,17 +477,17 @@ function OnboardingContent() {
 
           {/* Progress Steps */}
           <div className="flex items-center justify-center gap-2 mb-6">
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${currentStep === 'program' ? 'bg-[#E31837] text-white' : 'bg-white/10 text-gray-400'}`}>
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${currentStep === 'program' ? 'bg-[#E31837] text-white' : 'bg-surface-overlay text-text-muted'}`}>
               <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">1</span>
               Program
             </div>
             <ChevronRight className="w-4 h-4 text-gray-600" />
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${currentStep === 'teams' ? 'bg-[#E31837] text-white' : 'bg-white/10 text-gray-400'}`}>
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${currentStep === 'teams' ? 'bg-[#E31837] text-white' : 'bg-surface-overlay text-text-muted'}`}>
               <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">2</span>
               Teams
             </div>
             <ChevronRight className="w-4 h-4 text-gray-600" />
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${currentStep === 'rosters' ? 'bg-[#E31837] text-white' : 'bg-white/10 text-gray-400'}`}>
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${currentStep === 'rosters' ? 'bg-[#E31837] text-white' : 'bg-surface-overlay text-text-muted'}`}>
               <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">3</span>
               Rosters
             </div>
@@ -507,14 +507,14 @@ function OnboardingContent() {
         {/* Step 1: Program */}
         {currentStep === 'program' && (
           <Card className="p-6">
-            <h1 className="text-2xl font-bold text-white mb-2">Create Your Program</h1>
-            <p className="text-gray-400 mb-6">
+            <h1 className="text-2xl font-bold text-text-primary mb-2">Create Your Program</h1>
+            <p className="text-text-muted mb-6">
               Welcome, {session.user.name || 'Director'}! Let's set up your program.
             </p>
 
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Program Name *
                 </label>
                 <Input
@@ -528,12 +528,12 @@ function OnboardingContent() {
 
               {/* Logo Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Logo (Optional)
                 </label>
                 {programData.logo ? (
                   <div className="flex items-start gap-4">
-                    <div className="relative w-24 h-24 bg-[#1a3a6e] rounded-lg overflow-hidden">
+                    <div className="relative w-24 h-24 bg-surface-raised rounded-lg overflow-hidden">
                       <img
                         src={programData.logo}
                         alt="Logo preview"
@@ -558,9 +558,9 @@ function OnboardingContent() {
                     {isUploading ? (
                       <Loader2 className="w-8 h-8 text-[#E31837] animate-spin mx-auto" />
                     ) : (
-                      <ImageIcon className="w-8 h-8 text-gray-500 mx-auto mb-2" />
+                      <ImageIcon className="w-8 h-8 text-text-muted mx-auto mb-2" />
                     )}
-                    <p className="text-sm text-gray-400">Click to upload logo</p>
+                    <p className="text-sm text-text-muted">Click to upload logo</p>
                   </div>
                 )}
                 <input
@@ -575,7 +575,7 @@ function OnboardingContent() {
               {/* Location */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">City</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">City</label>
                   <Input
                     type="text"
                     placeholder="Los Angeles"
@@ -584,7 +584,7 @@ function OnboardingContent() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">State</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">State</label>
                   <Input
                     type="text"
                     placeholder="CA"
@@ -611,22 +611,22 @@ function OnboardingContent() {
         {/* Step 2: Teams */}
         {currentStep === 'teams' && (
           <Card className="p-6">
-            <h1 className="text-2xl font-bold text-white mb-2">Add Your Teams</h1>
-            <p className="text-gray-400 mb-6">
+            <h1 className="text-2xl font-bold text-text-primary mb-2">Add Your Teams</h1>
+            <p className="text-text-muted mb-6">
               Add the teams in your program. You need at least one team.
             </p>
 
             <div className="space-y-4">
               {teams.map((team, index) => (
-                <div key={team.id} className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div key={team.id} className="bg-surface-glass border border-border-default rounded-xl p-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+                    <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wider">
                       Team {index + 1}
                     </h3>
                     {teams.length > 1 && (
                       <button
                         onClick={() => removeTeam(index)}
-                        className="text-gray-400 hover:text-red-400 transition-colors"
+                        className="text-text-muted hover:text-red-400 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -644,7 +644,7 @@ function OnboardingContent() {
                     <select
                       value={team.division}
                       onChange={(e) => handleTeamChange(index, 'division', e.target.value)}
-                      className="w-full bg-[#0a1628] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#E31837]"
+                      className="w-full bg-page-bg-alt border border-border-default rounded-lg px-4 py-2.5 text-text-primary text-sm focus:outline-none focus:border-[#E31837]"
                     >
                       <option value="">Division</option>
                       {divisions.map(d => (
@@ -664,7 +664,7 @@ function OnboardingContent() {
 
               <button
                 onClick={addTeam}
-                className="w-full py-3 border-2 border-dashed border-white/20 rounded-xl text-gray-400 hover:text-white hover:border-white/40 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 border-2 border-dashed border-border-default rounded-xl text-text-muted hover:text-text-primary hover:border-white/40 transition-colors flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Add Another Team
@@ -685,8 +685,8 @@ function OnboardingContent() {
         {/* Step 3: Rosters */}
         {currentStep === 'rosters' && (
           <Card className="p-6">
-            <h1 className="text-2xl font-bold text-white mb-2">Add Players</h1>
-            <p className="text-gray-400 mb-6">
+            <h1 className="text-2xl font-bold text-text-primary mb-2">Add Players</h1>
+            <p className="text-text-muted mb-6">
               Add at least one player to each team. You can add more later.
             </p>
 
@@ -704,7 +704,7 @@ function OnboardingContent() {
                     className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
                       activeTeamIndex === index
                         ? 'bg-[#E31837] text-white'
-                        : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                        : 'bg-surface-overlay text-text-muted hover:bg-surface-overlay'
                     }`}
                   >
                     {team.name || `Team ${index + 1}`}
@@ -723,8 +723,8 @@ function OnboardingContent() {
               <div className="flex items-start gap-3">
                 <Camera className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-white mb-1">Quick Tip: Upload a photo of your roster!</h3>
-                  <p className="text-sm text-gray-400 mb-3">
+                  <h3 className="text-sm font-semibold text-text-primary mb-1">Quick Tip: Upload a photo of your roster!</h3>
+                  <p className="text-sm text-text-muted mb-3">
                     Take a picture of your printed roster or screenshot from your team app. We'll automatically extract player information.
                   </p>
                   <div className="flex gap-2">
@@ -753,24 +753,24 @@ function OnboardingContent() {
             </div>
 
             {/* Current Team Roster */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
-              <h3 className="text-sm font-semibold text-white mb-4">
+            <div className="bg-surface-glass border border-border-default rounded-xl p-4 mb-4">
+              <h3 className="text-sm font-semibold text-text-primary mb-4">
                 {teams[activeTeamIndex]?.name || `Team ${activeTeamIndex + 1}`} - {currentRoster.length} players
               </h3>
 
               {currentRoster.length > 0 && (
                 <div className="space-y-2 mb-4">
                   {currentRoster.map(player => (
-                    <div key={player.id} className="flex items-center justify-between p-2 bg-white/5 rounded-lg">
+                    <div key={player.id} className="flex items-center justify-between p-2 bg-surface-glass rounded-lg">
                       <div className="flex items-center gap-3">
                         {player.jerseyNumber && (
-                          <span className="text-sm font-mono text-gray-400 w-8">#{player.jerseyNumber}</span>
+                          <span className="text-sm font-mono text-text-muted w-8">#{player.jerseyNumber}</span>
                         )}
-                        <span className="text-white">{player.firstName} {player.lastName}</span>
+                        <span className="text-text-primary">{player.firstName} {player.lastName}</span>
                       </div>
                       <button
                         onClick={() => removePlayer(player.id)}
-                        className="text-gray-400 hover:text-red-400 transition-colors"
+                        className="text-text-muted hover:text-red-400 transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -826,26 +826,26 @@ function OnboardingContent() {
               <Check className="w-8 h-8 text-green-400" />
             </div>
 
-            <h1 className="text-2xl font-bold text-white mb-2">You're All Set!</h1>
-            <p className="text-gray-400 mb-6">
+            <h1 className="text-2xl font-bold text-text-primary mb-2">You're All Set!</h1>
+            <p className="text-text-muted mb-6">
               Your program, teams, and rosters have been created. You can now register for events!
             </p>
 
             {/* Summary */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6 text-left">
-              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Summary</h3>
+            <div className="bg-surface-glass border border-border-default rounded-xl p-4 mb-6 text-left">
+              <h3 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-3">Summary</h3>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Program</span>
-                  <span className="text-white font-medium">{programData.name}</span>
+                  <span className="text-text-muted">Program</span>
+                  <span className="text-text-primary font-medium">{programData.name}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Teams</span>
-                  <span className="text-white font-medium">{teams.length}</span>
+                  <span className="text-text-muted">Teams</span>
+                  <span className="text-text-primary font-medium">{teams.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Players</span>
-                  <span className="text-white font-medium">
+                  <span className="text-text-muted">Players</span>
+                  <span className="text-text-primary font-medium">
                     {Object.values(rosters).reduce((sum, r) => sum + r.length, 0)}
                   </span>
                 </div>
@@ -867,7 +867,7 @@ export default function DirectorOnboardingPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+        <div className="min-h-screen bg-page-bg flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
         </div>
       }

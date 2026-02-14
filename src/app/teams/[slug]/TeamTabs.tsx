@@ -90,12 +90,12 @@ function PlayerCard({ entry }: { entry: RosterEntry }) {
 
   return (
     <div
-      className="bg-[#0a1628] border border-white/10 group relative overflow-hidden rounded-sm hover:border-white/20 transition-all"
+      className="bg-page-bg-alt border border-border-default group relative overflow-hidden rounded-sm hover:border-border-default transition-all"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image Section */}
-      <div className="aspect-[4/5] bg-[#153361] overflow-hidden relative">
+      <div className="aspect-[4/5] bg-surface-raised overflow-hidden relative">
         {player.profilePhoto ? (
           <Image
             src={player.profilePhoto}
@@ -146,7 +146,7 @@ function PlayerCard({ entry }: { entry: RosterEntry }) {
 
           <Link
             href={`/players/${player.slug}`}
-            className="px-6 py-3 text-[10px] font-black tracking-widest uppercase transition-all w-full bg-white text-[#0A1D37] hover:bg-eha-red hover:text-white"
+            className="px-6 py-3 text-[10px] font-black tracking-widest uppercase transition-all w-full bg-white text-page-bg hover:bg-eha-red hover:text-white"
           >
             View Full Profile
           </Link>
@@ -163,30 +163,30 @@ function PlayerCard({ entry }: { entry: RosterEntry }) {
             {isConnected && <VerifiedBadge size="sm" />}
           </div>
           {player.primaryPosition && (
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
               {player.primaryPosition}
             </span>
           )}
         </div>
 
-        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">
+        <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-4">
           {player.graduationYear ? `Class of ${player.graduationYear}` : 'Class TBD'}
           {height && ` • ${height}`}
         </p>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/10">
+        <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border-default">
           <div className="text-center">
             <span className="block text-xs font-black text-white font-stats">{ppg}</span>
-            <span className="block text-[8px] font-bold text-gray-500 uppercase">PPG</span>
+            <span className="block text-[8px] font-bold text-text-muted uppercase">PPG</span>
           </div>
           <div className="text-center">
             <span className="block text-xs font-black text-white font-stats">{rpg}</span>
-            <span className="block text-[8px] font-bold text-gray-500 uppercase">RPG</span>
+            <span className="block text-[8px] font-bold text-text-muted uppercase">RPG</span>
           </div>
           <div className="text-center">
             <span className="block text-xs font-black text-white font-stats">{apg}</span>
-            <span className="block text-[8px] font-bold text-gray-500 uppercase">APG</span>
+            <span className="block text-[8px] font-bold text-text-muted uppercase">APG</span>
           </div>
         </div>
       </div>
@@ -215,8 +215,8 @@ function PositionFilter({ active, onChange }: { active: string; onChange: (v: st
           className={cn(
             "px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
             active === pos.value
-              ? "bg-white text-[#0A1D37]"
-              : "bg-[#0a1628] border border-white/10 text-white hover:bg-white/5"
+              ? "bg-white text-page-bg"
+              : "bg-page-bg-alt border border-border-default text-white hover:bg-surface-glass"
           )}
         >
           {pos.label}
@@ -262,12 +262,12 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
 
   return (
     <Tabs defaultValue="roster">
-      <TabsList className="bg-[#0a1628] border border-white/10">
-        <TabsTrigger value="roster" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-[#0A1D37]">
+      <TabsList className="bg-page-bg-alt border border-border-default">
+        <TabsTrigger value="roster" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-page-bg">
           <Users className="w-4 h-4" />
           Roster
         </TabsTrigger>
-        <TabsTrigger value="schedule" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-[#0A1D37]">
+        <TabsTrigger value="schedule" className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-page-bg">
           <Calendar className="w-4 h-4" />
           Schedule
         </TabsTrigger>
@@ -275,10 +275,10 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
 
       <TabsContent value="roster" className="mt-8">
         {roster.length === 0 ? (
-          <div className="text-center py-20 bg-[#0a1628] border border-white/5 rounded-sm">
+          <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
             <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">No Players on Roster</h3>
-            <p className="text-gray-400">This team hasn't added any players yet.</p>
+            <p className="text-text-muted">This team hasn't added any players yet.</p>
           </div>
         ) : (
           <>
@@ -287,9 +287,9 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
               <PositionFilter active={positionFilter} onChange={setPositionFilter} />
 
               <div className="flex items-center gap-4">
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Sort By:</span>
+                <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Sort By:</span>
                 <select
-                  className="text-xs font-bold border border-white/10 bg-[#0a1628] text-white px-4 py-2 rounded-sm focus:ring-1 focus:ring-eha-red outline-none"
+                  className="text-xs font-bold border border-border-default bg-page-bg-alt text-white px-4 py-2 rounded-sm focus:ring-1 focus:ring-eha-red outline-none"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -307,15 +307,15 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
               ))}
 
               {/* Roster Info Card */}
-              <div className="flex flex-col items-center justify-center p-8 text-center bg-[#0a1628] border border-white/10 rounded-sm">
+              <div className="flex flex-col items-center justify-center p-8 text-center bg-page-bg-alt border border-border-default rounded-sm">
                 <UsersRound className="w-12 h-12 text-eha-red mb-6" />
                 <h3 className="text-xl font-black uppercase tracking-tight mb-2 text-white font-heading">
                   Team Roster
                 </h3>
-                <p className="text-xs text-gray-400 mb-6">
+                <p className="text-xs text-text-muted mb-6">
                   {roster.length} players registered for {teamName}.
                 </p>
-                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
                   {filteredRoster.length} shown with current filters
                 </div>
               </div>
@@ -326,14 +326,14 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
 
       <TabsContent value="schedule" className="mt-8">
         {games.length === 0 ? (
-          <div className="text-center py-20 bg-[#0a1628] border border-white/5 rounded-sm">
+          <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
             <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">No Games Scheduled</h3>
-            <p className="text-gray-400">This team hasn't been scheduled for any games yet.</p>
+            <p className="text-text-muted">This team hasn't been scheduled for any games yet.</p>
           </div>
         ) : (
-          <div className="bg-[#0a1628] border border-white/10 rounded-sm overflow-hidden">
-            <div className="divide-y divide-white/5">
+          <div className="bg-page-bg-alt border border-border-default rounded-sm overflow-hidden">
+            <div className="divide-y divide-border-subtle">
               {games.map((game) => {
                 const isHome = game.homeTeam.id === teamId
                 const opponent = isHome ? game.awayTeam : game.homeTeam
@@ -346,11 +346,11 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
                 return (
                   <div
                     key={game.id}
-                    className="flex items-center justify-between p-5 hover:bg-white/5 transition-colors"
+                    className="flex items-center justify-between p-5 hover:bg-surface-glass transition-colors"
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <span className="text-gray-500 text-sm font-bold w-8">{prefix}</span>
+                        <span className="text-text-muted text-sm font-bold w-8">{prefix}</span>
                         <Link
                           href={`/teams/${opponent.slug}`}
                           className="text-white font-bold hover:text-eha-red transition-colors"
@@ -358,7 +358,7 @@ export function TeamTabs({ roster, games, teamId, teamName }: TeamTabsProps) {
                           {opponent.name}
                         </Link>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500 ml-11">
+                      <div className="flex items-center gap-2 text-sm text-text-muted ml-11">
                         <Calendar className="w-3.5 h-3.5" />
                         <span>{formatDate(game.scheduledAt)}</span>
                         {game.event && (

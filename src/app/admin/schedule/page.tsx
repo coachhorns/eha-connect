@@ -82,17 +82,17 @@ function DraggableGameCard({
 }) {
   return (
     <div
-      className={`p-3 bg-white/5 border border-white/10 rounded-lg cursor-grab active:cursor-grabbing transition-all ${isDragging ? 'opacity-50 ring-2 ring-eha-red' : 'hover:border-eha-red/50'
+      className={`p-3 bg-surface-glass border border-border-default rounded-lg cursor-grab active:cursor-grabbing transition-all ${isDragging ? 'opacity-50 ring-2 ring-eha-red' : 'hover:border-eha-red/50'
         }`}
     >
       <div className="flex items-start gap-2">
-        <GripVertical className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+        <GripVertical className="w-4 h-4 text-text-muted flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-white truncate">
+          <p className="text-sm font-medium text-text-primary truncate">
             {game.homeTeam.name}
           </p>
-          <p className="text-xs text-gray-400">vs</p>
-          <p className="text-sm font-medium text-white truncate">
+          <p className="text-xs text-text-muted">vs</p>
+          <p className="text-sm font-medium text-text-primary truncate">
             {game.awayTeam.name}
           </p>
           {game.division && (
@@ -124,7 +124,7 @@ function DroppableCell({
 }) {
   return (
     <div
-      className={`min-h-[60px] border-b border-r border-white/5 p-1 transition-colors ${isOver ? 'bg-eha-red/20' : game ? 'bg-white/5' : 'hover:bg-white/5'
+      className={`min-h-[60px] border-b border-r border-border-subtle p-1 transition-colors ${isOver ? 'bg-eha-red/20' : game ? 'bg-surface-glass' : 'hover:bg-surface-glass'
         }`}
     >
       {game && (
@@ -135,8 +135,8 @@ function DroppableCell({
           >
             <X className="w-3 h-3" />
           </button>
-          <p className="font-medium text-white truncate">{game.homeTeam.name}</p>
-          <p className="text-gray-400">vs {game.awayTeam.name}</p>
+          <p className="font-medium text-text-primary truncate">{game.homeTeam.name}</p>
+          <p className="text-text-muted">vs {game.awayTeam.name}</p>
         </div>
       )}
     </div>
@@ -369,7 +369,7 @@ export default function SchedulingGridPage() {
     >
       <div className="min-h-screen bg-dark-base">
         {/* Header */}
-        <div className="sticky top-0 z-40 bg-eha-navy/95 backdrop-blur-md border-b border-white/10">
+        <div className="sticky top-0 z-40 bg-eha-navy/95 backdrop-blur-md border-b border-border-default">
           <div className="max-w-[1800px] mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -379,8 +379,8 @@ export default function SchedulingGridPage() {
                   </Button>
                 </Link>
                 <div>
-                  <h1 className="text-xl font-bold text-white">Scheduling Grid</h1>
-                  <p className="text-sm text-gray-500">
+                  <h1 className="text-xl font-bold text-text-primary">Scheduling Grid</h1>
+                  <p className="text-sm text-text-muted">
                     Drag games to schedule them on courts
                   </p>
                 </div>
@@ -388,12 +388,12 @@ export default function SchedulingGridPage() {
 
               <div className="flex items-center gap-3">
                 {/* Date Navigation */}
-                <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
+                <div className="flex items-center gap-2 bg-surface-glass rounded-lg p-1">
                   <Button variant="ghost" size="sm" onClick={goToPreviousDay}>
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
                   <div className="px-3 py-1 text-center min-w-[140px]">
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-text-primary">
                       {isToday(selectedDate)
                         ? 'Today'
                         : format(selectedDate, 'EEE, MMM d')}
@@ -422,7 +422,7 @@ export default function SchedulingGridPage() {
                   />
                 </Button>
 
-                <div className="h-6 w-px bg-white/10 mx-2" />
+                <div className="h-6 w-px bg-surface-overlay mx-2" />
 
                 <Link href="/admin/scheduler/auto">
                   <Button size="sm" className="flex gap-2">
@@ -461,9 +461,9 @@ export default function SchedulingGridPage() {
         {/* Main Content */}
         <div className="flex h-[calc(100vh-80px)]">
           {/* Sidebar - Unscheduled Games */}
-          <div className="w-[300px] flex-shrink-0 border-r border-white/10 bg-[#0A1D37] overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-white/10">
-              <h2 className="font-semibold text-white mb-3 flex items-center gap-2">
+          <div className="w-[300px] flex-shrink-0 border-r border-border-default bg-page-bg overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-border-default">
+              <h2 className="font-semibold text-text-primary mb-3 flex items-center gap-2">
                 <Filter className="w-4 h-4" />
                 Unscheduled Games
                 <Badge variant="default">{unscheduledGames.length}</Badge>
@@ -474,21 +474,21 @@ export default function SchedulingGridPage() {
                 <select
                   value={eventFilter}
                   onChange={(e) => setEventFilter(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+                  className="w-full bg-surface-glass border border-border-default text-text-primary rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
                 >
-                  <option value="" className="bg-[#0A1D37] text-white">All Events</option>
+                  <option value="" className="bg-page-bg text-text-primary">All Events</option>
                   {events.map((e) => (
-                    <option key={e.id} value={e.id} className="bg-[#0A1D37] text-white">{e.name}</option>
+                    <option key={e.id} value={e.id} className="bg-page-bg text-text-primary">{e.name}</option>
                   ))}
                 </select>
                 <select
                   value={divisionFilter}
                   onChange={(e) => setDivisionFilter(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+                  className="w-full bg-surface-glass border border-border-default text-text-primary rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
                 >
-                  <option value="" className="bg-[#0A1D37] text-white">All Divisions</option>
+                  <option value="" className="bg-page-bg text-text-primary">All Divisions</option>
                   {divisions.map((d) => (
-                    <option key={d} value={d} className="bg-[#0A1D37] text-white">{d}</option>
+                    <option key={d} value={d} className="bg-page-bg text-text-primary">{d}</option>
                   ))}
                 </select>
               </div>
@@ -497,7 +497,7 @@ export default function SchedulingGridPage() {
             {/* Games List */}
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
               {unscheduledGames.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-text-muted">
                   <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">No unscheduled games</p>
                 </div>
@@ -521,12 +521,12 @@ export default function SchedulingGridPage() {
           <div className="flex-1 overflow-auto min-w-0">
             {allCourts.length === 0 ? (
               <div className="flex items-center justify-center h-full">
-                <div className="bg-[#152e50]/30 border border-white/5 rounded-sm p-8 text-center max-w-md">
+                <div className="bg-surface-raised/30 border border-border-subtle rounded-sm p-8 text-center max-w-md">
                   <AlertCircle className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                  <h3 className="text-lg font-semibold text-text-primary mb-2">
                     No Courts Available
                   </h3>
-                  <p className="text-gray-400 mb-4">
+                  <p className="text-text-muted mb-4">
                     You need to create venues and courts before you can schedule
                     games.
                   </p>
@@ -538,15 +538,15 @@ export default function SchedulingGridPage() {
             ) : (
               <div className="min-w-max">
                 {/* Court Headers */}
-                <div className="sticky top-0 z-30 bg-[#0A1D37] flex border-b border-white/10">
-                  <div className="w-20 flex-shrink-0 p-2 border-r border-white/10" />
+                <div className="sticky top-0 z-30 bg-page-bg flex border-b border-border-default">
+                  <div className="w-20 flex-shrink-0 p-2 border-r border-border-default" />
                   {allCourts.map((court) => (
                     <div
                       key={court.id}
-                      className="w-40 flex-shrink-0 p-2 border-r border-white/10 text-center"
+                      className="w-40 flex-shrink-0 p-2 border-r border-border-default text-center"
                     >
-                      <p className="font-medium text-white text-sm">{court.name}</p>
-                      <p className="text-xs text-gray-500">{court.venueName}</p>
+                      <p className="font-medium text-text-primary text-sm">{court.name}</p>
+                      <p className="text-xs text-text-muted">{court.venueName}</p>
                     </div>
                   ))}
                 </div>
@@ -555,8 +555,8 @@ export default function SchedulingGridPage() {
                 {TIME_SLOTS.map((slot) => (
                   <div key={`${slot.hour}-${slot.minute}`} className="flex">
                     {/* Time Label */}
-                    <div className="w-20 flex-shrink-0 p-2 border-r border-b border-white/5 text-right">
-                      <span className="text-xs text-gray-500">{slot.label}</span>
+                    <div className="w-20 flex-shrink-0 p-2 border-r border-b border-border-subtle text-right">
+                      <span className="text-xs text-text-muted">{slot.label}</span>
                     </div>
 
                     {/* Court Cells */}

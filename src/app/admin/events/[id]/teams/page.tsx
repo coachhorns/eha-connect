@@ -242,14 +242,14 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
         <div>
           <Link
             href={`/admin/events/${resolvedParams.id}/edit`}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-2"
+            className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Event
           </Link>
-          <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Manage Teams</h1>
+          <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">Manage Teams</h1>
           {event && (
-            <p className="mt-1 text-gray-400">{event.name}</p>
+            <p className="mt-1 text-text-muted">{event.name}</p>
           )}
         </div>
         <Button onClick={() => setShowAddModal(true)} className="flex items-center gap-2">
@@ -261,26 +261,26 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card className="p-4">
-          <div className="text-2xl font-bold text-white">{eventTeams.length}</div>
-          <div className="text-sm text-gray-500">Teams Registered</div>
+          <div className="text-2xl font-bold text-text-primary">{eventTeams.length}</div>
+          <div className="text-sm text-text-muted">Teams Registered</div>
         </Card>
         <Card className="p-4">
-          <div className="text-2xl font-bold text-white">
+          <div className="text-2xl font-bold text-text-primary">
             {Object.keys(groupedTeams).filter(p => p !== 'Unassigned').length}
           </div>
-          <div className="text-sm text-gray-500">Pools</div>
+          <div className="text-sm text-text-muted">Pools</div>
         </Card>
         <Card className="p-4">
-          <div className="text-2xl font-bold text-white">
+          <div className="text-2xl font-bold text-text-primary">
             {eventTeams.reduce((sum, et) => sum + et.team._count.roster, 0)}
           </div>
-          <div className="text-sm text-gray-500">Total Players</div>
+          <div className="text-sm text-text-muted">Total Players</div>
         </Card>
         <Card className="p-4">
-          <div className="text-2xl font-bold text-white">
+          <div className="text-2xl font-bold text-text-primary">
             {groupedTeams['Unassigned']?.length || 0}
           </div>
-          <div className="text-sm text-gray-500">Unassigned</div>
+          <div className="text-sm text-text-muted">Unassigned</div>
         </Card>
       </div>
 
@@ -288,43 +288,43 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
       {eventTeams.length === 0 ? (
         <Card className="p-12 text-center">
           <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-white mb-2">No teams registered</h3>
-          <p className="text-gray-500 mb-4">Add teams to this event to get started</p>
+          <h3 className="text-lg font-semibold text-text-primary mb-2">No teams registered</h3>
+          <p className="text-text-muted mb-4">Add teams to this event to get started</p>
           <Button onClick={() => setShowAddModal(true)}>Add First Team</Button>
         </Card>
       ) : (
         <div className="space-y-6">
           {sortedPools.map(pool => (
             <Card key={pool} className="overflow-hidden p-0">
-              <div className="bg-[#1a3a6e] px-6 py-3 flex items-center justify-between">
-                <h3 className="font-semibold text-white flex items-center gap-2">
+              <div className="bg-surface-raised px-6 py-3 flex items-center justify-between">
+                <h3 className="font-semibold text-text-primary flex items-center gap-2">
                   {pool === 'Unassigned' ? (
                     <Badge variant="warning">{pool}</Badge>
                   ) : (
                     <Badge variant="info">{pool}</Badge>
                   )}
-                  <span className="text-gray-500 font-normal">
+                  <span className="text-text-muted font-normal">
                     ({groupedTeams[pool].length} teams)
                   </span>
                 </h3>
               </div>
-              <div className="divide-y divide-[#1a3a6e]">
+              <div className="divide-y divide-border-default">
                 {groupedTeams[pool]
                   .sort((a, b) => (a.seed || 999) - (b.seed || 999))
                   .map((et) => (
                     <div
                       key={et.id}
-                      className="px-6 py-4 flex items-center justify-between hover:bg-[#1a3a6e]/30 transition-colors"
+                      className="px-6 py-4 flex items-center justify-between hover:bg-surface-overlay transition-colors"
                     >
                       <div className="flex items-center gap-4">
                         {et.seed && (
                           <div className="w-8 h-8 bg-[#FF6B00]/20 rounded-full flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">#{et.seed}</span>
+                            <span className="text-text-primary font-bold text-sm">#{et.seed}</span>
                           </div>
                         )}
                         <div>
-                          <div className="font-medium text-white">{et.team.name}</div>
-                          <div className="flex items-center gap-3 text-sm text-gray-500">
+                          <div className="font-medium text-text-primary">{et.team.name}</div>
+                          <div className="flex items-center gap-3 text-sm text-text-muted">
                             {et.team.program && (
                               <span>{et.team.program.name}</span>
                             )}
@@ -342,11 +342,11 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-right text-sm">
-                          <div className="text-gray-400">
+                          <div className="text-text-muted">
                             {et.team._count.roster} players
                           </div>
                           {(et.eventWins > 0 || et.eventLosses > 0) && (
-                            <div className="text-white font-medium">
+                            <div className="text-text-primary font-medium">
                               {et.eventWins}-{et.eventLosses}
                             </div>
                           )}
@@ -391,11 +391,11 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
       >
         <form onSubmit={handleAddTeam} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Search Teams
             </label>
             <div className="relative mb-3">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <Input
                 placeholder="Search by name or program..."
                 value={searchTeam}
@@ -405,15 +405,15 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
             </div>
             <div className="max-h-48 overflow-y-auto border border-[#1a3a6e] rounded-lg">
               {filteredAvailableTeams.length === 0 ? (
-                <div className="p-4 text-center text-gray-500">
+                <div className="p-4 text-center text-text-muted">
                   {searchTeam ? 'No teams found' : 'No available teams'}
                 </div>
               ) : (
                 filteredAvailableTeams.map((team) => (
                   <label
                     key={team.id}
-                    className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#1a3a6e] transition-colors ${
-                      addForm.teamId === team.id ? 'bg-[#1a3a6e]' : ''
+                    className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-surface-overlay transition-colors ${
+                      addForm.teamId === team.id ? 'bg-surface-raised' : ''
                     }`}
                   >
                     <input
@@ -425,8 +425,8 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
                       className="text-white focus:ring-eha-red"
                     />
                     <div className="flex-1">
-                      <div className="font-medium text-white">{team.name}</div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="font-medium text-text-primary">{team.name}</div>
+                      <div className="flex items-center gap-2 text-sm text-text-muted">
                         {team.program && <span>{team.program.name}</span>}
                         {team.division && <Badge size="sm">{team.division}</Badge>}
                       </div>
@@ -483,10 +483,10 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
       >
         {selectedTeam && (
           <form onSubmit={handleUpdateTeam} className="space-y-4">
-            <div className="bg-[#1a3a6e] rounded-lg p-4 mb-4">
-              <div className="font-medium text-white">{selectedTeam.team.name}</div>
+            <div className="bg-surface-raised rounded-lg p-4 mb-4">
+              <div className="font-medium text-text-primary">{selectedTeam.team.name}</div>
               {selectedTeam.team.program && (
-                <div className="text-sm text-gray-500">{selectedTeam.team.program.name}</div>
+                <div className="text-sm text-text-muted">{selectedTeam.team.program.name}</div>
               )}
             </div>
 
@@ -533,9 +533,9 @@ export default function AdminEventTeamsPage({ params }: { params: Promise<{ id: 
         title="Remove Team"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
+          <p className="text-text-secondary">
             Are you sure you want to remove{' '}
-            <strong className="text-white">{deleteModal.team?.team.name}</strong> from this event?
+            <strong className="text-text-primary">{deleteModal.team?.team.name}</strong> from this event?
           </p>
           <div className="flex gap-3 justify-end">
             <Button

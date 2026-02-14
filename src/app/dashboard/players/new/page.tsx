@@ -81,15 +81,15 @@ export default function NewPlayerPage() {
       <div className="mb-8">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
         </Link>
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">
+        <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">
           Create Player Profile
         </h1>
-        <p className="mt-2 text-gray-400">
+        <p className="mt-2 text-text-muted">
           Add a new player profile to your account
         </p>
       </div>

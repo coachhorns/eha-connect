@@ -92,13 +92,13 @@ export default function ImageUpload({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-gray-300">{label}</label>
+        <label className="block text-sm font-medium text-text-secondary">{label}</label>
       )}
 
       {value ? (
         <div className="relative">
           <div
-            className="relative w-full overflow-hidden rounded-lg bg-[#1A1A2E]"
+            className="relative w-full overflow-hidden rounded-lg bg-input-bg"
             style={{ paddingBottom: getAspectPadding() }}
           >
             <img
@@ -121,7 +121,7 @@ export default function ImageUpload({
           className={`relative border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
             isDragActive
               ? 'border-eha-red bg-eha-red/10'
-              : 'border-[#1a3a6e] hover:border-eha-red/50'
+              : 'border-border-default hover:border-eha-red/50'
           } ${isUploading ? 'pointer-events-none opacity-50' : ''}`}
         >
           <input {...getInputProps()} />
@@ -132,18 +132,18 @@ export default function ImageUpload({
             {isUploading ? (
               <>
                 <Loader2 className="w-8 h-8 text-eha-red animate-spin mb-2" />
-                <p className="text-sm text-gray-400">Uploading...</p>
+                <p className="text-sm text-text-muted">Uploading...</p>
               </>
             ) : (
               <>
-                <Upload className="w-8 h-8 text-gray-500 mb-2" />
-                <p className="text-sm text-gray-400 text-center">
+                <Upload className="w-8 h-8 text-text-muted mb-2" />
+                <p className="text-sm text-text-muted text-center">
                   {isDragActive
                     ? 'Drop the image here'
                     : 'Drag & drop an image, or click to select'}
                 </p>
                 {helperText && (
-                  <p className="text-xs text-gray-500 mt-1">{helperText}</p>
+                  <p className="text-xs text-text-muted mt-1">{helperText}</p>
                 )}
               </>
             )}

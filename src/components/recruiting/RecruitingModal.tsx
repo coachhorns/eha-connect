@@ -344,11 +344,11 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
 
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-2xl bg-[#0A1D37]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl max-h-[85vh] flex flex-col"
+          className="w-full max-w-2xl bg-page-bg/95 backdrop-blur-xl border border-border-default rounded-2xl shadow-2xl max-h-[85vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border-default shrink-0">
             <div className="flex items-center gap-3">
               {header.showBack && (
                 <button
@@ -359,23 +359,23 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                         ? () => setSelectedCollege(null)
                         : handleBackToPlayerSelection
                   }
-                  className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                  className="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface-overlay rounded-lg transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
               )}
               <div>
-                <h2 className="text-xl font-heading font-bold text-white">
+                <h2 className="text-xl font-heading font-bold text-text-primary">
                   {header.title}
                 </h2>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-text-muted mt-0.5">
                   {header.subtitle}
                 </p>
               </div>
             </div>
             <button
               onClick={handleClose}
-              className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              className="p-2 text-text-muted hover:text-text-primary hover:bg-surface-overlay rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -425,7 +425,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                       return (
                         <div key={teamName}>
                           {/* Team Header */}
-                          <div className="sticky top-0 z-10 px-5 py-2.5 bg-[#0A1D37] border-b border-white/10 flex items-center gap-3">
+                          <div className="sticky top-0 z-10 px-5 py-2.5 bg-page-bg border-b border-border-default flex items-center gap-3">
                             <button
                               onClick={toggleTeam}
                               className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
@@ -433,23 +433,23 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                                   ? 'bg-amber-500 border-amber-500'
                                   : someTeamSelected
                                     ? 'bg-amber-500/40 border-amber-500'
-                                    : 'border-white/20 hover:border-white/40'
+                                    : 'border-border-default hover:border-white/40'
                               }`}
                             >
                               {(allTeamSelected || someTeamSelected) && (
                                 <Check className="w-3 h-3 text-white" />
                               )}
                             </button>
-                            <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                            <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
                               {teamName}
                             </span>
-                            <span className="text-[10px] text-gray-500">
+                            <span className="text-[10px] text-text-muted">
                               ({teamPlayers.length})
                             </span>
                           </div>
 
                           {/* Team Players */}
-                          <div className="divide-y divide-white/5">
+                          <div className="divide-y divide-border-subtle">
                             {teamPlayers.map((player) => {
                               const isSelected = selectedSlugs.has(player.slug)
                               return (
@@ -463,15 +463,15 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                                   <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
                                     isSelected
                                       ? 'bg-amber-500 border-amber-500'
-                                      : 'border-white/20'
+                                      : 'border-border-default'
                                   }`}>
                                     {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-white truncate">
+                                    <p className="text-sm font-medium text-text-primary truncate">
                                       {player.firstName} {player.lastName}
                                     </p>
-                                    <p className="text-[10px] text-gray-500 truncate">
+                                    <p className="text-[10px] text-text-muted truncate">
                                       {[
                                         player.primaryPosition,
                                         player.graduationYear ? `Class of ${player.graduationYear}` : null,
@@ -489,7 +489,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                 </div>
 
                 {/* Continue Button */}
-                <div className="px-6 py-4 border-t border-white/10">
+                <div className="px-6 py-4 border-t border-border-default">
                   <Button
                     onClick={handleContinueWithPlayers}
                     disabled={selectedSlugs.size === 0}
@@ -505,56 +505,56 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                 {sendSuccess ? (
                   <div className="flex flex-col items-center justify-center py-8">
                     <CheckCircle className="w-16 h-16 text-green-400 mb-4" />
-                    <p className="text-white font-semibold text-lg">Message Sent!</p>
-                    <p className="text-gray-400 text-sm mt-1">
+                    <p className="text-text-primary font-semibold text-lg">Message Sent!</p>
+                    <p className="text-text-muted text-sm mt-1">
                       Your email has been delivered to {composingCoach.firstName} {composingCoach.lastName}
                     </p>
                   </div>
                 ) : (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
                         To
                       </label>
-                      <div className="px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-400">
+                      <div className="px-4 py-2.5 bg-surface-glass border border-border-default rounded-lg text-sm text-text-muted">
                         {composingCoach.email}
                       </div>
                     </div>
 
                     {isMultiPlayer && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                        <label className="block text-sm font-medium text-text-secondary mb-1.5">
                           Players Included
                         </label>
-                        <div className="px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-400">
+                        <div className="px-4 py-2.5 bg-surface-glass border border-border-default rounded-lg text-sm text-text-muted">
                           {playerNames}
                         </div>
                       </div>
                     )}
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
                         Subject
                       </label>
                       <input
                         type="text"
                         value={emailSubject}
                         onChange={(e) => setEmailSubject(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-dark-surface border border-eha-silver/20 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200"
+                        className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
                         Message
                       </label>
                       <textarea
                         value={emailBody}
                         onChange={(e) => setEmailBody(e.target.value)}
                         rows={8}
-                        className="w-full px-4 py-2.5 bg-dark-surface border border-eha-silver/20 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200 resize-none"
+                        className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200 resize-none"
                       />
-                      <p className="text-xs text-gray-500 mt-1.5">
+                      <p className="text-xs text-text-muted mt-1.5">
                         {isMultiPlayer
                           ? 'Links to all player profiles will be included automatically.'
                           : 'A link to your player profile will be included automatically.'}
@@ -570,7 +570,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                     <div className="flex gap-3 pt-2">
                       <button
                         onClick={handleBackFromCompose}
-                        className="px-4 py-2.5 text-gray-400 hover:text-white text-sm font-medium transition-colors"
+                        className="px-4 py-2.5 text-text-muted hover:text-text-primary text-sm font-medium transition-colors"
                       >
                         Cancel
                       </button>
@@ -597,13 +597,13 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                 ) : selectedCollege.coaches.length === 0 ? (
                   <div className="p-8 text-center">
                     <GraduationCap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                    <p className="text-white font-medium mb-1">No Coaches Listed</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-text-primary font-medium mb-1">No Coaches Listed</p>
+                    <p className="text-xs text-text-muted">
                       No coaching staff data is available for this school yet.
                     </p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-white/5">
+                  <div className="divide-y divide-border-subtle">
                     {selectedCollege.coaches.map((coach) => (
                       <div
                         key={coach.id}
@@ -615,11 +615,11 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate">
+                          <p className="text-sm font-medium text-text-primary truncate">
                             {coach.firstName} {coach.lastName}
                           </p>
                           {coach.title && (
-                            <p className="text-xs text-gray-400 truncate">{coach.title}</p>
+                            <p className="text-xs text-text-muted truncate">{coach.title}</p>
                           )}
                         </div>
                         {coach.email ? (
@@ -631,7 +631,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                             Email Coach
                           </button>
                         ) : (
-                          <span className="text-xs text-gray-500">No email</span>
+                          <span className="text-xs text-text-muted">No email</span>
                         )}
                       </div>
                     ))}
@@ -642,18 +642,18 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
               /* Search & Filter View */
               <>
                 {/* Search by Name */}
-                <div className="px-6 py-4 border-b border-white/10">
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                <div className="px-6 py-4 border-b border-border-default">
+                  <label className="block text-sm font-medium text-text-secondary mb-1.5">
                     Search by School Name
                   </label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                     <input
                       type="text"
                       placeholder="Type a school name..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-dark-surface border border-eha-silver/20 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200"
+                      className="w-full bg-input-bg border border-eha-silver/20 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -668,33 +668,33 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                     ) : searchResults.length === 0 ? (
                       <div className="p-8 text-center">
                         <Building2 className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                        <p className="text-white font-medium mb-1">No Schools Found</p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-text-primary font-medium mb-1">No Schools Found</p>
+                        <p className="text-xs text-text-muted">
                           No results for &ldquo;{searchQuery}&rdquo;. Try a different name or use the filters below.
                         </p>
                       </div>
                     ) : (
-                      <div className="divide-y divide-white/5">
+                      <div className="divide-y divide-border-subtle">
                         {searchResults.map((college) => (
                           <button
                             key={college.id}
                             onClick={() => handleSelectCollege(college.id)}
-                            className="w-full flex items-center gap-4 px-6 py-3.5 hover:bg-white/5 transition-colors text-left"
+                            className="w-full flex items-center gap-4 px-6 py-3.5 hover:bg-surface-glass transition-colors text-left"
                           >
-                            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center shrink-0">
-                              <GraduationCap className="w-5 h-5 text-gray-400" />
+                            <div className="w-10 h-10 bg-surface-overlay rounded-lg flex items-center justify-center shrink-0">
+                              <GraduationCap className="w-5 h-5 text-text-muted" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-white truncate">
+                              <p className="text-sm font-medium text-text-primary truncate">
                                 {college.name}
                               </p>
-                              <p className="text-xs text-gray-400 truncate">
+                              <p className="text-xs text-text-muted truncate">
                                 {[college.division, college.city, college.state, college.conference]
                                   .filter(Boolean)
                                   .join(' • ')}
                               </p>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-gray-500 shrink-0" />
+                            <ChevronRight className="w-4 h-4 text-text-muted shrink-0" />
                           </button>
                         ))}
                       </div>
@@ -703,7 +703,7 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                 ) : (
                   <>
                     {/* Filters */}
-                    <div className="px-6 py-4 border-b border-white/10">
+                    <div className="px-6 py-4 border-b border-border-default">
                       {isLoadingFilters ? (
                         <div className="flex items-center justify-center py-4">
                           <div className="animate-spin w-5 h-5 border-2 border-[#E31837] border-t-transparent rounded-full" />
@@ -751,41 +751,41 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                       ) : !selectedDivision && !selectedState ? (
                         <div className="p-8 text-center">
                           <Search className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                          <p className="text-white font-medium mb-1">Select Filters</p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-text-primary font-medium mb-1">Select Filters</p>
+                          <p className="text-xs text-text-muted">
                             Choose a division or state to find colleges
                           </p>
                         </div>
                       ) : colleges.length === 0 ? (
                         <div className="p-8 text-center">
                           <Building2 className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                          <p className="text-white font-medium mb-1">No Colleges Found</p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-text-primary font-medium mb-1">No Colleges Found</p>
+                          <p className="text-xs text-text-muted">
                             Try adjusting your filters
                           </p>
                         </div>
                       ) : (
-                        <div className="divide-y divide-white/5">
+                        <div className="divide-y divide-border-subtle">
                           {colleges.map((college) => (
                             <button
                               key={college.id}
                               onClick={() => handleSelectCollege(college.id)}
-                              className="w-full flex items-center gap-4 px-6 py-3.5 hover:bg-white/5 transition-colors text-left"
+                              className="w-full flex items-center gap-4 px-6 py-3.5 hover:bg-surface-glass transition-colors text-left"
                             >
-                              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center shrink-0">
-                                <GraduationCap className="w-5 h-5 text-gray-400" />
+                              <div className="w-10 h-10 bg-surface-overlay rounded-lg flex items-center justify-center shrink-0">
+                                <GraduationCap className="w-5 h-5 text-text-muted" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-white truncate">
+                                <p className="text-sm font-medium text-text-primary truncate">
                                   {college.name}
                                 </p>
-                                <p className="text-xs text-gray-400 truncate">
+                                <p className="text-xs text-text-muted truncate">
                                   {[college.city, college.state, college.conference]
                                     .filter(Boolean)
                                     .join(' • ')}
                                 </p>
                               </div>
-                              <ChevronRight className="w-4 h-4 text-gray-500 shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-text-muted shrink-0" />
                             </button>
                           ))}
                         </div>
@@ -798,8 +798,8 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-3 border-t border-white/10 shrink-0">
-            <p className="text-[10px] text-gray-500 text-center">
+          <div className="px-6 py-3 border-t border-border-default shrink-0">
+            <p className="text-[10px] text-text-muted text-center">
               Emails are sent from EHA Connect. Coaches can reply directly to your email address.
             </p>
           </div>

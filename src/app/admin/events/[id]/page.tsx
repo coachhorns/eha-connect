@@ -309,7 +309,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
@@ -321,12 +321,12 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] text-white w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8">
+      <div className="min-h-screen bg-page-bg text-text-primary w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8">
         <div className="bg-red-500/10 border border-red-500/20 rounded-sm p-6 text-center">
           <p className="text-red-400">{error}</p>
           <button
             onClick={() => router.push('/admin/events')}
-            className="mt-4 text-white hover:underline"
+            className="mt-4 text-text-primary hover:underline"
           >
             Back to Events
           </button>
@@ -342,12 +342,12 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
   const eventStatus = getEventStatus()
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] text-white w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8">
+    <div className="min-h-screen bg-page-bg text-text-primary w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8">
       {/* Header */}
       <div className="mb-8">
         <Link
           href="/admin/events"
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-6 text-sm font-bold uppercase tracking-widest"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-6 text-sm font-bold uppercase tracking-widest"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Events
@@ -356,13 +356,13 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl lg:text-5xl tracking-tighter font-bold text-white uppercase">{event.name}</h1>
+              <h1 className="text-4xl lg:text-5xl tracking-tighter font-bold text-text-primary uppercase">{event.name}</h1>
               <Badge variant={eventStatus.variant as any}>{eventStatus.label}</Badge>
               {!event.isPublished && (
                 <Badge variant="warning">Draft</Badge>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 font-bold uppercase tracking-widest mt-3">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-text-muted font-bold uppercase tracking-widest mt-3">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <span>
@@ -400,44 +400,44 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="rounded-sm p-4 border border-white/5">
+        <Card className="rounded-sm p-4 border border-border-subtle">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-sm">
+            <div className="p-2 bg-surface-overlay rounded-sm">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{teams.length}</p>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Teams</p>
+              <p className="text-2xl font-bold text-text-primary">{teams.length}</p>
+              <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Teams</p>
             </div>
           </div>
         </Card>
-        <Card className="rounded-sm p-4 border border-white/5">
+        <Card className="rounded-sm p-4 border border-border-subtle">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-sm">
+            <div className="p-2 bg-surface-overlay rounded-sm">
               <Gamepad2 className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{games.length}</p>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Games</p>
+              <p className="text-2xl font-bold text-text-primary">{games.length}</p>
+              <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Games</p>
             </div>
           </div>
         </Card>
-        <Card className="rounded-sm p-4 border border-white/5">
+        <Card className="rounded-sm p-4 border border-border-subtle">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-sm">
+            <div className="p-2 bg-surface-overlay rounded-sm">
               <Gamepad2 className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-text-primary">
                 {games.filter(g => g.status === 'FINAL').length}
               </p>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Completed</p>
+              <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Completed</p>
             </div>
           </div>
         </Card>
-        <Card className="rounded-sm p-4 border border-white/5">
+        <Card className="rounded-sm p-4 border border-border-subtle">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-sm">
+            <div className="p-2 bg-surface-overlay rounded-sm">
               {event.isPublished ? (
                 <Eye className="w-5 h-5 text-white" />
               ) : (
@@ -445,10 +445,10 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
               )}
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-text-primary">
                 {event.isPublished ? 'Live' : 'Draft'}
               </p>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Status</p>
+              <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Status</p>
             </div>
           </div>
         </Card>
@@ -473,36 +473,36 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
         {/* Teams Tab */}
         <TabsContent value="teams">
-          <Card className="overflow-hidden p-0 rounded-sm border border-white/5">
+          <Card className="overflow-hidden p-0 rounded-sm border border-border-subtle">
             {teams.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-2">No teams registered</h3>
-                <p className="text-gray-500 text-sm">Teams will appear here once they register for this event</p>
+                <h3 className="text-lg font-bold text-text-primary uppercase tracking-tight mb-2">No teams registered</h3>
+                <p className="text-text-muted text-sm">Teams will appear here once they register for this event</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#152e50]/50 border-b border-white/5">
+                  <thead className="bg-surface-raised/50 border-b border-border-subtle">
                     <tr>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                         Team Name
                       </th>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                         Coach
                       </th>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                         Division
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-border-subtle">
                     {teams.map((team) => (
-                      <tr key={team.id} className="hover:bg-white/5 transition-colors">
+                      <tr key={team.id} className="hover:bg-surface-glass transition-colors">
                         <td className="px-6 py-4">
-                          <div className="font-bold text-white uppercase tracking-wide">{team.name}</div>
+                          <div className="font-bold text-text-primary uppercase tracking-wide">{team.name}</div>
                         </td>
-                        <td className="px-6 py-4 text-gray-400 text-sm">
+                        <td className="px-6 py-4 text-text-muted text-sm">
                           {team.coachName || '-'}
                         </td>
                         <td className="px-6 py-4">
@@ -523,12 +523,12 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
 
         {/* Games Tab */}
         <TabsContent value="games">
-          <Card className="overflow-hidden p-0 rounded-sm border border-white/5">
+          <Card className="overflow-hidden p-0 rounded-sm border border-border-subtle">
             {games.length === 0 ? (
               <div className="text-center py-12">
                 <Gamepad2 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-2">No games scheduled</h3>
-                <p className="text-gray-500 text-sm mb-4">Schedule games for this event</p>
+                <h3 className="text-lg font-bold text-text-primary uppercase tracking-tight mb-2">No games scheduled</h3>
+                <p className="text-text-muted text-sm mb-4">Schedule games for this event</p>
                 <Link href="/admin/games/new">
                   <Button>Schedule Game</Button>
                 </Link>
@@ -536,53 +536,53 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#152e50]/50 border-b border-white/5">
+                  <thead className="bg-surface-raised/50 border-b border-border-subtle">
                     <tr>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                         Matchup
                       </th>
-                      <th className="px-6 py-4 text-center text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
+                      <th className="px-6 py-4 text-center text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                         Score
                       </th>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                         Date/Time
                       </th>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                         Court
                       </th>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                         Type
                       </th>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                         Status
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-border-subtle">
                     {games.map((game) => (
                       <tr
                         key={game.id}
-                        className="hover:bg-white/5 transition-colors cursor-pointer"
+                        className="hover:bg-surface-glass transition-colors cursor-pointer"
                         onClick={() => router.push(`/admin/games/${game.id}`)}
                       >
                         <td className="px-6 py-4">
-                          <div className="font-bold text-white uppercase tracking-wide">
+                          <div className="font-bold text-text-primary uppercase tracking-wide">
                             {game.homeTeam.name} vs {game.awayTeam.name}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
                           {game.status === 'FINAL' || game.status === 'IN_PROGRESS' ? (
-                            <span className="font-bold text-white">
+                            <span className="font-bold text-text-primary">
                               {game.homeScore} - {game.awayScore}
                             </span>
                           ) : (
-                            <span className="text-gray-500">-</span>
+                            <span className="text-text-muted">-</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-400 text-sm">
+                        <td className="px-6 py-4 text-text-muted text-sm">
                           {format(new Date(game.scheduledAt), 'MMM d, h:mm a')}
                         </td>
-                        <td className="px-6 py-4 text-gray-400 text-sm">
+                        <td className="px-6 py-4 text-text-muted text-sm">
                           {game.court || '-'}
                         </td>
                         <td className="px-6 py-4">
@@ -607,11 +607,11 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         {/* Exposure Sync Tab */}
         <TabsContent value="exposure">
           {/* Schedule Sync Card */}
-          <Card className="rounded-sm border border-white/5 mb-6 overflow-hidden">
-            <div className="p-4 border-b border-white/5 bg-[#152e50]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <Card className="rounded-sm border border-border-subtle mb-6 overflow-hidden">
+            <div className="p-4 border-b border-border-subtle bg-surface-raised/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wide">Schedule Sync</h3>
-                <p className="text-xs text-gray-400 mt-1">Pull latest game times, scores, and matchups from Exposure.</p>
+                <h3 className="text-sm font-bold text-text-primary uppercase tracking-wide">Schedule Sync</h3>
+                <p className="text-xs text-text-muted mt-1">Pull latest game times, scores, and matchups from Exposure.</p>
               </div>
               <Button
                 size="sm"
@@ -642,11 +642,11 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
           </Card>
 
           {/* Push Teams Card */}
-          <Card className="overflow-hidden p-0 rounded-sm border border-white/5">
-            <div className="p-4 border-b border-white/5 bg-[#152e50]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <Card className="overflow-hidden p-0 rounded-sm border border-border-subtle">
+            <div className="p-4 border-b border-border-subtle bg-surface-raised/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wide">Exposure Integration</h3>
-                <p className="text-xs text-gray-400 mt-1">Push registered teams to the official Exposure Events schedule.</p>
+                <h3 className="text-sm font-bold text-text-primary uppercase tracking-wide">Exposure Integration</h3>
+                <p className="text-xs text-text-muted mt-1">Push registered teams to the official Exposure Events schedule.</p>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="w-40">
@@ -710,26 +710,26 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
             {filteredTeams.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-2">No teams found</h3>
-                <p className="text-gray-500 text-sm">No teams match the selected filter.</p>
+                <h3 className="text-lg font-bold text-text-primary uppercase tracking-tight mb-2">No teams found</h3>
+                <p className="text-text-muted text-sm">No teams match the selected filter.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#152e50]/50 border-b border-white/5">
+                  <thead className="bg-surface-raised/50 border-b border-border-subtle">
                     <tr>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Team</th>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Division</th>
-                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Status</th>
-                      <th className="px-6 py-4 text-right text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Action</th>
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">Team</th>
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">Division</th>
+                      <th className="px-6 py-4 text-left text-[10px] font-extrabold text-text-muted uppercase tracking-widest">Status</th>
+                      <th className="px-6 py-4 text-right text-[10px] font-extrabold text-text-muted uppercase tracking-widest">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-border-subtle">
                     {filteredTeams.map((team) => (
-                      <tr key={team.id} className="hover:bg-white/5 transition-colors">
+                      <tr key={team.id} className="hover:bg-surface-glass transition-colors">
                         <td className="px-6 py-4">
-                          <div className="font-bold text-white uppercase tracking-wide">{team.name}</div>
-                          <div className="text-xs text-gray-500">{team.coachName || 'No Coach'}</div>
+                          <div className="font-bold text-text-primary uppercase tracking-wide">{team.name}</div>
+                          <div className="text-xs text-text-muted">{team.coachName || 'No Coach'}</div>
                         </td>
                         <td className="px-6 py-4">
                           {team.division ? (
@@ -775,8 +775,8 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         </div>
         <div className="p-6 flex items-center justify-between">
           <div>
-            <p className="text-white font-bold text-sm">Delete this event</p>
-            <p className="text-gray-500 text-xs mt-1">
+            <p className="text-text-primary font-bold text-sm">Delete this event</p>
+            <p className="text-text-muted text-xs mt-1">
               {games.length > 0
                 ? `This event has ${teams.length} teams and ${games.length} games. You can deactivate or permanently delete it.`
                 : 'Permanently remove this event and all associated data.'}
@@ -796,15 +796,15 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
         title="Delete Event"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
-            Are you sure you want to delete <strong className="text-white">{event?.name}</strong>?
+          <p className="text-text-secondary">
+            Are you sure you want to delete <strong className="text-text-primary">{event?.name}</strong>?
           </p>
 
           {games.length > 0 ? (
             <>
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">
-                <p className="text-sm text-gray-300">This event contains:</p>
-                <ul className="text-sm text-gray-400 list-disc list-inside space-y-1">
+              <div className="bg-surface-glass border border-border-default rounded-lg p-4 space-y-2">
+                <p className="text-sm text-text-secondary">This event contains:</p>
+                <ul className="text-sm text-text-muted list-disc list-inside space-y-1">
                   <li>{teams.length} registered team{teams.length !== 1 ? 's' : ''}</li>
                   <li>{games.length} game{games.length !== 1 ? 's' : ''}</li>
                 </ul>
@@ -889,14 +889,14 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Exposure Division ID</label>
+            <label className="block text-sm font-medium text-text-secondary mb-2">Exposure Division ID</label>
             <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="e.g. 1045"
                 value={pushDivisionId}
                 onChange={(e) => setPushDivisionId(e.target.value)}
-                className="flex-1 bg-white/5 border border-white/10 text-white px-4 py-2 rounded-sm focus:outline-none focus:border-eha-red"
+                className="flex-1 bg-surface-glass border border-border-default text-text-primary px-4 py-2 rounded-sm focus:outline-none focus:border-eha-red"
               />
               <Button variant="secondary" onClick={() => window.open('https://exposureevents.com/admin/divisions', '_blank')}>
                 Find ID
@@ -910,7 +910,7 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+          <div className="flex justify-end gap-3 pt-4 border-t border-border-default">
             <Button
               variant="ghost"
               onClick={() => {

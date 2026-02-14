@@ -150,8 +150,8 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <Trophy className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-white mb-2">Game Not Found</h1>
-        <p className="text-gray-400 mb-6">{error || 'The game you are looking for does not exist.'}</p>
+        <h1 className="text-2xl font-bold text-text-primary mb-2">Game Not Found</h1>
+        <p className="text-text-muted mb-6">{error || 'The game you are looking for does not exist.'}</p>
         <Link href="/standings">
           <Button>View Standings</Button>
         </Link>
@@ -183,7 +183,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
         return <Badge variant="error" size="lg">CANCELED</Badge>
       default:
         return (
-          <div className="text-gray-400 flex items-center gap-2">
+          <div className="text-text-muted flex items-center gap-2">
             <Clock className="w-4 h-4" />
             {format(new Date(game.scheduledAt), 'h:mm a')}
           </div>
@@ -203,13 +203,13 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-[#0a1628] border-b border-white/10 pt-32">
+      <div className="bg-page-bg-alt border-b border-border-default pt-32">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-6">
           {/* Back Link */}
           {game.event && (
             <Link
               href={`/events/${game.event.slug}`}
-              className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+              className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
               {game.event.name}
@@ -231,12 +231,12 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={(game.awayTeam.logo || game.awayTeam.program?.logo)!} alt={game.awayTeam.name} className="w-16 h-16 object-contain mx-auto mb-2" />
               ) : (
-                <div className="w-16 h-16 bg-white/10 rounded-full mx-auto mb-2 flex items-center justify-center text-2xl font-bold text-gray-500">
+                <div className="w-16 h-16 bg-surface-overlay rounded-full mx-auto mb-2 flex items-center justify-center text-2xl font-bold text-text-muted">
                   {game.awayTeam.name.charAt(0)}
                 </div>
               )}
-              <div className="text-lg font-semibold text-white mb-2">{game.awayTeam.name}</div>
-              <div className={`text-5xl md:text-6xl font-bold ${awayWon ? 'text-white' : 'text-white'}`}>
+              <div className="text-lg font-semibold text-text-primary mb-2">{game.awayTeam.name}</div>
+              <div className={`text-5xl md:text-6xl font-bold ${awayWon ? 'text-text-primary' : 'text-text-primary'}`}>
                 {game.homeScore > 0 || game.awayScore > 0 || isLive || isFinal ? game.awayScore : '-'}
               </div>
             </div>
@@ -252,19 +252,19 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={(game.homeTeam.logo || game.homeTeam.program?.logo)!} alt={game.homeTeam.name} className="w-16 h-16 object-contain mx-auto mb-2" />
               ) : (
-                <div className="w-16 h-16 bg-white/10 rounded-full mx-auto mb-2 flex items-center justify-center text-2xl font-bold text-gray-500">
+                <div className="w-16 h-16 bg-surface-overlay rounded-full mx-auto mb-2 flex items-center justify-center text-2xl font-bold text-text-muted">
                   {game.homeTeam.name.charAt(0)}
                 </div>
               )}
-              <div className="text-lg font-semibold text-white mb-2">{game.homeTeam.name}</div>
-              <div className={`text-5xl md:text-6xl font-bold ${homeWon ? 'text-white' : 'text-white'}`}>
+              <div className="text-lg font-semibold text-text-primary mb-2">{game.homeTeam.name}</div>
+              <div className={`text-5xl md:text-6xl font-bold ${homeWon ? 'text-text-primary' : 'text-text-primary'}`}>
                 {game.homeScore > 0 || game.awayScore > 0 || isLive || isFinal ? game.homeScore : '-'}
               </div>
             </div>
           </div>
 
           {/* Game Details */}
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-text-muted">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               {format(new Date(game.scheduledAt), 'EEEE, MMMM d, yyyy')}
@@ -289,7 +289,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedTeam('away')}
                 className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${selectedTeam === 'away'
                     ? 'bg-eha-red text-white'
-                    : 'bg-white/5 text-gray-400 hover:text-white'
+                    : 'bg-surface-glass text-text-muted hover:text-text-primary'
                   }`}
               >
                 {game.awayTeam.name}
@@ -299,7 +299,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 onClick={() => setSelectedTeam('home')}
                 className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${selectedTeam === 'home'
                     ? 'bg-eha-red text-white'
-                    : 'bg-white/5 text-gray-400 hover:text-white'
+                    : 'bg-surface-glass text-text-muted hover:text-text-primary'
                   }`}
               >
                 {game.homeTeam.name}
@@ -309,16 +309,16 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
 
             {/* Box Score Table */}
             <Card className="overflow-hidden p-0 mb-6">
-              <div className="bg-[#1a3a6e] px-4 py-3 border-b border-[#1A1A2E]">
-                <h2 className="font-semibold text-white">{currentTeam.name} Box Score</h2>
+              <div className="bg-surface-raised px-4 py-3 border-b border-border-default">
+                <h2 className="font-semibold text-text-primary">{currentTeam.name} Box Score</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-[#1a3a6e] text-xs text-gray-500 uppercase">
-                      <th className="text-left py-3 px-4 sticky left-0 bg-dark-surface">Player</th>
+                    <tr className="border-b border-border-default text-xs text-text-muted uppercase">
+                      <th className="text-left py-3 px-4 sticky left-0 bg-input-bg">Player</th>
                       <th className="text-center py-3 px-2 min-w-[40px]">MIN</th>
-                      <th className="text-center py-3 px-2 min-w-[40px] bg-[#1a3a6e]/30">PTS</th>
+                      <th className="text-center py-3 px-2 min-w-[40px] bg-surface-raised/30">PTS</th>
                       <th className="text-center py-3 px-2 min-w-[40px]">REB</th>
                       <th className="text-center py-3 px-2 min-w-[40px]">AST</th>
                       <th className="text-center py-3 px-2 min-w-[40px]">STL</th>
@@ -334,11 +334,11 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                     {currentStats
                       .sort((a, b) => b.points - a.points)
                       .map(stat => (
-                        <tr key={stat.id} className="border-b border-[#1a3a6e]/50 hover:bg-[#1a3a6e]/30">
-                          <td className="py-3 px-4 sticky left-0 bg-dark-surface">
+                        <tr key={stat.id} className="border-b border-border-default/50 hover:bg-surface-raised/30">
+                          <td className="py-3 px-4 sticky left-0 bg-input-bg">
                             <Link
                               href={`/players/${stat.player.slug}`}
-                              className="flex items-center gap-2 hover:text-white transition-colors"
+                              className="flex items-center gap-2 hover:text-text-primary transition-colors"
                             >
                               {stat.player.profilePhoto ? (
                                 <Image
@@ -349,57 +349,57 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                                   className="w-8 h-8 rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="w-8 h-8 bg-[#1a3a6e] rounded-full flex items-center justify-center">
-                                  <User className="w-4 h-4 text-gray-400" />
+                                <div className="w-8 h-8 bg-surface-raised rounded-full flex items-center justify-center">
+                                  <User className="w-4 h-4 text-text-muted" />
                                 </div>
                               )}
                               <div>
-                                <div className="font-medium text-white whitespace-nowrap">
+                                <div className="font-medium text-text-primary whitespace-nowrap">
                                   {stat.player.jerseyNumber && (
-                                    <span className="text-white mr-1">#{stat.player.jerseyNumber}</span>
+                                    <span className="text-text-primary mr-1">#{stat.player.jerseyNumber}</span>
                                   )}
                                   {stat.player.firstName[0]}. {stat.player.lastName}
                                 </div>
                               </div>
                             </Link>
                           </td>
-                          <td className="text-center py-3 px-2 text-gray-400">{stat.minutes || '-'}</td>
-                          <td className="text-center py-3 px-2 text-white font-bold bg-[#1a3a6e]/30">{stat.points}</td>
-                          <td className="text-center py-3 px-2 text-gray-300">{stat.rebounds}</td>
-                          <td className="text-center py-3 px-2 text-gray-300">{stat.assists}</td>
-                          <td className="text-center py-3 px-2 text-gray-300">{stat.steals}</td>
-                          <td className="text-center py-3 px-2 text-gray-300">{stat.blocks}</td>
-                          <td className="text-center py-3 px-2 text-gray-300">{stat.turnovers}</td>
-                          <td className="text-center py-3 px-2 text-gray-300">{stat.fouls}</td>
-                          <td className="text-center py-3 px-2 text-gray-400">
+                          <td className="text-center py-3 px-2 text-text-muted">{stat.minutes || '-'}</td>
+                          <td className="text-center py-3 px-2 text-text-primary font-bold bg-surface-raised/30">{stat.points}</td>
+                          <td className="text-center py-3 px-2 text-text-secondary">{stat.rebounds}</td>
+                          <td className="text-center py-3 px-2 text-text-secondary">{stat.assists}</td>
+                          <td className="text-center py-3 px-2 text-text-secondary">{stat.steals}</td>
+                          <td className="text-center py-3 px-2 text-text-secondary">{stat.blocks}</td>
+                          <td className="text-center py-3 px-2 text-text-secondary">{stat.turnovers}</td>
+                          <td className="text-center py-3 px-2 text-text-secondary">{stat.fouls}</td>
+                          <td className="text-center py-3 px-2 text-text-muted">
                             {stat.fgMade}-{stat.fgAttempted}
                           </td>
-                          <td className="text-center py-3 px-2 text-gray-400">
+                          <td className="text-center py-3 px-2 text-text-muted">
                             {stat.fg3Made}-{stat.fg3Attempted}
                           </td>
-                          <td className="text-center py-3 px-2 text-gray-400">
+                          <td className="text-center py-3 px-2 text-text-muted">
                             {stat.ftMade}-{stat.ftAttempted}
                           </td>
                         </tr>
                       ))}
                     {/* Totals Row */}
-                    <tr className="bg-[#1a3a6e] font-semibold">
-                      <td className="py-3 px-4 sticky left-0 bg-[#1a3a6e] text-white">TOTALS</td>
-                      <td className="text-center py-3 px-2 text-gray-400">-</td>
-                      <td className="text-center py-3 px-2 text-white">{currentTotals.points}</td>
-                      <td className="text-center py-3 px-2 text-gray-300">{currentTotals.rebounds}</td>
-                      <td className="text-center py-3 px-2 text-gray-300">{currentTotals.assists}</td>
-                      <td className="text-center py-3 px-2 text-gray-300">{currentTotals.steals}</td>
-                      <td className="text-center py-3 px-2 text-gray-300">{currentTotals.blocks}</td>
-                      <td className="text-center py-3 px-2 text-gray-300">{currentTotals.turnovers}</td>
-                      <td className="text-center py-3 px-2 text-gray-300">{currentTotals.fouls}</td>
-                      <td className="text-center py-3 px-2 text-gray-400">
+                    <tr className="bg-surface-raised font-semibold">
+                      <td className="py-3 px-4 sticky left-0 bg-surface-raised text-white">TOTALS</td>
+                      <td className="text-center py-3 px-2 text-text-muted">-</td>
+                      <td className="text-center py-3 px-2 text-text-primary">{currentTotals.points}</td>
+                      <td className="text-center py-3 px-2 text-text-secondary">{currentTotals.rebounds}</td>
+                      <td className="text-center py-3 px-2 text-text-secondary">{currentTotals.assists}</td>
+                      <td className="text-center py-3 px-2 text-text-secondary">{currentTotals.steals}</td>
+                      <td className="text-center py-3 px-2 text-text-secondary">{currentTotals.blocks}</td>
+                      <td className="text-center py-3 px-2 text-text-secondary">{currentTotals.turnovers}</td>
+                      <td className="text-center py-3 px-2 text-text-secondary">{currentTotals.fouls}</td>
+                      <td className="text-center py-3 px-2 text-text-muted">
                         {currentTotals.fgMade}-{currentTotals.fgAttempted}
                       </td>
-                      <td className="text-center py-3 px-2 text-gray-400">
+                      <td className="text-center py-3 px-2 text-text-muted">
                         {currentTotals.fg3Made}-{currentTotals.fg3Attempted}
                       </td>
-                      <td className="text-center py-3 px-2 text-gray-400">
+                      <td className="text-center py-3 px-2 text-text-muted">
                         {currentTotals.ftMade}-{currentTotals.ftAttempted}
                       </td>
                     </tr>
@@ -410,31 +410,31 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
 
             {/* Shooting Percentages */}
             <Card className="mb-6">
-              <h3 className="font-semibold text-white mb-4">{currentTeam.name} Shooting</h3>
+              <h3 className="font-semibold text-text-primary mb-4">{currentTeam.name} Shooting</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-2xl font-bold text-text-primary">
                     {formatPercentage(currentTotals.fgMade, currentTotals.fgAttempted)}
                   </div>
-                  <div className="text-sm text-gray-500">FG%</div>
+                  <div className="text-sm text-text-muted">FG%</div>
                   <div className="text-xs text-gray-600">
                     {currentTotals.fgMade}/{currentTotals.fgAttempted}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-2xl font-bold text-text-primary">
                     {formatPercentage(currentTotals.fg3Made, currentTotals.fg3Attempted)}
                   </div>
-                  <div className="text-sm text-gray-500">3PT%</div>
+                  <div className="text-sm text-text-muted">3PT%</div>
                   <div className="text-xs text-gray-600">
                     {currentTotals.fg3Made}/{currentTotals.fg3Attempted}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-2xl font-bold text-text-primary">
                     {formatPercentage(currentTotals.ftMade, currentTotals.ftAttempted)}
                   </div>
-                  <div className="text-sm text-gray-500">FT%</div>
+                  <div className="text-sm text-text-muted">FT%</div>
                   <div className="text-xs text-gray-600">
                     {currentTotals.ftMade}/{currentTotals.ftAttempted}
                   </div>
@@ -445,8 +445,8 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
         ) : (
           <Card className="p-8 text-center">
             <Trophy className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No Stats Available</h3>
-            <p className="text-gray-500">
+            <h3 className="text-lg font-semibold text-text-primary mb-2">No Stats Available</h3>
+            <p className="text-text-muted">
               {game.status === 'SCHEDULED'
                 ? 'Stats will be available once the game starts.'
                 : 'No player statistics have been recorded for this game.'}
@@ -457,7 +457,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
         {/* Team Comparison */}
         {(game.homeStats.length > 0 || game.awayStats.length > 0) && (
           <Card>
-            <h3 className="font-semibold text-white mb-4">Team Comparison</h3>
+            <h3 className="font-semibold text-text-primary mb-4">Team Comparison</h3>
             <div className="space-y-4">
               {[
                 { label: 'Points', home: game.homeTotals.points, away: game.awayTotals.points },
@@ -472,15 +472,15 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 return (
                   <div key={stat.label}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className={`font-medium ${stat.home > stat.away ? 'text-white' : 'text-gray-400'}`}>
+                      <span className={`font-medium ${stat.home > stat.away ? 'text-white' : 'text-text-muted'}`}>
                         {stat.home}
                       </span>
-                      <span className="text-gray-500">{stat.label}</span>
-                      <span className={`font-medium ${stat.away > stat.home ? 'text-white' : 'text-gray-400'}`}>
+                      <span className="text-text-muted">{stat.label}</span>
+                      <span className={`font-medium ${stat.away > stat.home ? 'text-white' : 'text-text-muted'}`}>
                         {stat.away}
                       </span>
                     </div>
-                    <div className="h-2 bg-[#1a3a6e] rounded-full overflow-hidden flex">
+                    <div className="h-2 bg-surface-raised rounded-full overflow-hidden flex">
                       <div
                         className={`h-full ${stat.home > stat.away ? 'bg-eha-red' : 'bg-gray-600'}`}
                         style={{ width: `${homePercent}%` }}
@@ -494,7 +494,7 @@ export default function GameBoxScorePage({ params }: { params: Promise<{ id: str
                 )
               })}
             </div>
-            <div className="flex justify-between text-xs text-gray-500 mt-4">
+            <div className="flex justify-between text-xs text-text-muted mt-4">
               <span>{game.homeTeam.name}</span>
               <span>{game.awayTeam.name}</span>
             </div>

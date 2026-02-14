@@ -252,14 +252,14 @@ export default function AdminUsersPage() {
   return (
     <div className="min-h-screen">
       {/* Header Section — matches Player Profile hero pattern */}
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
               <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">
                 Admin Panel
               </span>
-              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-text-primary uppercase tracking-tighter">
                 User Management
               </h1>
               <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">
@@ -284,13 +284,13 @@ export default function AdminUsersPage() {
         <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-4 mb-8">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
                 type="text"
                 placeholder="Search by name or email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
               />
             </div>
           </div>
@@ -301,10 +301,10 @@ export default function AdminUsersPage() {
                 setRoleFilter(e.target.value)
                 setPage(1)
               }}
-              className="bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+              className="bg-surface-glass border border-border-default text-text-primary rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
             >
               {roleOptions.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-[#0A1D37] text-white">
+                <option key={opt.value} value={opt.value} className="bg-page-bg text-text-primary">
                   {opt.label}
                 </option>
               ))}
@@ -316,7 +316,7 @@ export default function AdminUsersPage() {
         </form>
 
         {/* Users Table */}
-        <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
+        <div className="bg-surface-raised/30 border border-border-subtle rounded-sm overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
               <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
@@ -324,27 +324,27 @@ export default function AdminUsersPage() {
           ) : users.length === 0 ? (
             <div className="text-center py-16">
               <Users className="w-12 h-12 text-white/20 mx-auto mb-4" />
-              <h3 className="font-heading text-lg font-bold text-white mb-2">No users found</h3>
-              <p className="text-gray-500 text-sm uppercase tracking-widest">Try adjusting your search or filters</p>
+              <h3 className="font-heading text-lg font-bold text-text-primary mb-2">No users found</h3>
+              <p className="text-text-muted text-sm uppercase tracking-widest">Try adjusting your search or filters</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-white/5 border-b border-white/5">
+                <thead className="bg-surface-glass border-b border-border-subtle">
                   <tr>
-                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       User
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Role
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Connected Entities
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Joined
                     </th>
-                    <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Actions
                     </th>
                   </tr>
@@ -355,7 +355,7 @@ export default function AdminUsersPage() {
                     return (
                       <tr
                         key={user.id}
-                        className="hover:bg-white/5 transition-colors"
+                        className="hover:bg-surface-glass transition-colors"
                       >
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-3">
@@ -365,10 +365,10 @@ export default function AdminUsersPage() {
                               size="md"
                             />
                             <div>
-                              <div className="font-bold text-sm text-white">
+                              <div className="font-bold text-sm text-text-primary">
                                 {user.name || 'No name'}
                               </div>
-                              <div className="text-sm text-gray-400">{user.email}</div>
+                              <div className="text-sm text-text-muted">{user.email}</div>
                             </div>
                           </div>
                         </td>
@@ -383,7 +383,7 @@ export default function AdminUsersPage() {
                             {user.ownedPrograms.length > 0 && (
                               <div className="flex items-center gap-2 text-sm">
                                 <Building2 className="w-4 h-4 text-blue-400" />
-                                <span className="text-gray-300">
+                                <span className="text-text-secondary">
                                   Director: {user.ownedPrograms.map(p => p.name).join(', ')}
                                 </span>
                               </div>
@@ -391,7 +391,7 @@ export default function AdminUsersPage() {
                             {user.guardians.length > 0 && (
                               <div className="flex items-center gap-2 text-sm">
                                 <Baby className="w-4 h-4 text-green-400" />
-                                <span className="text-gray-300">
+                                <span className="text-text-secondary">
                                   Linked to: {user.guardians.map(g => `${g.player.firstName} ${g.player.lastName}`).join(', ')}
                                 </span>
                               </div>
@@ -402,7 +402,7 @@ export default function AdminUsersPage() {
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <span className="text-sm font-bold text-white">
+                          <span className="text-sm font-bold text-text-primary">
                             {format(new Date(user.createdAt), 'MMM d, yyyy')}
                           </span>
                         </td>
@@ -427,8 +427,8 @@ export default function AdminUsersPage() {
 
           {/* Pagination */}
           {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-border-subtle">
+              <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
                 Showing {((page - 1) * pagination.limit) + 1} to{' '}
                 {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} users
               </p>
@@ -441,7 +441,7 @@ export default function AdminUsersPage() {
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="text-sm font-bold text-gray-400">
+                <span className="text-sm font-bold text-text-muted">
                   Page {page} of {pagination.totalPages}
                 </span>
                 <Button
@@ -467,30 +467,30 @@ export default function AdminUsersPage() {
         {editModal.user && (
           <form onSubmit={handleEditSubmit} className="space-y-6">
             {/* User Info Header */}
-            <div className="flex items-center gap-4 p-4 bg-white/5 rounded-sm border border-white/10">
+            <div className="flex items-center gap-4 p-4 bg-surface-glass rounded-sm border border-border-default">
               <Avatar
                 src={editModal.user.image}
                 name={editModal.user.name || editModal.user.email}
                 size="lg"
               />
               <div>
-                <div className="font-bold text-white text-lg">
+                <div className="font-bold text-text-primary text-lg">
                   {editModal.user.name || 'No name'}
                 </div>
-                <div className="text-gray-400 text-sm">{editModal.user.email}</div>
+                <div className="text-text-muted text-sm">{editModal.user.email}</div>
               </div>
             </div>
 
             {/* Connected Entities (Read-only) */}
             {(editModal.user.ownedPrograms.length > 0 || editModal.user.guardians.length > 0) && (
-              <div className="p-4 bg-white/5 rounded-sm border border-white/10 space-y-3">
-                <h4 className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">
+              <div className="p-4 bg-surface-glass rounded-sm border border-border-default space-y-3">
+                <h4 className="text-[10px] font-extrabold text-text-muted uppercase tracking-widest">
                   Connected Entities
                 </h4>
                 {editModal.user.ownedPrograms.length > 0 && (
                   <div className="flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-blue-400" />
-                    <span className="text-white text-sm">
+                    <span className="text-text-primary text-sm">
                       Programs: {editModal.user.ownedPrograms.map(p => p.name).join(', ')}
                     </span>
                   </div>
@@ -498,7 +498,7 @@ export default function AdminUsersPage() {
                 {editModal.user.guardians.length > 0 && (
                   <div className="flex items-center gap-2">
                     <Baby className="w-4 h-4 text-green-400" />
-                    <span className="text-white text-sm">
+                    <span className="text-text-primary text-sm">
                       Linked to: {editModal.user.guardians.map(g => `${g.player.firstName} ${g.player.lastName}`).join(', ')}
                     </span>
                   </div>
@@ -509,25 +509,25 @@ export default function AdminUsersPage() {
             {/* Editable Fields */}
             <div className="space-y-4">
               <div>
-                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Name</label>
+                <label className="block text-[10px] font-extrabold text-text-muted uppercase tracking-widest mb-2">Name</label>
                 <input
                   type="text"
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                   placeholder="User's display name"
-                  className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                  className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Role</label>
+                <label className="block text-[10px] font-extrabold text-text-muted uppercase tracking-widest mb-2">Role</label>
                 <select
                   value={editForm.role}
                   onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+                  className="w-full bg-surface-glass border border-border-default text-text-primary rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
                 >
                   {editRoleOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value} className="bg-[#0A1D37] text-white">
+                    <option key={opt.value} value={opt.value} className="bg-page-bg text-text-primary">
                       {opt.label}
                     </option>
                   ))}
@@ -535,15 +535,15 @@ export default function AdminUsersPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Reset Password</label>
+                <label className="block text-[10px] font-extrabold text-text-muted uppercase tracking-widest mb-2">Reset Password</label>
                 <input
                   type="password"
                   value={editForm.password}
                   onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
                   placeholder="Leave empty to keep current password"
-                  className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                  className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
                 />
-                <p className="mt-2 text-[10px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1">
+                <p className="mt-2 text-[10px] text-text-muted font-bold uppercase tracking-widest flex items-center gap-1">
                   <Key className="w-3 h-3" />
                   Enter a new password to reset, or leave blank
                 </p>
@@ -558,7 +558,7 @@ export default function AdminUsersPage() {
             )}
 
             {/* Delete User Section */}
-            <div className="pt-4 border-t border-white/10">
+            <div className="pt-4 border-t border-border-default">
               {!showDeleteConfirm ? (
                 <Button
                   type="button"
@@ -607,7 +607,7 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 justify-end pt-4 border-t border-white/10">
+            <div className="flex gap-3 justify-end pt-4 border-t border-border-default">
               <Button type="button" variant="ghost" onClick={closeEditModal}>
                 Cancel
               </Button>

@@ -202,15 +202,15 @@ export default function EditVenuePage({ params }: { params: Promise<{ id: string
       <div className="mb-8">
         <Link
           href="/admin/venues"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Venues
         </Link>
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">
+        <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">
           Edit Venue
         </h1>
-        <p className="mt-2 text-gray-400">
+        <p className="mt-2 text-text-muted">
           Update venue details and manage courts
         </p>
       </div>
@@ -225,7 +225,7 @@ export default function EditVenuePage({ params }: { params: Promise<{ id: string
 
           {/* Basic Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium text-white flex items-center gap-2 border-b border-[#1a3a6e] pb-2">
+            <h3 className="text-lg font-medium text-text-primary flex items-center gap-2 border-b border-border-default pb-2">
               <MapPin className="w-5 h-5 text-eha-red" />
               Location Details
             </h3>
@@ -263,8 +263,8 @@ export default function EditVenuePage({ params }: { params: Promise<{ id: string
 
           {/* Courts Configuration */}
           <div className="space-y-4">
-            <div className="flex justify-between items-center border-b border-[#1a3a6e] pb-2">
-              <h3 className="text-lg font-medium text-white flex items-center gap-2">
+            <div className="flex justify-between items-center border-b border-border-default pb-2">
+              <h3 className="text-lg font-medium text-text-primary flex items-center gap-2">
                 <Home className="w-5 h-5 text-eha-red" />
                 Courts
               </h3>
@@ -291,7 +291,7 @@ export default function EditVenuePage({ params }: { params: Promise<{ id: string
                   <button
                     type="button"
                     onClick={() => removeCourt(court.id)}
-                    className="p-2 text-gray-500 hover:text-red-400 transition-colors"
+                    className="p-2 text-text-muted hover:text-red-400 transition-colors"
                     title="Remove court"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -300,8 +300,8 @@ export default function EditVenuePage({ params }: { params: Promise<{ id: string
               ))}
 
               {courts.length === 0 && (
-                <div className="text-center py-4 bg-[#153361]/20 rounded-lg border border-dashed border-[#1a3a6e]">
-                  <p className="text-gray-400 text-sm">No courts configured.</p>
+                <div className="text-center py-4 bg-surface-raised/20 rounded-lg border border-dashed border-border-default">
+                  <p className="text-text-muted text-sm">No courts configured.</p>
                   <button
                     type="button"
                     onClick={addCourt}
@@ -312,7 +312,7 @@ export default function EditVenuePage({ params }: { params: Promise<{ id: string
                 </div>
               )}
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-text-muted">
               Removing a court with scheduled games is not allowed. Reassign games
               first.
             </p>
@@ -356,7 +356,7 @@ export default function EditVenuePage({ params }: { params: Promise<{ id: string
             <AlertTriangle className="w-6 h-6 flex-shrink-0" />
             <div>
               <p className="font-medium">Are you sure you want to delete this venue?</p>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="text-sm text-text-muted mt-1">
                 This will also delete all courts associated with this venue. This
                 action cannot be undone.
               </p>

@@ -95,7 +95,7 @@ export default function NewVenuePage() {
     }
 
     if (status === 'loading') {
-        return <div className="p-8 text-center text-gray-400">Loading...</div>
+        return <div className="p-8 text-center text-text-muted">Loading...</div>
     }
 
     return (
@@ -104,13 +104,13 @@ export default function NewVenuePage() {
             <div className="mb-8">
                 <Link
                     href="/admin/venues"
-                    className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+                    className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Back to Venues
                 </Link>
-                <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Add Venue</h1>
-                <p className="mt-2 text-gray-400">Add a new tournament location and configure its courts</p>
+                <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">Add Venue</h1>
+                <p className="mt-2 text-text-muted">Add a new tournament location and configure its courts</p>
             </div>
 
             <Card className="p-6">
@@ -123,7 +123,7 @@ export default function NewVenuePage() {
 
                     {/* Basic Info */}
                     <div className="space-y-4">
-                        <h3 className="text-lg font-medium text-white flex items-center gap-2 border-b border-[#1a3a6e] pb-2">
+                        <h3 className="text-lg font-medium text-text-primary flex items-center gap-2 border-b border-border-default pb-2">
                             <MapPin className="w-5 h-5 text-eha-red" />
                             Location Details
                         </h3>
@@ -161,8 +161,8 @@ export default function NewVenuePage() {
 
                     {/* Courts Configuration */}
                     <div className="space-y-4">
-                        <div className="flex justify-between items-center border-b border-[#1a3a6e] pb-2">
-                            <h3 className="text-lg font-medium text-white flex items-center gap-2">
+                        <div className="flex justify-between items-center border-b border-border-default pb-2">
+                            <h3 className="text-lg font-medium text-text-primary flex items-center gap-2">
                                 <Home className="w-5 h-5 text-eha-red" />
                                 Courts
                             </h3>
@@ -189,7 +189,7 @@ export default function NewVenuePage() {
                                     <button
                                         type="button"
                                         onClick={() => removeCourt(court.id)}
-                                        className="p-2 text-gray-500 hover:text-red-400 transition-colors"
+                                        className="p-2 text-text-muted hover:text-red-400 transition-colors"
                                     >
                                         <Trash2 className="w-5 h-5" />
                                     </button>
@@ -197,8 +197,8 @@ export default function NewVenuePage() {
                             ))}
 
                             {courts.length === 0 && (
-                                <div className="text-center py-4 bg-[#153361]/20 rounded-lg border border-dashed border-[#1a3a6e]">
-                                    <p className="text-gray-400 text-sm">No courts added yet.</p>
+                                <div className="text-center py-4 bg-surface-raised/20 rounded-lg border border-dashed border-border-default">
+                                    <p className="text-text-muted text-sm">No courts added yet.</p>
                                     <button
                                         type="button"
                                         onClick={addCourt}
@@ -209,7 +209,7 @@ export default function NewVenuePage() {
                                 </div>
                             )}
                         </div>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-text-muted">
                             Each court will be available for scheduling games. You can edit names later.
                         </p>
                     </div>

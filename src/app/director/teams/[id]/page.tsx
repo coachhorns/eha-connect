@@ -690,7 +690,7 @@ export default function DirectorTeamDetailPage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
@@ -702,7 +702,7 @@ export default function DirectorTeamDetailPage() {
 
   if (error && !team) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+      <div className="min-h-screen bg-page-bg relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -711,7 +711,7 @@ export default function DirectorTeamDetailPage() {
           }}
         />
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8 relative z-10">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+          <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-6">
             <p className="text-red-400">{error}</p>
             <Link href="/director/dashboard">
               <Button className="mt-4 bg-gradient-to-r from-[#E31837] to-[#a01128]">Back to Dashboard</Button>
@@ -729,7 +729,7 @@ export default function DirectorTeamDetailPage() {
   const logoUrl = team.logo || team.program.logo
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -747,18 +747,18 @@ export default function DirectorTeamDetailPage() {
         {/* Back Link */}
         <Link
           href="/director/dashboard"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
         </Link>
 
         {/* Header */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 mb-8 shadow-2xl">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-6 md:p-8 mb-8 shadow-2xl">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="flex items-center gap-5">
               {logoUrl ? (
-                <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-white/10 bg-white/5">
+                <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-border-default bg-surface-glass">
                   <Image
                     src={logoUrl}
                     alt={team.name}
@@ -767,7 +767,7 @@ export default function DirectorTeamDetailPage() {
                   />
                 </div>
               ) : (
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#1a3a6e] to-[#0a1628] flex items-center justify-center border-2 border-white/10">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#1a3a6e] to-[#0a1628] flex items-center justify-center border-2 border-border-default">
                   <span className="text-2xl font-bold text-white/30">
                     {team.name.substring(0, 2).toUpperCase()}
                   </span>
@@ -775,10 +775,10 @@ export default function DirectorTeamDetailPage() {
               )}
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl md:text-3xl font-heading font-bold text-white tracking-tight">{team.name}</h1>
+                  <h1 className="text-2xl md:text-3xl font-heading font-bold text-text-primary tracking-tight">{team.name}</h1>
                   <button
                     onClick={openEditModal}
-                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                    className="p-2 text-text-muted hover:text-text-primary hover:bg-surface-overlay rounded-lg transition-colors"
                     title="Edit team settings"
                   >
                     <Pencil className="w-5 h-5" />
@@ -786,14 +786,14 @@ export default function DirectorTeamDetailPage() {
                 </div>
                 <div className="flex items-center gap-3 mt-2">
                   {team.division && <Badge variant="info">{team.division}</Badge>}
-                  <span className="text-gray-400">{team.program.name}</span>
+                  <span className="text-text-muted">{team.program.name}</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2.5 rounded-xl">
+            <div className="flex items-center gap-2 bg-surface-overlay px-4 py-2.5 rounded-xl">
               <Trophy className="w-5 h-5 text-white" />
-              <span className="text-xl font-bold text-white font-mono">
+              <span className="text-xl font-bold text-text-primary font-mono">
                 {team.wins}-{team.losses}
               </span>
             </div>
@@ -813,36 +813,36 @@ export default function DirectorTeamDetailPage() {
 
         {/* Team Info Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-5">
+          <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Coach</div>
-                <div className="text-lg font-semibold text-white">{team.coachName || 'Not assigned'}</div>
+                <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Coach</div>
+                <div className="text-lg font-semibold text-text-primary">{team.coachName || 'Not assigned'}</div>
               </div>
             </div>
           </div>
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-5">
+          <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Roster Size</div>
-                <div className="text-lg font-semibold text-white">{team.roster.length} players</div>
+                <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Roster Size</div>
+                <div className="text-lg font-semibold text-text-primary">{team.roster.length} players</div>
               </div>
             </div>
           </div>
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-5">
+          <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
                 <Trophy className="w-6 h-6 text-white" />
               </div>
               <div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Games</div>
-                <div className="text-lg font-semibold text-white">{team._count.homeGames + team._count.awayGames}</div>
+                <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Total Games</div>
+                <div className="text-lg font-semibold text-text-primary">{team._count.homeGames + team._count.awayGames}</div>
               </div>
             </div>
           </div>
@@ -850,7 +850,7 @@ export default function DirectorTeamDetailPage() {
 
         {/* Roster Section */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-heading font-bold text-white">Roster</h2>
+          <h2 className="text-xl font-heading font-bold text-text-primary">Roster</h2>
           <Button
             onClick={() => setIsAddPlayerOpen(true)}
             className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25"
@@ -861,12 +861,12 @@ export default function DirectorTeamDetailPage() {
         </div>
 
         {team.roster.length === 0 ? (
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
-            <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-12 text-center">
+            <div className="w-20 h-20 bg-surface-overlay rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Users className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-xl font-heading font-bold text-white mb-2">No Players Yet</h3>
-            <p className="text-gray-400 mb-6 max-w-md mx-auto">
+            <h3 className="text-xl font-heading font-bold text-text-primary mb-2">No Players Yet</h3>
+            <p className="text-text-muted mb-6 max-w-md mx-auto">
               Start building your roster by adding players
             </p>
             <Button
@@ -878,23 +878,23 @@ export default function DirectorTeamDetailPage() {
             </Button>
           </div>
         ) : (
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+          <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl overflow-hidden">
             <table className="w-full">
-              <thead className="bg-[#0a1628] border-b border-white/10">
+              <thead className="bg-page-bg-alt border-b border-border-default">
                 <tr>
-                  <th className="px-5 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                  <th className="px-5 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Player</th>
-                  <th className="px-5 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                  <th className="px-5 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Height</th>
-                  <th className="px-5 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">School</th>
-                  <th className="px-5 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
-                  <th className="px-5 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-5 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">#</th>
+                  <th className="px-5 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Player</th>
+                  <th className="px-5 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Position</th>
+                  <th className="px-5 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Height</th>
+                  <th className="px-5 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">School</th>
+                  <th className="px-5 py-4 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Class</th>
+                  <th className="px-5 py-4 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-border-subtle">
                 {team.roster.map((entry) => (
-                  <tr key={entry.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-5 py-4 text-white font-mono font-medium">
+                  <tr key={entry.id} className="hover:bg-surface-glass transition-colors">
+                    <td className="px-5 py-4 text-text-primary font-mono font-medium">
                       {entry.jerseyNumber || entry.player.jerseyNumber || '-'}
                     </td>
                     <td className="px-5 py-4">
@@ -912,36 +912,36 @@ export default function DirectorTeamDetailPage() {
                             />
                           </div>
                         ) : (
-                          <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-medium text-gray-400">
+                          <div className="w-10 h-10 bg-surface-overlay rounded-full flex items-center justify-center">
+                            <span className="text-sm font-medium text-text-muted">
                               {entry.player.firstName.charAt(0)}{entry.player.lastName.charAt(0)}
                             </span>
                           </div>
                         )}
-                        <div className="font-medium text-white hover:text-[#E31837] transition-colors">
+                        <div className="font-medium text-text-primary hover:text-[#E31837] transition-colors">
                           {entry.player.firstName} {entry.player.lastName}
                         </div>
                       </Link>
                     </td>
-                    <td className="px-5 py-4 text-gray-300">
+                    <td className="px-5 py-4 text-text-secondary">
                       {entry.player.primaryPosition || '-'}
                     </td>
-                    <td className="px-5 py-4 text-gray-300">
+                    <td className="px-5 py-4 text-text-secondary">
                       {entry.player.heightFeet && entry.player.heightInches !== null
                         ? `${entry.player.heightFeet}'${entry.player.heightInches}"`
                         : '-'}
                     </td>
-                    <td className="px-5 py-4 text-gray-300">
+                    <td className="px-5 py-4 text-text-secondary">
                       {entry.player.school || '-'}
                     </td>
-                    <td className="px-5 py-4 text-gray-300">
+                    <td className="px-5 py-4 text-text-secondary">
                       {entry.player.graduationYear || '-'}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => openEditPlayerModal(entry.player)}
-                          className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                          className="p-2 text-text-muted hover:text-text-primary hover:bg-surface-overlay rounded-lg transition-colors"
                           title="Edit player"
                         >
                           <Pencil className="w-4 h-4" />
@@ -951,7 +951,7 @@ export default function DirectorTeamDetailPage() {
                             entry.player.id,
                             `${entry.player.firstName} ${entry.player.lastName}`
                           )}
-                          className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                          className="p-2 text-text-muted hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                           title="Remove from roster"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -981,13 +981,13 @@ export default function DirectorTeamDetailPage() {
           title="Add Players to Roster"
         >
           {/* Tab Navigation */}
-          <div className="flex border-b border-white/10 mb-4">
+          <div className="flex border-b border-border-default mb-4">
             <button
               type="button"
               onClick={() => setActiveTab('manual')}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'manual'
                 ? 'border-[#E31837] text-white'
-                : 'border-transparent text-gray-400 hover:text-white'
+                : 'border-transparent text-text-muted hover:text-text-primary'
                 }`}
             >
               Manual Entry
@@ -997,7 +997,7 @@ export default function DirectorTeamDetailPage() {
               onClick={() => setActiveTab('upload')}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'upload'
                 ? 'border-[#E31837] text-white'
-                : 'border-transparent text-gray-400 hover:text-white'
+                : 'border-transparent text-text-muted hover:text-text-primary'
                 }`}
             >
               <Upload className="w-4 h-4 inline-block mr-1" />
@@ -1016,7 +1016,7 @@ export default function DirectorTeamDetailPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">First Name *</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">First Name *</label>
                   <Input
                     type="text"
                     placeholder="John"
@@ -1026,7 +1026,7 @@ export default function DirectorTeamDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Last Name *</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">Last Name *</label>
                   <Input
                     type="text"
                     placeholder="Smith"
@@ -1039,7 +1039,7 @@ export default function DirectorTeamDetailPage() {
 
               {/* Duplicate player detection panel */}
               {isSearchingDupes && (
-                <div className="flex items-center gap-2 text-gray-400 text-sm py-2">
+                <div className="flex items-center gap-2 text-text-muted text-sm py-2">
                   <div className="animate-spin w-4 h-4 border-2 border-[#E31837] border-t-transparent rounded-full" />
                   Checking for existing players...
                 </div>
@@ -1062,36 +1062,36 @@ export default function DirectorTeamDetailPage() {
                           ? 'border-red-500/30 bg-red-500/5'
                           : duplicateDecision === match.id
                             ? 'border-green-500/30 bg-green-500/5'
-                            : 'border-white/10 bg-white/5'
+                            : 'border-border-default bg-surface-glass'
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 bg-surface-overlay rounded-full flex items-center justify-center flex-shrink-0">
                           {match.profilePhoto ? (
                             <Image src={match.profilePhoto} alt="" width={40} height={40} className="rounded-full object-cover" />
                           ) : (
-                            <span className="text-sm font-medium text-gray-400">
+                            <span className="text-sm font-medium text-text-muted">
                               {match.firstName.charAt(0)}{match.lastName.charAt(0)}
                             </span>
                           )}
                         </div>
                         <div className="min-w-0">
-                          <div className="text-white font-medium text-sm flex items-center gap-2">
+                          <div className="text-text-primary font-medium text-sm flex items-center gap-2">
                             {match.firstName} {match.lastName}
                             {match.hasGuardian && (
                               <Badge variant="info" className="text-[10px] px-1.5 py-0">Claimed</Badge>
                             )}
                           </div>
-                          <div className="text-gray-400 text-xs flex items-center gap-2 flex-wrap">
+                          <div className="text-text-muted text-xs flex items-center gap-2 flex-wrap">
                             {match.primaryPosition && <span>{match.primaryPosition}</span>}
                             {match.heightFeet && <span>{match.heightFeet}&apos;{match.heightInches || 0}&quot;</span>}
                             {match.graduationYear && <span>Class {match.graduationYear}</span>}
                           </div>
                           {match.school && (
-                            <div className="text-gray-500 text-xs">{match.school}</div>
+                            <div className="text-text-muted text-xs">{match.school}</div>
                           )}
                           {match.currentTeams.length > 0 && (
-                            <div className="text-gray-500 text-xs">
+                            <div className="text-text-muted text-xs">
                               {match.currentTeams.map(t => `${t.teamName}${t.programName ? ` (${t.programName})` : ''}`).join(', ')}
                             </div>
                           )}
@@ -1108,7 +1108,7 @@ export default function DirectorTeamDetailPage() {
                           onClick={() => setDuplicateDecision(duplicateDecision === match.id ? null : match.id)}
                           className={duplicateDecision === match.id
                             ? ''
-                            : 'border-white/20 text-gray-300'}
+                            : 'border-border-default text-text-secondary'}
                         >
                           <Link2 className="w-3 h-3 mr-1" />
                           {duplicateDecision === match.id ? 'Selected' : 'Use This Player'}
@@ -1123,7 +1123,7 @@ export default function DirectorTeamDetailPage() {
                     className={`w-full text-center text-sm py-2 rounded-lg border transition-colors ${
                       duplicateDecision === 'new'
                         ? 'border-blue-500/30 bg-blue-500/10 text-blue-400'
-                        : 'border-white/10 text-gray-400 hover:text-white hover:bg-white/5'
+                        : 'border-border-default text-text-muted hover:text-text-primary hover:bg-surface-glass'
                     }`}
                   >
                     {duplicateDecision === 'new' ? '+ Creating new player' : '+ Create new player instead'}
@@ -1134,7 +1134,7 @@ export default function DirectorTeamDetailPage() {
               {/* Hide remaining fields when linking existing player */}
               {duplicateDecision && duplicateDecision !== 'new' ? (
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Jersey Number</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">Jersey Number</label>
                   <Input
                     type="text"
                     placeholder="23"
@@ -1142,13 +1142,13 @@ export default function DirectorTeamDetailPage() {
                     onChange={(e) => setPlayerForm(prev => ({ ...prev, jerseyNumber: e.target.value }))}
                     maxLength={3}
                   />
-                  <p className="text-gray-500 text-xs mt-2">Other details will be pulled from the existing player profile.</p>
+                  <p className="text-text-muted text-xs mt-2">Other details will be pulled from the existing player profile.</p>
                 </div>
               ) : (
               <>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Jersey Number</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">Jersey Number</label>
                   <Input
                     type="text"
                     placeholder="23"
@@ -1158,24 +1158,24 @@ export default function DirectorTeamDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Position</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">Position</label>
                   <div className="relative">
                     <select
                       value={playerForm.primaryPosition}
                       onChange={(e) => setPlayerForm(prev => ({ ...prev, primaryPosition: e.target.value }))}
-                      className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
+                      className="w-full appearance-none bg-surface-glass border border-border-default text-text-primary px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
                     >
                       {positionOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value} className="bg-[#0a1628]">{opt.label}</option>
+                        <option key={opt.value} value={opt.value} className="bg-page-bg-alt">{opt.label}</option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Height</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">Height</label>
                 <div className="grid grid-cols-2 gap-4">
                   <Input
                     type="number"
@@ -1198,7 +1198,7 @@ export default function DirectorTeamDetailPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">School</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">School</label>
                   <Input
                     type="text"
                     placeholder="School name"
@@ -1207,7 +1207,7 @@ export default function DirectorTeamDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Class (Grad Year)</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">Class (Grad Year)</label>
                   <Input
                     type="number"
                     placeholder="2026"
@@ -1225,7 +1225,7 @@ export default function DirectorTeamDetailPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-white/20 text-gray-300 hover:bg-white/10"
+                  className="border-border-default text-text-secondary hover:bg-surface-overlay"
                   onClick={() => {
                     setIsAddPlayerOpen(false)
                     resetAddPlayerState()
@@ -1255,7 +1255,7 @@ export default function DirectorTeamDetailPage() {
               )}
 
               {parsedPlayers.length === 0 && !isParsing && (
-                <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-white/30 transition-colors">
+                <div className="border-2 border-dashed border-border-default rounded-xl p-8 text-center hover:border-white/30 transition-colors">
                   <input
                     type="file"
                     id="roster-upload"
@@ -1265,16 +1265,16 @@ export default function DirectorTeamDetailPage() {
                   />
                   <label htmlFor="roster-upload" className="cursor-pointer">
                     <Upload className="w-12 h-12 text-white mx-auto mb-3" />
-                    <p className="text-gray-300 text-sm mb-1">
+                    <p className="text-text-secondary text-sm mb-1">
                       Include: First Name, Last Name, Number, Position, Height, Grad Year, School
                     </p>
-                    <p className="text-gray-400 text-xs mb-4">
+                    <p className="text-text-muted text-xs mb-4">
                       (any order - AI will figure it out)
                     </p>
-                    <p className="text-white font-medium mb-2">
+                    <p className="text-text-primary font-medium mb-2">
                       Drop your roster file here or click to browse
                     </p>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-text-muted text-sm">
                       Supports CSV, PNG, and JPG files
                     </p>
                   </label>
@@ -1284,8 +1284,8 @@ export default function DirectorTeamDetailPage() {
               {isParsing && (
                 <div className="text-center py-8">
                   <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full mx-auto mb-4" />
-                  <p className="text-white font-medium">Analyzing {uploadFileName}...</p>
-                  <p className="text-gray-400 text-sm mt-1">
+                  <p className="text-text-primary font-medium">Analyzing {uploadFileName}...</p>
+                  <p className="text-text-muted text-sm mt-1">
                     Using AI to extract player information
                   </p>
                 </div>
@@ -1294,7 +1294,7 @@ export default function DirectorTeamDetailPage() {
               {isCheckingBatchDupes && (
                 <div className="text-center py-4">
                   <div className="animate-spin w-6 h-6 border-2 border-[#E31837] border-t-transparent rounded-full mx-auto mb-2" />
-                  <p className="text-gray-400 text-sm">Checking for existing players...</p>
+                  <p className="text-text-muted text-sm">Checking for existing players...</p>
                 </div>
               )}
 
@@ -1303,11 +1303,11 @@ export default function DirectorTeamDetailPage() {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-white" />
-                      <span className="text-white font-medium">
+                      <span className="text-text-primary font-medium">
                         {parsedPlayers.length} players found
                       </span>
                       {uploadFileName && (
-                        <span className="text-gray-400 text-sm">from {uploadFileName}</span>
+                        <span className="text-text-muted text-sm">from {uploadFileName}</span>
                       )}
                       {batchMatches.size > 0 && (
                         <Badge variant="warning" className="text-xs">
@@ -1322,25 +1322,25 @@ export default function DirectorTeamDetailPage() {
                         setBatchMatches(new Map())
                         setBatchResolutions(new Map())
                       }}
-                      className="text-gray-400 hover:text-white text-sm"
+                      className="text-text-muted hover:text-text-primary text-sm"
                     >
                       Upload different file
                     </button>
                   </div>
 
-                  <div className="max-h-80 overflow-y-auto border border-white/10 rounded-xl">
+                  <div className="max-h-80 overflow-y-auto border border-border-default rounded-xl">
                     <table className="w-full text-sm">
-                      <thead className="bg-[#0a1628] sticky top-0">
+                      <thead className="bg-page-bg-alt sticky top-0">
                         <tr>
-                          <th className="px-3 py-2 text-left text-gray-400 font-medium">Name</th>
-                          <th className="px-3 py-2 text-left text-gray-400 font-medium">#</th>
-                          <th className="px-3 py-2 text-left text-gray-400 font-medium">Pos</th>
-                          <th className="px-3 py-2 text-left text-gray-400 font-medium">Class</th>
-                          <th className="px-3 py-2 text-left text-gray-400 font-medium">Status</th>
-                          <th className="px-3 py-2 text-right text-gray-400 font-medium"></th>
+                          <th className="px-3 py-2 text-left text-text-muted font-medium">Name</th>
+                          <th className="px-3 py-2 text-left text-text-muted font-medium">#</th>
+                          <th className="px-3 py-2 text-left text-text-muted font-medium">Pos</th>
+                          <th className="px-3 py-2 text-left text-text-muted font-medium">Class</th>
+                          <th className="px-3 py-2 text-left text-text-muted font-medium">Status</th>
+                          <th className="px-3 py-2 text-right text-text-muted font-medium"></th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/5">
+                      <tbody className="divide-y divide-border-subtle">
                         {parsedPlayers.map((player, index) => {
                           const matches = batchMatches.get(index)
                           const resolution = batchResolutions.get(index)
@@ -1350,20 +1350,20 @@ export default function DirectorTeamDetailPage() {
                             : null
 
                           return (
-                            <tr key={index} className={`${hasMatch ? 'bg-amber-500/5' : ''} hover:bg-white/5`}>
+                            <tr key={index} className={`${hasMatch ? 'bg-amber-500/5' : ''} hover:bg-surface-glass`}>
                               <td className="px-3 py-2">
                                 <div className="flex gap-1">
                                   <input
                                     type="text"
                                     value={player.firstName}
                                     onChange={(e) => updateParsedPlayer(index, 'firstName', e.target.value)}
-                                    className="w-20 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                    className="w-20 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   />
                                   <input
                                     type="text"
                                     value={player.lastName}
                                     onChange={(e) => updateParsedPlayer(index, 'lastName', e.target.value)}
-                                    className="w-24 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                    className="w-24 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   />
                                 </div>
                               </td>
@@ -1372,7 +1372,7 @@ export default function DirectorTeamDetailPage() {
                                   type="text"
                                   value={player.jerseyNumber || ''}
                                   onChange={(e) => updateParsedPlayer(index, 'jerseyNumber', e.target.value || null)}
-                                  className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   placeholder="-"
                                 />
                               </td>
@@ -1381,7 +1381,7 @@ export default function DirectorTeamDetailPage() {
                                   type="text"
                                   value={player.primaryPosition || ''}
                                   onChange={(e) => updateParsedPlayer(index, 'primaryPosition', e.target.value || null)}
-                                  className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  className="w-10 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   placeholder="-"
                                 />
                               </td>
@@ -1390,13 +1390,13 @@ export default function DirectorTeamDetailPage() {
                                   type="text"
                                   value={player.graduationYear || ''}
                                   onChange={(e) => updateParsedPlayer(index, 'graduationYear', e.target.value ? parseInt(e.target.value) : null)}
-                                  className="w-12 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-white px-1 outline-none"
+                                  className="w-12 bg-transparent border-b border-transparent hover:border-gray-600 focus:border-[#E31837] text-text-primary px-1 outline-none"
                                   placeholder="-"
                                 />
                               </td>
                               <td className="px-3 py-2">
                                 {!hasMatch ? (
-                                  <span className="text-gray-500 text-xs">New</span>
+                                  <span className="text-text-muted text-xs">New</span>
                                 ) : linkedPlayer ? (
                                   <button
                                     type="button"
@@ -1438,7 +1438,7 @@ export default function DirectorTeamDetailPage() {
                               <td className="px-3 py-2 text-right">
                                 <button
                                   onClick={() => removeParsedPlayer(index)}
-                                  className="text-gray-400 hover:text-red-400 transition-colors"
+                                  className="text-text-muted hover:text-red-400 transition-colors"
                                   title="Remove player"
                                 >
                                   <X className="w-4 h-4" />
@@ -1464,7 +1464,7 @@ export default function DirectorTeamDetailPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="border-white/20 text-gray-300 hover:bg-white/10"
+                      className="border-border-default text-text-secondary hover:bg-surface-overlay"
                       onClick={() => {
                         setIsAddPlayerOpen(false)
                         setParsedPlayers([])
@@ -1493,7 +1493,7 @@ export default function DirectorTeamDetailPage() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="border-white/20 text-gray-300 hover:bg-white/10"
+                    className="border-border-default text-text-secondary hover:bg-surface-overlay"
                     onClick={() => {
                       setIsAddPlayerOpen(false)
                       setActiveTab('manual')
@@ -1524,7 +1524,7 @@ export default function DirectorTeamDetailPage() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Team Name *</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Team Name *</label>
               <Input
                 type="text"
                 placeholder="e.g., Houston Elite 17U"
@@ -1535,23 +1535,23 @@ export default function DirectorTeamDetailPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Division</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Division</label>
               <div className="relative">
                 <select
                   value={editForm.division}
                   onChange={(e) => setEditForm(prev => ({ ...prev, division: e.target.value }))}
-                  className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
+                  className="w-full appearance-none bg-surface-glass border border-border-default text-text-primary px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
                 >
                   {divisionOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value} className="bg-[#0a1628]">{opt.label}</option>
+                    <option key={opt.value} value={opt.value} className="bg-page-bg-alt">{opt.label}</option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Coach Name</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Coach Name</label>
               <Input
                 type="text"
                 placeholder="John Smith"
@@ -1564,7 +1564,7 @@ export default function DirectorTeamDetailPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="border-white/20 text-gray-300 hover:bg-white/10"
+                className="border-border-default text-text-secondary hover:bg-surface-overlay"
                 onClick={() => {
                   setIsEditTeamOpen(false)
                   setError('')
@@ -1612,7 +1612,7 @@ export default function DirectorTeamDetailPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">First Name *</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">First Name *</label>
                 <Input
                   type="text"
                   placeholder="John"
@@ -1622,7 +1622,7 @@ export default function DirectorTeamDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Last Name *</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">Last Name *</label>
                 <Input
                   type="text"
                   placeholder="Smith"
@@ -1635,7 +1635,7 @@ export default function DirectorTeamDetailPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Jersey Number</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">Jersey Number</label>
                 <Input
                   type="text"
                   placeholder="23"
@@ -1645,24 +1645,24 @@ export default function DirectorTeamDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Position</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">Position</label>
                 <div className="relative">
                   <select
                     value={editPlayerForm.primaryPosition}
                     onChange={(e) => setEditPlayerForm(prev => ({ ...prev, primaryPosition: e.target.value }))}
-                    className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
+                    className="w-full appearance-none bg-surface-glass border border-border-default text-text-primary px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
                   >
                     {positionOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value} className="bg-[#0a1628]">{opt.label}</option>
+                      <option key={opt.value} value={opt.value} className="bg-page-bg-alt">{opt.label}</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Height</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Height</label>
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   type="number"
@@ -1685,7 +1685,7 @@ export default function DirectorTeamDetailPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">School</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">School</label>
                 <Input
                   type="text"
                   placeholder="School name"
@@ -1694,7 +1694,7 @@ export default function DirectorTeamDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Class (Grad Year)</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">Class (Grad Year)</label>
                 <Input
                   type="number"
                   placeholder="2026"
@@ -1710,7 +1710,7 @@ export default function DirectorTeamDetailPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="border-white/20 text-gray-300 hover:bg-white/10"
+                className="border-border-default text-text-secondary hover:bg-surface-overlay"
                 onClick={() => {
                   setIsEditPlayerOpen(false)
                   setEditPlayerForm({

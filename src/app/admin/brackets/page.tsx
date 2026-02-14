@@ -147,12 +147,12 @@ export default function BracketsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
               <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
-              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Brackets & Pools</h1>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-text-primary uppercase tracking-tighter">Brackets & Pools</h1>
               <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">Manage tournament brackets and pool play groups</p>
             </div>
             <div className="flex items-center gap-3">
@@ -170,18 +170,18 @@ export default function BracketsPage() {
 
       {/* Filter */}
       <div className="mb-8 flex items-center gap-4">
-        <Calendar className="w-5 h-5 text-gray-500" />
+        <Calendar className="w-5 h-5 text-text-muted" />
         <select
-          className="bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm w-64 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+          className="bg-surface-glass border border-border-default text-text-primary rounded-sm px-4 py-3 text-sm w-64 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
           value={eventFilter}
           onChange={(e) => setEventFilter(e.target.value)}
         >
-          <option className="bg-[#0A1D37] text-white" value="">All Events</option>
+          <option className="bg-page-bg text-text-primary" value="">All Events</option>
           {events.map(e => (
-            <option className="bg-[#0A1D37] text-white" key={e.id} value={e.id}>{e.name}</option>
+            <option className="bg-page-bg text-text-primary" key={e.id} value={e.id}>{e.name}</option>
           ))}
         </select>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-text-muted">
           {brackets.length} bracket{brackets.length !== 1 ? 's' : ''} found
         </span>
       </div>
@@ -202,10 +202,10 @@ export default function BracketsPage() {
 
       {/* Content */}
       {brackets.length === 0 ? (
-        <div className="bg-[#152e50]/30 border border-white/5 rounded-sm p-12 text-center">
+        <div className="bg-surface-raised/30 border border-border-subtle rounded-sm p-12 text-center">
           <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">No Brackets Yet</h3>
-          <p className="text-gray-400 mb-6 max-w-md mx-auto">
+          <h3 className="text-xl font-semibold text-text-primary mb-2">No Brackets Yet</h3>
+          <p className="text-text-muted mb-6 max-w-md mx-auto">
             Create your first bracket or pool to start generating matchups for your tournament.
           </p>
           <Link href="/admin/brackets/new">
@@ -220,7 +220,7 @@ export default function BracketsPage() {
           {/* Pool Play Section */}
           {poolBrackets.length > 0 && (
             <div>
-              <h2 className="font-heading text-[10px] font-extrabold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+              <h2 className="font-heading text-[10px] font-extrabold uppercase tracking-widest text-text-muted mb-6 flex items-center gap-2">
                 <LayoutGrid className="w-5 h-5 text-blue-400" />
                 Pool Play Groups
                 <Badge variant="default">{poolBrackets.length}</Badge>
@@ -241,7 +241,7 @@ export default function BracketsPage() {
           {/* Elimination Brackets Section */}
           {elimBrackets.length > 0 && (
             <div>
-              <h2 className="font-heading text-[10px] font-extrabold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+              <h2 className="font-heading text-[10px] font-extrabold uppercase tracking-widest text-text-muted mb-6 flex items-center gap-2">
                 <GitBranch className="w-5 h-5 text-green-400" />
                 Elimination Brackets
                 <Badge variant="default">{elimBrackets.length}</Badge>
@@ -277,20 +277,20 @@ function BracketCard({
   const Icon = TYPE_ICONS[bracket.type] || GitBranch
 
   return (
-    <div className="bg-[#152e50]/30 border border-white/5 rounded-sm p-5 hover:border-eha-red/50 hover:-translate-y-0.5 transition-all">
+    <div className="bg-surface-raised/30 border border-border-subtle rounded-sm p-5 hover:border-eha-red/50 hover:-translate-y-0.5 transition-all">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-            <Icon className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 bg-surface-overlay rounded-lg flex items-center justify-center">
+            <Icon className="w-5 h-5 text-text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-white">{bracket.name}</h3>
-            <p className="text-sm text-gray-500">{bracket.event.name}</p>
+            <h3 className="font-semibold text-text-primary">{bracket.name}</h3>
+            <p className="text-sm text-text-muted">{bracket.event.name}</p>
             <div className="flex items-center gap-2 mt-2">
               <Badge size="sm" variant="default">
                 {TYPE_LABELS[bracket.type]}
               </Badge>
-              <span className="text-xs text-gray-500 flex items-center gap-1">
+              <span className="text-xs text-text-muted flex items-center gap-1">
                 <Users className="w-3 h-3" />
                 {bracket.teamCount} teams
               </span>
@@ -317,7 +317,7 @@ function BracketCard({
 
       {/* Progress Bar */}
       <div className="mt-4">
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+        <div className="flex items-center justify-between text-xs text-text-muted mb-1">
           <span>
             {bracket.completedGames} / {bracket.totalGames} games completed
           </span>
@@ -332,8 +332,8 @@ function BracketCard({
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-        <span className="text-xs text-gray-500">
+      <div className="mt-4 pt-4 border-t border-border-default flex items-center justify-between">
+        <span className="text-xs text-text-muted">
           Created {new Date(bracket.createdAt).toLocaleDateString()}
         </span>
         <Link href="/admin/schedule">

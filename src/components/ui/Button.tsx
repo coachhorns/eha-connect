@@ -11,13 +11,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-extrabold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-base disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-100 uppercase tracking-widest'
+    const baseStyles = 'inline-flex items-center justify-center font-extrabold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-page-bg disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-100 uppercase tracking-widest'
 
     const variants = {
       primary: 'bg-eha-red text-white hover:bg-white hover:text-eha-navy focus:ring-eha-red',
-      secondary: 'bg-transparent border border-white/20 text-white hover:border-eha-red hover:bg-eha-red hover:text-white focus:ring-eha-silver',
+      secondary: 'bg-transparent border border-border-default text-text-primary hover:border-eha-red hover:bg-eha-red hover:text-white focus:ring-eha-silver',
       outline: 'border border-eha-red text-eha-red hover:bg-eha-red hover:text-white focus:ring-eha-red',
-      ghost: 'text-gray-400 hover:text-eha-red hover:bg-transparent focus:ring-eha-silver',
+      ghost: 'text-text-muted hover:text-eha-red hover:bg-transparent focus:ring-eha-silver',
       danger: 'bg-eha-red text-white hover:brightness-110 focus:ring-red-600',
     }
 

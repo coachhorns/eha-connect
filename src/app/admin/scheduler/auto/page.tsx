@@ -303,7 +303,7 @@ export default function AutoSchedulerPage() {
       <div className="mb-8">
         <Link
           href="/admin/schedule"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Schedule
@@ -311,10 +311,10 @@ export default function AutoSchedulerPage() {
         <div className="flex items-center gap-3">
           <Wand2 className="w-8 h-8 text-eha-red" />
           <div>
-            <h1 className="text-3xl font-bold text-white uppercase tracking-wider">
+            <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">
               Auto-Schedule Wizard
             </h1>
-            <p className="mt-1 text-gray-400">
+            <p className="mt-1 text-text-muted">
               Automatically assign times and courts to unscheduled games
             </p>
           </div>
@@ -331,7 +331,7 @@ export default function AutoSchedulerPage() {
                   ? 'bg-eha-red text-white'
                   : idx < ['config', 'preview', 'complete'].indexOf(step)
                   ? 'bg-green-500 text-white'
-                  : 'bg-gray-700 text-gray-400'
+                  : 'bg-gray-700 text-text-muted'
               }`}
             >
               {idx < ['config', 'preview', 'complete'].indexOf(step) ? (
@@ -342,7 +342,7 @@ export default function AutoSchedulerPage() {
             </div>
             <span
               className={`ml-2 text-sm ${
-                step === s ? 'text-white font-medium' : 'text-gray-400'
+                step === s ? 'text-text-primary font-medium' : 'text-text-muted'
               }`}
             >
               {s === 'config' && 'Configuration'}
@@ -363,14 +363,14 @@ export default function AutoSchedulerPage() {
       {/* Step 1: Configuration */}
       {step === 'config' && (
         <Card className="p-6">
-          <h2 className="text-xl font-semibold text-white mb-6">
+          <h2 className="text-xl font-semibold text-text-primary mb-6">
             Configure Scheduling Parameters
           </h2>
 
           <div className="space-y-6">
             {/* Event Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Select Event *
               </label>
               <Select
@@ -385,33 +385,33 @@ export default function AutoSchedulerPage() {
 
             {/* Date Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Schedule Date *
               </label>
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   min={selectedEvent?.startDate?.split('T')[0]}
                   max={selectedEvent?.endDate?.split('T')[0]}
-                  className="w-full bg-[#0a1628] border border-[#1a3a6e] rounded-lg py-2 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-eha-red focus:border-transparent"
+                  className="w-full bg-page-bg-alt border border-border-default rounded-lg py-2 pl-10 pr-4 text-text-primary focus:outline-none focus:ring-2 focus:ring-eha-red focus:border-transparent"
                 />
               </div>
             </div>
 
             {/* Venue Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Select Venues to Use *
               </label>
-              <p className="text-sm text-gray-500 mb-3">
+              <p className="text-sm text-text-muted mb-3">
                 Choose which venues and courts to schedule games on
               </p>
-              <div className="space-y-2 max-h-48 overflow-y-auto bg-[#0a1628] border border-[#1a3a6e] rounded-lg p-3">
+              <div className="space-y-2 max-h-48 overflow-y-auto bg-page-bg-alt border border-border-default rounded-lg p-3">
                 {venues.length === 0 ? (
-                  <p className="text-gray-500 text-sm">No venues available. Please create venues first.</p>
+                  <p className="text-text-muted text-sm">No venues available. Please create venues first.</p>
                 ) : (
                   venues.map((venue) => (
                     <label
@@ -419,7 +419,7 @@ export default function AutoSchedulerPage() {
                       className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                         selectedVenueIds.includes(venue.id)
                           ? 'bg-eha-red/20 border border-eha-red/50'
-                          : 'bg-[#0d1f3c] border border-transparent hover:border-[#1a3a6e]'
+                          : 'bg-[#0d1f3c] border border-transparent hover:border-border-default'
                       }`}
                     >
                       <input
@@ -435,11 +435,11 @@ export default function AutoSchedulerPage() {
                         className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-700 text-eha-red focus:ring-eha-red focus:ring-offset-0"
                       />
                       <div className="flex-1">
-                        <p className="text-white font-medium">{venue.name}</p>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-text-primary font-medium">{venue.name}</p>
+                        <p className="text-sm text-text-muted">
                           {venue.courts.length} court{venue.courts.length !== 1 ? 's' : ''}
                           {venue.courts.length > 0 && (
-                            <span className="text-gray-500">
+                            <span className="text-text-muted">
                               {' '}({venue.courts.map((c) => c.name).join(', ')})
                             </span>
                           )}
@@ -450,7 +450,7 @@ export default function AutoSchedulerPage() {
                 )}
               </div>
               {selectedVenueIds.length > 0 && (
-                <p className="text-sm text-gray-400 mt-2">
+                <p className="text-sm text-text-muted mt-2">
                   {selectedVenueIds.length} venue{selectedVenueIds.length !== 1 ? 's' : ''} selected
                   {' '}({venues
                     .filter((v) => selectedVenueIds.includes(v.id))
@@ -462,7 +462,7 @@ export default function AutoSchedulerPage() {
             {/* Time Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   <Clock className="inline w-4 h-4 mr-1" />
                   Start Time
                 </label>
@@ -473,7 +473,7 @@ export default function AutoSchedulerPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   <Clock className="inline w-4 h-4 mr-1" />
                   End Time
                 </label>
@@ -488,7 +488,7 @@ export default function AutoSchedulerPage() {
             {/* Game Duration & Rest */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Game Duration
                 </label>
                 <Select
@@ -498,7 +498,7 @@ export default function AutoSchedulerPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Minimum Rest Between Games
                 </label>
                 <Select
@@ -510,7 +510,7 @@ export default function AutoSchedulerPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-4 pt-4 border-t border-[#1a3a6e]">
+            <div className="flex justify-end gap-4 pt-4 border-t border-border-default">
               <Link href="/admin/schedule">
                 <Button variant="ghost">Cancel</Button>
               </Link>
@@ -532,34 +532,34 @@ export default function AutoSchedulerPage() {
         <div className="space-y-6">
           {/* Stats Summary */}
           <Card className="p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
               Schedule Preview
             </h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-[#0a1628] rounded-lg p-4 text-center">
-                <div className="text-3xl font-bold text-white">
+              <div className="bg-page-bg-alt rounded-lg p-4 text-center">
+                <div className="text-3xl font-bold text-text-primary">
                   {previewResult.stats.totalGames}
                 </div>
-                <div className="text-sm text-gray-400">Total Games</div>
+                <div className="text-sm text-text-muted">Total Games</div>
               </div>
-              <div className="bg-[#0a1628] rounded-lg p-4 text-center">
+              <div className="bg-page-bg-alt rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-green-400">
                   {previewResult.stats.scheduledCount}
                 </div>
-                <div className="text-sm text-gray-400">Scheduled</div>
+                <div className="text-sm text-text-muted">Scheduled</div>
               </div>
-              <div className="bg-[#0a1628] rounded-lg p-4 text-center">
+              <div className="bg-page-bg-alt rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-yellow-400">
                   {previewResult.stats.unscheduledCount}
                 </div>
-                <div className="text-sm text-gray-400">Could Not Schedule</div>
+                <div className="text-sm text-text-muted">Could Not Schedule</div>
               </div>
-              <div className="bg-[#0a1628] rounded-lg p-4 text-center">
+              <div className="bg-page-bg-alt rounded-lg p-4 text-center">
                 <div className="text-3xl font-bold text-blue-400">
                   {previewResult.stats.utilizationPercent}%
                 </div>
-                <div className="text-sm text-gray-400">Court Utilization</div>
+                <div className="text-sm text-text-muted">Court Utilization</div>
               </div>
             </div>
 
@@ -569,10 +569,10 @@ export default function AutoSchedulerPage() {
                   <AlertTriangle className="w-5 h-5" />
                   {previewResult.unscheduled.length} Game(s) Could Not Be Scheduled
                 </div>
-                <ul className="space-y-2 text-sm text-gray-300">
+                <ul className="space-y-2 text-sm text-text-secondary">
                   {previewResult.unscheduled.map((game) => (
                     <li key={game.gameId} className="flex items-start gap-2">
-                      <span className="text-gray-400">-</span>
+                      <span className="text-text-muted">-</span>
                       <span>
                         {game.homeTeam} vs {game.awayTeam}:{' '}
                         <span className="text-yellow-400">{game.reason}</span>
@@ -586,24 +586,24 @@ export default function AutoSchedulerPage() {
 
           {/* Scheduled Games List */}
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
               Proposed Schedule ({previewResult.scheduled.length} games)
             </h3>
 
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#1a3a6e]">
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                  <tr className="border-b border-border-default">
+                    <th className="text-left py-3 px-4 text-text-muted font-medium">
                       Time
                     </th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                    <th className="text-left py-3 px-4 text-text-muted font-medium">
                       Court
                     </th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                    <th className="text-left py-3 px-4 text-text-muted font-medium">
                       Matchup
                     </th>
-                    <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                    <th className="text-left py-3 px-4 text-text-muted font-medium">
                       Type
                     </th>
                   </tr>
@@ -618,18 +618,18 @@ export default function AutoSchedulerPage() {
                     .map((game) => (
                       <tr
                         key={game.gameId}
-                        className="border-b border-[#1a3a6e]/50 hover:bg-[#0a1628]/50"
+                        className="border-b border-border-default/50 hover:bg-page-bg-alt/50"
                       >
-                        <td className="py-3 px-4 text-white font-medium">
+                        <td className="py-3 px-4 text-text-primary font-medium">
                           {game.timeSlot}
                         </td>
-                        <td className="py-3 px-4 text-gray-300">
+                        <td className="py-3 px-4 text-text-secondary">
                           {game.courtName}
-                          <span className="text-gray-500 text-sm ml-2">
+                          <span className="text-text-muted text-sm ml-2">
                             ({game.venueName})
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-gray-300">
+                        <td className="py-3 px-4 text-text-secondary">
                           {game.homeTeam} vs {game.awayTeam}
                         </td>
                         <td className="py-3 px-4">
@@ -652,7 +652,7 @@ export default function AutoSchedulerPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-between gap-4 pt-6 mt-6 border-t border-[#1a3a6e]">
+            <div className="flex justify-between gap-4 pt-6 mt-6 border-t border-border-default">
               <Button variant="ghost" onClick={() => setStep('config')}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Configuration
@@ -675,10 +675,10 @@ export default function AutoSchedulerPage() {
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-white mb-2">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">
             Schedule Applied Successfully!
           </h2>
-          <p className="text-gray-400 mb-8">
+          <p className="text-text-muted mb-8">
             {previewResult?.stats.scheduledCount} games have been assigned to
             courts and time slots.
           </p>

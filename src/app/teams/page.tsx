@@ -64,11 +64,11 @@ function FilterSidebar({ filters, setFilters, onReset, onClose, isMobile = false
 
   return (
     <div className={cn(
-      "bg-[#0a1628] border border-white/10 p-6 rounded-sm",
+      "bg-page-bg-alt border border-border-default p-6 rounded-sm",
       isMobile ? "relative" : "sticky top-28"
     )}>
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
-        <h3 className="text-xs font-black text-white uppercase tracking-widest">Team Filters</h3>
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-border-default">
+        <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Team Filters</h3>
         <div className="flex items-center gap-3">
           <button
             onClick={onReset}
@@ -77,7 +77,7 @@ function FilterSidebar({ filters, setFilters, onReset, onClose, isMobile = false
             Reset
           </button>
           {isMobile && onClose && (
-            <button onClick={onClose} className="text-gray-400 hover:text-white">
+            <button onClick={onClose} className="text-text-muted hover:text-text-primary">
               <X className="w-5 h-5" />
             </button>
           )}
@@ -87,9 +87,9 @@ function FilterSidebar({ filters, setFilters, onReset, onClose, isMobile = false
       <div className="space-y-6">
         {/* Division Filter */}
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Division</label>
+          <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">Division</label>
           <select
-            className="w-full text-sm font-semibold border border-white/10 bg-[#153361] text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none transition-all"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none transition-all"
             style={selectStyle}
             value={filters.division}
             onChange={(e) => setFilters(prev => ({ ...prev, division: e.target.value }))}
@@ -103,9 +103,9 @@ function FilterSidebar({ filters, setFilters, onReset, onClose, isMobile = false
 
         {/* Region/State Filter */}
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Region / State</label>
+          <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">Region / State</label>
           <select
-            className="w-full text-sm font-semibold border border-white/10 bg-[#153361] text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none transition-all"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none transition-all"
             style={selectStyle}
             value={filters.state}
             onChange={(e) => setFilters(prev => ({ ...prev, state: e.target.value }))}
@@ -119,13 +119,13 @@ function FilterSidebar({ filters, setFilters, onReset, onClose, isMobile = false
 
         {/* Performance Tier Filter */}
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Performance Tier</label>
+          <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">Performance Tier</label>
           <div className="space-y-2">
             {['Undefeated', 'Winning Record (> .500)', 'Has Roster'].map(tier => (
-              <label key={tier} className="flex items-center gap-3 text-sm font-medium cursor-pointer text-gray-300 hover:text-white transition-colors">
+              <label key={tier} className="flex items-center gap-3 text-sm font-medium cursor-pointer text-text-secondary hover:text-text-primary transition-colors">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-white/20 bg-[#153361] accent-eha-red"
+                  className="w-4 h-4 rounded border-border-default bg-surface-raised accent-eha-red"
                   checked={filters.performanceTier.includes(tier)}
                   onChange={() => handleCheckboxChange(tier)}
                 />
@@ -155,9 +155,9 @@ function TeamCard({ team }: TeamCardProps) {
 
   return (
     <Link href={`/teams/${team.slug}`}>
-      <div className="bg-[#0a1628] border border-white/10 rounded-sm overflow-hidden group transition-all hover:shadow-xl hover:shadow-eha-red/10 hover:-translate-y-1 hover:border-white/20">
+      <div className="bg-page-bg-alt border border-border-default rounded-sm overflow-hidden group transition-all hover:shadow-xl hover:shadow-eha-red/10 hover:-translate-y-1 hover:border-border-default">
         {/* Image Header */}
-        <div className="relative h-48 bg-[#153361] overflow-hidden">
+        <div className="relative h-48 bg-surface-raised overflow-hidden">
           {/* Radial pattern overlay */}
           <div
             className="absolute inset-0 opacity-10"
@@ -187,7 +187,7 @@ function TeamCard({ team }: TeamCardProps) {
           {/* Badges */}
           <div className="absolute top-4 left-4 flex flex-col gap-2">
             {team.division && (
-              <span className="text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest bg-[#0A1D37]">
+              <span className="text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest bg-page-bg">
                 {team.division}
               </span>
             )}
@@ -198,7 +198,7 @@ function TeamCard({ team }: TeamCardProps) {
         <div className="px-6 pb-6 pt-0 relative">
           {/* Circular Logo */}
           <div className="flex justify-end -mt-8 mb-2">
-            <div className="w-16 h-16 bg-white rounded-full p-1 border-2 border-white/20 shadow-lg flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform overflow-hidden">
+            <div className="w-16 h-16 bg-white rounded-full p-1 border-2 border-border-default shadow-lg flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform overflow-hidden">
               {logoUrl ? (
                 <Image
                   src={logoUrl}
@@ -215,32 +215,32 @@ function TeamCard({ team }: TeamCardProps) {
 
           {/* Team Info */}
           <div className="mb-4">
-            <h3 className="font-heading text-xl font-bold leading-tight text-white group-hover:text-eha-red transition-colors">
+            <h3 className="font-heading text-xl font-bold leading-tight text-text-primary group-hover:text-eha-red transition-colors">
               {team.name}
             </h3>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+            <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-1">
               {programName} {location && `| ${location}`}
             </p>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-3 gap-4 border-t border-white/10 pt-4">
+          <div className="grid grid-cols-3 gap-4 border-t border-border-default pt-4">
             <div>
-              <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-widest">Record</span>
+              <span className="block text-[8px] font-bold text-text-muted uppercase tracking-widest">Record</span>
               <span className="text-sm font-black text-white font-stats">{record}</span>
             </div>
             <div>
-              <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-widest">Roster</span>
+              <span className="block text-[8px] font-bold text-text-muted uppercase tracking-widest">Roster</span>
               <span className="text-sm font-black text-white font-stats">{team._count.roster}</span>
             </div>
             <div>
-              <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-widest">Win %</span>
+              <span className="block text-[8px] font-bold text-text-muted uppercase tracking-widest">Win %</span>
               <span className={`text-sm font-black font-stats ${
                 team.wins + team.losses > 0
                   ? (team.wins / (team.wins + team.losses)) >= 0.5
                     ? 'text-green-400'
-                    : 'text-gray-400'
-                  : 'text-gray-500'
+                    : 'text-text-muted'
+                  : 'text-text-muted'
               }`}>
                 {team.wins + team.losses > 0
                   ? `${Math.round((team.wins / (team.wins + team.losses)) * 100)}%`
@@ -251,7 +251,7 @@ function TeamCard({ team }: TeamCardProps) {
 
           {/* View Team Button */}
           <div className="mt-5 flex gap-2">
-            <span className="flex-1 text-center text-white text-[10px] font-black uppercase tracking-widest py-3 bg-[#153361] group-hover:bg-eha-red transition-colors rounded-sm">
+            <span className="flex-1 text-center text-white text-[10px] font-black uppercase tracking-widest py-3 bg-surface-raised group-hover:bg-eha-red transition-colors rounded-sm">
               View Team
             </span>
           </div>
@@ -267,22 +267,22 @@ function TeamCard({ team }: TeamCardProps) {
 
 function TeamCardSkeleton() {
   return (
-    <div className="bg-[#0a1628] border border-white/5 rounded-sm overflow-hidden animate-pulse">
-      <div className="h-48 bg-[#153361]" />
+    <div className="bg-page-bg-alt border border-border-subtle rounded-sm overflow-hidden animate-pulse">
+      <div className="h-48 bg-surface-raised" />
       <div className="px-6 pb-6 pt-0 relative">
         <div className="flex justify-end -mt-8 mb-2">
-          <div className="w-16 h-16 bg-[#153361] rounded-full" />
+          <div className="w-16 h-16 bg-surface-raised rounded-full" />
         </div>
         <div className="mb-4 space-y-2">
-          <div className="h-6 bg-[#153361] rounded w-3/4" />
-          <div className="h-3 bg-[#153361] rounded w-1/2" />
+          <div className="h-6 bg-surface-raised rounded w-3/4" />
+          <div className="h-3 bg-surface-raised rounded w-1/2" />
         </div>
-        <div className="grid grid-cols-3 gap-4 border-t border-white/10 pt-4">
-          <div className="h-8 bg-[#153361] rounded" />
-          <div className="h-8 bg-[#153361] rounded" />
-          <div className="h-8 bg-[#153361] rounded" />
+        <div className="grid grid-cols-3 gap-4 border-t border-border-default pt-4">
+          <div className="h-8 bg-surface-raised rounded" />
+          <div className="h-8 bg-surface-raised rounded" />
+          <div className="h-8 bg-surface-raised rounded" />
         </div>
-        <div className="mt-5 h-10 bg-[#153361] rounded" />
+        <div className="mt-5 h-10 bg-surface-raised rounded" />
       </div>
     </div>
   )
@@ -387,9 +387,9 @@ export default function TeamsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37]">
+    <div className="min-h-screen bg-page-bg">
       {/* ========== HERO HEADER ========== */}
-      <section className="pt-32 pb-12 bg-[#0a1628] border-b border-white/5 relative overflow-hidden">
+      <section className="pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle relative overflow-hidden">
         {/* Radial Dot Pattern Overlay */}
         <div
           className="absolute inset-0 opacity-5"
@@ -410,17 +410,17 @@ export default function TeamsPage() {
             </div>
 
             {/* Title */}
-            <h1 className="text-4xl lg:text-5xl font-heading font-bold tracking-tighter text-white">
+            <h1 className="text-4xl lg:text-5xl font-heading font-bold tracking-tighter text-text-primary">
               Team Directory
             </h1>
 
             {/* Search Bar */}
             <div className="relative max-w-2xl mt-4">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search by team name, program, or location..."
-                className="w-full bg-white/10 border border-white/20 rounded-full py-4 pl-14 pr-8 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
+                className="w-full bg-surface-overlay border border-border-default rounded-full py-4 pl-14 pr-8 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -446,15 +446,15 @@ export default function TeamsPage() {
             <div className="col-span-12 lg:col-span-9">
               {/* Results Header */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <span className="text-sm font-bold text-gray-400">
-                  Showing <span className="text-white">{totalCount.toLocaleString()}</span> Registered Teams
+                <span className="text-sm font-bold text-text-muted">
+                  Showing <span className="text-text-primary">{totalCount.toLocaleString()}</span> Registered Teams
                 </span>
 
                 <div className="flex items-center gap-4 w-full sm:w-auto">
                   {/* Mobile Filter Toggle */}
                   <button
                     onClick={() => setShowMobileFilters(true)}
-                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-[#153361] border border-white/10 rounded-sm text-white text-xs font-bold uppercase tracking-widest"
+                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-surface-raised border border-border-default rounded-sm text-white text-xs font-bold uppercase tracking-widest"
                   >
                     <SlidersHorizontal className="w-4 h-4" />
                     Filters
@@ -465,7 +465,7 @@ export default function TeamsPage() {
 
                   {/* Sort */}
                   <div className="flex items-center gap-3 ml-auto">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest hidden sm:block">
+                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest hidden sm:block">
                       Sort By
                     </span>
                     <select
@@ -490,10 +490,10 @@ export default function TeamsPage() {
                   ))}
                 </div>
               ) : teams.length === 0 ? (
-                <div className="text-center py-20 bg-[#0a1628] border border-white/5 rounded-sm">
+                <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
                   <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-white mb-2">No Teams Found</h3>
-                  <p className="text-gray-400 text-sm mb-4">Try adjusting your filters</p>
+                  <h3 className="text-xl font-bold text-text-primary mb-2">No Teams Found</h3>
+                  <p className="text-text-muted text-sm mb-4">Try adjusting your filters</p>
                   <button
                     onClick={clearFilters}
                     className="text-[10px] font-bold uppercase tracking-widest text-eha-red hover:underline"
@@ -513,7 +513,7 @@ export default function TeamsPage() {
               {totalPages > 1 && !isLoading && teams.length > 0 && (
                 <div className="mt-12 flex justify-center items-center gap-2">
                   <button
-                    className="w-10 h-10 flex items-center justify-center border border-white/10 text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
+                    className="w-10 h-10 flex items-center justify-center border border-border-default text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
                   >
@@ -528,19 +528,19 @@ export default function TeamsPage() {
                           "w-10 h-10 flex items-center justify-center font-bold transition-all rounded-sm",
                           page === p
                             ? 'bg-eha-red text-white border border-eha-red'
-                            : 'border border-white/10 text-white hover:bg-white/5'
+                            : 'border border-border-default text-white hover:bg-surface-glass'
                         )}
                         onClick={() => setPage(p)}
                       >
                         {p}
                       </button>
                     ) : (
-                      <span key={idx} className="mx-2 text-gray-500 font-bold">...</span>
+                      <span key={idx} className="mx-2 text-text-muted font-bold">...</span>
                     )
                   ))}
 
                   <button
-                    className="w-10 h-10 flex items-center justify-center border border-white/10 text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
+                    className="w-10 h-10 flex items-center justify-center border border-border-default text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
                   >
@@ -557,7 +557,7 @@ export default function TeamsPage() {
       {showMobileFilters && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={() => setShowMobileFilters(false)} />
-          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-[#0A1D37] overflow-y-auto">
+          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-page-bg overflow-y-auto">
             <div className="p-6">
               <FilterSidebar
                 filters={filters}

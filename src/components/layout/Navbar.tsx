@@ -44,7 +44,7 @@ export function Navbar() {
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 pt-[env(safe-area-inset-top)]",
       isScrolled
-        ? "bg-[#0F0F1A]/20 backdrop-blur-xl border-white/5 shadow-2xl"
+        ? "bg-page-bg/80 backdrop-blur-xl border-border-subtle shadow-2xl"
         : "bg-transparent border-transparent"
     )}>
       <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
@@ -72,7 +72,7 @@ export function Navbar() {
                     'flex items-center justify-center px-6 py-2 rounded-full border text-xs font-bold uppercase tracking-widest shadow-md transition-all duration-300 ease-out',
                     isActive(link.href)
                       ? 'bg-gradient-to-br from-[#FF1F40] to-[#600010] border-eha-red text-white shadow-lg shadow-eha-red/40'
-                      : 'border-white/20 text-gray-300 hover:bg-[linear-gradient(145deg,rgba(255,255,255,0.15)_0%,rgba(255,255,255,0.05)_100%)] hover:border-white/40 hover:shadow-[0_0_20px_rgba(255,255,255,0.2),inset_0_0_10px_rgba(255,255,255,0.1)] hover:-translate-y-0.5'
+                      : 'border-border-default text-text-secondary hover:bg-surface-overlay hover:border-border-default hover:shadow-lg hover:-translate-y-0.5'
                   )}
                 >
                   {link.label}
@@ -89,22 +89,22 @@ export function Navbar() {
           {/* Right Side */}
           <div className="flex items-center gap-3">
             {status === 'loading' ? (
-              <div className="w-8 h-8 rounded-full bg-dark-surface animate-pulse" />
+              <div className="w-8 h-8 rounded-full bg-surface-overlay animate-pulse" />
             ) : session ? (
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-dark-surface transition-colors"
+                  className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-overlay transition-colors"
                 >
                   <Avatar
                     src={session.user.image}
                     fallback={session.user.name || session.user.email || 'U'}
                     size="sm"
                   />
-                  <span className="hidden sm:block text-sm text-gray-300">
+                  <span className="hidden sm:block text-sm text-text-secondary">
                     {session.user.name || session.user.email}
                   </span>
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                  <ChevronDown className="w-4 h-4 text-text-muted" />
                 </button>
 
                 {/* User Dropdown */}
@@ -114,12 +114,12 @@ export function Navbar() {
                       className="fixed inset-0 z-10"
                       onClick={() => setUserMenuOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-64 bg-[#0A1D37] border border-white/10 rounded-sm shadow-2xl z-20 py-2">
-                      <div className="px-5 py-3 border-b border-white/10 bg-[#152e50]/30">
-                        <p className="text-sm font-heading font-bold text-white uppercase tracking-wider truncate">
+                    <div className="absolute right-0 mt-2 w-64 bg-modal-bg border border-border-default rounded-sm shadow-2xl z-20 py-2">
+                      <div className="px-5 py-3 border-b border-border-default bg-surface-glass">
+                        <p className="text-sm font-heading font-bold text-text-primary uppercase tracking-wider truncate">
                           {session.user.name || 'User'}
                         </p>
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest truncate mt-0.5">
+                        <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest truncate mt-0.5">
                           {session.user.email}
                         </p>
                       </div>
@@ -128,7 +128,7 @@ export function Navbar() {
                         {session.user.role === 'PROGRAM_DIRECTOR' ? (
                           <Link
                             href="/director/dashboard"
-                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary hover:bg-surface-glass transition-colors"
                             onClick={() => setUserMenuOpen(false)}
                           >
                             <User className="w-4 h-4" />
@@ -137,7 +137,7 @@ export function Navbar() {
                         ) : session.user.role !== 'ADMIN' && session.user.role !== 'SCOREKEEPER' ? (
                           <Link
                             href="/dashboard"
-                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary hover:bg-surface-glass transition-colors"
                             onClick={() => setUserMenuOpen(false)}
                           >
                             <User className="w-4 h-4" />
@@ -147,7 +147,7 @@ export function Navbar() {
 
                         <Link
                           href="/dashboard/settings"
-                          className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                          className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary hover:bg-surface-glass transition-colors"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           <Settings className="w-4 h-4" />
@@ -156,10 +156,10 @@ export function Navbar() {
                       </div>
 
                       {session.user.role === 'ADMIN' && (
-                        <div className="border-t border-white/5 py-1">
+                        <div className="border-t border-border-subtle py-1">
                           <Link
                             href="/admin"
-                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-eha-red hover:bg-white/5 transition-colors"
+                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-eha-red hover:bg-surface-glass transition-colors"
                             onClick={() => setUserMenuOpen(false)}
                           >
                             <Settings className="w-4 h-4" />
@@ -169,10 +169,10 @@ export function Navbar() {
                       )}
 
                       {session.user.role === 'SCOREKEEPER' && (
-                        <div className="border-t border-white/5 py-1">
+                        <div className="border-t border-border-subtle py-1">
                           <Link
                             href="/scorekeeper"
-                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-eha-red hover:bg-white/5 transition-colors"
+                            className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-eha-red hover:bg-surface-glass transition-colors"
                             onClick={() => setUserMenuOpen(false)}
                           >
                             <Settings className="w-4 h-4" />
@@ -181,13 +181,13 @@ export function Navbar() {
                         </div>
                       )}
 
-                      <div className="border-t border-white/10 mt-1 pt-1">
+                      <div className="border-t border-border-default mt-1 pt-1">
                         <button
                           onClick={() => {
                             setUserMenuOpen(false)
                             signOut()
                           }}
-                          className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-400 hover:bg-white/5 transition-colors w-full"
+                          className="flex items-center gap-3 px-5 py-3 text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-400 hover:bg-surface-glass transition-colors w-full"
                         >
                           <LogOut className="w-4 h-4" />
                           Sign Out
@@ -214,7 +214,7 @@ export function Navbar() {
             {!isScorekeeperMode && (
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-gray-400 hover:text-white"
+                className="md:hidden p-2 text-text-muted hover:text-text-primary"
               >
                 {mobileMenuOpen ? (
                   <X className="w-6 h-6" />
@@ -229,7 +229,7 @@ export function Navbar() {
 
       {/* Mobile Menu - Hidden in Scorekeeper Mode */}
       {mobileMenuOpen && !isScorekeeperMode && (
-        <div className="md:hidden bg-eha-navy/95 backdrop-blur-xl border-t border-eha-silver/20">
+        <div className="md:hidden bg-modal-bg backdrop-blur-xl border-t border-border-default">
           <div className="px-4 py-4">
             <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block mb-4">
               <Image
@@ -250,7 +250,7 @@ export function Navbar() {
                     'block px-4 py-3 font-heading font-bold uppercase tracking-[0.15em] text-sm transition-colors',
                     isActive(link.href)
                       ? 'text-eha-red border-l-2 border-eha-red bg-eha-red/10'
-                      : 'text-gray-300 hover:text-white hover:bg-dark-surface'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-overlay'
                   )}
                 >
                   {link.label}

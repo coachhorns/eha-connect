@@ -171,16 +171,16 @@ function ClaimPlayerContent() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37]">
+    <div className="min-h-screen bg-page-bg">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-12 bg-[#0a1628] border-b border-white/5">
+      <section className="relative overflow-hidden pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle">
         <div
           className="absolute inset-0 opacity-5"
           style={{
@@ -189,16 +189,16 @@ function ClaimPlayerContent() {
           }}
         />
         <div className="max-w-2xl mx-auto px-6 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/10 backdrop-blur-sm mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-overlay rounded-full border border-border-default backdrop-blur-sm mb-6">
             <UserPlus className="w-4 h-4 text-eha-red" />
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-white">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-text-primary">
               Claim Profile
             </span>
           </div>
-          <h1 className="text-4xl lg:text-5xl font-heading font-bold tracking-tighter text-white mb-4">
+          <h1 className="text-4xl lg:text-5xl font-heading font-bold tracking-tighter text-text-primary mb-4">
             Find Your Athlete
           </h1>
-          <p className="text-lg text-gray-400 font-light">
+          <p className="text-lg text-text-muted font-light">
             Link your account to your child&apos;s official player profile
           </p>
         </div>
@@ -221,19 +221,19 @@ function ClaimPlayerContent() {
                       className={`w-10 h-10 rounded-sm flex items-center justify-center text-sm font-black transition-all ${
                         isActive
                           ? 'bg-eha-red text-white shadow-lg shadow-eha-red/20'
-                          : 'bg-[#153361] text-gray-500 border border-white/10'
+                          : 'bg-surface-raised text-text-muted border border-border-default'
                       } ${isCurrent ? 'ring-2 ring-eha-red ring-offset-2 ring-offset-[#0A1D37]' : ''}`}
                     >
                       {index + 1}
                     </div>
-                    <span className={`text-[10px] font-bold uppercase tracking-widest mt-2 ${isActive ? 'text-white' : 'text-gray-500'}`}>
+                    <span className={`text-[10px] font-bold uppercase tracking-widest mt-2 ${isActive ? 'text-white' : 'text-text-muted'}`}>
                       {label}
                     </span>
                   </div>
                   {index < 1 && (
                     <div
                       className={`w-16 h-0.5 mx-4 mb-6 ${
-                        currentStepIndex > 0 || step === 'success' || step === 'approval' ? 'bg-eha-red' : 'bg-white/10'
+                        currentStepIndex > 0 || step === 'success' || step === 'approval' ? 'bg-eha-red' : 'bg-surface-overlay'
                       }`}
                     />
                   )}
@@ -243,14 +243,14 @@ function ClaimPlayerContent() {
           </div>
 
           {/* Step Content Card */}
-          <div className="bg-[#0a1628] border border-white/10 rounded-sm p-8 shadow-xl">
+          <div className="bg-page-bg-alt border border-border-default rounded-sm p-8 shadow-xl">
             {/* Direct Claim Flow (when coming from player profile) */}
             {directPlayerId && step !== 'success' && step !== 'approval' && (
               <div className="space-y-6">
                 {isLoadingDirect ? (
                   <div className="py-12 text-center">
                     <Loader2 className="w-12 h-12 text-eha-red animate-spin mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-white font-heading">Loading Player...</h2>
+                    <h2 className="text-xl font-bold text-text-primary font-heading">Loading Player...</h2>
                   </div>
                 ) : directPlayer ? (
                   <>
@@ -258,17 +258,17 @@ function ClaimPlayerContent() {
                       <div className="w-16 h-16 bg-eha-red/20 rounded-sm flex items-center justify-center mx-auto mb-4">
                         <User className="w-8 h-8 text-eha-red" />
                       </div>
-                      <h2 className="text-2xl font-bold text-white font-heading uppercase tracking-tight">
+                      <h2 className="text-2xl font-bold text-text-primary font-heading uppercase tracking-tight">
                         Confirm Your Athlete
                       </h2>
-                      <p className="text-gray-400 text-sm mt-2">
+                      <p className="text-text-muted text-sm mt-2">
                         You&apos;re about to claim this player profile
                       </p>
                     </div>
 
-                    <div className="p-5 bg-[#153361]/50 border border-white/10 rounded-sm">
+                    <div className="p-5 bg-surface-raised/50 border border-border-default rounded-sm">
                       <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-sm overflow-hidden bg-[#0a1628] border border-white/10 flex-shrink-0">
+                        <div className="w-16 h-16 rounded-sm overflow-hidden bg-page-bg-alt border border-border-default flex-shrink-0">
                           {directPlayer.profilePhoto ? (
                             <Image
                               src={directPlayer.profilePhoto}
@@ -278,7 +278,7 @@ function ClaimPlayerContent() {
                               className="object-cover w-full h-full"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xl font-bold text-gray-500">
+                            <div className="w-full h-full flex items-center justify-center text-xl font-bold text-text-muted">
                               {directPlayer.firstName[0]}{directPlayer.lastName[0]}
                             </div>
                           )}
@@ -286,7 +286,7 @@ function ClaimPlayerContent() {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-lg font-bold text-white font-heading">
+                            <p className="text-lg font-bold text-text-primary font-heading">
                               {directPlayer.firstName} {directPlayer.lastName}
                             </p>
                             {directPlayer.hasPrimaryGuardian && (
@@ -298,25 +298,25 @@ function ClaimPlayerContent() {
                           </div>
 
                           {directPlayer.currentTeam && (
-                            <p className="text-sm text-gray-300 mt-1 flex items-center gap-1.5">
+                            <p className="text-sm text-text-secondary mt-1 flex items-center gap-1.5">
                               <Users className="w-3.5 h-3.5 flex-shrink-0 text-eha-red" />
                               <span className="font-medium">{directPlayer.currentTeam.name}</span>
                             </p>
                           )}
 
-                          <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-2 flex-wrap">
+                          <div className="flex items-center gap-2 text-[10px] text-text-muted mt-2 flex-wrap">
                             {directPlayer.currentTeam?.division && (
-                              <span className="bg-white/5 px-2 py-1 rounded-sm font-bold uppercase tracking-wider">
+                              <span className="bg-surface-glass px-2 py-1 rounded-sm font-bold uppercase tracking-wider">
                                 {directPlayer.currentTeam.division}
                               </span>
                             )}
                             {directPlayer.primaryPosition && (
-                              <span className="bg-white/5 px-2 py-1 rounded-sm font-bold uppercase tracking-wider">
+                              <span className="bg-surface-glass px-2 py-1 rounded-sm font-bold uppercase tracking-wider">
                                 {formatPosition(directPlayer.primaryPosition)}
                               </span>
                             )}
                             {directPlayer.graduationYear && (
-                              <span className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-sm font-bold uppercase tracking-wider">
+                              <span className="flex items-center gap-1 bg-surface-glass px-2 py-1 rounded-sm font-bold uppercase tracking-wider">
                                 <GraduationCap className="w-3 h-3" />
                                 {directPlayer.graduationYear}
                               </span>
@@ -362,8 +362,8 @@ function ClaimPlayerContent() {
                 ) : error ? (
                   <div className="text-center py-8">
                     <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-white mb-2 font-heading">Player Not Found</h2>
-                    <p className="text-gray-400 mb-6">{error}</p>
+                    <h2 className="text-xl font-bold text-text-primary mb-2 font-heading">Player Not Found</h2>
+                    <p className="text-text-muted mb-6">{error}</p>
                     <Button onClick={() => router.push('/claim-player')}>
                       Search for Player
                     </Button>
@@ -379,17 +379,17 @@ function ClaimPlayerContent() {
                   <div className="w-16 h-16 bg-eha-red/20 rounded-sm flex items-center justify-center mx-auto mb-4">
                     <User className="w-8 h-8 text-eha-red" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white font-heading uppercase tracking-tight">
+                  <h2 className="text-2xl font-bold text-text-primary font-heading uppercase tracking-tight">
                     Enter Player Name
                   </h2>
-                  <p className="text-gray-400 text-sm mt-2">
+                  <p className="text-text-muted text-sm mt-2">
                     Enter your child&apos;s name exactly as it appears on their team roster
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                    <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">
                       First Name
                     </label>
                     <input
@@ -397,11 +397,11 @@ function ClaimPlayerContent() {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="John"
-                      className="w-full bg-[#153361] border border-white/10 rounded-sm px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
+                      className="w-full bg-surface-raised border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                    <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">
                       Last Name
                     </label>
                     <input
@@ -409,7 +409,7 @@ function ClaimPlayerContent() {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Smith"
-                      className="w-full bg-[#153361] border border-white/10 rounded-sm px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
+                      className="w-full bg-surface-raised border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
                     />
                   </div>
                 </div>
@@ -435,8 +435,8 @@ function ClaimPlayerContent() {
             {step === 'search' && isSearching && (
               <div className="py-12 text-center">
                 <Loader2 className="w-12 h-12 text-eha-red animate-spin mx-auto mb-4" />
-                <h2 className="text-xl font-bold text-white font-heading">Searching...</h2>
-                <p className="text-gray-400 text-sm mt-1">
+                <h2 className="text-xl font-bold text-text-primary font-heading">Searching...</h2>
+                <p className="text-text-muted text-sm mt-1">
                   Looking for {firstName} {lastName}
                 </p>
               </div>
@@ -453,7 +453,7 @@ function ClaimPlayerContent() {
                       <AlertCircle className="w-8 h-8 text-yellow-500" />
                     )}
                   </div>
-                  <h2 className="text-2xl font-bold text-white font-heading uppercase tracking-tight">
+                  <h2 className="text-2xl font-bold text-text-primary font-heading uppercase tracking-tight">
                     {players.length === 0 ? 'Player Not Found' : `Found ${players.length} Player${players.length > 1 ? 's' : ''}`}
                   </h2>
                 </div>
@@ -474,12 +474,12 @@ function ClaimPlayerContent() {
                       </div>
                     </div>
 
-                    <div className="bg-[#153361]/50 border border-white/10 rounded-sm p-5">
-                      <h3 className="text-white font-bold mb-3 flex items-center gap-2 text-sm uppercase tracking-wider">
+                    <div className="bg-surface-raised/50 border border-border-default rounded-sm p-5">
+                      <h3 className="text-text-primary font-bold mb-3 flex items-center gap-2 text-sm uppercase tracking-wider">
                         <Mail className="w-4 h-4 text-eha-red" />
                         Need Help?
                       </h3>
-                      <ul className="text-gray-400 text-sm space-y-2">
+                      <ul className="text-text-muted text-sm space-y-2">
                         <li className="flex items-start gap-2">
                           <span className="text-eha-red">•</span>
                           Double-check the spelling of the first and last name
@@ -502,16 +502,16 @@ function ClaimPlayerContent() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center mb-4">
+                    <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest text-center mb-4">
                       Select the correct player to claim
                     </p>
                     {players.map((player) => (
                       <div
                         key={player.id}
-                        className="p-4 bg-[#153361]/50 border border-white/10 rounded-sm hover:border-eha-red/50 transition-all group"
+                        className="p-4 bg-surface-raised/50 border border-border-default rounded-sm hover:border-eha-red/50 transition-all group"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-14 h-14 rounded-sm overflow-hidden bg-[#0a1628] border border-white/10 flex-shrink-0">
+                          <div className="w-14 h-14 rounded-sm overflow-hidden bg-page-bg-alt border border-border-default flex-shrink-0">
                             {player.profilePhoto ? (
                               <Image
                                 src={player.profilePhoto}
@@ -521,7 +521,7 @@ function ClaimPlayerContent() {
                                 className="object-cover w-full h-full"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-lg font-bold text-gray-500">
+                              <div className="w-full h-full flex items-center justify-center text-lg font-bold text-text-muted">
                                 {player.firstName[0]}{player.lastName[0]}
                               </div>
                             )}
@@ -529,7 +529,7 @@ function ClaimPlayerContent() {
 
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <p className="font-bold text-white font-heading">
+                              <p className="font-bold text-text-primary font-heading">
                                 {player.firstName} {player.lastName}
                               </p>
                               {player.hasPrimaryGuardian && (
@@ -541,20 +541,20 @@ function ClaimPlayerContent() {
                             </div>
 
                             {player.currentTeam && (
-                              <p className="text-sm text-gray-300 mt-0.5 flex items-center gap-1.5">
+                              <p className="text-sm text-text-secondary mt-0.5 flex items-center gap-1.5">
                                 <Users className="w-3.5 h-3.5 flex-shrink-0 text-eha-red" />
                                 <span className="font-medium">{player.currentTeam.name}</span>
                                 {player.currentTeam.program && (
-                                  <span className="text-gray-500">
+                                  <span className="text-text-muted">
                                     — {player.currentTeam.program.name}
                                   </span>
                                 )}
                               </p>
                             )}
 
-                            <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-1 flex-wrap">
+                            <div className="flex items-center gap-2 text-[10px] text-text-muted mt-1 flex-wrap">
                               {player.currentTeam?.division && (
-                                <span className="bg-white/5 px-2 py-0.5 rounded-sm font-bold uppercase tracking-wider">
+                                <span className="bg-surface-glass px-2 py-0.5 rounded-sm font-bold uppercase tracking-wider">
                                   {player.currentTeam.division}
                                 </span>
                               )}
@@ -609,10 +609,10 @@ function ClaimPlayerContent() {
                 <div className="w-20 h-20 bg-green-500/20 rounded-sm flex items-center justify-center mx-auto mb-6">
                   <CheckCircle className="w-10 h-10 text-green-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2 font-heading uppercase tracking-tight">Success!</h2>
-                <p className="text-gray-400 mb-8">
+                <h2 className="text-2xl font-bold text-text-primary mb-2 font-heading uppercase tracking-tight">Success!</h2>
+                <p className="text-text-muted mb-8">
                   You are now the primary guardian of{' '}
-                  <span className="text-white font-medium">
+                  <span className="text-text-primary font-medium">
                     {claimedPlayer.firstName} {claimedPlayer.lastName}
                   </span>
                 </p>
@@ -633,9 +633,9 @@ function ClaimPlayerContent() {
                 <div className="w-20 h-20 bg-yellow-500/20 rounded-sm flex items-center justify-center mx-auto mb-6">
                   <AlertCircle className="w-10 h-10 text-yellow-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2 font-heading uppercase tracking-tight">Approval Needed</h2>
-                <p className="text-gray-400 mb-8">
-                  <span className="text-white font-medium">
+                <h2 className="text-2xl font-bold text-text-primary mb-2 font-heading uppercase tracking-tight">Approval Needed</h2>
+                <p className="text-text-muted mb-8">
+                  <span className="text-text-primary font-medium">
                     {needsApprovalPlayer.firstName} {needsApprovalPlayer.lastName}
                   </span>{' '}
                   already has a primary guardian. The primary guardian will need to invite you as a co-parent from their account settings.
@@ -654,10 +654,10 @@ function ClaimPlayerContent() {
 
           {/* Help Text */}
           <div className="text-center mt-8 space-y-2">
-            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
               Player profiles are created by Program Directors and Coaches.
             </p>
-            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
               If you can&apos;t find your athlete, please contact your team&apos;s staff.
             </p>
           </div>

@@ -122,12 +122,12 @@ export default function AdminProgramsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
               <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
-              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Manage Programs</h1>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-text-primary uppercase tracking-tighter">Manage Programs</h1>
               <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">View and manage all registered programs</p>
             </div>
             <Link href="/admin/programs/new">
@@ -142,12 +142,12 @@ export default function AdminProgramsPage() {
       <form onSubmit={handleSearch} className="flex gap-4 mb-8">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
               <input
                 placeholder="Search programs..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
               />
             </div>
           </div>
@@ -157,7 +157,7 @@ export default function AdminProgramsPage() {
         </form>
 
       {/* Programs Table */}
-      <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
+      <div className="bg-surface-raised/30 border border-border-subtle rounded-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
@@ -165,27 +165,27 @@ export default function AdminProgramsPage() {
         ) : programs.length === 0 ? (
           <div className="text-center py-12">
             <Building2 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No programs found</h3>
-            <p className="text-gray-500">No programs match your search criteria</p>
+            <h3 className="text-lg font-semibold text-text-primary mb-2">No programs found</h3>
+            <p className="text-text-muted">No programs match your search criteria</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-white/5 border-b border-white/5">
+              <thead className="bg-surface-glass border-b border-border-subtle">
                 <tr>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Name
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Director
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Location
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Teams
                   </th>
-                  <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Actions
                   </th>
                 </tr>
@@ -194,7 +194,7 @@ export default function AdminProgramsPage() {
                 {programs.map((program) => (
                   <tr
                     key={program.id}
-                    className="hover:bg-white/5 transition-colors cursor-pointer"
+                    className="hover:bg-surface-glass transition-colors cursor-pointer"
                     onClick={() => router.push(`/admin/programs/${program.id}`)}
                   >
                     <td className="px-6 py-4">
@@ -206,19 +206,19 @@ export default function AdminProgramsPage() {
                             className="w-10 h-10 rounded-lg object-cover"
                           />
                         ) : (
-                          <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                            <Building2 className="w-5 h-5 text-gray-400" />
+                          <div className="w-10 h-10 bg-surface-overlay rounded-lg flex items-center justify-center">
+                            <Building2 className="w-5 h-5 text-text-muted" />
                           </div>
                         )}
-                        <div className="font-medium text-white">{program.name}</div>
+                        <div className="font-medium text-text-primary">{program.name}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-400">
+                    <td className="px-6 py-4 text-text-muted">
                       {program.directorName || '-'}
                     </td>
                     <td className="px-6 py-4">
                       {program.city || program.state ? (
-                        <div className="flex items-center gap-1 text-gray-400">
+                        <div className="flex items-center gap-1 text-text-muted">
                           <MapPin className="w-4 h-4" />
                           <span>{program.city}{program.city && program.state ? ', ' : ''}{program.state}</span>
                         </div>
@@ -228,7 +228,7 @@ export default function AdminProgramsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4 text-gray-500" />
+                        <Users className="w-4 h-4 text-text-muted" />
                         <Badge variant="default" size="sm">
                           {program.teamsCount}
                         </Badge>
@@ -263,8 +263,8 @@ export default function AdminProgramsPage() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border-subtle">
+            <p className="text-sm text-text-muted">
               Showing {((page - 1) * pagination.limit) + 1} to{' '}
               {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} programs
             </p>
@@ -277,7 +277,7 @@ export default function AdminProgramsPage() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-text-muted">
                 Page {page} of {pagination.totalPages}
               </span>
               <Button
@@ -300,8 +300,8 @@ export default function AdminProgramsPage() {
         title="Delete Program"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
-            Are you sure you want to delete <strong className="text-white">{deleteModal.program?.name}</strong>?
+          <p className="text-text-secondary">
+            Are you sure you want to delete <strong className="text-text-primary">{deleteModal.program?.name}</strong>?
             {deleteModal.program && deleteModal.program.teamsCount > 0 && (
               <span className="block mt-2 text-yellow-400">
                 This program has {deleteModal.program.teamsCount} team(s). It will be archived instead of deleted.

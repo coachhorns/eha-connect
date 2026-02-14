@@ -141,7 +141,7 @@ function SignUpContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center px-4 pt-32 pb-12 relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg flex items-center justify-center px-4 pt-32 pb-12 relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -157,7 +157,7 @@ function SignUpContent() {
 
       {/* Card */}
       <div className="relative z-10 w-full max-w-md">
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-8">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl shadow-2xl p-8">
           {/* Logo */}
           <div className="text-center mb-8">
             <Image
@@ -168,10 +168,10 @@ function SignUpContent() {
               className="w-auto h-36 mx-auto mb-2 object-contain"
               priority
             />
-            <h1 className="text-3xl font-heading font-bold text-white tracking-tight">
+            <h1 className="text-3xl font-heading font-bold text-text-primary tracking-tight">
               Create Account
             </h1>
-            <p className="text-gray-400 mt-2 font-light">
+            <p className="text-text-muted mt-2 font-light">
               {roleParam && validRoles.includes(roleParam)
                 ? `Sign up as ${roleLabels[roleParam]}`
                 : 'Join EHA Connect today'}
@@ -204,10 +204,10 @@ function SignUpContent() {
           {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10" />
+              <div className="w-full border-t border-border-default" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-4 bg-[#0A1D37] text-gray-500 uppercase tracking-widest font-medium">
+              <span className="px-4 bg-page-bg text-text-muted uppercase tracking-widest font-medium">
                 or continue with email
               </span>
             </div>
@@ -217,9 +217,9 @@ function SignUpContent() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Full Name</label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   type="text"
                   name="name"
@@ -227,16 +227,16 @@ function SignUpContent() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 bg-page-bg-alt border border-border-default rounded-lg text-text-primary placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
                 />
               </div>
             </div>
 
             {/* Email Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Email</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   type="email"
                   name="email"
@@ -244,34 +244,34 @@ function SignUpContent() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 bg-page-bg-alt border border-border-default rounded-lg text-text-primary placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
                 />
               </div>
             </div>
 
             {/* Account Type Select */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Account Type</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Account Type</label>
               <div className="relative">
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="w-full px-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all appearance-none cursor-pointer"
+                  className="w-full px-4 py-3.5 bg-page-bg-alt border border-border-default rounded-lg text-text-primary text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all appearance-none cursor-pointer"
                 >
                   <option value="PARENT">Parent/Guardian</option>
                   <option value="PLAYER">Player</option>
                   <option value="PROGRAM_DIRECTOR">Club/Program Director</option>
                 </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted pointer-events-none" />
               </div>
             </div>
 
             {/* Password Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">Password</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   type="password"
                   name="password"
@@ -279,18 +279,18 @@ function SignUpContent() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 bg-page-bg-alt border border-border-default rounded-lg text-text-primary placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
                 />
               </div>
             </div>
 
             {/* Confirm Password Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   type="password"
                   name="confirmPassword"
@@ -305,19 +305,19 @@ function SignUpContent() {
                     }
                   }}
                   required
-                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 bg-page-bg-alt border border-border-default rounded-lg text-text-primary placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
                 />
               </div>
             </div>
 
             {/* Terms */}
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-text-muted">
               By creating an account, you agree to our{' '}
-              <Link href="/terms" className="text-[#E31837] hover:text-white transition-colors">
+              <Link href="/terms" className="text-[#E31837] hover:text-text-primary transition-colors">
                 Terms of Service
               </Link>{' '}
               and{' '}
-              <Link href="/privacy" className="text-[#E31837] hover:text-white transition-colors">
+              <Link href="/privacy" className="text-[#E31837] hover:text-text-primary transition-colors">
                 Privacy Policy
               </Link>
               .
@@ -342,11 +342,11 @@ function SignUpContent() {
 
           {/* Sign In Link */}
           <div className="mt-8 text-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-text-muted text-sm">
               Already have an account?{' '}
               <Link
                 href="/auth/signin"
-                className="text-[#E31837] hover:text-white transition-colors font-semibold"
+                className="text-[#E31837] hover:text-text-primary transition-colors font-semibold"
               >
                 Sign in
               </Link>
@@ -360,7 +360,7 @@ function SignUpContent() {
 
 function SignUpLoading() {
   return (
-    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+    <div className="min-h-screen bg-page-bg flex items-center justify-center">
       <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
     </div>
   )

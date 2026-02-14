@@ -303,12 +303,12 @@ export default function AdminEventsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
               <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
-              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Manage Events</h1>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-text-primary uppercase tracking-tighter">Manage Events</h1>
               <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">Create and manage tournaments, leagues, showcases, and camps</p>
             </div>
             <div className="flex items-center gap-3">
@@ -344,11 +344,11 @@ export default function AdminEventsPage() {
               <h4 className={`font-semibold ${syncResult.error ? 'text-red-400' : 'text-green-400'}`}>
                 {syncResult.error ? 'Sync Failed' : 'Sync Complete'}
               </h4>
-              <p className="text-sm text-gray-300 mt-1">
+              <p className="text-sm text-text-secondary mt-1">
                 {syncResult.error || `Added ${syncResult.created} new events, updated ${syncResult.updated} existing events.${syncResult.venuesCreated ? ` Created ${syncResult.venuesCreated} new venues.` : ''}`}
               </p>
             </div>
-            <button onClick={() => setSyncResult(null)} className="text-gray-400 hover:text-white">
+            <button onClick={() => setSyncResult(null)} className="text-text-muted hover:text-text-primary">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -358,12 +358,12 @@ export default function AdminEventsPage() {
         <form onSubmit={handleSearch} className="mb-6 flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
               <input
                 placeholder="Search events..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+                className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
               />
             </div>
           </div>
@@ -374,10 +374,10 @@ export default function AdminEventsPage() {
                 setTypeFilter(e.target.value)
                 setPage(1)
               }}
-              className="bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+              className="bg-surface-glass border border-border-default text-text-primary rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
             >
               {eventTypeOptions.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-[#0A1D37] text-white">{opt.label}</option>
+                <option key={opt.value} value={opt.value} className="bg-page-bg text-text-primary">{opt.label}</option>
               ))}
             </select>
             <select
@@ -386,10 +386,10 @@ export default function AdminEventsPage() {
                 setStatusFilter(e.target.value)
                 setPage(1)
               }}
-              className="bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+              className="bg-surface-glass border border-border-default text-text-primary rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
             >
               {statusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-[#0A1D37] text-white">{opt.label}</option>
+                <option key={opt.value} value={opt.value} className="bg-page-bg text-text-primary">{opt.label}</option>
               ))}
             </select>
             <Button type="submit" variant="secondary">
@@ -399,7 +399,7 @@ export default function AdminEventsPage() {
         </form>
 
         {/* Events Table */}
-        <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
+        <div className="bg-surface-raised/30 border border-border-subtle rounded-sm overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
@@ -407,8 +407,8 @@ export default function AdminEventsPage() {
           ) : events.length === 0 ? (
             <div className="text-center py-12">
               <Calendar className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">No events found</h3>
-              <p className="text-gray-500 mb-4">Get started by creating your first event</p>
+              <h3 className="text-lg font-semibold text-text-primary mb-2">No events found</h3>
+              <p className="text-text-muted mb-4">Get started by creating your first event</p>
               <Link href="/admin/events/new">
                 <Button>Create Event</Button>
               </Link>
@@ -416,48 +416,48 @@ export default function AdminEventsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-white/5 border-b border-white/5">
+                <thead className="bg-surface-glass border-b border-border-subtle">
                   <tr>
-                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Event
                     </th>
-                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Type
                     </th>
-                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Dates
                     </th>
-                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Location
                     </th>
-                    <th className="px-6 py-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Teams
                     </th>
-                    <th className="px-6 py-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Games
                     </th>
-                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Status
                     </th>
-                    <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                    <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border-subtle">
                   {events.map((event) => {
                     const eventStatus = getEventStatus(event)
                     return (
                       <tr
                         key={event.id}
-                        className="hover:bg-white/5 transition-colors cursor-pointer"
+                        className="hover:bg-surface-glass transition-colors cursor-pointer"
                         onClick={() => router.push(`/admin/events/${event.id}`)}
                       >
                         <td className="px-6 py-4">
                           <div>
-                            <div className="font-medium text-white">{event.name}</div>
+                            <div className="font-medium text-text-primary">{event.name}</div>
                             {event.divisions.length > 0 && (
-                              <div className="text-sm text-gray-500 mt-1">
+                              <div className="text-sm text-text-muted mt-1">
                                 {event.divisions.join(', ')}
                               </div>
                             )}
@@ -469,13 +469,13 @@ export default function AdminEventsPage() {
                           </Badge>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="text-sm text-white">
+                          <div className="text-sm text-text-primary">
                             {format(new Date(event.startDate), 'MMM d')} - {format(new Date(event.endDate), 'MMM d, yyyy')}
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           {event.venue || event.city ? (
-                            <div className="flex items-center gap-1 text-sm text-gray-400">
+                            <div className="flex items-center gap-1 text-sm text-text-muted">
                               <MapPin className="w-4 h-4" />
                               <span>
                                 {event.venue ? `${event.venue}, ` : ''}
@@ -487,13 +487,13 @@ export default function AdminEventsPage() {
                           )}
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <div className="flex items-center justify-center gap-1 text-sm text-gray-400">
+                          <div className="flex items-center justify-center gap-1 text-sm text-text-muted">
                             <Users className="w-4 h-4" />
                             <span>{event._count.teams}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <div className="flex items-center justify-center gap-1 text-sm text-gray-400">
+                          <div className="flex items-center justify-center gap-1 text-sm text-text-muted">
                             <Gamepad2 className="w-4 h-4" />
                             <span>{event._count.games}</span>
                           </div>
@@ -527,10 +527,10 @@ export default function AdminEventsPage() {
                                 <MoreVertical className="w-4 h-4" />
                               </Button>
                               {openDropdown === event.id && (
-                                <div className="absolute right-0 top-full mt-1 w-48 bg-[#0A1D37] border border-white/10 rounded-sm shadow-xl z-10">
+                                <div className="absolute right-0 top-full mt-1 w-48 bg-page-bg border border-border-default rounded-sm shadow-xl z-10">
                                   <Link
                                     href={`/admin/events/${event.id}`}
-                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors"
+                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-surface-overlay transition-colors"
                                     onClick={() => setOpenDropdown(null)}
                                   >
                                     <Gamepad2 className="w-4 h-4" />
@@ -538,7 +538,7 @@ export default function AdminEventsPage() {
                                   </Link>
                                   <button
                                     onClick={() => handleTogglePublish(event)}
-                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors"
+                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-surface-overlay transition-colors"
                                   >
                                     {event.isPublished ? (
                                       <>
@@ -554,7 +554,7 @@ export default function AdminEventsPage() {
                                   </button>
                                   <Link
                                     href={`/events/${event.slug}`}
-                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors"
+                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-surface-overlay transition-colors"
                                     onClick={() => setOpenDropdown(null)}
                                   >
                                     <Eye className="w-4 h-4" />
@@ -565,7 +565,7 @@ export default function AdminEventsPage() {
                                       setDeleteModal({ isOpen: true, event })
                                       setOpenDropdown(null)
                                     }}
-                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-white/10 transition-colors"
+                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-surface-overlay transition-colors"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                     Delete
@@ -585,8 +585,8 @@ export default function AdminEventsPage() {
 
           {/* Pagination */}
           {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
-              <p className="text-sm text-gray-500">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-border-subtle">
+              <p className="text-sm text-text-muted">
                 Showing {((page - 1) * pagination.limit) + 1} to{' '}
                 {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} events
               </p>
@@ -599,7 +599,7 @@ export default function AdminEventsPage() {
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="text-sm text-gray-400">
+                <span className="text-sm text-text-muted">
                   Page {page} of {pagination.totalPages}
                 </span>
                 <Button
@@ -622,15 +622,15 @@ export default function AdminEventsPage() {
           title="Delete Event"
         >
           <div className="space-y-4">
-            <p className="text-gray-300">
-              Are you sure you want to delete <strong className="text-white">{deleteModal.event?.name}</strong>?
+            <p className="text-text-secondary">
+              Are you sure you want to delete <strong className="text-text-primary">{deleteModal.event?.name}</strong>?
             </p>
 
             {deleteModal.event && deleteModal.event._count.games > 0 ? (
               <>
-                <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">
-                  <p className="text-sm text-gray-300">This event contains:</p>
-                  <ul className="text-sm text-gray-400 list-disc list-inside space-y-1">
+                <div className="bg-surface-glass border border-border-default rounded-lg p-4 space-y-2">
+                  <p className="text-sm text-text-secondary">This event contains:</p>
+                  <ul className="text-sm text-text-muted list-disc list-inside space-y-1">
                     <li>{deleteModal.event._count.teams} registered team{deleteModal.event._count.teams !== 1 ? 's' : ''}</li>
                     <li>{deleteModal.event._count.games} game{deleteModal.event._count.games !== 1 ? 's' : ''}</li>
                   </ul>
@@ -702,7 +702,7 @@ export default function AdminEventsPage() {
             {exposureModal.isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
-                <span className="ml-3 text-gray-400">Fetching events from Exposure...</span>
+                <span className="ml-3 text-text-muted">Fetching events from Exposure...</span>
               </div>
             ) : exposureModal.error ? (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
@@ -710,12 +710,12 @@ export default function AdminEventsPage() {
               </div>
             ) : exposureModal.events.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-400">No upcoming events found in Exposure.</p>
+                <p className="text-text-muted">No upcoming events found in Exposure.</p>
               </div>
             ) : (
               <>
                 {/* Select All header */}
-                <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                <div className="flex items-center justify-between pb-2 border-b border-border-default">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -725,14 +725,14 @@ export default function AdminEventsPage() {
                         selectedExposureIds.size > 0
                       }
                       onChange={toggleSelectAll}
-                      className="w-4 h-4 rounded border-white/20 bg-white/5 text-eha-red focus:ring-eha-red focus:ring-offset-0"
+                      className="w-4 h-4 rounded border-border-default bg-surface-glass text-eha-red focus:ring-eha-red focus:ring-offset-0"
                     />
-                    <span className="text-sm text-gray-400 font-semibold uppercase tracking-wider">
+                    <span className="text-sm text-text-muted font-semibold uppercase tracking-wider">
                       Select All ({selectedExposureIds.size} of{' '}
                       {exposureModal.events.filter(e => !e.alreadyImported).length} new)
                     </span>
                   </label>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-text-muted">
                     {exposureModal.events.length} upcoming events
                   </span>
                 </div>
@@ -744,10 +744,10 @@ export default function AdminEventsPage() {
                       key={event.exposureId}
                       className={`flex items-center gap-4 p-3 rounded-lg border transition-colors ${
                         event.alreadyImported
-                          ? 'border-white/5 bg-white/[0.02] opacity-60 cursor-default'
+                          ? 'border-border-subtle bg-white/[0.02] opacity-60 cursor-default'
                           : selectedExposureIds.has(event.exposureId)
                           ? 'border-eha-red/30 bg-eha-red/5 cursor-pointer'
-                          : 'border-white/10 bg-white/5 hover:border-white/20 cursor-pointer'
+                          : 'border-border-default bg-surface-glass hover:border-border-default cursor-pointer'
                       }`}
                     >
                       <input
@@ -755,16 +755,16 @@ export default function AdminEventsPage() {
                         checked={event.alreadyImported || selectedExposureIds.has(event.exposureId)}
                         disabled={event.alreadyImported}
                         onChange={() => toggleExposureSelection(event.exposureId)}
-                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-eha-red focus:ring-eha-red focus:ring-offset-0 disabled:opacity-50"
+                        className="w-4 h-4 rounded border-border-default bg-surface-glass text-eha-red focus:ring-eha-red focus:ring-offset-0 disabled:opacity-50"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-white truncate">{event.name}</span>
+                          <span className="font-medium text-text-primary truncate">{event.name}</span>
                           {event.alreadyImported && (
                             <Badge variant="success" size="sm">Already Synced</Badge>
                           )}
                         </div>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                        <div className="flex items-center gap-3 mt-1 text-xs text-text-muted">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {event.startDate} - {event.endDate}
@@ -783,8 +783,8 @@ export default function AdminEventsPage() {
                 </div>
 
                 {/* Footer actions */}
-                <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                  <p className="text-sm text-gray-500">
+                <div className="flex items-center justify-between pt-4 border-t border-border-default">
+                  <p className="text-sm text-text-muted">
                     {selectedExposureIds.size} event{selectedExposureIds.size !== 1 ? 's' : ''} selected for import
                   </p>
                   <div className="flex gap-3">

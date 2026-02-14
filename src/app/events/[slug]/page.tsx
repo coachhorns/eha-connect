@@ -191,7 +191,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
@@ -199,7 +199,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+      <div className="min-h-screen bg-page-bg relative overflow-hidden">
         {/* Background Pattern */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -209,11 +209,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
           }}
         />
         <div className="max-w-2xl mx-auto px-4 py-32 text-center relative z-10">
-          <div className="w-20 h-20 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <Trophy className="w-10 h-10 text-gray-500" />
+          <div className="w-20 h-20 bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Trophy className="w-10 h-10 text-text-muted" />
           </div>
-          <h1 className="text-3xl font-heading font-bold text-white mb-3">Event Not Found</h1>
-          <p className="text-gray-400 mb-8">{error || 'The event you are looking for does not exist.'}</p>
+          <h1 className="text-3xl font-heading font-bold text-text-primary mb-3">Event Not Found</h1>
+          <p className="text-text-muted mb-8">{error || 'The event you are looking for does not exist.'}</p>
           <Link href="/events">
             <Button className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530]">
               Browse Events
@@ -315,7 +315,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
         return <Badge variant="error">CAN</Badge>
       default:
         return (
-          <span className="text-sm text-gray-400">
+          <span className="text-sm text-text-muted">
             {format(new Date(game.scheduledAt), 'h:mm a')}
           </span>
         )
@@ -324,11 +324,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
   const GameCard = ({ game }: { game: Game }) => (
     <Link href={`/games/${game.id}`}>
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-0.5">
+      <div className="bg-surface-glass backdrop-blur-sm border border-border-default rounded-xl p-4 hover:bg-surface-overlay hover:border-border-default transition-all duration-300 hover:-translate-y-0.5">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             {/* Game Info */}
-            <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+            <div className="flex items-center gap-2 text-xs text-text-muted mb-2">
               {game.court && (
                 <span className="flex items-center gap-1">
                   <MapPin className="w-3 h-3" />
@@ -372,7 +372,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   )
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -392,14 +392,14 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
           {/* Back Link */}
           <Link
             href="/events"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             All Events
           </Link>
 
           {/* Banner */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden mb-8">
+          <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl shadow-2xl overflow-hidden mb-8">
             <div className="relative h-64 md:h-80 bg-gradient-to-br from-[#0a1628] to-[#1a3a6e]/50">
               {event.bannerImage ? (
                 <>
@@ -449,11 +449,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   )}
                   {isPast && <Badge variant="default">Completed</Badge>}
                 </div>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white tracking-tight">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-text-primary tracking-tight">
                   {event.name}
                 </h1>
                 {event.description && (
-                  <p className="text-gray-300 mt-3 max-w-3xl text-sm md:text-base leading-relaxed">
+                  <p className="text-text-secondary mt-3 max-w-3xl text-sm md:text-base leading-relaxed">
                     {event.description}
                   </p>
                 )}
@@ -464,13 +464,13 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
           {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {/* Dates Card */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
+            <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5 hover:bg-surface-overlay transition-colors">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#E31837]/20 rounded-xl flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-[#E31837]" />
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Dates</div>
+                  <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Dates</div>
                   <div className="text-white font-semibold">
                     {format(new Date(event.startDate), 'MMM d')} - {format(new Date(event.endDate), 'd, yyyy')}
                   </div>
@@ -479,13 +479,13 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             </div>
 
             {/* Location Card */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
+            <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5 hover:bg-surface-overlay transition-colors">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
                   <MapPin className="w-6 h-6 text-blue-400" />
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Location</div>
+                  <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Location</div>
                   <div className="text-white font-semibold">
                     {event.venue || (event.city && event.state ? `${event.city}, ${event.state}` : 'TBA')}
                   </div>
@@ -494,32 +494,32 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             </div>
 
             {/* Teams Card */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
+            <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5 hover:bg-surface-overlay transition-colors">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center">
                   <Users className="w-6 h-6 text-amber-400" />
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Teams</div>
+                  <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Teams</div>
                   <div className="text-white font-semibold">
                     <span className="text-2xl font-mono">{event._count.teams}</span>
-                    <span className="text-gray-400 text-sm ml-1">Registered</span>
+                    <span className="text-text-muted text-sm ml-1">Registered</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Games Card */}
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
+            <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5 hover:bg-surface-overlay transition-colors">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
                   <Trophy className="w-6 h-6 text-green-400" />
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Games</div>
+                  <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Games</div>
                   <div className="text-white font-semibold">
                     <span className="text-2xl font-mono">{event._count.games}</span>
-                    <span className="text-gray-400 text-sm ml-1">Scheduled</span>
+                    <span className="text-text-muted text-sm ml-1">Scheduled</span>
                   </div>
                 </div>
               </div>
@@ -531,13 +531,13 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             {/* Main Content Area */}
             <div className="lg:col-span-2 space-y-6">
               {/* Tabs */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-1.5 flex gap-1">
+              <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-1.5 flex gap-1">
                 <button
                   onClick={() => setActiveTab('schedule')}
                   className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
                     activeTab === 'schedule'
                       ? 'bg-gradient-to-r from-[#E31837] to-[#a01128] text-white shadow-lg shadow-[#E31837]/25'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      : 'text-text-muted hover:text-text-primary hover:bg-surface-glass'
                   }`}
                 >
                   <Clock className="w-4 h-4" />
@@ -548,7 +548,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
                     activeTab === 'teams'
                       ? 'bg-gradient-to-r from-[#E31837] to-[#a01128] text-white shadow-lg shadow-[#E31837]/25'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      : 'text-text-muted hover:text-text-primary hover:bg-surface-glass'
                   }`}
                 >
                   <List className="w-4 h-4" />
@@ -560,7 +560,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                     className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
                       activeTab === 'bracket'
                         ? 'bg-gradient-to-r from-[#E31837] to-[#a01128] text-white shadow-lg shadow-[#E31837]/25'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                        : 'text-text-muted hover:text-text-primary hover:bg-surface-glass'
                     }`}
                   >
                     <Grid3X3 className="w-4 h-4" />
@@ -571,9 +571,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
               {/* Filter Bar */}
               {event.divisions.length > 0 && (
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-4">
                   <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex items-center gap-2 text-text-muted">
                       <Filter className="w-4 h-4" />
                       <span className="text-sm font-medium uppercase tracking-wider">Filter</span>
                     </div>
@@ -584,14 +584,14 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                         <select
                           value={selectedDivision}
                           onChange={(e) => setSelectedDivision(e.target.value)}
-                          className="appearance-none bg-[#0a1628] border border-white/10 text-white px-4 py-2 pr-10 rounded-lg text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                          className="appearance-none bg-page-bg-alt border border-border-default text-white px-4 py-2 pr-10 rounded-lg text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
                         >
                           <option value="">All Divisions</option>
                           {event.divisions.map(div => (
                             <option key={div} value={div}>{div}</option>
                           ))}
                         </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
                       </div>
                     )}
 
@@ -599,10 +599,10 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
                     {/* Export/Print Buttons */}
                     <div className="flex gap-2">
-                      <button className="p-2 bg-white/5 border border-white/10 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                      <button className="p-2 bg-surface-glass border border-border-default rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-overlay transition-colors">
                         <Download className="w-4 h-4" />
                       </button>
-                      <button className="p-2 bg-white/5 border border-white/10 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                      <button className="p-2 bg-surface-glass border border-border-default rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-overlay transition-colors">
                         <Printer className="w-4 h-4" />
                       </button>
                     </div>
@@ -612,7 +612,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                         onClick={() => {
                           setSelectedDivision('')
                         }}
-                        className="text-[#E31837] hover:text-white text-sm font-medium transition-colors"
+                        className="text-[#E31837] hover:text-text-primary text-sm font-medium transition-colors"
                       >
                         Clear Filters
                       </button>
@@ -634,7 +634,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                           className={`px-5 py-2.5 rounded-lg font-medium whitespace-nowrap transition-all duration-300 ${
                             selectedDate === date
                               ? 'bg-gradient-to-r from-[#E31837] to-[#a01128] text-white shadow-lg shadow-[#E31837]/25'
-                              : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+                              : 'bg-surface-glass border border-border-default text-text-muted hover:text-text-primary hover:bg-surface-overlay'
                           }`}
                         >
                           {format(new Date(date), 'EEE, MMM d')}
@@ -644,14 +644,14 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   )}
 
                   {filteredGames.length === 0 ? (
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
-                      <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <Clock className="w-10 h-10 text-gray-500" />
+                    <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-12 text-center">
+                      <div className="w-20 h-20 bg-surface-glass rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <Clock className="w-10 h-10 text-text-muted" />
                       </div>
-                      <h3 className="text-xl font-heading font-bold text-white mb-2">
+                      <h3 className="text-xl font-heading font-bold text-text-primary mb-2">
                         {hasActiveFilters ? 'No Matching Games' : 'Schedule Not Released'}
                       </h3>
-                      <p className="text-gray-400 mb-6 max-w-md mx-auto">
+                      <p className="text-text-muted mb-6 max-w-md mx-auto">
                         {hasActiveFilters
                           ? 'No games match the selected filters. Try adjusting your criteria.'
                           : 'The game schedule for this event has not been released yet. Check back soon or enable notifications.'}
@@ -671,7 +671,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                               )}
                               Register Team
                             </Button>
-                            <Button variant="outline" className="border-white/20 text-gray-300 hover:bg-white/5">
+                            <Button variant="outline" className="border-border-default text-text-secondary hover:bg-surface-glass">
                               <Bell className="w-4 h-4 mr-2" />
                               Notify Me
                             </Button>
@@ -680,7 +680,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                         {hasActiveFilters && (
                           <Button
                             variant="outline"
-                            className="border-white/20 text-gray-300 hover:bg-white/5"
+                            className="border-border-default text-text-secondary hover:bg-surface-glass"
                             onClick={() => {
                               setSelectedDivision('')
                             }}
@@ -704,14 +704,14 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               {activeTab === 'teams' && (
                 <div className="space-y-6">
                   {filteredTeams.length === 0 ? (
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
-                      <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <Users className="w-10 h-10 text-gray-500" />
+                    <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-12 text-center">
+                      <div className="w-20 h-20 bg-surface-glass rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <Users className="w-10 h-10 text-text-muted" />
                       </div>
-                      <h3 className="text-xl font-heading font-bold text-white mb-2">
+                      <h3 className="text-xl font-heading font-bold text-text-primary mb-2">
                         {hasActiveFilters ? 'No Matching Teams' : 'No Teams Registered'}
                       </h3>
-                      <p className="text-gray-400 mb-6">
+                      <p className="text-text-muted mb-6">
                         {hasActiveFilters
                           ? 'No teams match the selected filters.'
                           : 'Be the first to register your team for this event!'}
@@ -733,15 +733,15 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                     </div>
                   ) : (
                     filteredSortedPools.map(pool => (
-                      <div key={pool} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-                        <div className="bg-[#0a1628] px-5 py-4 border-b border-white/10">
+                      <div key={pool} className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl overflow-hidden">
+                        <div className="bg-page-bg-alt px-5 py-4 border-b border-border-default">
                           <h3 className="font-semibold text-white flex items-center gap-3">
                             {pool === 'Unassigned' ? (
-                              <span className="text-gray-400">{pool}</span>
+                              <span className="text-text-muted">{pool}</span>
                             ) : (
                               <Badge variant="info" className="text-sm">{pool}</Badge>
                             )}
-                            <span className="text-gray-500 text-sm font-normal">
+                            <span className="text-text-muted text-sm font-normal">
                               {filteredTeamsByPool[pool].length} teams
                             </span>
                           </h3>
@@ -749,7 +749,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                         <div className="overflow-x-auto">
                           <table className="w-full">
                             <thead>
-                              <tr className="border-b border-white/10 text-xs text-gray-500 uppercase tracking-wider">
+                              <tr className="border-b border-border-default text-xs text-text-muted uppercase tracking-wider">
                                 <th className="text-left py-4 px-5">Team</th>
                                 <th className="text-center py-4 px-3 w-12">W</th>
                                 <th className="text-center py-4 px-3 w-12">L</th>
@@ -765,13 +765,13 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                   return (b.pointsFor - b.pointsAgainst) - (a.pointsFor - a.pointsAgainst)
                                 })
                                 .map((et, idx) => (
-                                  <tr key={et.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                  <tr key={et.id} className="border-b border-border-subtle hover:bg-surface-glass transition-colors">
                                     <td className="py-4 px-5">
                                       <div className="flex items-center gap-4">
-                                        <span className="text-gray-500 text-sm font-mono w-5">{idx + 1}</span>
+                                        <span className="text-text-muted text-sm font-mono w-5">{idx + 1}</span>
                                         <div>
                                           <div className="font-medium text-white">{et.team.name}</div>
-                                          <div className="text-xs text-gray-500 flex items-center gap-2">
+                                          <div className="text-xs text-text-muted flex items-center gap-2">
                                             {et.team.city && et.team.state && (
                                               <span>{et.team.city}, {et.team.state}</span>
                                             )}
@@ -781,11 +781,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                     </td>
                                     <td className="text-center py-4 px-3 text-white font-semibold font-mono">{et.eventWins}</td>
                                     <td className="text-center py-4 px-3 text-white font-semibold font-mono">{et.eventLosses}</td>
-                                    <td className="text-center py-4 px-3 text-gray-400 font-mono">{et.pointsFor}</td>
-                                    <td className="text-center py-4 px-3 text-gray-400 font-mono">{et.pointsAgainst}</td>
+                                    <td className="text-center py-4 px-3 text-text-muted font-mono">{et.pointsFor}</td>
+                                    <td className="text-center py-4 px-3 text-text-muted font-mono">{et.pointsAgainst}</td>
                                     <td className={`text-center py-4 px-3 font-semibold font-mono ${
                                       et.pointsFor - et.pointsAgainst > 0 ? 'text-green-400' :
-                                      et.pointsFor - et.pointsAgainst < 0 ? 'text-red-400' : 'text-gray-400'
+                                      et.pointsFor - et.pointsAgainst < 0 ? 'text-red-400' : 'text-text-muted'
                                     }`}>
                                       {et.pointsFor - et.pointsAgainst > 0 ? '+' : ''}{et.pointsFor - et.pointsAgainst}
                                     </td>
@@ -804,14 +804,14 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               {activeTab === 'bracket' && (
                 <div className="space-y-8">
                   {bracketGames.length === 0 ? (
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
-                      <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <Grid3X3 className="w-10 h-10 text-gray-500" />
+                    <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-12 text-center">
+                      <div className="w-20 h-20 bg-surface-glass rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <Grid3X3 className="w-10 h-10 text-text-muted" />
                       </div>
-                      <h3 className="text-xl font-heading font-bold text-white mb-2">
+                      <h3 className="text-xl font-heading font-bold text-text-primary mb-2">
                         {hasActiveFilters ? 'No Matching Bracket Games' : 'Bracket Not Released'}
                       </h3>
-                      <p className="text-gray-400 mb-6">
+                      <p className="text-text-muted mb-6">
                         {hasActiveFilters
                           ? 'No bracket games match the selected filters.'
                           : 'The bracket for this event has not been released yet.'}
@@ -830,7 +830,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                           {division && bracketDivisions.length > 1 && (
                             <div className="flex items-center gap-3 mb-4">
                               <Trophy className="w-5 h-5 text-amber-400" />
-                              <h3 className="text-lg font-heading font-bold text-white">{division} Bracket</h3>
+                              <h3 className="text-lg font-heading font-bold text-text-primary">{division} Bracket</h3>
                             </div>
                           )}
 
@@ -884,11 +884,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                                     ? 'border-amber-500/30 bg-amber-500/5'
                                                     : isConsolation
                                                       ? 'border-blue-500/20 bg-blue-500/5'
-                                                      : 'border-white/10 bg-white/5'
-                                              } hover:bg-white/10`}>
+                                                      : 'border-border-default bg-surface-glass'
+                                              } hover:bg-surface-overlay`}>
                                                 {/* Game meta bar */}
-                                                <div className="px-3 py-1.5 border-b border-white/5 flex items-center justify-between">
-                                                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                                                <div className="px-3 py-1.5 border-b border-border-subtle flex items-center justify-between">
+                                                  <div className="flex items-center gap-2 text-xs text-text-muted">
                                                     {isConsolation && (
                                                       <Badge size="sm" variant="info">Consolation</Badge>
                                                     )}
@@ -906,9 +906,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                                         LIVE
                                                       </Badge>
                                                     ) : isFinalStatus ? (
-                                                      <span className="text-xs text-gray-500 font-medium">FINAL</span>
+                                                      <span className="text-xs text-text-muted font-medium">FINAL</span>
                                                     ) : (
-                                                      <span className="text-xs text-gray-500">
+                                                      <span className="text-xs text-text-muted">
                                                         {format(new Date(game.scheduledAt), 'EEE h:mm a')}
                                                       </span>
                                                     )}
@@ -917,15 +917,15 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
                                                 {/* Away team row */}
                                                 <div className={`flex items-center justify-between px-3 py-2.5 ${
-                                                  awayWins ? 'bg-white/5' : ''
+                                                  awayWins ? 'bg-surface-glass' : ''
                                                 }`}>
                                                   <div className="flex items-center gap-2 min-w-0 flex-1">
                                                     {awayWins && <span className="w-1 h-4 bg-[#E31837] rounded-full flex-shrink-0" />}
                                                     <div className="min-w-0 flex-1">
                                                       <span className={`text-sm truncate block ${
-                                                        isTbdAway ? 'text-gray-500 italic' :
+                                                        isTbdAway ? 'text-text-muted italic' :
                                                         awayWins ? 'text-white font-semibold' :
-                                                        isFinalStatus && !awayWins ? 'text-gray-500' : 'text-white'
+                                                        isFinalStatus && !awayWins ? 'text-text-muted' : 'text-white'
                                                       }`}>
                                                         {isTbdAway && game.awayTeamLabel
                                                           ? game.awayTeamLabel
@@ -935,7 +935,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                                   </div>
                                                   {(isFinalStatus || isLiveStatus) && (
                                                     <span className={`text-sm font-bold font-mono ml-2 ${
-                                                      awayWins ? 'text-white' : 'text-gray-500'
+                                                      awayWins ? 'text-white' : 'text-text-muted'
                                                     }`}>
                                                       {game.awayScore}
                                                     </span>
@@ -943,19 +943,19 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                                 </div>
 
                                                 {/* Divider */}
-                                                <div className="border-t border-white/5" />
+                                                <div className="border-t border-border-subtle" />
 
                                                 {/* Home team row */}
                                                 <div className={`flex items-center justify-between px-3 py-2.5 ${
-                                                  homeWins ? 'bg-white/5' : ''
+                                                  homeWins ? 'bg-surface-glass' : ''
                                                 }`}>
                                                   <div className="flex items-center gap-2 min-w-0 flex-1">
                                                     {homeWins && <span className="w-1 h-4 bg-[#E31837] rounded-full flex-shrink-0" />}
                                                     <div className="min-w-0 flex-1">
                                                       <span className={`text-sm truncate block ${
-                                                        isTbdHome ? 'text-gray-500 italic' :
+                                                        isTbdHome ? 'text-text-muted italic' :
                                                         homeWins ? 'text-white font-semibold' :
-                                                        isFinalStatus && !homeWins ? 'text-gray-500' : 'text-white'
+                                                        isFinalStatus && !homeWins ? 'text-text-muted' : 'text-white'
                                                       }`}>
                                                         {isTbdHome && game.homeTeamLabel
                                                           ? game.homeTeamLabel
@@ -965,7 +965,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                                                   </div>
                                                   {(isFinalStatus || isLiveStatus) && (
                                                     <span className={`text-sm font-bold font-mono ml-2 ${
-                                                      homeWins ? 'text-white' : 'text-gray-500'
+                                                      homeWins ? 'text-white' : 'text-text-muted'
                                                     }`}>
                                                       {game.homeScore}
                                                     </span>
@@ -1026,20 +1026,20 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             <div className="space-y-6">
               {/* Venue Information Card */}
               {(event.venue || event.address || event.city) && (
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-                  <div className="px-5 py-4 border-b border-white/10">
-                    <h3 className="font-heading font-bold text-white flex items-center gap-2">
+                <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl overflow-hidden">
+                  <div className="px-5 py-4 border-b border-border-default">
+                    <h3 className="font-heading font-bold text-text-primary flex items-center gap-2">
                       <MapPin className="w-5 h-5 text-[#E31837]" />
                       Venue Information
                     </h3>
                   </div>
 
                   {/* Map Placeholder */}
-                  <div className="h-40 bg-[#0a1628] relative">
+                  <div className="h-40 bg-page-bg-alt relative">
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
                         <MapPin className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-                        <span className="text-gray-500 text-sm">Map View</span>
+                        <span className="text-text-muted text-sm">Map View</span>
                       </div>
                     </div>
                   </div>
@@ -1047,27 +1047,27 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   <div className="p-5 space-y-4">
                     {event.venue && (
                       <div>
-                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Venue</div>
+                        <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Venue</div>
                         <div className="text-white font-medium">{event.venue}</div>
                       </div>
                     )}
                     {event.address && (
                       <div>
-                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Address</div>
-                        <div className="text-gray-300 text-sm">{event.address}</div>
+                        <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Address</div>
+                        <div className="text-text-secondary text-sm">{event.address}</div>
                       </div>
                     )}
                     {event.city && event.state && (
                       <div>
-                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">City</div>
-                        <div className="text-gray-300 text-sm">{event.city}, {event.state}</div>
+                        <div className="text-xs text-text-muted uppercase tracking-wider mb-1">City</div>
+                        <div className="text-text-secondary text-sm">{event.city}, {event.state}</div>
                       </div>
                     )}
                     <a
                       href={`https://maps.google.com/?q=${encodeURIComponent([event.venue, event.address, event.city, event.state].filter(Boolean).join(', '))}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block w-full py-2.5 bg-white/5 border border-white/10 rounded-lg text-center text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                      className="block w-full py-2.5 bg-surface-glass border border-border-default rounded-lg text-center text-sm text-text-secondary hover:bg-surface-overlay hover:text-text-primary transition-colors"
                     >
                       Get Directions
                     </a>
@@ -1076,9 +1076,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               )}
 
               {/* Event Details Card */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-                <div className="px-5 py-4 border-b border-white/10">
-                  <h3 className="font-heading font-bold text-white flex items-center gap-2">
+              <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl overflow-hidden">
+                <div className="px-5 py-4 border-b border-border-default">
+                  <h3 className="font-heading font-bold text-text-primary flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-[#E31837]" />
                     Event Details
                   </h3>
@@ -1086,7 +1086,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                 <div className="p-5 space-y-4">
                   {event.divisions.length > 0 && (
                     <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Divisions</div>
+                      <div className="text-xs text-text-muted uppercase tracking-wider mb-2">Divisions</div>
                       <div className="flex flex-wrap gap-2">
                         {event.divisions.map(div => (
                           <Badge key={div} variant="default" size="sm">{div}</Badge>
@@ -1096,7 +1096,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                   )}
                   {event.entryFee && (
                     <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Entry Fee</div>
+                      <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Entry Fee</div>
                       <div className="text-white font-semibold text-lg">{event.entryFee}</div>
                     </div>
                   )}
@@ -1106,8 +1106,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               {/* Registration CTA */}
               {isUpcoming && (
                 <div className="bg-gradient-to-br from-[#E31837]/20 to-transparent border border-[#E31837]/30 rounded-2xl p-6">
-                  <h3 className="font-heading font-bold text-white mb-2">Register Your Team</h3>
-                  <p className="text-gray-400 text-sm mb-4">
+                  <h3 className="font-heading font-bold text-text-primary mb-2">Register Your Team</h3>
+                  <p className="text-text-muted text-sm mb-4">
                     Secure your spot in this event. Registration is open!
                   </p>
                   <Button
@@ -1135,10 +1135,10 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setShowBlockingModal(false)}
           />
-          <div className="relative bg-[#0A1D37] border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+          <div className="relative bg-page-bg border border-border-default rounded-2xl p-8 max-w-md w-full shadow-2xl">
             <button
               onClick={() => setShowBlockingModal(false)}
-              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 p-2 text-text-muted hover:text-text-primary transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -1148,17 +1148,17 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                 <ShieldAlert className="w-8 h-8 text-amber-400" />
               </div>
 
-              <h2 className="text-2xl font-heading font-bold text-white mb-3">
+              <h2 className="text-2xl font-heading font-bold text-text-primary mb-3">
                 Director Account Required
               </h2>
 
-              <p className="text-gray-400 mb-6">
+              <p className="text-text-muted mb-6">
                 Only Program Directors can register teams for events.
               </p>
 
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-6 text-left">
+              <div className="bg-surface-glass border border-border-default rounded-xl p-4 mb-6 text-left">
                 <h3 className="text-sm font-semibold text-white mb-2">Are you a coach or club director?</h3>
-                <p className="text-sm text-gray-400 mb-3">
+                <p className="text-sm text-text-muted mb-3">
                   Create a Director Account to manage your program and register teams for events.
                 </p>
                 <Link href="/auth/signup?role=PROGRAM_DIRECTOR">
@@ -1171,7 +1171,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
               <div className="text-left">
                 <h3 className="text-sm font-semibold text-white mb-2">Are you a parent or player?</h3>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-text-muted">
                   Contact your team's director to register for this event.
                 </p>
               </div>

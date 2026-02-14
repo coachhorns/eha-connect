@@ -161,13 +161,13 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
       <div className="mb-8">
         <Link
           href={`/admin/teams/${resolvedParams.id}`}
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Team
         </Link>
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Edit Team</h1>
-        <p className="mt-2 text-gray-400">
+        <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">Edit Team</h1>
+        <p className="mt-2 text-text-muted">
           Update team information
         </p>
       </div>
@@ -182,7 +182,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
 
           {/* Team Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Team Name *
             </label>
             <Input
@@ -196,7 +196,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
 
           {/* Division */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Division
             </label>
             <Select
@@ -209,7 +209,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
           {/* Location */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 City
               </label>
               <Input
@@ -220,7 +220,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 State
               </label>
               <Input
@@ -233,14 +233,14 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
             </div>
           </div>
 
-          <hr className="border-[#1a3a6e]" />
+          <hr className="border-border-default" />
 
           {/* Coach Information */}
           <div>
-            <h3 className="text-lg font-medium text-white mb-4">Coach Information</h3>
+            <h3 className="text-lg font-medium text-text-primary mb-4">Coach Information</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Coach Name
                 </label>
                 <Input
@@ -252,7 +252,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
                     Email
                   </label>
                   <Input
@@ -263,7 +263,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
                     Phone
                   </label>
                   <Input

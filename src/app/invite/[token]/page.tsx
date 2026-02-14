@@ -139,8 +139,8 @@ export default function AcceptInvitePage({
               <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <XCircle className="w-10 h-10 text-red-500" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Invite Not Found</h2>
-              <p className="text-gray-400 mb-6">
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Invite Not Found</h2>
+              <p className="text-text-muted mb-6">
                 This invite link is invalid or has been removed.
               </p>
               <Link href="/">
@@ -155,8 +155,8 @@ export default function AcceptInvitePage({
               <div className="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Clock className="w-10 h-10 text-yellow-500" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Invite Expired</h2>
-              <p className="text-gray-400 mb-6">
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Invite Expired</h2>
+              <p className="text-text-muted mb-6">
                 This invite has expired. Please ask for a new invite link.
               </p>
               <Link href="/">
@@ -171,8 +171,8 @@ export default function AcceptInvitePage({
               <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-10 h-10 text-blue-500" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Already Accepted</h2>
-              <p className="text-gray-400 mb-6">
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Already Accepted</h2>
+              <p className="text-text-muted mb-6">
                 This invite has already been used.
               </p>
               <Link href="/dashboard">
@@ -187,8 +187,8 @@ export default function AcceptInvitePage({
               <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <XCircle className="w-10 h-10 text-red-500" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Error</h2>
-              <p className="text-gray-400 mb-6">{error}</p>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Error</h2>
+              <p className="text-text-muted mb-6">{error}</p>
               <Button onClick={fetchInvite}>Try Again</Button>
             </div>
           )}
@@ -208,13 +208,13 @@ export default function AcceptInvitePage({
                   <UserPlus className="w-10 h-10 text-eha-red" />
                 )}
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-bold text-text-primary mb-2">
                 {invite.role === 'PLAYER'
                   ? 'Claim Athlete Profile'
                   : 'Co-Parent Invitation'}
               </h2>
-              <p className="text-gray-400 mb-6">
-                <span className="text-white font-medium">
+              <p className="text-text-muted mb-6">
+                <span className="text-text-primary font-medium">
                   {invite.inviter.name || invite.inviter.email}
                 </span>{' '}
                 {invite.role === 'PLAYER'
@@ -223,9 +223,9 @@ export default function AcceptInvitePage({
               </p>
 
               {/* Player Card */}
-              <div className="bg-[#1a3a6e]/30 rounded-lg p-4 mb-6">
+              <div className="bg-surface-raised/30 rounded-lg p-4 mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
+                  <div className="w-16 h-16 rounded-full overflow-hidden bg-surface-overlay flex-shrink-0">
                     {invite.player.profilePhoto ? (
                       <Image
                         src={invite.player.profilePhoto}
@@ -235,17 +235,17 @@ export default function AcceptInvitePage({
                         className="object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xl font-bold text-gray-500">
+                      <div className="w-full h-full flex items-center justify-center text-xl font-bold text-text-muted">
                         {invite.player.firstName[0]}
                         {invite.player.lastName[0]}
                       </div>
                     )}
                   </div>
                   <div className="text-left">
-                    <p className="text-lg font-bold text-white">
+                    <p className="text-lg font-bold text-text-primary">
                       {invite.player.firstName} {invite.player.lastName}
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-text-muted">
                       {invite.role === 'PLAYER'
                         ? 'You will get full access to edit this profile'
                         : `You'll be added as a ${invite.role.toLowerCase()} guardian`}
@@ -262,7 +262,7 @@ export default function AcceptInvitePage({
 
               {!session ? (
                 <div className="space-y-4">
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-text-muted">
                     Sign in or create an account to accept this invitation
                   </p>
                   <Button onClick={handleAccept} className="w-full">
@@ -298,8 +298,8 @@ export default function AcceptInvitePage({
               <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-10 h-10 text-green-500" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Welcome!</h2>
-              <p className="text-gray-400 mb-6">{acceptResult.message}</p>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Welcome!</h2>
+              <p className="text-text-muted mb-6">{acceptResult.message}</p>
               <div className="flex gap-3 justify-center">
                 {acceptResult.player && (
                   <Link href={`/players/${acceptResult.player.slug}`}>

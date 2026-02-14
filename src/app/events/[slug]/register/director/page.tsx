@@ -344,7 +344,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0a1628] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg-alt flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
@@ -352,12 +352,12 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
   if (error && (!event || !program)) {
     return (
-      <div className="min-h-screen bg-[#0a1628]">
+      <div className="min-h-screen bg-page-bg-alt">
         <div className="max-w-2xl mx-auto px-4 pt-32 pb-16 text-center">
-          <div className="bg-[#0A1D37] border border-white/10 rounded-xl p-8">
+          <div className="bg-page-bg border border-border-default rounded-xl p-8">
             <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-            <h1 className="text-2xl font-heading font-bold text-white mb-2">Error</h1>
-            <p className="text-gray-400 mb-6">{error}</p>
+            <h1 className="text-2xl font-heading font-bold text-text-primary mb-2">Error</h1>
+            <p className="text-text-muted mb-6">{error}</p>
             <Link href="/events">
               <Button>Browse Events</Button>
             </Link>
@@ -372,8 +372,8 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
   // Success state
   if (step === 'complete' && registrationSuccess) {
     return (
-      <div className="min-h-screen bg-[#0a1628]">
-        <div className="relative bg-[#0A1D37] border-b border-white/10 pt-32">
+      <div className="min-h-screen bg-page-bg-alt">
+        <div className="relative bg-page-bg border-b border-border-default pt-32">
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -383,26 +383,26 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
           />
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
             <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
-            <h1 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2">
+            <h1 className="text-3xl md:text-4xl font-heading font-bold text-text-primary mb-2">
               Registration Complete!
             </h1>
-            <p className="text-gray-400 text-lg">
-              Your teams have been registered for <span className="text-white font-semibold">{event.name}</span>
+            <p className="text-text-muted text-lg">
+              Your teams have been registered for <span className="text-text-primary font-semibold">{event.name}</span>
             </p>
           </div>
         </div>
 
         <div className="max-w-2xl mx-auto px-4 py-12">
-          <div className="bg-[#0A1D37] border border-white/10 rounded-xl p-8">
-            <h2 className="text-lg font-semibold text-white mb-4">Registered Teams</h2>
+          <div className="bg-page-bg border border-border-default rounded-xl p-8">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">Registered Teams</h2>
             <div className="space-y-3 mb-6">
               {selectedTeams.map(team => (
-                <div key={team.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                <div key={team.id} className="flex items-center gap-3 p-3 bg-surface-glass rounded-lg">
                   <CheckCircle className="w-5 h-5 text-green-400" />
                   <div>
-                    <div className="font-medium text-white">{team.name}</div>
+                    <div className="font-medium text-text-primary">{team.name}</div>
                     {team.division && (
-                      <div className="text-sm text-gray-400">{team.division}</div>
+                      <div className="text-sm text-text-muted">{team.division}</div>
                     )}
                   </div>
                 </div>
@@ -411,7 +411,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
             <div className="flex gap-3 justify-center">
               <Link href={`/events/${event.slug}`}>
-                <Button variant="outline" className="border-white/20 text-gray-300 hover:bg-white/5">
+                <Button variant="outline" className="border-border-default text-text-secondary hover:bg-surface-glass">
                   View Event
                 </Button>
               </Link>
@@ -428,9 +428,9 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
   }
 
   return (
-    <div className="min-h-screen bg-[#0a1628]">
+    <div className="min-h-screen bg-page-bg-alt">
       {/* Hero Section */}
-      <div className="relative bg-[#0A1D37] border-b border-white/10 pt-32">
+      <div className="relative bg-page-bg border-b border-border-default pt-32">
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -441,32 +441,32 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Link
             href={`/events/${event.slug}`}
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Event
           </Link>
 
-          <h1 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-text-primary mb-2">
             Register Teams
           </h1>
-          <p className="text-gray-400 text-lg">
-            Register your teams for <span className="text-white">{event.name}</span>
+          <p className="text-text-muted text-lg">
+            Register your teams for <span className="text-text-primary">{event.name}</span>
           </p>
 
           {/* Progress Steps */}
           <div className="flex items-center gap-2 mt-6">
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${step === 'teams' ? 'bg-[#E31837]' : 'bg-white/10'}`}>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${step === 'teams' ? 'bg-[#E31837]' : 'bg-surface-overlay'}`}>
               <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">1</span>
               <span className="text-sm font-medium text-white">Select Teams</span>
             </div>
             <div className="w-4 h-0.5 bg-white/20" />
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${step === 'rosters' ? 'bg-[#E31837]' : 'bg-white/10'}`}>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${step === 'rosters' ? 'bg-[#E31837]' : 'bg-surface-overlay'}`}>
               <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">2</span>
               <span className="text-sm font-medium text-white">Verify Rosters</span>
             </div>
             <div className="w-4 h-0.5 bg-white/20" />
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${step === 'payment' ? 'bg-[#E31837]' : 'bg-white/10'}`}>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${step === 'payment' ? 'bg-[#E31837]' : 'bg-surface-overlay'}`}>
               <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">3</span>
               <span className="text-sm font-medium text-white">{isFreeEvent ? 'Confirm' : 'Payment'}</span>
             </div>
@@ -491,12 +491,12 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
             {/* Step 1: Team Selection */}
             {step === 'teams' && (
               <div className="space-y-4">
-                <div className="bg-[#0A1D37] border border-white/10 rounded-xl p-6">
-                  <h2 className="text-lg font-heading font-semibold text-white mb-4 flex items-center gap-2">
+                <div className="bg-page-bg border border-border-default rounded-xl p-6">
+                  <h2 className="text-lg font-heading font-semibold text-text-primary mb-4 flex items-center gap-2">
                     <Users className="w-5 h-5 text-[#E31837]" />
                     Select Teams to Register
                   </h2>
-                  <p className="text-gray-400 text-sm mb-6">
+                  <p className="text-text-muted text-sm mb-6">
                     Select the teams from your program that you want to register for this event.
                   </p>
 
@@ -516,7 +516,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                               ? 'border-amber-500/30 bg-amber-500/5'
                               : isSelected
                               ? 'border-[#E31837] bg-[#E31837]/10'
-                              : 'border-white/10 bg-white/5 hover:border-white/20'
+                              : 'border-border-default bg-surface-glass hover:border-border-default'
                           }`}
                         >
                           <div
@@ -538,18 +538,18 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                               }`}
                             >
                               {isSelected && <Check className="w-4 h-4 text-white" />}
-                              {isAlreadyRegistered && <Check className="w-4 h-4 text-gray-400" />}
+                              {isAlreadyRegistered && <Check className="w-4 h-4 text-text-muted" />}
                             </div>
 
                             {/* Team Info */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-white">{team.name}</span>
+                                <span className="font-medium text-text-primary">{team.name}</span>
                                 {isAlreadyRegistered && (
                                   <Badge size="sm" variant="default">Registered</Badge>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2 text-sm text-gray-400 mt-1">
+                              <div className="flex items-center gap-2 text-sm text-text-muted mt-1">
                                 {team.division && <Badge size="sm" variant="info">{team.division}</Badge>}
                                 {team.coachName && <span>Coach: {team.coachName}</span>}
                               </div>
@@ -557,7 +557,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
                             {/* Roster Count */}
                             <div className="text-right flex-shrink-0">
-                              <div className="flex items-center gap-1 text-sm text-gray-400">
+                              <div className="flex items-center gap-1 text-sm text-text-muted">
                                 <Users className="w-4 h-4" />
                                 <span>{team.rosterCount} players</span>
                               </div>
@@ -567,7 +567,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                             <div className="flex-shrink-0">
                               {isAlreadyRegistered ? (
                                 <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
-                                  <Check className="w-5 h-5 text-gray-400" />
+                                  <Check className="w-5 h-5 text-text-muted" />
                                 </div>
                               ) : eligible ? (
                                 <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
@@ -593,9 +593,9 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
                           {/* Schedule Requests - only for selected teams */}
                           {isSelected && (
-                            <div className="border-t border-white/10">
+                            <div className="border-t border-border-default">
                               <div
-                                className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-white/5 transition-all duration-200"
+                                className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-surface-glass transition-all duration-200"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   toggleScheduleExpand(team.id)
@@ -603,7 +603,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                               >
                                 <div className="flex items-center gap-2 text-sm">
                                   <Clock className="w-4 h-4 text-[#E31837]" />
-                                  <span className="text-gray-300 font-medium">Scheduling Restrictions</span>
+                                  <span className="text-text-secondary font-medium">Scheduling Restrictions</span>
                                   {(() => {
                                     const sr = getScheduleRequest(team.id)
                                     const count = (sr.coachConflict ? 1 : 0)
@@ -616,9 +616,9 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                   })()}
                                 </div>
                                 {expandedScheduleIds.has(team.id) ? (
-                                  <ChevronUp className="w-4 h-4 text-gray-400" />
+                                  <ChevronUp className="w-4 h-4 text-text-muted" />
                                 ) : (
-                                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                                  <ChevronDown className="w-4 h-4 text-text-muted" />
                                 )}
                               </div>
 
@@ -643,8 +643,8 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                       )}
                                     </div>
                                     <div>
-                                      <span className="text-sm text-white">Coach has another team in this event</span>
-                                      <p className="text-xs text-gray-500">
+                                      <span className="text-sm text-text-primary">Coach has another team in this event</span>
+                                      <p className="text-xs text-text-muted">
                                         Avoid scheduling conflicts with another team this coach runs
                                       </p>
                                     </div>
@@ -652,7 +652,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
                                   {/* Max Games Per Day */}
                                   <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                                    <label className="block text-sm font-medium text-text-secondary mb-1.5">
                                       Game Restrictions (Max Per Day)
                                     </label>
                                     <input
@@ -666,20 +666,20 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                           maxGamesPerDay: e.target.value ? parseInt(e.target.value) : null,
                                         })
                                       }
-                                      className="w-full max-w-[200px] px-3 py-2 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white placeholder-gray-500 text-sm transition-all duration-200 focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                      className="w-full max-w-[200px] px-3 py-2 bg-input-bg border border-[#A2AAAD]/20 rounded-lg text-text-primary placeholder-gray-500 text-sm transition-all duration-200 focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
                                     />
                                   </div>
 
                                   {/* Time Constraints */}
                                   <div>
                                     <div className="flex items-center justify-between mb-2">
-                                      <label className="text-sm font-medium text-gray-300">
+                                      <label className="text-sm font-medium text-text-secondary">
                                         Date/Time Restrictions
                                       </label>
                                       <button
                                         type="button"
                                         onClick={() => addConstraint(team.id)}
-                                        className="flex items-center gap-1 text-xs text-[#E31837] hover:text-white transition-colors"
+                                        className="flex items-center gap-1 text-xs text-[#E31837] hover:text-text-primary transition-colors"
                                       >
                                         <Plus className="w-3.5 h-3.5" />
                                         Add Restriction
@@ -687,14 +687,14 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                     </div>
 
                                     {getScheduleRequest(team.id).constraints.length === 0 && (
-                                      <p className="text-xs text-gray-500 italic">No date/time restrictions added</p>
+                                      <p className="text-xs text-text-muted italic">No date/time restrictions added</p>
                                     )}
 
                                     <div className="space-y-2">
                                       {getScheduleRequest(team.id).constraints.map((constraint, idx) => (
                                         <div
                                           key={idx}
-                                          className="flex flex-wrap items-center gap-2 p-2.5 bg-white/5 rounded-lg"
+                                          className="flex flex-wrap items-center gap-2 p-2.5 bg-surface-glass rounded-lg"
                                         >
                                           <select
                                             value={constraint.type}
@@ -703,7 +703,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                                 type: e.target.value as TimeConstraint['type'],
                                               })
                                             }
-                                            className="px-2 py-1.5 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                            className="px-2 py-1.5 bg-input-bg border border-[#A2AAAD]/20 rounded-lg text-text-primary text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
                                           >
                                             <option value="NOT_BEFORE">Not Before</option>
                                             <option value="NOT_AFTER">Not After</option>
@@ -717,7 +717,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                                 day: e.target.value as TimeConstraint['day'],
                                               })
                                             }
-                                            className="px-2 py-1.5 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                            className="px-2 py-1.5 bg-input-bg border border-[#A2AAAD]/20 rounded-lg text-text-primary text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
                                           >
                                             <option value="Friday">Friday</option>
                                             <option value="Saturday">Saturday</option>
@@ -730,19 +730,19 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                             onChange={(e) =>
                                               updateConstraint(team.id, idx, { time: e.target.value })
                                             }
-                                            className="px-2 py-1.5 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                            className="px-2 py-1.5 bg-input-bg border border-[#A2AAAD]/20 rounded-lg text-text-primary text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
                                           />
 
                                           {constraint.type === 'NOT_BETWEEN' && (
                                             <>
-                                              <span className="text-gray-500 text-xs">to</span>
+                                              <span className="text-text-muted text-xs">to</span>
                                               <input
                                                 type="time"
                                                 value={constraint.endTime || ''}
                                                 onChange={(e) =>
                                                   updateConstraint(team.id, idx, { endTime: e.target.value })
                                                 }
-                                                className="px-2 py-1.5 bg-[#1A1A2E] border border-[#A2AAAD]/20 rounded-lg text-white text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
+                                                className="px-2 py-1.5 bg-input-bg border border-[#A2AAAD]/20 rounded-lg text-text-primary text-sm focus:outline-none focus:border-[#E31837] focus:ring-2 focus:ring-[#E31837]/20"
                                               />
                                             </>
                                           )}
@@ -750,7 +750,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                           <button
                                             type="button"
                                             onClick={() => removeConstraint(team.id, idx)}
-                                            className="p-1 text-gray-500 hover:text-red-400 transition-colors flex-shrink-0 ml-auto"
+                                            className="p-1 text-text-muted hover:text-red-400 transition-colors flex-shrink-0 ml-auto"
                                           >
                                             <Trash2 className="w-3.5 h-3.5" />
                                           </button>
@@ -761,14 +761,14 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
                                   {/* Matchup Restrictions */}
                                   <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                                    <label className="block text-sm font-medium text-text-secondary mb-1.5">
                                       Matchup Restrictions
                                     </label>
-                                    <p className="text-xs text-gray-500 mb-2">
+                                    <p className="text-xs text-text-muted mb-2">
                                       Prevent this team from playing against your other teams
                                     </p>
                                     {selectedTeams.filter(t => t.id !== team.id).length === 0 ? (
-                                      <p className="text-xs text-gray-500 italic">
+                                      <p className="text-xs text-text-muted italic">
                                         Select multiple teams to add matchup restrictions
                                       </p>
                                     ) : (
@@ -780,7 +780,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                             return (
                                               <label
                                                 key={otherTeam.id}
-                                                className="flex items-center gap-3 cursor-pointer p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-all duration-200"
+                                                className="flex items-center gap-3 cursor-pointer p-2 bg-surface-glass rounded-lg hover:bg-surface-overlay transition-all duration-200"
                                               >
                                                 <div
                                                   className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
@@ -798,7 +798,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                                   )}
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                  <span className="text-sm text-white">{otherTeam.name}</span>
+                                                  <span className="text-sm text-text-primary">{otherTeam.name}</span>
                                                   {otherTeam.division && (
                                                     <Badge size="sm" variant="info">{otherTeam.division}</Badge>
                                                   )}
@@ -820,8 +820,8 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
                   {program.teams.length === 0 && (
                     <div className="text-center py-8">
-                      <Users className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                      <p className="text-gray-400 mb-4">You don't have any teams yet.</p>
+                      <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
+                      <p className="text-text-muted mb-4">You don't have any teams yet.</p>
                       <Link href={`/director/teams/new?programId=${program.id}`}>
                         <Button>Add Team</Button>
                       </Link>
@@ -844,12 +844,12 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
             {/* Step 2: Roster Verification */}
             {step === 'rosters' && (
               <div className="space-y-4">
-                <div className="bg-[#0A1D37] border border-white/10 rounded-xl p-6">
-                  <h2 className="text-lg font-heading font-semibold text-white mb-4 flex items-center gap-2">
+                <div className="bg-page-bg border border-border-default rounded-xl p-6">
+                  <h2 className="text-lg font-heading font-semibold text-text-primary mb-4 flex items-center gap-2">
                     <Users className="w-5 h-5 text-[#E31837]" />
                     Verify Rosters
                   </h2>
-                  <p className="text-gray-400 text-sm mb-6">
+                  <p className="text-text-muted text-sm mb-6">
                     Please verify that the rosters for your selected teams are up to date.
                   </p>
 
@@ -859,9 +859,9 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                       const hasEmptyRoster = team.rosterCount === 0
 
                       return (
-                        <div key={team.id} className="border border-white/10 rounded-xl overflow-hidden">
+                        <div key={team.id} className="border border-border-default rounded-xl overflow-hidden">
                           <div
-                            className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/5"
+                            className="flex items-center justify-between p-4 cursor-pointer hover:bg-surface-glass"
                             onClick={() => toggleTeamExpand(team.id)}
                           >
                             <div className="flex items-center gap-3">
@@ -875,8 +875,8 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                 </div>
                               )}
                               <div>
-                                <div className="font-medium text-white">{team.name}</div>
-                                <div className="text-sm text-gray-400">
+                                <div className="font-medium text-text-primary">{team.name}</div>
+                                <div className="text-sm text-text-muted">
                                   {team.rosterCount} players
                                   {hasEmptyRoster && (
                                     <span className="text-amber-400 ml-2">- Roster is empty!</span>
@@ -889,23 +889,23 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                 href={`/director/teams/${team.id}`}
                                 target="_blank"
                                 onClick={(e) => e.stopPropagation()}
-                                className="text-sm text-[#E31837] hover:text-white flex items-center gap-1"
+                                className="text-sm text-[#E31837] hover:text-text-primary flex items-center gap-1"
                               >
                                 Edit Roster
                                 <ExternalLink className="w-3 h-3" />
                               </Link>
                               {isExpanded ? (
-                                <ChevronUp className="w-5 h-5 text-gray-400" />
+                                <ChevronUp className="w-5 h-5 text-text-muted" />
                               ) : (
-                                <ChevronDown className="w-5 h-5 text-gray-400" />
+                                <ChevronDown className="w-5 h-5 text-text-muted" />
                               )}
                             </div>
                           </div>
 
                           {isExpanded && (
-                            <div className="px-4 pb-4 pt-0 border-t border-white/10">
+                            <div className="px-4 pb-4 pt-0 border-t border-border-default">
                               {hasEmptyRoster ? (
-                                <div className="py-4 text-center text-gray-400">
+                                <div className="py-4 text-center text-text-muted">
                                   <p className="mb-3">No players on this roster yet.</p>
                                   <Link
                                     href={`/director/teams/${team.id}`}
@@ -919,10 +919,10 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                                   <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5">
                                     {team.roster.map((player, idx) => (
                                       <div key={idx} className="contents">
-                                        <span className="text-xs text-gray-500 font-mono text-right tabular-nums">
+                                        <span className="text-xs text-text-muted font-mono text-right tabular-nums">
                                           {player.jerseyNumber ? `#${player.jerseyNumber}` : '—'}
                                         </span>
-                                        <span className="text-sm text-gray-300">
+                                        <span className="text-sm text-text-secondary">
                                           {player.firstName} {player.lastName}
                                         </span>
                                       </div>
@@ -938,7 +938,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                   </div>
 
                   {/* Confirmation Checkbox */}
-                  <div className="mt-6 pt-6 border-t border-white/10">
+                  <div className="mt-6 pt-6 border-t border-border-default">
                     <label className="flex items-start gap-3 cursor-pointer">
                       <div
                         className={`w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
@@ -950,7 +950,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                       >
                         {rostersConfirmed && <Check className="w-4 h-4 text-white" />}
                       </div>
-                      <span className="text-gray-300 text-sm">
+                      <span className="text-text-secondary text-sm">
                         I confirm that all rosters are up-to-date and accurate. I understand that rosters may be verified before or during the event.
                       </span>
                     </label>
@@ -961,7 +961,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                   <Button
                     variant="outline"
                     onClick={() => setStep('teams')}
-                    className="border-white/20 text-gray-300 hover:bg-white/5"
+                    className="border-border-default text-text-secondary hover:bg-surface-glass"
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back
@@ -980,25 +980,25 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
             {/* Step 3: Payment Summary / Confirmation */}
             {step === 'payment' && (
               <div className="space-y-4">
-                <div className="bg-[#0A1D37] border border-white/10 rounded-xl p-6">
-                  <h2 className="text-lg font-heading font-semibold text-white mb-4 flex items-center gap-2">
+                <div className="bg-page-bg border border-border-default rounded-xl p-6">
+                  <h2 className="text-lg font-heading font-semibold text-text-primary mb-4 flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-[#E31837]" />
                     {isFreeEvent ? 'Confirm Registration' : 'Payment Summary'}
                   </h2>
 
                   {/* Registration Summary */}
                   <div className="space-y-3 mb-6">
-                    <div className="text-sm text-gray-400 uppercase tracking-wider">Teams</div>
+                    <div className="text-sm text-text-muted uppercase tracking-wider">Teams</div>
                     {selectedTeams.map(team => (
-                      <div key={team.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                      <div key={team.id} className="flex items-center justify-between p-3 bg-surface-glass rounded-lg">
                         <div>
-                          <div className="font-medium text-white">{team.name}</div>
+                          <div className="font-medium text-text-primary">{team.name}</div>
                           {team.division && (
-                            <div className="text-sm text-gray-400">{team.division}</div>
+                            <div className="text-sm text-text-muted">{team.division}</div>
                           )}
                         </div>
                         {!isFreeEvent && event.entryFee && (
-                          <div className="text-white font-medium">
+                          <div className="text-text-primary font-medium">
                             ${Number(event.entryFee).toFixed(0)}
                           </div>
                         )}
@@ -1008,10 +1008,10 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
                   {/* Total */}
                   {!isFreeEvent && (
-                    <div className="border-t border-white/10 pt-4">
+                    <div className="border-t border-border-default pt-4">
                       <div className="flex items-center justify-between text-lg">
-                        <span className="text-gray-300">Total</span>
-                        <span className="text-white font-bold text-2xl">${totalFee.toFixed(0)}</span>
+                        <span className="text-text-secondary">Total</span>
+                        <span className="text-text-primary font-bold text-2xl">${totalFee.toFixed(0)}</span>
                       </div>
                       <p className="text-sm text-amber-400 mt-4 flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4" />
@@ -1034,7 +1034,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                   <Button
                     variant="outline"
                     onClick={() => setStep('rosters')}
-                    className="border-white/20 text-gray-300 hover:bg-white/5"
+                    className="border-border-default text-text-secondary hover:bg-surface-glass"
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back
@@ -1058,21 +1058,21 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
           {/* Sidebar */}
           <div>
-            <div className="bg-[#0A1D37] border border-white/10 rounded-xl p-6 sticky top-24">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">
+            <div className="bg-page-bg border border-border-default rounded-xl p-6 sticky top-24">
+              <h2 className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-4">
                 Event Details
               </h2>
 
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-heading font-semibold text-white text-lg">{event.name}</h3>
+                  <h3 className="font-heading font-semibold text-text-primary text-lg">{event.name}</h3>
                   <Badge variant="orange" className="mt-2">{event.type}</Badge>
                 </div>
 
-                <div className="pt-4 border-t border-white/10">
+                <div className="pt-4 border-t border-border-default">
                   <div className="flex items-start gap-3 text-sm">
                     <Calendar className="w-4 h-4 text-[#E31837] mt-0.5" />
-                    <div className="text-gray-300">
+                    <div className="text-text-secondary">
                       {format(new Date(event.startDate), 'MMMM d')} -{' '}
                       {format(new Date(event.endDate), 'MMMM d, yyyy')}
                     </div>
@@ -1082,7 +1082,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                 {(event.venue || event.city) && (
                   <div className="flex items-start gap-3 text-sm">
                     <MapPin className="w-4 h-4 text-[#E31837] mt-0.5" />
-                    <div className="text-gray-300">
+                    <div className="text-text-secondary">
                       {event.venue && <div>{event.venue}</div>}
                       {event.city && (
                         <div>
@@ -1095,7 +1095,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
                 {event.divisions && event.divisions.length > 0 && (
                   <div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-2">
                       Divisions
                     </div>
                     <div className="flex flex-wrap gap-1">
@@ -1107,28 +1107,28 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
                 )}
 
                 {event.entryFee && Number(event.entryFee) > 0 && (
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">
+                  <div className="pt-4 border-t border-border-default">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">
                       Entry Fee
                     </div>
-                    <div className="text-3xl font-heading font-bold text-white">
+                    <div className="text-3xl font-heading font-bold text-text-primary">
                       ${Number(event.entryFee).toFixed(0)}
                     </div>
-                    <div className="text-xs text-gray-500">per team</div>
+                    <div className="text-xs text-text-muted">per team</div>
                   </div>
                 )}
 
                 {/* Selection Summary */}
                 {selectedTeamIds.size > 0 && (
-                  <div className="pt-4 border-t border-white/10">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                  <div className="pt-4 border-t border-border-default">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-2">
                       Selected
                     </div>
-                    <div className="text-2xl font-heading font-bold text-white">
+                    <div className="text-2xl font-heading font-bold text-text-primary">
                       {selectedTeamIds.size} team{selectedTeamIds.size !== 1 ? 's' : ''}
                     </div>
                     {!isFreeEvent && (
-                      <div className="text-sm text-gray-400 mt-1">
+                      <div className="text-sm text-text-muted mt-1">
                         Total: ${totalFee.toFixed(0)}
                       </div>
                     )}

@@ -186,8 +186,8 @@ export default function ScorekeeperHub() {
             <div className="w-20 h-20 bg-eha-red/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-10 h-10 text-eha-red" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Scorekeeper</h1>
-            <p className="text-gray-400">Enter your PIN to access the scorekeeper</p>
+            <h1 className="text-3xl font-bold text-text-primary mb-2">Scorekeeper</h1>
+            <p className="text-text-muted">Enter your PIN to access the scorekeeper</p>
           </div>
 
           <form onSubmit={handlePinSubmit}>
@@ -218,7 +218,7 @@ export default function ScorekeeperHub() {
             </Card>
           </form>
 
-          <p className="text-center text-gray-500 text-sm mt-6">
+          <p className="text-center text-text-muted text-sm mt-6">
             Contact your tournament director for access
           </p>
         </div>
@@ -233,7 +233,7 @@ export default function ScorekeeperHub() {
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             {/* Event & Court Info */}
-            <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+            <div className="flex items-center gap-2 text-xs text-text-muted mb-2">
               {game.event && <span className="truncate">{game.event.name}</span>}
               {game.court && (
                 <>
@@ -255,17 +255,17 @@ export default function ScorekeeperHub() {
             {/* Teams & Scores */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-medium text-white truncate pr-2 text-lg">{game.awayTeam.name}</span>
+                <span className="font-medium text-text-primary truncate pr-2 text-lg">{game.awayTeam.name}</span>
                 {(game.status === 'IN_PROGRESS' || game.status === 'FINAL' || game.status === 'HALFTIME') && (
-                  <span className="text-2xl font-bold text-white font-stats">
+                  <span className="text-2xl font-bold text-text-primary font-stats">
                     {game.awayScore}
                   </span>
                 )}
               </div>
               <div className="flex items-center justify-between">
-                <span className="font-medium text-white truncate pr-2 text-lg">{game.homeTeam.name}</span>
+                <span className="font-medium text-text-primary truncate pr-2 text-lg">{game.homeTeam.name}</span>
                 {(game.status === 'IN_PROGRESS' || game.status === 'FINAL' || game.status === 'HALFTIME') && (
-                  <span className="text-2xl font-bold text-white font-stats">
+                  <span className="text-2xl font-bold text-text-primary font-stats">
                     {game.homeScore}
                   </span>
                 )}
@@ -278,7 +278,7 @@ export default function ScorekeeperHub() {
             {getStatusBadge(game)}
             {game.status === 'SCHEDULED' && (
               <>
-                <span className="text-sm text-gray-400 flex items-center gap-1">
+                <span className="text-sm text-text-muted flex items-center gap-1">
                   <Clock className="w-4 h-4" />
                   {formatGameTime(game.scheduledAt)}
                 </span>
@@ -306,8 +306,8 @@ export default function ScorekeeperHub() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-white">Scorekeeper Hub</h1>
-            <p className="text-sm text-gray-500">Select a game to record stats</p>
+            <h1 className="text-2xl font-bold text-text-primary">Scorekeeper Hub</h1>
+            <p className="text-sm text-text-muted">Select a game to record stats</p>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -324,7 +324,7 @@ export default function ScorekeeperHub() {
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              className="flex items-center gap-2 text-gray-400 hover:text-white touch-manipulation"
+              className="flex items-center gap-2 text-text-muted hover:text-text-primary touch-manipulation"
             >
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Exit</span>
@@ -341,8 +341,8 @@ export default function ScorekeeperHub() {
 
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <p className="text-lg font-semibold text-white">{getDateLabel(selectedDate)}</p>
-                <p className="text-sm text-gray-500">{format(selectedDate, 'MMMM d, yyyy')}</p>
+                <p className="text-lg font-semibold text-text-primary">{getDateLabel(selectedDate)}</p>
+                <p className="text-sm text-text-muted">{format(selectedDate, 'MMMM d, yyyy')}</p>
               </div>
               {!isToday(selectedDate) && (
                 <Button variant="outline" size="sm" onClick={goToToday} className="touch-manipulation">
@@ -359,12 +359,12 @@ export default function ScorekeeperHub() {
 
         {/* Status Filters */}
         <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-          <Filter className="w-4 h-4 text-gray-500 flex-shrink-0" />
+          <Filter className="w-4 h-4 text-text-muted flex-shrink-0" />
           <button
             onClick={() => setStatusFilter('')}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${statusFilter === ''
                 ? 'bg-eha-red text-white'
-                : 'bg-white/5 text-gray-400 hover:text-white'
+                : 'bg-surface-glass text-text-muted hover:text-text-primary'
               }`}
           >
             All Games
@@ -373,7 +373,7 @@ export default function ScorekeeperHub() {
             onClick={() => setStatusFilter('IN_PROGRESS')}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${statusFilter === 'IN_PROGRESS'
                 ? 'bg-green-600 text-white'
-                : 'bg-white/5 text-gray-400 hover:text-white'
+                : 'bg-surface-glass text-text-muted hover:text-text-primary'
               }`}
           >
             Live
@@ -382,7 +382,7 @@ export default function ScorekeeperHub() {
             onClick={() => setStatusFilter('SCHEDULED')}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${statusFilter === 'SCHEDULED'
                 ? 'bg-blue-600 text-white'
-                : 'bg-white/5 text-gray-400 hover:text-white'
+                : 'bg-surface-glass text-text-muted hover:text-text-primary'
               }`}
           >
             Upcoming
@@ -391,7 +391,7 @@ export default function ScorekeeperHub() {
             onClick={() => setStatusFilter('FINAL')}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${statusFilter === 'FINAL'
                 ? 'bg-gray-600 text-white'
-                : 'bg-white/5 text-gray-400 hover:text-white'
+                : 'bg-surface-glass text-text-muted hover:text-text-primary'
               }`}
           >
             Completed
@@ -406,8 +406,8 @@ export default function ScorekeeperHub() {
         ) : games.length === 0 ? (
           <Card className="p-8 text-center">
             <Calendar className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No games found</h3>
-            <p className="text-gray-500">
+            <h3 className="text-lg font-semibold text-text-primary mb-2">No games found</h3>
+            <p className="text-text-muted">
               {statusFilter
                 ? `No ${statusFilter.toLowerCase().replace('_', ' ')} games for ${getDateLabel(selectedDate).toLowerCase()}.`
                 : `There are no games scheduled for ${getDateLabel(selectedDate).toLowerCase()}.`}
@@ -446,7 +446,7 @@ export default function ScorekeeperHub() {
             {/* Upcoming Games */}
             {upcomingGames.length > 0 && (
               <div>
-                <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-3 flex items-center gap-2">
                   <Clock className="w-4 h-4" />
                   Upcoming ({upcomingGames.length})
                 </h2>
@@ -461,7 +461,7 @@ export default function ScorekeeperHub() {
             {/* Completed Games */}
             {completedGames.length > 0 && (
               <div>
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-3">
                   Completed ({completedGames.length})
                 </h2>
                 <div className="space-y-3">

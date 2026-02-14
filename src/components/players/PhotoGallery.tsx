@@ -35,7 +35,7 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
             key={item.id}
             type="button"
             onClick={() => setSelectedIndex(index)}
-            className="relative aspect-square rounded-sm overflow-hidden bg-white/5 border border-white/10 cursor-pointer group"
+            className="relative aspect-square rounded-sm overflow-hidden bg-surface-glass border border-border-default cursor-pointer group"
           >
             <Image
               src={item.url}
@@ -61,7 +61,7 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
           <button
             type="button"
             onClick={() => setSelectedIndex(null)}
-            className="absolute top-6 right-6 z-10 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+            className="absolute top-6 right-6 z-10 p-2 text-white/70 hover:text-white hover:bg-surface-overlay rounded-full transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -72,14 +72,14 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
               <button
                 type="button"
                 onClick={handlePrev}
-                className="absolute left-4 z-10 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                className="absolute left-4 z-10 p-2 text-white/70 hover:text-white hover:bg-surface-overlay rounded-full transition-colors"
               >
                 <ChevronLeft className="w-8 h-8" />
               </button>
               <button
                 type="button"
                 onClick={handleNext}
-                className="absolute right-4 z-10 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                className="absolute right-4 z-10 p-2 text-white/70 hover:text-white hover:bg-surface-overlay rounded-full transition-colors"
               >
                 <ChevronRight className="w-8 h-8" />
               </button>

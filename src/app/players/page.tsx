@@ -56,9 +56,9 @@ const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
   const initials = `${player.firstName?.charAt(0) || ''}${player.lastName?.charAt(0) || ''}`
 
   return (
-    <Link href={`/players/${player.slug}`} className="bg-[#0a1628] border border-white/10 rounded-sm overflow-hidden group transition-all hover:shadow-xl hover:shadow-eha-red/10 hover:-translate-y-1 hover:border-white/20 block">
+    <Link href={`/players/${player.slug}`} className="bg-page-bg-alt border border-border-default rounded-sm overflow-hidden group transition-all hover:shadow-xl hover:shadow-eha-red/10 hover:-translate-y-1 hover:border-border-default block">
       {/* Image Section */}
-      <div className="relative h-56 bg-[#153361] overflow-hidden">
+      <div className="relative h-56 bg-surface-raised overflow-hidden">
         {player.profilePhoto ? (
           <img
             src={player.profilePhoto}
@@ -77,7 +77,7 @@ const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
             #{String(rank).padStart(2, '0')}
           </span>
           {player.primaryPosition && (
-            <span className="bg-[#0A1D37] text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest">
+            <span className="bg-page-bg text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest">
               {player.primaryPosition}
             </span>
           )}
@@ -96,43 +96,43 @@ const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
       <div className="p-5">
         <div className="mb-4">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-bold text-white leading-tight font-heading">
+            <h3 className="text-lg font-bold text-text-primary leading-tight font-heading">
               {player.firstName} {player.lastName}
             </h3>
             {player.isVerified && <VerifiedBadge size="sm" />}
           </div>
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+          <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-1">
             {player.school || 'School TBD'} {player.graduationYear ? `| Class of ${player.graduationYear}` : ''}
           </p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-3 border-t border-white/10 pt-4">
+        <div className="grid grid-cols-3 gap-3 border-t border-border-default pt-4">
           <div>
-            <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-widest">PPG</span>
-            <span className="text-sm font-black text-white font-stats">
+            <span className="block text-[8px] font-bold text-text-muted uppercase tracking-widest">PPG</span>
+            <span className="text-sm font-black text-text-primary font-stats">
               {player.careerStats?.ppg?.toFixed(1) || '-'}
             </span>
           </div>
           <div>
-            <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-widest">RPG</span>
-            <span className="text-sm font-black text-white font-stats">
+            <span className="block text-[8px] font-bold text-text-muted uppercase tracking-widest">RPG</span>
+            <span className="text-sm font-black text-text-primary font-stats">
               {player.careerStats?.rpg?.toFixed(1) || '-'}
             </span>
           </div>
           <div>
-            <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-widest">HT</span>
-            <span className="text-sm font-black text-white font-stats">{height}</span>
+            <span className="block text-[8px] font-bold text-text-muted uppercase tracking-widest">HT</span>
+            <span className="text-sm font-black text-text-primary font-stats">{height}</span>
           </div>
         </div>
 
         {/* Actions */}
         <div className="mt-5 flex gap-2">
-          <span className="flex-1 bg-[#153361] text-white text-[10px] font-black uppercase tracking-widest py-3 group-hover:bg-eha-red transition-colors rounded-sm text-center">
+          <span className="flex-1 bg-surface-raised text-white text-[10px] font-black uppercase tracking-widest py-3 group-hover:bg-eha-red transition-colors rounded-sm text-center">
             View Profile
           </span>
-          <span className="w-11 border border-white/10 flex items-center justify-center group-hover:bg-white/5 rounded-sm transition-colors">
-            <Plus className="w-4 h-4 text-gray-400" />
+          <span className="w-11 border border-border-default flex items-center justify-center group-hover:bg-surface-glass rounded-sm transition-colors">
+            <Plus className="w-4 h-4 text-text-muted" />
           </span>
         </div>
       </div>
@@ -163,11 +163,11 @@ const FilterSidebar = ({
 
   return (
     <div className={cn(
-      "bg-[#0a1628] border border-white/10 p-6 rounded-sm",
+      "bg-page-bg-alt border border-border-default p-6 rounded-sm",
       isMobile ? "relative" : "sticky top-28"
     )}>
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
-        <h3 className="text-xs font-black text-white uppercase tracking-widest">Refine Results</h3>
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-border-default">
+        <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Refine Results</h3>
         <div className="flex items-center gap-3">
           <button
             onClick={onReset}
@@ -176,7 +176,7 @@ const FilterSidebar = ({
             Reset
           </button>
           {isMobile && onClose && (
-            <button onClick={onClose} className="text-gray-400 hover:text-white">
+            <button onClick={onClose} className="text-text-muted hover:text-text-primary">
               <X className="w-5 h-5" />
             </button>
           )}
@@ -186,13 +186,13 @@ const FilterSidebar = ({
       <div className="space-y-6">
         {/* Position */}
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+          <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">
             Position
           </label>
           <select
             value={filters.position}
             onChange={(e) => setFilters({ ...filters, position: e.target.value })}
-            className="w-full text-sm font-semibold border border-white/10 bg-[#153361] text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
             style={{
               backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
               backgroundRepeat: 'no-repeat',
@@ -209,13 +209,13 @@ const FilterSidebar = ({
 
         {/* Class Year */}
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+          <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">
             Class Year
           </label>
           <select
             value={filters.year}
             onChange={(e) => setFilters({ ...filters, year: e.target.value })}
-            className="w-full text-sm font-semibold border border-white/10 bg-[#153361] text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
             style={{
               backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
               backgroundRepeat: 'no-repeat',
@@ -232,13 +232,13 @@ const FilterSidebar = ({
 
         {/* State */}
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+          <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">
             State
           </label>
           <select
             value={filters.state}
             onChange={(e) => setFilters({ ...filters, state: e.target.value })}
-            className="w-full text-sm font-semibold border border-white/10 bg-[#153361] text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
             style={{
               backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
               backgroundRepeat: 'no-repeat',
@@ -255,13 +255,13 @@ const FilterSidebar = ({
 
         {/* Division */}
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+          <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">
             Division
           </label>
           <select
             value={filters.division}
             onChange={(e) => setFilters({ ...filters, division: e.target.value })}
-            className="w-full text-sm font-semibold border border-white/10 bg-[#153361] text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
+            className="w-full text-sm font-semibold border border-border-default bg-surface-raised text-white px-4 py-3 rounded-sm focus:ring-1 focus:ring-eha-red focus:border-eha-red outline-none appearance-none"
             style={{
               backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E\")",
               backgroundRepeat: 'no-repeat',
@@ -365,9 +365,9 @@ export default function PlayersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37]">
+    <div className="min-h-screen bg-page-bg">
       {/* Hero Section */}
-      <section className="pt-32 pb-12 bg-[#0a1628] border-b border-white/5 relative overflow-hidden">
+      <section className="pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle relative overflow-hidden">
         {/* Background Pattern */}
         <div
           className="absolute inset-0 opacity-5"
@@ -386,19 +386,19 @@ export default function PlayersPage() {
               </span>
             </div>
 
-            <h1 className="text-4xl lg:text-5xl font-heading font-bold tracking-tighter text-white">
+            <h1 className="text-4xl lg:text-5xl font-heading font-bold tracking-tighter text-text-primary">
               Players Directory
             </h1>
 
             {/* Search Bar */}
             <div className="relative max-w-2xl mt-4">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by player name, school, or state..."
-                className="w-full bg-white/10 border border-white/20 rounded-full py-4 pl-14 pr-8 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
+                className="w-full bg-surface-overlay border border-border-default rounded-full py-4 pl-14 pr-8 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 transition-all"
               />
             </div>
           </div>
@@ -422,15 +422,15 @@ export default function PlayersPage() {
             <div className="col-span-12 lg:col-span-9">
               {/* Top Bar */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <span className="text-sm font-bold text-gray-400">
-                  Showing <span className="text-white">{totalCount.toLocaleString()}</span> Players
+                <span className="text-sm font-bold text-text-muted">
+                  Showing <span className="text-text-primary">{totalCount.toLocaleString()}</span> Players
                 </span>
 
                 <div className="flex items-center gap-4 w-full sm:w-auto">
                   {/* Mobile Filter Toggle */}
                   <button
                     onClick={() => setShowMobileFilters(true)}
-                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-[#153361] border border-white/10 rounded-sm text-white text-xs font-bold uppercase tracking-widest"
+                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-surface-raised border border-border-default rounded-sm text-white text-xs font-bold uppercase tracking-widest"
                   >
                     <SlidersHorizontal className="w-4 h-4" />
                     Filters
@@ -441,7 +441,7 @@ export default function PlayersPage() {
 
                   {/* Sort */}
                   <div className="flex items-center gap-3 ml-auto">
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest hidden sm:block">
+                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest hidden sm:block">
                       Sort By
                     </span>
                     <select
@@ -466,17 +466,17 @@ export default function PlayersPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="animate-pulse">
-                      <div className="bg-[#0a1628] border border-white/5 rounded-sm overflow-hidden">
-                        <div className="h-56 bg-[#153361]" />
+                      <div className="bg-page-bg-alt border border-border-subtle rounded-sm overflow-hidden">
+                        <div className="h-56 bg-surface-raised" />
                         <div className="p-5 space-y-4">
-                          <div className="h-5 bg-[#153361] rounded w-3/4" />
-                          <div className="h-3 bg-[#153361] rounded w-1/2" />
-                          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-white/10">
-                            <div className="h-8 bg-[#153361] rounded" />
-                            <div className="h-8 bg-[#153361] rounded" />
-                            <div className="h-8 bg-[#153361] rounded" />
+                          <div className="h-5 bg-surface-raised rounded w-3/4" />
+                          <div className="h-3 bg-surface-raised rounded w-1/2" />
+                          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-border-default">
+                            <div className="h-8 bg-surface-raised rounded" />
+                            <div className="h-8 bg-surface-raised rounded" />
+                            <div className="h-8 bg-surface-raised rounded" />
                           </div>
-                          <div className="h-10 bg-[#153361] rounded mt-4" />
+                          <div className="h-10 bg-surface-raised rounded mt-4" />
                         </div>
                       </div>
                     </div>
@@ -484,10 +484,10 @@ export default function PlayersPage() {
                 </div>
               ) : players.length === 0 ? (
                 /* Empty State */
-                <div className="text-center py-20 bg-[#0a1628] border border-white/5 rounded-sm">
+                <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
                   <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-white mb-2">No Players Found</h3>
-                  <p className="text-gray-400 max-w-md mx-auto mb-6">
+                  <h3 className="text-xl font-bold text-text-primary mb-2">No Players Found</h3>
+                  <p className="text-text-muted max-w-md mx-auto mb-6">
                     {hasActiveFilters
                       ? 'No players match your current filters. Try adjusting your search criteria.'
                       : 'There are no players in the directory yet.'}
@@ -517,7 +517,7 @@ export default function PlayersPage() {
                       <button
                         onClick={() => setPage(Math.max(1, page - 1))}
                         disabled={page === 1}
-                        className="w-10 h-10 flex items-center justify-center border border-white/10 text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-white/10 rounded-sm"
+                        className="w-10 h-10 flex items-center justify-center border border-border-default text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border-default rounded-sm"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
@@ -531,20 +531,20 @@ export default function PlayersPage() {
                               "w-10 h-10 flex items-center justify-center font-bold text-sm rounded-sm transition-colors",
                               page === p
                                 ? "bg-eha-red text-white"
-                                : "border border-white/10 text-white hover:bg-white/5"
+                                : "border border-border-default text-white hover:bg-surface-glass"
                             )}
                           >
                             {p}
                           </button>
                         ) : (
-                          <span key={i} className="mx-1 text-gray-500 font-bold">...</span>
+                          <span key={i} className="mx-1 text-text-muted font-bold">...</span>
                         )
                       ))}
 
                       <button
                         onClick={() => setPage(Math.min(totalPages, page + 1))}
                         disabled={page === totalPages}
-                        className="w-10 h-10 flex items-center justify-center border border-white/10 text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-white/10 rounded-sm"
+                        className="w-10 h-10 flex items-center justify-center border border-border-default text-white hover:bg-eha-red hover:border-eha-red transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border-default rounded-sm"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
@@ -564,7 +564,7 @@ export default function PlayersPage() {
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setShowMobileFilters(false)}
           />
-          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-[#0A1D37] overflow-y-auto">
+          <div className="absolute right-0 top-0 h-full w-full max-w-sm bg-page-bg overflow-y-auto">
             <div className="p-4">
               <FilterSidebar
                 filters={filters}

@@ -3,8 +3,10 @@ import { Inter, JetBrains_Mono, Outfit } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
 import { QueryProvider } from '@/components/providers/QueryProvider'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -72,15 +74,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable} ${outfit.variable} font-sans antialiased bg-navy-gradient text-white min-h-screen`}>
-        <SessionProvider>
-          <QueryProvider>
-            <Navbar />
-            <main className="min-h-[calc(100vh-80px)]">{children}</main>
-            <Footer />
-          </QueryProvider>
-        </SessionProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable} ${outfit.variable} font-sans antialiased bg-navy-gradient min-h-screen`}>
+        <ThemeProvider>
+          <SessionProvider>
+            <QueryProvider>
+              <Navbar />
+              <main className="min-h-[calc(100vh-80px)]">{children}</main>
+              <Footer />
+              <ThemeToggle />
+            </QueryProvider>
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

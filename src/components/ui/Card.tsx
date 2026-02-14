@@ -9,7 +9,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', children, ...props }, ref) => {
-    const baseStyles = 'bg-[#153361] border border-white/10 shadow-[0_0_15px_rgba(13,43,91,0.5)]'
+    const baseStyles = 'bg-surface-raised border border-border-default shadow-lg'
 
     const variants = {
       default: '',
@@ -40,14 +40,14 @@ CardHeader.displayName = 'CardHeader'
 
 const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn('text-xl font-bold text-white', className)} {...props} />
+    <h3 ref={ref} className={cn('text-xl font-bold text-text-primary', className)} {...props} />
   )
 )
 CardTitle.displayName = 'CardTitle'
 
 const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLParagraphElement>>(
   ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn('text-sm text-gray-400 mt-1', className)} {...props} />
+    <p ref={ref} className={cn('text-sm text-text-muted mt-1', className)} {...props} />
   )
 )
 CardDescription.displayName = 'CardDescription'
@@ -61,7 +61,7 @@ CardContent.displayName = 'CardContent'
 
 const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('mt-4 pt-4 border-t border-eha-silver/20', className)} {...props} />
+    <div ref={ref} className={cn('mt-4 pt-4 border-t border-border-default', className)} {...props} />
   )
 )
 CardFooter.displayName = 'CardFooter'

@@ -112,14 +112,14 @@ export default function InviteCoParentModal({
             <div className="w-16 h-16 bg-eha-red/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <UserPlus className="w-8 h-8 text-eha-red" />
             </div>
-            <p className="text-gray-400 text-sm">
+            <p className="text-text-muted text-sm">
               Invite another parent or guardian to access your child's profile
             </p>
           </div>
 
           {eligiblePlayers.length === 0 ? (
             <div className="text-center py-6">
-              <p className="text-gray-400">
+              <p className="text-text-muted">
                 You need to be a primary guardian to send invites.
               </p>
             </div>
@@ -144,7 +144,7 @@ export default function InviteCoParentModal({
                   placeholder="Enter their email address"
                   icon={<Mail className="w-4 h-4" />}
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-text-muted">
                   They will receive an email with a link to accept the invitation
                 </p>
               </div>
@@ -155,7 +155,7 @@ export default function InviteCoParentModal({
                 </div>
               )}
 
-              <div className="flex gap-3 justify-end pt-4 border-t border-[#1a3a6e]">
+              <div className="flex gap-3 justify-end pt-4 border-t border-surface-raised">
                 <Button type="button" variant="ghost" onClick={handleClose}>
                   Cancel
                 </Button>
@@ -176,16 +176,16 @@ export default function InviteCoParentModal({
           <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-500" />
           </div>
-          <h3 className="text-lg font-bold text-white mb-2">Invite Sent!</h3>
-          <p className="text-gray-400 text-sm mb-6">{success.message}</p>
+          <h3 className="text-lg font-bold text-text-primary mb-2">Invite Sent!</h3>
+          <p className="text-text-muted text-sm mb-6">{success.message}</p>
 
           {success.inviteUrl && (
-            <div className="bg-[#1a3a6e]/30 rounded-lg p-4 mb-6">
-              <p className="text-xs text-gray-400 mb-2">
+            <div className="bg-surface-raised/30 rounded-lg p-4 mb-6">
+              <p className="text-xs text-text-muted mb-2">
                 Or share this link directly:
               </p>
               <div className="flex items-center gap-2">
-                <code className="flex-1 text-xs bg-black/20 p-2 rounded text-gray-300 truncate">
+                <code className="flex-1 text-xs bg-black/20 p-2 rounded text-text-secondary truncate">
                   {success.inviteUrl}
                 </code>
                 <Button
