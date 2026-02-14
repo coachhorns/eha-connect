@@ -15,13 +15,11 @@ import {
   ChevronRight,
   Calendar,
   Shield,
-  Filter,
-  ChevronDown,
   GraduationCap,
   Mail,
   Crown,
   Clock,
-  Check,
+  ArrowLeftRight,
 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 import RecruitingModal from '@/components/recruiting/RecruitingModal'
@@ -79,32 +77,22 @@ export default function DirectorDashboardPage() {
   const [program, setProgram] = useState<Program | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
-  const [sortBy, setSortBy] = useState('priority')
-
-  // Recruiting state
-  const [selectedPlayerIds, setSelectedPlayerIds] = useState<string[]>([])
   const [recruitingOpen, setRecruitingOpen] = useState(false)
   const [emailLog, setEmailLog] = useState<EmailLogEntry[]>([])
 
-  const sortOptions = [
-    { value: 'priority', label: 'Priority' },
-    { value: 'division', label: 'Division' },
-    { value: 'name', label: 'Name' },
-  ]
+  // Extract age number from team name or division (e.g. "17U" → 17, "EPL 15" → 15)
+  const getAgeGroup = (team: Team): number => {
+    const text = `${team.division || ''} ${team.name || ''}`
+    const match = text.match(/(\d{2})U?\b/i)
+    return match ? parseInt(match[1], 10) : 0
+  }
 
   const getSortedTeams = (teams: Team[]): Team[] => {
     return [...teams].sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return (a.name || '').localeCompare(b.name || '')
-        case 'division':
-          const divCompare = (a.division || '').localeCompare(b.division || '')
-          if (divCompare !== 0) return divCompare
-          return (a.name || '').localeCompare(b.name || '')
-        case 'priority':
-        default:
-          return (a.division || '').localeCompare(b.division || '') || (a.name || '').localeCompare(b.name || '')
-      }
+      // Always sort oldest (highest age) first, then alphabetically by name
+      const ageDiff = getAgeGroup(b) - getAgeGroup(a)
+      if (ageDiff !== 0) return ageDiff
+      return (a.name || '').localeCompare(b.name || '')
     })
   }
 
@@ -175,39 +163,6 @@ export default function DirectorDashboardPage() {
     }
   }
 
-  const togglePlayer = (playerId: string) => {
-    setSelectedPlayerIds((prev) =>
-      prev.includes(playerId)
-        ? prev.filter((id) => id !== playerId)
-        : [...prev, playerId]
-    )
-  }
-
-  const selectAll = () => {
-    const allPlayers = getAllPlayers()
-    if (selectedPlayerIds.length === allPlayers.length) {
-      setSelectedPlayerIds([])
-    } else {
-      setSelectedPlayerIds(allPlayers.map((p) => p.playerId))
-    }
-  }
-
-  const handleOpenRecruiting = () => {
-    if (selectedPlayerIds.length === 0) return
-    setRecruitingOpen(true)
-  }
-
-  const getSelectedPlayerObjects = () => {
-    const allPlayers = getAllPlayers()
-    return allPlayers
-      .filter((p) => selectedPlayerIds.includes(p.playerId))
-      .map((p) => ({
-        firstName: p.firstName,
-        lastName: p.lastName,
-        graduationYear: p.graduationYear,
-        slug: p.slug,
-      }))
-  }
 
   if (status === 'loading' || isLoading) {
     return (
@@ -396,36 +351,12 @@ export default function DirectorDashboardPage() {
             <h2 className="text-xl font-heading font-bold text-white">
               Your Teams
             </h2>
-            <div className="flex items-center gap-3">
-              {/* Sort Dropdown */}
-              <div className="relative">
-                <div className="flex items-center gap-2 text-gray-400 text-sm">
-                  <Filter className="w-4 h-4" />
-                  <span>Sort:</span>
-                </div>
-              </div>
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white/5 border border-white/10 text-white px-4 py-2 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.value} value={option.value} className="bg-[#0a1628]">
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-              </div>
-
-              <Link href={`/director/teams/new?programId=${program.id}`}>
-                <Button className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Team
-                </Button>
-              </Link>
-            </div>
+            <Link href={`/director/teams/new?programId=${program.id}`}>
+              <Button className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Team
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -446,48 +377,46 @@ export default function DirectorDashboardPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {getSortedTeams(program.teams).map((team) => (
-              <Link key={team.id} href={`/director/teams/${team.id}`}>
-                <div className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-0.5 h-full">
-                  <div className="flex items-start justify-between mb-4">
-                    <h3 className="font-semibold text-white text-lg group-hover:text-white transition-colors">
-                      {team.name}
-                    </h3>
-                    <div className="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-lg">
-                      <Trophy className="w-4 h-4 text-white" />
-                      <span className="text-white font-semibold font-mono text-sm">
-                        {team.wins}-{team.losses}
-                      </span>
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+            <div className="divide-y divide-white/5">
+              {getSortedTeams(program.teams).map((team) => (
+                <Link key={team.id} href={`/director/teams/${team.id}`}>
+                  <div className="group flex items-center gap-4 px-5 py-3.5 hover:bg-white/5 transition-colors">
+                    {/* Team Name */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-white text-sm truncate group-hover:text-white">
+                        {team.name}
+                      </h3>
+                      {team.coachName && (
+                        <p className="text-[11px] text-gray-500 truncate">{team.coachName}</p>
+                      )}
                     </div>
-                  </div>
 
-                  <div className="flex flex-wrap gap-2 mb-4">
+                    {/* Division */}
                     {team.division && (
                       <Badge variant="default" size="sm">{team.division}</Badge>
                     )}
-                  </div>
 
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <Users className="w-4 h-4" />
-                      <span>{team.rosterCount} players</span>
-                    </div>
-                    {team.coachName && (
-                      <span className="text-gray-500 truncate max-w-[120px]">
-                        Coach: {team.coachName}
+                    {/* Record */}
+                    <div className="flex items-center gap-1.5 text-gray-400 shrink-0">
+                      <Trophy className="w-3.5 h-3.5" />
+                      <span className="text-xs font-mono font-semibold text-white">
+                        {team.wins}-{team.losses}
                       </span>
-                    )}
-                  </div>
+                    </div>
 
-                  {/* Hover indicator */}
-                  <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between text-sm text-gray-500 group-hover:text-gray-400 transition-colors">
-                    <span>Manage Team</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    {/* Players */}
+                    <div className="flex items-center gap-1.5 text-gray-400 shrink-0">
+                      <Users className="w-3.5 h-3.5" />
+                      <span className="text-xs">{team.rosterCount}</span>
+                    </div>
+
+                    {/* Arrow */}
+                    <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
 
@@ -499,8 +428,8 @@ export default function DirectorDashboardPage() {
             <div className="absolute inset-[1px] bg-[#0a1628]/95 backdrop-blur-xl rounded-2xl" />
 
             <div className="relative">
-              {/* Premium Header */}
-              <div className="p-6 border-b border-amber-500/10 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5">
+              {/* Header */}
+              <div className="p-6 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2.5">
@@ -512,96 +441,28 @@ export default function DirectorDashboardPage() {
                       </span>
                     </h2>
                     <p className="text-sm text-gray-500 mt-1">
-                      Select players and send their profiles to college coaches
+                      Send player profiles to college coaches
                     </p>
                   </div>
                   <Button
-                    onClick={handleOpenRecruiting}
-                    disabled={selectedPlayerIds.length === 0}
-                    className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-0 shadow-lg shadow-amber-900/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                    onClick={() => setRecruitingOpen(true)}
+                    className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-0 shadow-lg shadow-amber-900/20"
                   >
                     <Mail className="w-4 h-4" />
                     Email Coaches
-                    {selectedPlayerIds.length > 0 && (
-                      <span className="bg-white/20 px-1.5 py-0.5 rounded text-[10px] font-bold">
-                        {selectedPlayerIds.length}
-                      </span>
-                    )}
                   </Button>
                 </div>
               </div>
 
-              {/* Select All */}
-              <div className="px-6 py-3 border-b border-white/5 flex items-center justify-between">
-                <button
-                  onClick={selectAll}
-                  className="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"
-                >
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                    selectedPlayerIds.length === allPlayers.length && allPlayers.length > 0
-                      ? 'bg-amber-500 border-amber-500'
-                      : 'border-white/20 hover:border-white/40'
-                  }`}>
-                    {selectedPlayerIds.length === allPlayers.length && allPlayers.length > 0 && (
-                      <Check className="w-3 h-3 text-white" />
-                    )}
-                  </div>
-                  <span className="font-semibold uppercase tracking-wider">
-                    {selectedPlayerIds.length === allPlayers.length && allPlayers.length > 0 ? 'Deselect All' : 'Select All'}
-                  </span>
-                </button>
-                <span className="text-xs text-gray-500">
-                  {selectedPlayerIds.length} of {allPlayers.length} selected
-                </span>
-              </div>
-
-              {/* Player List */}
-              <div className="max-h-[360px] overflow-y-auto divide-y divide-white/5">
-                {allPlayers.map((player) => {
-                  const isSelected = selectedPlayerIds.includes(player.playerId)
-                  return (
-                    <button
-                      key={player.playerId}
-                      onClick={() => togglePlayer(player.playerId)}
-                      className={`w-full flex items-center gap-3 px-6 py-3 text-left transition-colors ${
-                        isSelected ? 'bg-amber-500/5' : 'hover:bg-white/[0.02]'
-                      }`}
-                    >
-                      <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                        isSelected
-                          ? 'bg-amber-500 border-amber-500'
-                          : 'border-white/20'
-                      }`}>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">
-                          {player.firstName} {player.lastName}
-                        </p>
-                        <p className="text-[10px] text-gray-500 truncate">
-                          {player.teamName}
-                          {player.graduationYear ? ` • Class of ${player.graduationYear}` : ''}
-                          {player.primaryPosition ? ` • ${player.primaryPosition}` : ''}
-                        </p>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-
               {/* Sent Emails Log */}
-              <div className="border-t border-amber-500/10">
-                <div className="px-6 py-3 pb-2">
-                  <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-gray-500 flex items-center gap-1.5">
-                    <Clock className="w-3 h-3" />
-                    Sent Emails
-                  </h3>
-                </div>
-                {emailLog.length === 0 ? (
-                  <div className="px-6 pb-5">
-                    <p className="text-[11px] text-gray-600">No emails sent yet. Select players above and email a college coach.</p>
+              {emailLog.length > 0 && (
+                <div className="border-t border-amber-500/10">
+                  <div className="px-6 py-3 pb-2">
+                    <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-gray-500 flex items-center gap-1.5">
+                      <Clock className="w-3 h-3" />
+                      Sent Emails
+                    </h3>
                   </div>
-                ) : (
                   <div className="px-6 pb-4 space-y-2">
                     {emailLog.slice(0, 10).map((log) => (
                       <div key={log.id} className="flex items-center justify-between py-2 px-3 bg-white/[0.02] rounded border border-white/5">
@@ -620,14 +481,31 @@ export default function DirectorDashboardPage() {
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {program.teams.length >= 2 && (
+            <Link href="/director/roster-manager">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group h-full">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                    <ArrowLeftRight className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-white mb-1">Roster Manager</h3>
+                    <p className="text-sm text-gray-400">Move players between teams</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                </div>
+              </div>
+            </Link>
+          )}
+
           <Link href="/events">
             <div className="bg-gradient-to-br from-[#E31837]/20 to-transparent border border-[#E31837]/30 rounded-xl p-6 hover:border-[#E31837]/50 transition-all duration-300 group">
               <div className="flex items-center gap-4">
@@ -666,7 +544,14 @@ export default function DirectorDashboardPage() {
       {/* Recruiting Modal */}
       {recruitingOpen && (
         <RecruitingModal
-          players={getSelectedPlayerObjects()}
+          allPlayers={allPlayers.map((p) => ({
+            firstName: p.firstName,
+            lastName: p.lastName,
+            graduationYear: p.graduationYear,
+            slug: p.slug,
+            teamName: p.teamName,
+            primaryPosition: p.primaryPosition,
+          }))}
           isOpen={recruitingOpen}
           onClose={() => setRecruitingOpen(false)}
           onEmailSent={fetchEmailLog}
