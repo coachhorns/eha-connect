@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
+import { safeParseDate } from '@/lib/timezone'
 import Link from 'next/link'
 import { X, Plus, Save, ArrowLeft, Users } from 'lucide-react'
 import { Card, Button, Input, Select, Badge, ImageUpload } from '@/components/ui'
@@ -121,13 +122,13 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
         city: initialData.city || '',
         state: initialData.state || '',
         startDate: initialData.startDate
-          ? format(new Date(initialData.startDate), 'yyyy-MM-dd')
+          ? format(safeParseDate(initialData.startDate), 'yyyy-MM-dd')
           : '',
         endDate: initialData.endDate
-          ? format(new Date(initialData.endDate), 'yyyy-MM-dd')
+          ? format(safeParseDate(initialData.endDate), 'yyyy-MM-dd')
           : '',
         registrationDeadline: initialData.registrationDeadline
-          ? format(new Date(initialData.registrationDeadline), 'yyyy-MM-dd')
+          ? format(safeParseDate(initialData.registrationDeadline), 'yyyy-MM-dd')
           : '',
         divisions: initialData.divisions || [],
         entryFee: initialData.entryFee?.toString() || '',

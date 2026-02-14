@@ -151,8 +151,13 @@ export async function POST(
       )
     }
 
-    const registrationCutoff = event.registrationDeadline || event.startDate
-    if (new Date() > new Date(registrationCutoff)) {
+    // Check if registration is still open (use end of deadline day)
+    const cutoffDate = event.registrationDeadline || event.startDate
+    const cutoff = new Date(cutoffDate)
+    if (cutoff.getUTCHours() === 0 && cutoff.getUTCMinutes() === 0) {
+      cutoff.setUTCHours(23, 59, 59, 999)
+    }
+    if (new Date() > cutoff) {
       return NextResponse.json(
         { error: 'Registration has closed for this event' },
         { status: 400 }

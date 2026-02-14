@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
+import { safeParseDate } from '@/lib/timezone'
 
 interface Event {
   id: string
@@ -377,7 +378,7 @@ export default function EventsPage() {
                   // Find events on this day
                   // Note: simple match, in real app consider timezones
                   const dayEvents = events.filter(e => {
-                    const eDate = new Date(e.startDate);
+                    const eDate = safeParseDate(e.startDate);
                     return eDate.getDate() === day &&
                       eDate.getMonth() === currentDate.getMonth() &&
                       eDate.getFullYear() === currentDate.getFullYear();

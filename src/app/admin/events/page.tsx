@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { format } from 'date-fns'
+import { safeParseDate } from '@/lib/timezone'
 import {
   Calendar,
   Plus,
@@ -267,8 +268,8 @@ export default function AdminEventsPage() {
 
   const getEventStatus = (event: Event): { label: string; variant: 'success' | 'warning' | 'default' | 'error' } => {
     const now = new Date()
-    const start = new Date(event.startDate)
-    const end = new Date(event.endDate)
+    const start = safeParseDate(event.startDate)
+    const end = safeParseDate(event.endDate)
 
     if (!event.isActive) {
       return { label: 'Inactive', variant: 'error' }

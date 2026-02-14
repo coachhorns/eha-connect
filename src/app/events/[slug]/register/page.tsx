@@ -29,6 +29,7 @@ interface Event {
   state: string | null
   startDate: string
   endDate: string
+  registrationDeadline: string | null
   divisions: string[]
   entryFee: number | null
   isPublished: boolean
@@ -312,7 +313,15 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
     )
   }
 
-  const registrationClosed = event && new Date() > new Date(event.registrationDeadline || event.startDate)
+  const registrationClosed = (() => {
+    if (!event) return false
+    const cutoff = new Date(event.registrationDeadline || event.startDate)
+    // Shift midnight UTC to end of day to avoid premature closure
+    if (cutoff.getUTCHours() === 0 && cutoff.getUTCMinutes() === 0) {
+      cutoff.setUTCHours(23, 59, 59, 999)
+    }
+    return new Date() > cutoff
+  })()
   const stateOptions = [{ value: '', label: 'Select State' }, ...states]
   const divisionOpts = event && event.divisions && event.divisions.length > 0
     ? [{ value: '', label: 'Select Division' }, ...event.divisions.map(d => ({ value: d, label: d }))]

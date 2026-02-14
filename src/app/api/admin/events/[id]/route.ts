@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { safeParseDate } from '@/lib/timezone'
 
 function generateSlug(name: string): string {
   return name
@@ -126,9 +127,9 @@ export async function PUT(
         address: address !== undefined ? address : existingEvent.address,
         city: city !== undefined ? city : existingEvent.city,
         state: state !== undefined ? state : existingEvent.state,
-        ...(startDate && { startDate: new Date(startDate) }),
-        ...(endDate && { endDate: new Date(endDate) }),
-        registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
+        ...(startDate && { startDate: safeParseDate(startDate) }),
+        ...(endDate && { endDate: safeParseDate(endDate) }),
+        registrationDeadline: registrationDeadline ? safeParseDate(registrationDeadline) : null,
         ...(divisions !== undefined && { divisions }),
         ...(entryFee !== undefined && { entryFee: entryFee ? parseFloat(entryFee) : null }),
         ...(bannerImage !== undefined && { bannerImage }),

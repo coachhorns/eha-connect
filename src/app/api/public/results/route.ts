@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
+import { getStartOfDayPacific, getEndOfDayPacific, toPacificTime } from '@/lib/timezone'
 
 export async function GET(request: Request) {
   try {
@@ -24,14 +25,10 @@ export async function GET(request: Request) {
     }
 
     if (date) {
-      // Filter by specific date
-      const startOfDay = new Date(date)
-      startOfDay.setHours(0, 0, 0, 0)
-      const endOfDay = new Date(date)
-      endOfDay.setHours(23, 59, 59, 999)
+      // Filter by specific date in Pacific timezone
       whereClause.scheduledAt = {
-        gte: startOfDay,
-        lte: endOfDay,
+        gte: getStartOfDayPacific(date),
+        lte: getEndOfDayPacific(date),
       }
     }
 
@@ -92,10 +89,10 @@ export async function GET(request: Request) {
       }),
     ])
 
-    // Get unique dates for filter
+    // Get unique dates for filter (in Pacific timezone)
     const uniqueDates = [...new Set(
       gameDates.map(g => {
-        const d = new Date(g.scheduledAt)
+        const d = toPacificTime(new Date(g.scheduledAt))
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
       })
     )]

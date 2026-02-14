@@ -1,7 +1,7 @@
 /**
  * Timezone utilities for Pacific Time (America/Los_Angeles)
  */
-import { toZonedTime, fromZonedTime } from 'date-fns-tz'
+import { toZonedTime, fromZonedTime, format as formatTz } from 'date-fns-tz'
 
 export const PACIFIC_TIMEZONE = 'America/Los_Angeles'
 
@@ -72,6 +72,47 @@ export function formatPacificTime(date: Date): string {
   const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
   const displayMin = minute.toString().padStart(2, '0')
   return `${displayHour}:${displayMin} ${period}`
+}
+
+/**
+ * Safely parse a date string from the database or API response.
+ * Handles the common off-by-one issue where date-only strings or midnight UTC
+ * dates get shifted back a day in US timezones.
+ *
+ * For date-only strings like "2025-02-14", shifts to noon UTC so the date
+ * lands on the correct calendar day in any US timezone.
+ * For full ISO strings at midnight UTC (e.g. "2025-02-14T00:00:00.000Z"),
+ * also shifts to noon UTC.
+ * For ISO strings with non-midnight times, returns as-is.
+ */
+export function safeParseDate(dateStr: string | Date): Date {
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return d
+
+  const str = typeof dateStr === 'string' ? dateStr : dateStr.toISOString()
+
+  // Date-only string like "2025-02-14" — parsed as midnight UTC
+  if (!str.includes('T') && !str.includes(' ')) {
+    d.setUTCHours(12)
+    return d
+  }
+
+  // ISO string at midnight UTC like "2025-02-14T00:00:00.000Z"
+  if (d.getUTCHours() === 0 && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0 && d.getUTCMilliseconds() === 0) {
+    d.setUTCHours(12)
+    return d
+  }
+
+  return d
+}
+
+/**
+ * Format a date for display in Pacific timezone.
+ * Uses safeParseDate internally to avoid off-by-one issues.
+ */
+export function formatDatePacific(dateStr: string | Date, fmt: string): string {
+  const d = safeParseDate(dateStr)
+  return formatTz(d, fmt, { timeZone: PACIFIC_TIMEZONE })
 }
 
 /**

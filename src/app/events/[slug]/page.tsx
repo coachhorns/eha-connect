@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { format } from 'date-fns'
+import { safeParseDate } from '@/lib/timezone'
 import {
   Calendar,
   MapPin,
@@ -223,9 +224,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
     )
   }
 
-  const isUpcoming = new Date() < new Date(event.startDate)
-  const isOngoing = new Date() >= new Date(event.startDate) && new Date() <= new Date(event.endDate)
-  const isPast = new Date() > new Date(event.endDate)
+  const isUpcoming = new Date() < safeParseDate(event.startDate)
+  const isOngoing = new Date() >= safeParseDate(event.startDate) && new Date() <= safeParseDate(event.endDate)
+  const isPast = new Date() > safeParseDate(event.endDate)
 
   const getEventTypeBadge = (type: string) => {
     const variants: Record<string, 'orange' | 'info' | 'gold' | 'success'> = {

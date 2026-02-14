@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { getStartOfDayPacific, getEndOfDayPacific } from '@/lib/timezone'
 
 export async function GET(request: Request) {
   try {
@@ -10,26 +11,15 @@ export async function GET(request: Request) {
     const dateParam = searchParams.get('date')
     const status = searchParams.get('status')
 
-    // Get date range
-    let startDate: Date
-    let endDate: Date
-
-    if (dateParam) {
-      startDate = new Date(dateParam)
-      startDate.setHours(0, 0, 0, 0)
-      endDate = new Date(startDate)
-      endDate.setDate(endDate.getDate() + 1)
-    } else {
-      startDate = new Date()
-      startDate.setHours(0, 0, 0, 0)
-      endDate = new Date(startDate)
-      endDate.setDate(endDate.getDate() + 1)
-    }
+    // Get date range in Pacific timezone
+    const today = new Date()
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    const dateStr = dateParam || todayStr
 
     const where: any = {
       scheduledAt: {
-        gte: startDate,
-        lt: endDate,
+        gte: getStartOfDayPacific(dateStr),
+        lte: getEndOfDayPacific(dateStr),
       },
     }
 

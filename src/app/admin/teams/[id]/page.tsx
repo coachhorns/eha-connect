@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 import { formatPosition, formatHeight } from '@/lib/utils'
+import { safeParseDate } from '@/lib/timezone'
 
 interface Player {
   id: string
@@ -354,7 +355,7 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
                 <div>
                   <p className="text-white font-medium">{et.event.name}</p>
                   <p className="text-sm text-gray-500">
-                    {new Date(et.event.startDate).toLocaleDateString()} - {new Date(et.event.endDate).toLocaleDateString()}
+                    {safeParseDate(et.event.startDate).toLocaleDateString()} - {safeParseDate(et.event.endDate).toLocaleDateString()}
                   </p>
                 </div>
                 <Badge variant="info" size="sm">View</Badge>
