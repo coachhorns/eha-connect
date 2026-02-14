@@ -17,6 +17,7 @@ import {
   Trophy,
   RefreshCw,
   Download,
+  Trash2,
 } from 'lucide-react'
 import { Card, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Modal, Select } from '@/components/ui'
 
@@ -79,6 +80,11 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
   const [pushSuccessCount, setPushSuccessCount] = useState(0)
   const [isBulkPush, setIsBulkPush] = useState(false)
   const [selectedDivisionFilter, setSelectedDivisionFilter] = useState<string>('all')
+
+  // Delete Event State
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteMode, setDeleteMode] = useState<'confirm' | 'force' | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Schedule Sync State
   const [isSyncingSchedule, setIsSyncingSchedule] = useState(false)
@@ -200,6 +206,24 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
       setSyncScheduleError('Network error — could not reach the server.')
     } finally {
       setIsSyncingSchedule(false)
+    }
+  }
+
+  const handleDeleteEvent = async (force: boolean = false) => {
+    if (!event) return
+    try {
+      setIsDeleting(true)
+      const url = force
+        ? `/api/admin/events/${resolvedParams.id}?force=true`
+        : `/api/admin/events/${resolvedParams.id}`
+      const res = await fetch(url, { method: 'DELETE' })
+      if (res.ok) {
+        router.push('/admin/events')
+      }
+    } catch (err) {
+      console.error('Error deleting event:', err)
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -743,6 +767,103 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Danger Zone */}
+      <div className="mt-12 border border-red-500/20 rounded-sm overflow-hidden">
+        <div className="px-6 py-4 bg-red-500/5 border-b border-red-500/20">
+          <h3 className="text-sm font-bold text-red-400 uppercase tracking-wide">Danger Zone</h3>
+        </div>
+        <div className="p-6 flex items-center justify-between">
+          <div>
+            <p className="text-white font-bold text-sm">Delete this event</p>
+            <p className="text-gray-500 text-xs mt-1">
+              {games.length > 0
+                ? `This event has ${teams.length} teams and ${games.length} games. You can deactivate or permanently delete it.`
+                : 'Permanently remove this event and all associated data.'}
+            </p>
+          </div>
+          <Button variant="danger" size="sm" onClick={() => setShowDeleteModal(true)}>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete Event
+          </Button>
+        </div>
+      </div>
+
+      {/* Delete Event Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => { setShowDeleteModal(false); setDeleteMode(null) }}
+        title="Delete Event"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-300">
+            Are you sure you want to delete <strong className="text-white">{event?.name}</strong>?
+          </p>
+
+          {games.length > 0 ? (
+            <>
+              <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">
+                <p className="text-sm text-gray-300">This event contains:</p>
+                <ul className="text-sm text-gray-400 list-disc list-inside space-y-1">
+                  <li>{teams.length} registered team{teams.length !== 1 ? 's' : ''}</li>
+                  <li>{games.length} game{games.length !== 1 ? 's' : ''}</li>
+                </ul>
+              </div>
+
+              {deleteMode !== 'force' ? (
+                <>
+                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+                    <p className="text-yellow-400 text-sm">
+                      <strong>Deactivate</strong> hides the event but preserves all game data and stats.
+                    </p>
+                  </div>
+                  <div className="flex gap-3 justify-end">
+                    <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteMode(null) }}>
+                      Cancel
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDeleteEvent(false)} isLoading={isDeleting}>
+                      Deactivate
+                    </Button>
+                    <button
+                      onClick={() => setDeleteMode('force')}
+                      className="text-sm text-red-400/60 hover:text-red-400 transition-colors px-3"
+                    >
+                      Permanently Delete...
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                    <p className="text-red-400 text-sm font-bold mb-1">This action cannot be undone.</p>
+                    <p className="text-red-400/80 text-sm">
+                      This will permanently delete the event, all {games.length} game{games.length !== 1 ? 's' : ''},
+                      game stats, team registrations, brackets, and schedule constraints.
+                    </p>
+                  </div>
+                  <div className="flex gap-3 justify-end">
+                    <Button variant="ghost" onClick={() => setDeleteMode(null)}>
+                      Back
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDeleteEvent(true)} isLoading={isDeleting}>
+                      Permanently Delete Everything
+                    </Button>
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <div className="flex gap-3 justify-end">
+              <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteMode(null) }}>
+                Cancel
+              </Button>
+              <Button variant="danger" onClick={() => handleDeleteEvent(false)} isLoading={isDeleting}>
+                Delete
+              </Button>
+            </div>
+          )}
+        </div>
+      </Modal>
 
       {/* Push Modal */}
       <Modal

@@ -91,6 +91,7 @@ export default function AdminEventsPage() {
     event: null,
   })
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteMode, setDeleteMode] = useState<'confirm' | 'force' | null>(null)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
   const [isSyncing, setIsSyncing] = useState(false)
@@ -242,18 +243,20 @@ export default function AdminEventsPage() {
     setOpenDropdown(null)
   }
 
-  const handleDelete = async () => {
+  const handleDelete = async (force: boolean = false) => {
     if (!deleteModal.event) return
 
     try {
       setIsDeleting(true)
-      const res = await fetch(`/api/admin/events/${deleteModal.event.id}`, {
-        method: 'DELETE',
-      })
+      const url = force
+        ? `/api/admin/events/${deleteModal.event.id}?force=true`
+        : `/api/admin/events/${deleteModal.event.id}`
+      const res = await fetch(url, { method: 'DELETE' })
 
       if (res.ok) {
         fetchEvents()
         setDeleteModal({ isOpen: false, event: null })
+        setDeleteMode(null)
       }
     } catch (error) {
       console.error('Error deleting event:', error)
@@ -614,35 +617,76 @@ export default function AdminEventsPage() {
         {/* Delete Confirmation Modal */}
         <Modal
           isOpen={deleteModal.isOpen}
-          onClose={() => setDeleteModal({ isOpen: false, event: null })}
+          onClose={() => { setDeleteModal({ isOpen: false, event: null }); setDeleteMode(null) }}
           title="Delete Event"
         >
           <div className="space-y-4">
             <p className="text-gray-300">
               Are you sure you want to delete <strong className="text-white">{deleteModal.event?.name}</strong>?
             </p>
-            {deleteModal.event && deleteModal.event._count.games > 0 && (
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
-                <p className="text-yellow-400 text-sm">
-                  This event has {deleteModal.event._count.games} games. It will be deactivated instead of deleted.
-                </p>
+
+            {deleteModal.event && deleteModal.event._count.games > 0 ? (
+              <>
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">
+                  <p className="text-sm text-gray-300">This event contains:</p>
+                  <ul className="text-sm text-gray-400 list-disc list-inside space-y-1">
+                    <li>{deleteModal.event._count.teams} registered team{deleteModal.event._count.teams !== 1 ? 's' : ''}</li>
+                    <li>{deleteModal.event._count.games} game{deleteModal.event._count.games !== 1 ? 's' : ''}</li>
+                  </ul>
+                </div>
+
+                {deleteMode !== 'force' ? (
+                  <>
+                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+                      <p className="text-yellow-400 text-sm">
+                        <strong>Deactivate</strong> hides the event but preserves all game data and stats.
+                      </p>
+                    </div>
+                    <div className="flex gap-3 justify-end">
+                      <Button variant="ghost" onClick={() => { setDeleteModal({ isOpen: false, event: null }); setDeleteMode(null) }}>
+                        Cancel
+                      </Button>
+                      <Button variant="danger" onClick={() => handleDelete(false)} isLoading={isDeleting}>
+                        Deactivate
+                      </Button>
+                      <button
+                        onClick={() => setDeleteMode('force')}
+                        className="text-sm text-red-400/60 hover:text-red-400 transition-colors px-3"
+                      >
+                        Permanently Delete...
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                      <p className="text-red-400 text-sm font-bold mb-1">This action cannot be undone.</p>
+                      <p className="text-red-400/80 text-sm">
+                        This will permanently delete the event, all {deleteModal.event._count.games} game{deleteModal.event._count.games !== 1 ? 's' : ''},
+                        game stats, team registrations, brackets, and schedule constraints.
+                      </p>
+                    </div>
+                    <div className="flex gap-3 justify-end">
+                      <Button variant="ghost" onClick={() => setDeleteMode(null)}>
+                        Back
+                      </Button>
+                      <Button variant="danger" onClick={() => handleDelete(true)} isLoading={isDeleting}>
+                        Permanently Delete Everything
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="flex gap-3 justify-end">
+                <Button variant="ghost" onClick={() => { setDeleteModal({ isOpen: false, event: null }); setDeleteMode(null) }}>
+                  Cancel
+                </Button>
+                <Button variant="danger" onClick={() => handleDelete(false)} isLoading={isDeleting}>
+                  Delete
+                </Button>
               </div>
             )}
-            <div className="flex gap-3 justify-end">
-              <Button
-                variant="ghost"
-                onClick={() => setDeleteModal({ isOpen: false, event: null })}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleDelete}
-                isLoading={isDeleting}
-              >
-                Delete
-              </Button>
-            </div>
           </div>
         </Modal>
 

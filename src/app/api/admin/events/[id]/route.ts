@@ -151,6 +151,7 @@ export async function PUT(
 }
 
 // DELETE event
+// Use ?force=true to permanently delete event and all related data (games, stats, etc.)
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -162,6 +163,8 @@ export async function DELETE(
     }
 
     const { id } = await params
+    const { searchParams } = new URL(request.url)
+    const force = searchParams.get('force') === 'true'
 
     // Check if event exists
     const existingEvent = await prisma.event.findUnique({
@@ -177,9 +180,39 @@ export async function DELETE(
       return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     }
 
-    // Check if event has games - warn but allow deletion
+    // Force delete: permanently remove event and ALL related data
+    if (force) {
+      await prisma.$transaction(async (tx) => {
+        // 1. Get game IDs for this event
+        const games = await tx.game.findMany({
+          where: { eventId: id },
+          select: { id: true },
+        })
+        const gameIds = games.map((g) => g.id)
+
+        // 2. Nullify BracketSlot.gameId references to prevent FK violation
+        if (gameIds.length > 0) {
+          await tx.bracketSlot.updateMany({
+            where: { gameId: { in: gameIds } },
+            data: { gameId: null },
+          })
+        }
+
+        // 3. Delete all games (cascades GameStats, StatLog)
+        await tx.game.deleteMany({ where: { eventId: id } })
+
+        // 4. Delete the event (cascades EventTeam, EventAward, Bracket->BracketSlot, ScheduleConstraint)
+        await tx.event.delete({ where: { id } })
+      }, { timeout: 30000 })
+
+      return NextResponse.json({
+        message: 'Event and all related data permanently deleted',
+        deleted: true,
+      })
+    }
+
+    // Non-force: soft delete if event has games
     if (existingEvent._count.games > 0) {
-      // Soft delete by marking inactive instead
       await prisma.event.update({
         where: { id },
         data: { isActive: false },
@@ -190,7 +223,7 @@ export async function DELETE(
       })
     }
 
-    // Hard delete if no games
+    // No games - hard delete directly
     await prisma.event.delete({ where: { id } })
 
     return NextResponse.json({ message: 'Event deleted successfully' })
