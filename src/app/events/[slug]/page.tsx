@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, use, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -31,6 +32,9 @@ import {
   ShieldAlert,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
+import RecruitingPacketModal from '@/components/recruiting/RecruitingPacketModal'
+import CollegesAttending from '@/components/events/CollegesAttending'
+import { GraduationCap } from 'lucide-react'
 
 interface Team {
   id: string
@@ -95,6 +99,7 @@ interface Event {
   entryFee: string | null
   bannerImage: string | null
   isPublished: boolean
+  isNcaaCertified: boolean
   teams: EventTeam[]
   games: Game[]
   _count: {
@@ -114,7 +119,16 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedDivision, setSelectedDivision] = useState<string>('')
   const [showBlockingModal, setShowBlockingModal] = useState(false)
+  const [showPacketModal, setShowPacketModal] = useState(false)
   const [isCheckingDirector, setIsCheckingDirector] = useState(false)
+  const searchParams = useSearchParams()
+
+  // Auto-open packet modal if ?packet=open
+  useEffect(() => {
+    if (searchParams.get('packet') === 'open' && event?.isNcaaCertified) {
+      setShowPacketModal(true)
+    }
+  }, [searchParams, event?.isNcaaCertified])
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -430,7 +444,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A1D37] via-[#0A1D37]/30 to-transparent z-20" />
 
               {/* Content overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-30">
                 <div className="flex flex-wrap items-center gap-3 mb-3">
                   <Badge variant={getEventTypeBadge(event.type)} size="lg" className="uppercase tracking-wider">
                     {event.type}
@@ -448,6 +462,12 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                     </Badge>
                   )}
                   {isPast && <Badge variant="default">Completed</Badge>}
+                  {event.isNcaaCertified && (
+                    <Badge variant="gold" className="flex items-center gap-1.5">
+                      <GraduationCap className="w-3.5 h-3.5" />
+                      NCAA Certified
+                    </Badge>
+                  )}
                 </div>
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white tracking-tight">
                   {event.name}
@@ -525,6 +545,58 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               </div>
             </div>
           </div>
+
+          {/* Registration + Recruiting Packet Banner */}
+          {(isUpcoming || isOngoing) && (
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              {isUpcoming && (
+                <div className="flex-1 bg-gradient-to-r from-[#E31837]/20 to-transparent border border-[#E31837]/30 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 bg-[#E31837]/20 rounded-lg flex items-center justify-center shrink-0">
+                      <Users className="w-5 h-5 text-[#E31837]" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-heading font-bold text-white text-sm">Register Your Team</h3>
+                      <p className="text-gray-400 text-xs truncate">Secure your spot — Registration is open!</p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleRegisterClick}
+                    disabled={isCheckingDirector}
+                    size="sm"
+                    className="shrink-0 bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25"
+                  >
+                    {isCheckingDirector && (
+                      <div className="w-3 h-3 mr-1.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    )}
+                    Register Now
+                    <ChevronRight className="w-3.5 h-3.5 ml-1.5" />
+                  </Button>
+                </div>
+              )}
+              {event.isNcaaCertified && (
+                <div className="flex-1 bg-gradient-to-r from-amber-500/20 to-transparent border border-amber-500/30 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center shrink-0">
+                      <GraduationCap className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-heading font-bold text-white text-sm">College Recruiting Packet</h3>
+                      <p className="text-gray-400 text-xs truncate">Rosters, player info, coach emails &amp; live stats</p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => setShowPacketModal(true)}
+                    size="sm"
+                    className="shrink-0 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 shadow-lg shadow-amber-600/25"
+                  >
+                    Purchase Packet
+                    <ChevronRight className="w-3.5 h-3.5 ml-1.5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Main Content Grid */}
           <div className="grid lg:grid-cols-3 gap-8">
@@ -1024,6 +1096,34 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
             {/* Sidebar */}
             <div className="space-y-6">
+              {/* Event Details Card */}
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                <div className="px-5 py-4 border-b border-white/10">
+                  <h3 className="font-heading font-bold text-white flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-[#E31837]" />
+                    Event Details
+                  </h3>
+                </div>
+                <div className="p-5 space-y-4">
+                  {event.divisions.length > 0 && (
+                    <div>
+                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Divisions</div>
+                      <div className="flex flex-wrap gap-2">
+                        {event.divisions.map(div => (
+                          <Badge key={div} variant="default" size="sm">{div}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {event.entryFee && (
+                    <div>
+                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Entry Fee</div>
+                      <div className="text-white font-semibold text-lg">${event.entryFee}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Venue Information Card */}
               {(event.venue || event.address || event.city) && (
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
@@ -1034,14 +1134,15 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                     </h3>
                   </div>
 
-                  {/* Map Placeholder */}
+                  {/* Google Maps Embed */}
                   <div className="h-40 bg-[#0a1628] relative">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <MapPin className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-                        <span className="text-gray-500 text-sm">Map View</span>
-                      </div>
-                    </div>
+                    <iframe
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent([event.venue, event.address, event.city, event.state].filter(Boolean).join(', '))}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                      className="w-full h-full border-0"
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
                   </div>
 
                   <div className="p-5 space-y-4">
@@ -1075,58 +1176,25 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                 </div>
               )}
 
-              {/* Event Details Card */}
-              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-                <div className="px-5 py-4 border-b border-white/10">
-                  <h3 className="font-heading font-bold text-white flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-[#E31837]" />
-                    Event Details
-                  </h3>
-                </div>
-                <div className="p-5 space-y-4">
-                  {event.divisions.length > 0 && (
-                    <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Divisions</div>
-                      <div className="flex flex-wrap gap-2">
-                        {event.divisions.map(div => (
-                          <Badge key={div} variant="default" size="sm">{div}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {event.entryFee && (
-                    <div>
-                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Entry Fee</div>
-                      <div className="text-white font-semibold text-lg">{event.entryFee}</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Registration CTA */}
-              {isUpcoming && (
-                <div className="bg-gradient-to-br from-[#E31837]/20 to-transparent border border-[#E31837]/30 rounded-2xl p-6">
-                  <h3 className="font-heading font-bold text-white mb-2">Register Your Team</h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Secure your spot in this event. Registration is open!
-                  </p>
-                  <Button
-                    onClick={handleRegisterClick}
-                    disabled={isCheckingDirector}
-                    className="w-full bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25"
-                  >
-                    {isCheckingDirector ? (
-                      <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : null}
-                    Register Now
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
+              {/* Colleges Attending */}
+              {event.isNcaaCertified && (isUpcoming || isOngoing) && (
+                <CollegesAttending eventId={event.id} />
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Recruiting Packet Modal */}
+      {showPacketModal && event && (
+        <RecruitingPacketModal
+          isOpen={showPacketModal}
+          onClose={() => setShowPacketModal(false)}
+          eventId={event.id}
+          eventSlug={event.slug}
+          eventName={event.name}
+        />
+      )}
 
       {/* Blocking Modal for Parents/Players */}
       {showBlockingModal && (

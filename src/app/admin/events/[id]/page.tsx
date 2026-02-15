@@ -18,6 +18,7 @@ import {
   RefreshCw,
   Download,
   Trash2,
+  GraduationCap,
 } from 'lucide-react'
 import { Card, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Modal, Select } from '@/components/ui'
 
@@ -688,6 +689,33 @@ export default function EventDashboardPage({ params }: { params: Promise<{ id: s
                     >
                       <Download className="w-4 h-4" />
                       Restrictions CSV
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="flex items-center gap-2"
+                      onClick={async () => {
+                        try {
+                          const res = await fetch(`/api/admin/events/${resolvedParams.id}/export-colleges`)
+                          if (!res.ok) {
+                            const err = await res.json()
+                            alert(err.error || 'Failed to export colleges')
+                            return
+                          }
+                          const blob = await res.blob()
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = res.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') || 'colleges-attending.csv'
+                          a.click()
+                          URL.revokeObjectURL(url)
+                        } catch {
+                          alert('Failed to download colleges CSV')
+                        }
+                      }}
+                    >
+                      <GraduationCap className="w-4 h-4" />
+                      Colleges Attending CSV
                     </Button>
                     <Button
                       size="sm"

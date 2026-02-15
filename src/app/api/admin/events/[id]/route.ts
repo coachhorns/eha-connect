@@ -90,6 +90,7 @@ export async function PUT(
       bannerImage,
       flyerImage,
       isPublished,
+      isNcaaCertified,
       isActive,
     } = body
 
@@ -135,6 +136,7 @@ export async function PUT(
         ...(bannerImage !== undefined && { bannerImage }),
         ...(flyerImage !== undefined && { flyerImage }),
         ...(isPublished !== undefined && { isPublished }),
+        ...(isNcaaCertified !== undefined && { isNcaaCertified }),
         ...(isActive !== undefined && { isActive }),
       },
       include: {

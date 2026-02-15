@@ -392,18 +392,20 @@ model Event {
   bannerImage String?
   flyerImage  String?     // 1080x1440 flyer image
 
-  isPublished Boolean     @default(false)
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  isPublished     Boolean     @default(false)
+  isNcaaCertified Boolean     @default(false)
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
   // Relations
-  games       Game[]
-  teams       EventTeam[]
-  awards      EventAward[]
-  venues      Venue[]
-  brackets    Bracket[]
-  constraints ScheduleConstraint[]
+  games                Game[]
+  teams                EventTeam[]
+  awards               EventAward[]
+  venues               Venue[]
+  brackets             Bracket[]
+  constraints          ScheduleConstraint[]
+  collegeRegistrations EventCollegeRegistration[]
 
   // Exposure Events Integration
   exposureId      Int?      @unique // Event ID in Exposure
@@ -837,6 +839,7 @@ model College {
 
   coaches     CollegeCoach[]
   recruitingEmails RecruitingEmail[]
+  eventRegistrations EventCollegeRegistration[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -860,6 +863,7 @@ model CollegeCoach {
   updatedAt   DateTime @updatedAt
 
   recruitingEmails RecruitingEmail[]
+  eventRegistrations EventCollegeRegistration[]
 
   @@map("college_coaches")
 }
@@ -899,4 +903,48 @@ model RecruitingEmailPlayer {
 
   @@unique([recruitingEmailId, playerId])
   @@map("recruiting_email_players")
+}
+
+// ============================================
+// COLLEGE RECRUITING PACKET REGISTRATIONS
+// ============================================
+
+model EventCollegeRegistration {
+  id              String   @id @default(cuid())
+  eventId         String
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  // Coach info (denormalized + optional FK to CollegeCoach if matched)
+  collegeCoachId  String?
+  collegeCoach    CollegeCoach? @relation(fields: [collegeCoachId], references: [id])
+  collegeId       String?
+  college         College?      @relation(fields: [collegeId], references: [id])
+
+  firstName       String
+  lastName        String
+  school          String   // Denormalized college name
+  email           String   // .edu email
+  division        String   // e.g., "Division I", "Division II"
+
+  // Payment
+  amountPaid      Decimal  @db.Decimal(10, 2)
+  stripeSessionId String?
+  stripePaymentId String?
+  paymentStatus   PaymentStatus @default(PENDING)
+
+  // Physical copy request
+  wantsPhysicalCopy Boolean @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([eventId, email])
+  @@map("event_college_registrations")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
 }

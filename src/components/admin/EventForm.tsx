@@ -34,6 +34,7 @@ interface EventFormData {
   bannerImage: string
   flyerImage: string
   isPublished: boolean
+  isNcaaCertified: boolean
 }
 
 interface EventInput {
@@ -53,6 +54,7 @@ interface EventInput {
   bannerImage?: string | null
   flyerImage?: string | null
   isPublished?: boolean
+  isNcaaCertified?: boolean
 }
 
 interface EventFormProps {
@@ -90,6 +92,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
     bannerImage: '',
     flyerImage: '',
     isPublished: false,
+    isNcaaCertified: false,
   })
 
   // Fetch venues on mount
@@ -135,6 +138,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
         bannerImage: initialData.bannerImage || '',
         flyerImage: initialData.flyerImage || '',
         isPublished: initialData.isPublished || false,
+        isNcaaCertified: initialData.isNcaaCertified || false,
       })
     }
   }, [initialData])
@@ -278,6 +282,16 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               </Button>
             </Link>
           )}
+          <label className="flex items-center gap-2 text-sm text-gray-400">
+            <input
+              type="checkbox"
+              name="isNcaaCertified"
+              checked={formData.isNcaaCertified}
+              onChange={handleChange}
+              className="w-4 h-4 rounded-sm border-white/10 bg-[#0A1D37] text-eha-red focus:ring-eha-red"
+            />
+            NCAA Certified
+          </label>
           <label className="flex items-center gap-2 text-sm text-gray-400">
             <input
               type="checkbox"

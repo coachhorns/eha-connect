@@ -39,6 +39,23 @@ export async function POST(request: Request) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
+
+        // Handle recruiting packet one-time payment
+        if (session.metadata?.type === 'recruiting_packet') {
+          const registrationId = session.metadata.registrationId
+          if (registrationId) {
+            await prisma.eventCollegeRegistration.update({
+              where: { id: registrationId },
+              data: {
+                paymentStatus: 'COMPLETED',
+                stripePaymentId: (session.payment_intent as string) || null,
+              },
+            })
+          }
+          break
+        }
+
+        // Handle subscription payment
         const userId = session.metadata?.userId
         const plan = session.metadata?.plan as 'ANNUAL' | 'SEMI_ANNUAL' | 'MONTHLY'
         const childCount = parseInt(session.metadata?.childCount || '1') || 1

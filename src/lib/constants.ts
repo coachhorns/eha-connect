@@ -77,6 +77,36 @@ export function calculateFamilyPrice(plan: 'ANNUAL' | 'SEMI_ANNUAL' | 'MONTHLY',
   return base + additionalCost
 }
 
+// College Recruiting Packet Pricing (in cents)
+// Database division values: NCAA D1, NCAA DII, NCAA DIII, NAIA, JC, JC-CCCAA, JC-D1, JC-D2, JC-D3, JC-NWAC
+const DIVISION_PRICE_MAP: Record<string, number> = {
+  'ncaa d1':    52500, // $525
+  'ncaa di':    52500,
+  'ncaa dii':   25000, // $250
+  'ncaa d2':    25000,
+  'ncaa diii':  10000, // $100
+  'ncaa d3':    10000,
+  'naia':       20000, // $200
+  'jc':          5000, // $50
+  'jc-cccaa':    5000,
+  'jc-d1':       5000,
+  'jc-d2':       5000,
+  'jc-d3':       5000,
+  'jc-nwac':     5000,
+}
+
+const DEFAULT_PACKET_PRICE = 10000 // $100 fallback
+
+export function getPacketPrice(division: string): number {
+  const normalized = division.trim().toLowerCase()
+  return DIVISION_PRICE_MAP[normalized] ?? DEFAULT_PACKET_PRICE
+}
+
+export function getPacketPriceLabel(division: string): string {
+  const cents = getPacketPrice(division)
+  return `$${(cents / 100).toFixed(2)}`
+}
+
 // Position options
 export const positions = [
   { value: 'PG', label: 'Point Guard' },

@@ -55,7 +55,7 @@ export async function GET(
           orderBy: { scheduledAt: 'asc' },
         },
         _count: {
-          select: { teams: true, games: true },
+          select: { teams: true, games: true, collegeRegistrations: true },
         },
       },
     })

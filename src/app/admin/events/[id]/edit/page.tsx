@@ -23,6 +23,7 @@ interface Event {
   bannerImage: string | null
   flyerImage: string | null
   isPublished: boolean
+  isNcaaCertified: boolean
   isActive: boolean
 }
 

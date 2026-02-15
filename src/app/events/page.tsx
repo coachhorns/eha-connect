@@ -16,7 +16,8 @@ import {
   Smartphone,
   LineChart,
   Calendar as CalendarIcon,
-  ChevronDown
+  ChevronDown,
+  GraduationCap,
 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 import { formatDate } from '@/lib/utils'
@@ -34,6 +35,7 @@ interface Event {
   startDate: string
   endDate: string
   bannerImage?: string | null
+  isNcaaCertified?: boolean
   _count: {
     teams: number
     games: number
@@ -121,13 +123,15 @@ const EventCard = ({
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Registered</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Eye className="w-5 h-5 text-gray-400" />
-              <div>
-                <p className="text-xs font-bold text-white">Verified</p>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Scouts attending</p>
+            {event.isNcaaCertified && (
+              <div className="flex items-center gap-3">
+                <GraduationCap className="w-5 h-5 text-amber-400" />
+                <div>
+                  <p className="text-xs font-bold text-white">NCAA Certified Event</p>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Coaches Attending</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -138,8 +142,14 @@ const EventCard = ({
               Registration Open
             </span>
           </div>
-          <div className="flex gap-4 w-full sm:w-auto">
+          <div className="flex gap-3 w-full sm:w-auto flex-wrap">
             <Button variant="secondary" onClick={viewDetails} className="flex-1 sm:flex-none">View Details</Button>
+            {event.isNcaaCertified && (
+              <Button variant="secondary" onClick={() => window.location.href = `/events/${event.slug}?packet=open`} className="flex-1 sm:flex-none !border-amber-500/50 !text-amber-400 hover:!bg-amber-500 hover:!text-white">
+                <GraduationCap className="w-3.5 h-3.5 mr-2" />
+                Purchase Recruiting Packet
+              </Button>
+            )}
             <Button variant="primary" onClick={(e) => register(e)} className="flex-1 sm:flex-none">Register Team</Button>
           </div>
         </div>

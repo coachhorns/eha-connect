@@ -102,6 +102,7 @@ export async function POST(request: Request) {
       bannerImage,
       flyerImage,
       isPublished,
+      isNcaaCertified,
     } = body
 
     // Validate required fields
@@ -140,6 +141,7 @@ export async function POST(request: Request) {
         bannerImage: bannerImage || null,
         flyerImage: flyerImage || null,
         isPublished: isPublished ?? false,
+        isNcaaCertified: isNcaaCertified ?? false,
         isActive: true,
       },
       include: {
