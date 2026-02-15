@@ -1,60 +1,129 @@
 import { Tabs } from 'expo-router';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, Pressable, Dimensions } from 'react-native';
 import { Colors } from '@/constants/colors';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
-// Simple SVG-free tab icons using View components
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const TAB_BAR_WIDTH = Math.min(SCREEN_WIDTH * 0.62, 280);
+const TAB_BAR_HEIGHT = 52;
+
 function TabIcon({ name, focused }: { name: string; focused: boolean }) {
-  const color = focused ? Colors.red : Colors.inactiveTab;
-  const size = 24;
+  const iconColor = focused ? '#FFFFFF' : 'rgba(255,255,255,0.45)';
 
-  // Simple geometric icons
-  switch (name) {
-    case 'home':
-      return (
-        <View style={[iconStyles.house, { borderColor: color }]}>
-          <View style={[iconStyles.houseRoof, { borderBottomColor: color }]} />
-        </View>
-      );
-    case 'events':
-      return (
-        <View style={[iconStyles.calendar, { borderColor: color }]}>
-          <View style={[iconStyles.calendarTop, { backgroundColor: color }]} />
-        </View>
-      );
-    case 'leaderboard':
-      return (
-        <View style={iconStyles.barGroup}>
-          <View style={[iconStyles.bar, { height: 10, backgroundColor: color }]} />
-          <View style={[iconStyles.bar, { height: 16, backgroundColor: color }]} />
-          <View style={[iconStyles.bar, { height: 13, backgroundColor: color }]} />
-        </View>
-      );
-    case 'profile':
-      return (
-        <View>
-          <View style={[iconStyles.profileHead, { backgroundColor: color }]} />
-          <View style={[iconStyles.profileBody, { backgroundColor: color }]} />
-        </View>
-      );
-    case 'more':
-      return (
-        <View style={iconStyles.dotsRow}>
-          <View style={[iconStyles.dot, { backgroundColor: color }]} />
-          <View style={[iconStyles.dot, { backgroundColor: color }]} />
-          <View style={[iconStyles.dot, { backgroundColor: color }]} />
-        </View>
-      );
-    default:
-      return <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: color }} />;
-  }
+  const icon = (() => {
+    switch (name) {
+      case 'index':
+        return (
+          <View style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ width: 14, height: 10, borderWidth: 1.6, borderTopWidth: 0, borderColor: iconColor, position: 'absolute', bottom: 0 }} />
+            <View style={{ width: 0, height: 0, borderLeftWidth: 10, borderRightWidth: 10, borderBottomWidth: 7, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: iconColor, position: 'absolute', top: 0 }} />
+            <View style={{ width: 4, height: 5, backgroundColor: iconColor, position: 'absolute', bottom: 0 }} />
+          </View>
+        );
+      case 'events':
+        return (
+          <View style={{ width: 18, height: 18, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ width: 16, height: 14, borderWidth: 1.6, borderColor: iconColor, borderRadius: 2.5, position: 'absolute', bottom: 0 }}>
+              <View style={{ height: 4, backgroundColor: iconColor, borderTopLeftRadius: 1, borderTopRightRadius: 1 }} />
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', padding: 1.5, gap: 1.5, marginTop: 1 }}>
+                <View style={{ width: 2.5, height: 2, backgroundColor: iconColor, opacity: 0.6 }} />
+                <View style={{ width: 2.5, height: 2, backgroundColor: iconColor, opacity: 0.6 }} />
+                <View style={{ width: 2.5, height: 2, backgroundColor: iconColor, opacity: 0.6 }} />
+              </View>
+            </View>
+            <View style={{ position: 'absolute', top: 0, left: 3, width: 1.8, height: 4, backgroundColor: iconColor, borderRadius: 1 }} />
+            <View style={{ position: 'absolute', top: 0, right: 3, width: 1.8, height: 4, backgroundColor: iconColor, borderRadius: 1 }} />
+          </View>
+        );
+      case 'leaderboards':
+        return (
+          <View style={{ width: 20, height: 18, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 2 }}>
+            <View style={{ width: 4.5, height: 9, backgroundColor: iconColor, borderTopLeftRadius: 1.5, borderTopRightRadius: 1.5 }} />
+            <View style={{ width: 4.5, height: 16, backgroundColor: iconColor, borderTopLeftRadius: 1.5, borderTopRightRadius: 1.5 }} />
+            <View style={{ width: 4.5, height: 12, backgroundColor: iconColor, borderTopLeftRadius: 1.5, borderTopRightRadius: 1.5 }} />
+          </View>
+        );
+      case 'profile':
+        return (
+          <View style={{ width: 20, height: 20, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: 9, height: 9, borderRadius: 4.5, borderWidth: 1.6, borderColor: iconColor }} />
+            <View style={{ width: 16, height: 7, borderTopLeftRadius: 8, borderTopRightRadius: 8, borderWidth: 1.6, borderBottomWidth: 0, borderColor: iconColor, marginTop: 1.5 }} />
+          </View>
+        );
+      case 'more':
+        return (
+          <View style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ width: 16, height: 16, borderWidth: 1.6, borderColor: iconColor, borderRadius: 8, justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ width: 7, height: 1.6, backgroundColor: iconColor }} />
+              <View style={{ width: 1.6, height: 7, backgroundColor: iconColor, position: 'absolute' }} />
+            </View>
+          </View>
+        );
+      default:
+        return <View style={{ width: 20, height: 20 }} />;
+    }
+  })();
+
+  return (
+    <View style={[styles.iconWrapper, focused && styles.iconWrapperActive]}>
+      {icon}
+    </View>
+  );
+}
+
+function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  return (
+    <View style={styles.tabBarContainer}>
+      <View style={styles.tabBarPill}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const isFocused = state.index === index;
+
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name, route.params);
+            }
+          };
+
+          const onLongPress = () => {
+            navigation.emit({
+              type: 'tabLongPress',
+              target: route.key,
+            });
+          };
+
+          return (
+            <Pressable
+              key={route.key}
+              accessibilityRole="button"
+              accessibilityState={isFocused ? { selected: true } : {}}
+              accessibilityLabel={options.tabBarAccessibilityLabel}
+              onPress={onPress}
+              onLongPress={onLongPress}
+              style={styles.tabItem}
+            >
+              <TabIcon name={route.name} focused={isFocused} />
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
 }
 
 export default function TabLayout() {
   return (
     <Tabs
+      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         headerStyle: {
-          backgroundColor: Colors.surface,
+          backgroundColor: Colors.background,
           shadowColor: 'transparent',
           elevation: 0,
         },
@@ -64,21 +133,6 @@ export default function TabLayout() {
           fontSize: 18,
           letterSpacing: 0.5,
         },
-        tabBarStyle: {
-          backgroundColor: Colors.tabBarBackground,
-          borderTopColor: Colors.tabBarBorder,
-          borderTopWidth: 1,
-          height: Platform.OS === 'ios' ? 88 : 64,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
-          paddingTop: 8,
-        },
-        tabBarActiveTintColor: Colors.red,
-        tabBarInactiveTintColor: Colors.inactiveTab,
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
-          letterSpacing: 0.5,
-        },
       }}
     >
       <Tabs.Screen
@@ -86,7 +140,6 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           headerTitle: 'EHA Connect',
-          tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -94,7 +147,6 @@ export default function TabLayout() {
         options={{
           title: 'Events',
           headerShown: false,
-          tabBarIcon: ({ focused }) => <TabIcon name="events" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -102,7 +154,6 @@ export default function TabLayout() {
         options={{
           title: 'Leaders',
           headerTitle: 'Leaderboards',
-          tabBarIcon: ({ focused }) => <TabIcon name="leaderboard" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -110,7 +161,6 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           headerTitle: 'My Profile',
-          tabBarIcon: ({ focused }) => <TabIcon name="profile" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -118,22 +168,55 @@ export default function TabLayout() {
         options={{
           title: 'More',
           headerTitle: 'More',
-          tabBarIcon: ({ focused }) => <TabIcon name="more" focused={focused} />,
         }}
       />
     </Tabs>
   );
 }
 
-const iconStyles = StyleSheet.create({
-  house: { width: 20, height: 16, borderWidth: 2, borderTopWidth: 0, marginTop: 6 },
-  houseRoof: { width: 0, height: 0, borderLeftWidth: 12, borderRightWidth: 12, borderBottomWidth: 8, borderLeftColor: 'transparent', borderRightColor: 'transparent', position: 'absolute', top: -8, left: -2 },
-  calendar: { width: 20, height: 18, borderWidth: 2, borderRadius: 3 },
-  calendarTop: { height: 3, width: 16, position: 'absolute', top: 3 },
-  barGroup: { flexDirection: 'row', alignItems: 'flex-end', gap: 3, height: 20 },
-  bar: { width: 5, borderRadius: 2 },
-  profileHead: { width: 10, height: 10, borderRadius: 5, alignSelf: 'center' },
-  profileBody: { width: 18, height: 8, borderTopLeftRadius: 9, borderTopRightRadius: 9, marginTop: 2, alignSelf: 'center' },
-  dotsRow: { flexDirection: 'row', gap: 4, alignItems: 'center', height: 24, justifyContent: 'center' },
-  dot: { width: 5, height: 5, borderRadius: 2.5 },
+const styles = StyleSheet.create({
+  tabBarContainer: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 36 : 20,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  tabBarPill: {
+    width: TAB_BAR_WIDTH,
+    height: TAB_BAR_HEIGHT,
+    backgroundColor: 'rgba(13, 43, 91, 0.95)',
+    borderRadius: TAB_BAR_HEIGHT / 2,
+    borderWidth: 1,
+    borderColor: 'rgba(30, 74, 138, 0.5)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 20,
+  },
+  tabItem: {
+    flex: 1,
+    height: TAB_BAR_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconWrapper: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconWrapperActive: {
+    backgroundColor: Colors.red,
+    shadowColor: Colors.red,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 6,
+  },
 });
