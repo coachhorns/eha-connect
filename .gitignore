@@ -51,3 +51,9 @@ public/workbox-*.js.map
 # Uploads (local dev)
 public/uploads/*
 !public/uploads/.gitkeep
+
+# Local dev scripts
+/scripts/
+
+# Claude Code local settings
+.claude/settings.local.json
