@@ -1,0 +1,64 @@
+{
+  "expo": {
+    "name": "EHA Connect",
+    "slug": "eha-connect",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "ehaconnect",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D2B5B"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ehaconnect.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "EHA Connect needs camera access to update your profile photo and upload highlight media.",
+        "NSPhotoLibraryUsageDescription": "EHA Connect needs photo library access to select profile photos and highlight media."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0D2B5B"
+      },
+      "package": "com.ehaconnect.app",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-image-picker",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#0D2B5B"
+        }
+      ],
+      "expo-asset",
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      },
+      "router": {
+        "origin": false
+      }
+    }
+  }
+}
