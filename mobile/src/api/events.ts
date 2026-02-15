@@ -2,8 +2,10 @@ import { api } from './client';
 import type { Event, Game, Standing } from '@/types';
 
 export const eventsApi = {
-  list: () =>
-    api.get<Event[]>('/api/events'),
+  list: async (): Promise<Event[]> => {
+    const res = await api.get<{ events: Event[] }>('/api/events', { limit: '50' });
+    return res.events;
+  },
 
   getById: (id: string) =>
     api.get<Event>(`/api/public/events/${id}`),

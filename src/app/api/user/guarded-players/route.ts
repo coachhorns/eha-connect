@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionUser } from '@/lib/get-session'
 import prisma from '@/lib/prisma'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -30,12 +29,12 @@ export async function GET() {
     // Fetch guardian-linked players and self-linked players in parallel
     const [guardians, selfLinkedPlayers] = await Promise.all([
       prisma.guardian.findMany({
-        where: { userId: session.user.id },
+        where: { userId: user.id },
         include: { player: { include: playerInclude } },
         orderBy: { createdAt: 'asc' },
       }),
       prisma.player.findMany({
-        where: { userId: session.user.id },
+        where: { userId: user.id },
         include: playerInclude,
       }),
     ])

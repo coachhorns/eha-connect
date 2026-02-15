@@ -1,7 +1,8 @@
 import { api } from './client';
-import type { LeaderboardEntry } from '@/types';
 
 export const leaderboardsApi = {
-  get: (params?: Record<string, string>) =>
-    api.get<LeaderboardEntry[]>('/api/leaderboards', params),
+  get: async (params?: Record<string, string>) => {
+    const res = await api.get<{ leaderboard: unknown[] }>('/api/leaderboards', params);
+    return res.leaderboard ?? [];
+  },
 };

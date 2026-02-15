@@ -2,17 +2,25 @@ import { api } from './client';
 import type { Player, PlayerMedia } from '@/types';
 
 export const playersApi = {
-  list: (params?: Record<string, string>) =>
-    api.get<Player[]>('/api/players', params),
+  list: async (params?: Record<string, string>): Promise<Player[]> => {
+    const res = await api.get<{ players: Player[] }>('/api/players', params);
+    return res.players ?? [];
+  },
 
-  getBySlug: (slug: string) =>
-    api.get<Player>(`/api/players/${slug}`),
+  getBySlug: async (slug: string): Promise<Player> => {
+    const res = await api.get<{ player: Player } | Player>(`/api/players/${slug}`);
+    return 'player' in res ? res.player : res;
+  },
 
-  getMyPlayers: () =>
-    api.get<Player[]>('/api/user/players'),
+  getMyPlayers: async (): Promise<Player[]> => {
+    const res = await api.get<{ players: Player[] }>('/api/user/players');
+    return res.players ?? [];
+  },
 
-  getGuardedPlayers: () =>
-    api.get<Player[]>('/api/user/guarded-players'),
+  getGuardedPlayers: async (): Promise<Player[]> => {
+    const res = await api.get<{ players: Player[] }>('/api/user/guarded-players');
+    return res.players ?? [];
+  },
 
   updatePlayer: (id: string, data: Partial<Player>) =>
     api.put<Player>(`/api/user/players/${id}`, data),

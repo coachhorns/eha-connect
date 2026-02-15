@@ -1,22 +1,23 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { getSessionUser } from '@/lib/get-session'
 import prisma from '@/lib/prisma'
 import { generateSlug } from '@/lib/utils'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const players = await prisma.player.findMany({
       where: {
         OR: [
-          { userId: session.user.id },
-          { guardians: { some: { userId: session.user.id } } },
+          { userId: user.id },
+          { guardians: { some: { userId: user.id } } },
         ],
         isActive: true,
       },
@@ -62,9 +63,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const postUser = await getSessionUser(request)
 
-    if (!session) {
+    if (!postUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -91,7 +92,7 @@ export async function POST(request: Request) {
 
     const player = await prisma.player.create({
       data: {
-        userId: session.user.id,
+        userId: postUser.id,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         slug,
