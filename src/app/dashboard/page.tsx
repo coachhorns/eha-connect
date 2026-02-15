@@ -659,7 +659,7 @@ export default function DashboardPage() {
       {/* Recruiting Modal */}
       {recruitingPlayer && (
         <RecruitingModal
-          players={[{
+          allPlayers={[{
             firstName: recruitingPlayer.firstName,
             lastName: recruitingPlayer.lastName,
             graduationYear: recruitingPlayer.graduationYear,
