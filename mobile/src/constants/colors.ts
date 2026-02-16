@@ -1,25 +1,25 @@
 export const Colors = {
   // EHA Brand
-  navy: '#0D2B5B',
-  navySurface: '#153361',
-  navyLight: '#1E4A8A',
-  red: '#C8102E',
-  redLight: '#E41937',
-  gold: '#C5A900',
-  goldLight: '#FFD700',
-  silver: '#A2AAAD',
+  navy: '#0F172A',
+  navySurface: '#1E293B',
+  navyLight: '#334155',
+  red: '#EF4444',
+  redLight: '#F87171',
+  gold: '#F59E0B',
+  goldLight: '#FBBF24',
+  silver: '#9CA3AF',
 
   // Backgrounds
-  background: '#0A0A1A',
-  surface: '#111127',
-  surfaceLight: '#1A1A35',
-  surfaceElevated: '#222244',
+  background: '#0F172A',
+  surface: '#1E293B',
+  surfaceLight: '#334155',
+  surfaceElevated: '#475569',
 
   // Text
   textPrimary: '#FFFFFF',
-  textSecondary: '#A0A0B8',
-  textMuted: '#6B6B80',
-  textInverse: '#0A0A1A',
+  textSecondary: '#94A3B8',
+  textMuted: '#64748B',
+  textInverse: '#0F172A',
 
   // Status
   success: '#10B981',
@@ -28,13 +28,13 @@ export const Colors = {
   info: '#3B82F6',
 
   // UI
-  border: '#2A2A45',
-  borderLight: '#3A3A55',
-  inputBackground: '#1A1A35',
-  tabBarBackground: '#0A0A1A',
-  tabBarBorder: '#1A1A35',
-  activeTab: '#C8102E',
-  inactiveTab: '#6B6B80',
+  border: '#334155',
+  borderLight: '#475569',
+  inputBackground: '#1E293B',
+  tabBarBackground: '#0F172A',
+  tabBarBorder: '#1E293B',
+  activeTab: '#EF4444',
+  inactiveTab: '#64748B',
 
   // Overlays
   overlay: 'rgba(0, 0, 0, 0.6)',
@@ -68,4 +68,16 @@ export const BorderRadius = {
   lg: 14,
   xl: 20,
   full: 9999,
+} as const;
+
+export const Fonts = {
+  // Headings (Outfit)
+  heading: 'Outfit_700Bold',
+  headingSemiBold: 'Outfit_600SemiBold',
+  headingBlack: 'Outfit_800ExtraBold',
+  // Body (Inter)
+  body: 'Inter_400Regular',
+  bodyMedium: 'Inter_500Medium',
+  bodySemiBold: 'Inter_600SemiBold',
+  bodyBold: 'Inter_700Bold',
 } as const;

@@ -1,13 +1,43 @@
 import { api } from './client';
-import type { College, RecruitingLog } from '@/types';
+import type { College, CollegeFilters, RecruitingEmailLog } from '@/types';
 
 export const recruitingApi = {
-  getColleges: (params?: Record<string, string>) =>
-    api.get<College[]>('/api/colleges', params),
+  // Get filter options (divisions, states)
+  getFilters: () =>
+    api.get<CollegeFilters>('/api/colleges'),
 
-  logActivity: (data: { playerId: string; collegeId: string; type: string; notes?: string }) =>
-    api.post<RecruitingLog>('/api/recruiting/log', data),
+  // Search colleges by name
+  searchColleges: (search: string) =>
+    api.get<{ colleges: College[] }>('/api/colleges', { search }),
 
-  sendEmail: (data: { playerId: string; collegeId: string; message: string }) =>
-    api.post<{ success: boolean }>('/api/recruiting/send-email', data),
+  // Filter colleges by division/state/conference
+  filterColleges: (params: { division?: string; state?: string; conference?: string }) => {
+    const query: Record<string, string> = {};
+    if (params.division) query.division = params.division;
+    if (params.state) query.state = params.state;
+    if (params.conference) query.conference = params.conference;
+    return api.get<{ colleges: College[] }>('/api/colleges', query);
+  },
+
+  // Get a single college with its coaches
+  getCollegeWithCoaches: (schoolId: string) =>
+    api.get<{ college: College }>('/api/colleges', { schoolId }),
+
+  // Send recruiting email
+  sendEmail: (data: {
+    coachEmail: string;
+    coachName: string;
+    coachId?: string;
+    collegeId?: string;
+    collegeName: string;
+    playerSlugs: string[];
+    subject: string;
+    message: string;
+  }) => api.post<{ success: boolean; id: string }>('/api/recruiting/send-email', data),
+
+  // Get sent email log
+  getEmailLog: async (): Promise<RecruitingEmailLog[]> => {
+    const res = await api.get<{ logs: RecruitingEmailLog[] }>('/api/recruiting/log');
+    return res.logs ?? [];
+  },
 };

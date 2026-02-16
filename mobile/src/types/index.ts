@@ -17,23 +17,50 @@ export interface AuthSession {
 
 // ── Players ──────────────────────────────────────────────────
 
+export interface PlayerGuardian {
+  role: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+    role: string;
+  };
+}
+
 export interface Player {
   id: string;
   slug: string;
   firstName: string;
   lastName: string;
   position: string | null;
+  primaryPosition: string | null;
+  heightFeet: number | null;
   heightInches: number | null;
   weight: number | null;
   graduationYear: number | null;
   school: string | null;
   city: string | null;
   state: string | null;
+  profilePhoto: string | null;
   profileImageUrl: string | null;
   bio: string | null;
   gpa: number | null;
   userId: string | null;
+  isVerified: boolean;
   createdAt: string;
+  _count?: {
+    gameStats: number;
+    achievements: number;
+  };
+  guardians?: PlayerGuardian[];
+  user?: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+    role: string;
+  };
 }
 
 export interface PlayerStats {
@@ -140,8 +167,32 @@ export interface College {
   name: string;
   division: string;
   conference: string | null;
+  city: string | null;
   state: string | null;
   logoUrl: string | null;
+  coaches?: CollegeCoach[];
+}
+
+export interface CollegeCoach {
+  id: string;
+  firstName: string;
+  lastName: string;
+  title: string | null;
+  email: string | null;
+}
+
+export interface RecruitingEmailLog {
+  id: string;
+  coachName: string;
+  coachEmail: string;
+  collegeName: string;
+  sentAt: string;
+  players: { firstName: string; lastName: string }[];
+}
+
+export interface CollegeFilters {
+  divisions: string[];
+  states: string[];
 }
 
 export interface RecruitingLog {
