@@ -61,6 +61,52 @@ export interface Player {
     image: string | null;
     role: string;
   };
+  careerStats?: PlayerCareerStats | null;
+  gameStats?: PlayerGameStats[];
+}
+
+export interface PlayerGameStats {
+  id: string;
+  gameId: string;
+  playerId: string;
+  teamId: string;
+  minutes: number;
+  points: number;
+  fgMade: number;
+  fgAttempted: number;
+  fg3Made: number;
+  fg3Attempted: number;
+  ftMade: number;
+  ftAttempted: number;
+  offRebounds: number;
+  defRebounds: number;
+  rebounds: number;
+  assists: number;
+  steals: number;
+  blocks: number;
+  turnovers: number;
+  fouls: number;
+  game: {
+    id: string;
+    scheduledAt: string | null;
+    homeScore: number;
+    awayScore: number;
+    status: string;
+    homeTeam: { name: string; slug: string } | null;
+    awayTeam: { name: string; slug: string } | null;
+    event: { name: string; slug: string } | null;
+  };
+}
+
+export interface PlayerCareerStats {
+  gamesPlayed: number;
+  totals: PlayerStats;
+  averages: PlayerStats;
+  shooting: {
+    fgPct: number;
+    fg3Pct: number;
+    ftPct: number;
+  };
 }
 
 export interface PlayerStats {
@@ -77,6 +123,9 @@ export interface PlayerStats {
   ppg: number;
   rpg: number;
   apg: number;
+  spg: number;
+  bpg: number;
+  topg: number;
 }
 
 export interface PlayerMedia {

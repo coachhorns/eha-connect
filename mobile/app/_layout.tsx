@@ -62,6 +62,16 @@ function RootNavigator() {
         }}
       />
       <Stack.Screen
+        name="players/game-log"
+        options={{
+          headerShown: true,
+          headerStyle: { backgroundColor: Colors.background },
+          headerTintColor: Colors.textPrimary,
+          headerTitle: 'Game Log',
+          presentation: 'card',
+        }}
+      />
+      <Stack.Screen
         name="recruiting"
         options={{
           headerShown: false,

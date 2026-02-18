@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Tabs } from 'expo-router';
-import { View, StyleSheet, Platform, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Platform, Dimensions, TouchableOpacity, Pressable } from 'react-native';
 import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -14,7 +15,7 @@ import Animated, {
   Easing,
   useDerivedValue,
 } from 'react-native-reanimated';
-import { Colors } from '@/constants/colors';
+import { Colors, Fonts } from '@/constants/colors';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -22,13 +23,100 @@ const TAB_BAR_WIDTH = Math.min(SCREEN_WIDTH * 0.7, 320);
 const TAB_BAR_HEIGHT = 56;
 const TAB_COUNT = 5;
 const TAB_WIDTH = TAB_BAR_WIDTH / TAB_COUNT;
-const PILL_HEIGHT = 40;
 const PILL_PADDING = 6;
-const REST_WIDTH = TAB_WIDTH - PILL_PADDING * 2;
 
 const SLIDE_SPRING = { damping: 18, stiffness: 170, mass: 0.8 };
 const MORPH_SPRING = { damping: 14, stiffness: 140, mass: 0.7 };
 const SNAP_SPRING = { damping: 16, stiffness: 200, mass: 0.7 };
+
+// Morphing expansion constants
+const EXPANDED_WIDTH = Math.min(SCREEN_WIDTH * 0.92, 380);
+const EXPANDED_HEIGHT = 175;
+const EXPAND_SPRING = { damping: 16, stiffness: 180, mass: 0.85 };
+const FADE_OUT_END = 0.35;
+const FADE_IN_START = 0.35;
+// The "more" tab (index 4) triggers expand instead of navigation
+const MORE_TAB_INDEX = 4;
+
+// Quick actions for expanded panel — 4 items, single horizontal row
+const QUICK_ACTIONS = [
+  { id: 'email_coaches', label: 'Email\nCoaches', icon: 'mail', color: Colors.gold },
+  { id: 'schedule', label: 'Schedule', icon: 'calendar', color: Colors.info },
+  { id: 'rankings', label: 'Rankings', icon: 'trophy', color: Colors.red },
+  { id: 'my_profile', label: 'My Profile', icon: 'person', color: Colors.success },
+];
+
+function QuickActionIcon({ name, color, size = 18 }: { name: string; color: string; size?: number }) {
+  switch (name) {
+    case 'mail':
+      return (
+        <View style={{ width: size, height: size * 0.7, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ width: size, height: size * 0.7, borderWidth: 1.6, borderColor: color, borderRadius: 2 }} />
+          <View style={{
+            position: 'absolute', top: 0, width: 0, height: 0,
+            borderLeftWidth: size / 2, borderRightWidth: size / 2, borderTopWidth: size * 0.3,
+            borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: color,
+          }} />
+        </View>
+      );
+    case 'calendar':
+      return (
+        <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ width: size, height: size * 0.82, borderWidth: 1.6, borderColor: color, borderRadius: 2.5, position: 'absolute', bottom: 0 }}>
+            <View style={{ height: 4, backgroundColor: color, borderTopLeftRadius: 1, borderTopRightRadius: 1 }} />
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', padding: 2, gap: 2, marginTop: 1 }}>
+              <View style={{ width: 3, height: 2.5, backgroundColor: color, opacity: 0.6 }} />
+              <View style={{ width: 3, height: 2.5, backgroundColor: color, opacity: 0.6 }} />
+              <View style={{ width: 3, height: 2.5, backgroundColor: color, opacity: 0.6 }} />
+            </View>
+          </View>
+          <View style={{ position: 'absolute', top: 0, left: size * 0.2, width: 1.8, height: 4, backgroundColor: color, borderRadius: 1 }} />
+          <View style={{ position: 'absolute', top: 0, right: size * 0.2, width: 1.8, height: 4, backgroundColor: color, borderRadius: 1 }} />
+        </View>
+      );
+    case 'trophy':
+      return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'flex-end' }}>
+          <View style={{ width: size * 0.55, height: size * 0.6, borderWidth: 1.6, borderColor: color, borderTopLeftRadius: size * 0.25, borderTopRightRadius: size * 0.25, borderBottomWidth: 0, position: 'absolute', top: 0 }} />
+          <View style={{ width: size * 0.3, height: 1.6, backgroundColor: color, position: 'absolute', bottom: size * 0.18 }} />
+          <View style={{ width: size * 0.5, height: 1.6, backgroundColor: color, position: 'absolute', bottom: 0, borderRadius: 1 }} />
+        </View>
+      );
+    case 'person':
+      return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: size * 0.4, height: size * 0.4, borderRadius: size * 0.2, borderWidth: 1.6, borderColor: color }} />
+          <View style={{ width: size * 0.7, height: size * 0.3, borderTopLeftRadius: size * 0.35, borderTopRightRadius: size * 0.35, borderWidth: 1.6, borderBottomWidth: 0, borderColor: color, marginTop: 2 }} />
+        </View>
+      );
+    case 'share':
+      return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 1.6, height: size * 0.55, backgroundColor: color, position: 'absolute', bottom: size * 0.1 }} />
+          <View style={{
+            width: 0, height: 0, position: 'absolute', top: size * 0.05,
+            borderLeftWidth: size * 0.2, borderRightWidth: size * 0.2, borderBottomWidth: size * 0.25,
+            borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: color,
+          }} />
+          <View style={{ width: size * 0.65, height: size * 0.45, borderWidth: 1.6, borderTopWidth: 0, borderColor: color, borderBottomLeftRadius: 3, borderBottomRightRadius: 3, position: 'absolute', bottom: 0 }} />
+        </View>
+      );
+    case 'gear':
+      return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: size * 0.5, height: size * 0.5, borderRadius: size * 0.25, borderWidth: 1.6, borderColor: color }} />
+          <View style={{ width: size * 0.2, height: size * 0.2, borderRadius: size * 0.1, backgroundColor: color, position: 'absolute' }} />
+          {/* Gear teeth */}
+          <View style={{ width: 2, height: size, backgroundColor: color, position: 'absolute', borderRadius: 1 }} />
+          <View style={{ width: size, height: 2, backgroundColor: color, position: 'absolute', borderRadius: 1 }} />
+          <View style={{ width: 2, height: size, backgroundColor: color, position: 'absolute', borderRadius: 1, transform: [{ rotate: '45deg' }] }} />
+          <View style={{ width: size, height: 2, backgroundColor: color, position: 'absolute', borderRadius: 1, transform: [{ rotate: '45deg' }] }} />
+        </View>
+      );
+    default:
+      return <View style={{ width: size, height: size }} />;
+  }
+}
 
 function TabIcon({ name, color }: { name: string; color: string }) {
   switch (name) {
@@ -118,44 +206,131 @@ function AnimatedTab({ index, name, pillCenter }: {
   );
 }
 
+function ExpandedPanel({
+  expandProgress,
+  onClose,
+  onAction,
+}: {
+  expandProgress: Animated.SharedValue<number>;
+  onClose: () => void;
+  onAction: (actionId: string) => void;
+}) {
+  const dismissTranslateY = useSharedValue(0);
+  const dismissTranslateX = useSharedValue(0);
+
+  // Swipe down or sideways to dismiss
+  const dismissGesture = Gesture.Pan()
+    .activeOffsetY([-12, 12])
+    .activeOffsetX([-20, 20])
+    .onUpdate((e) => {
+      // Only allow downward or sideways drag (not upward)
+      dismissTranslateY.value = Math.max(0, e.translationY);
+      dismissTranslateX.value = e.translationX * 0.4;
+    })
+    .onEnd((e) => {
+      const distance = Math.abs(e.translationY) + Math.abs(e.translationX);
+      const velocity = Math.abs(e.velocityY) + Math.abs(e.velocityX);
+
+      if (distance > 60 || velocity > 800) {
+        // Dismiss — animate out then close
+        dismissTranslateY.value = withTiming(300, { duration: 200 });
+        runOnJS(onClose)();
+      }
+      // Snap back
+      dismissTranslateY.value = withSpring(0, { damping: 20, stiffness: 200 });
+      dismissTranslateX.value = withSpring(0, { damping: 20, stiffness: 200 });
+    });
+
+  const panelStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      expandProgress.value,
+      [FADE_IN_START, 1],
+      [0, 1],
+      Extrapolation.CLAMP
+    );
+    const scale = interpolate(
+      expandProgress.value,
+      [FADE_IN_START, 1],
+      [0.85, 1],
+      Extrapolation.CLAMP
+    );
+    // Fade out as user drags to dismiss
+    const dragOpacity = interpolate(
+      dismissTranslateY.value,
+      [0, 150],
+      [1, 0.3],
+      Extrapolation.CLAMP
+    );
+    return {
+      opacity: opacity * dragOpacity,
+      transform: [
+        { scale },
+        { translateY: dismissTranslateY.value },
+        { translateX: dismissTranslateX.value },
+      ],
+    };
+  });
+
+  return (
+    <GestureDetector gesture={dismissGesture}>
+      <Animated.View style={[StyleSheet.absoluteFill, styles.expandedPanel, panelStyle]}>
+        {/* Swipe handle */}
+        <View style={styles.swipeHandle} />
+
+        {/* Header */}
+        <View style={styles.expandedHeader}>
+          <Text style={styles.expandedTitle}>QUICK ACTIONS</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton} activeOpacity={0.7}>
+            <View style={{ width: 12, height: 12, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 14, height: 2, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '45deg' }], position: 'absolute' }} />
+              <View style={{ width: 14, height: 2, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '-45deg' }], position: 'absolute' }} />
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Action Grid */}
+        <View style={styles.quickActionsGrid}>
+          {QUICK_ACTIONS.map((action) => (
+            <TouchableOpacity
+              key={action.id}
+              style={styles.quickActionItem}
+              onPress={() => onAction(action.id)}
+              activeOpacity={0.75}
+            >
+              <View style={[styles.quickActionIconWrap, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}>
+                <QuickActionIcon name={action.icon} color="#fff" />
+              </View>
+              <Text style={styles.quickActionLabel} numberOfLines={2}>{action.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+
 function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const activeIndex = state.index;
 
   const pillCenterX = useSharedValue(activeIndex * TAB_WIDTH + TAB_WIDTH / 2);
-  const pillW = useSharedValue(REST_WIDTH);
   const isDragging = useSharedValue(0);
   const dragStartX = useSharedValue(0);
   const prevIndex = useSharedValue(activeIndex);
 
+  // Morphing expansion state
+  const expandProgress = useSharedValue(0);
+  const isExpanded = useSharedValue(0);
+  const [showBackdrop, setShowBackdrop] = useState(false);
+
   const pillCenter = useDerivedValue(() => pillCenterX.value);
 
-  // Animate pill on programmatic tab change (from tap)
+  // Animate dot on programmatic tab change (from tap)
   useEffect(() => {
     const targetCenter = activeIndex * TAB_WIDTH + TAB_WIDTH / 2;
     const prev = prevIndex.value;
 
     if (prev !== activeIndex && isDragging.value === 0) {
-      const prevCenter = prev * TAB_WIDTH + TAB_WIDTH / 2;
-      const distance = Math.abs(targetCenter - prevCenter);
-      const stretchWidth = distance + REST_WIDTH;
-      const midpoint = (prevCenter + targetCenter) / 2;
-
-      // Phase 1: stretch to span both positions
-      pillCenterX.value = withTiming(midpoint, {
-        duration: 180,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-      });
-      pillW.value = withTiming(stretchWidth, {
-        duration: 180,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-      });
-
-      // Phase 2: contract to destination
-      setTimeout(() => {
-        pillCenterX.value = withSpring(targetCenter, SLIDE_SPRING);
-        pillW.value = withSpring(REST_WIDTH, MORPH_SPRING);
-      }, 170);
-
+      pillCenterX.value = withSpring(targetCenter, SLIDE_SPRING);
       prevIndex.value = activeIndex;
     }
   }, [activeIndex]);
@@ -174,14 +349,72 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     }
   };
 
-  // Tap gesture: tap an icon to switch tabs
+  const toggleExpand = () => {
+    if (isExpanded.value === 0) {
+      isExpanded.value = 1;
+      setShowBackdrop(true);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      expandProgress.value = withSpring(1, EXPAND_SPRING);
+    } else {
+      isExpanded.value = 0;
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      expandProgress.value = withSpring(0, EXPAND_SPRING);
+      // Delay hiding backdrop until animation completes
+      setTimeout(() => setShowBackdrop(false), 400);
+    }
+  };
+
+  const handleAction = (actionId: string) => {
+    // Close panel first
+    isExpanded.value = 0;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    expandProgress.value = withSpring(0, EXPAND_SPRING);
+    setTimeout(() => setShowBackdrop(false), 400);
+
+    // Navigate based on action
+    switch (actionId) {
+      case 'email_coaches':
+        navigation.navigate('index' as any);
+        // Small delay to let tab switch, then navigate to recruiting
+        setTimeout(() => {
+          (navigation as any).getParent()?.navigate('recruiting');
+        }, 100);
+        break;
+      case 'schedule':
+        navigation.navigate('events' as any);
+        break;
+      case 'rankings':
+        navigation.navigate('leaderboards' as any);
+        break;
+      case 'my_profile':
+        navigation.navigate('profile' as any);
+        break;
+      case 'share':
+        navigation.navigate('profile' as any);
+        break;
+      case 'settings':
+        navigation.navigate('more' as any);
+        break;
+    }
+  };
+
+  // Handle tap — more tab triggers expand, others navigate
+  const handleTap = (tapIndex: number) => {
+    if (tapIndex === MORE_TAB_INDEX) {
+      toggleExpand();
+    } else {
+      navigateToTab(tapIndex);
+    }
+  };
+
+  // Tap gesture: tap an icon to switch tabs (or expand for more)
   const tapGesture = Gesture.Tap()
     .onEnd((e) => {
       const tapIndex = Math.min(Math.max(Math.floor(e.x / TAB_WIDTH), 0), TAB_COUNT - 1);
-      runOnJS(navigateToTab)(tapIndex);
+      runOnJS(handleTap)(tapIndex);
     });
 
-  // Pan gesture: drag the pill across
+  // Pan gesture: drag the pill across (clamped before the more tab)
   const panGesture = Gesture.Pan()
     .activeOffsetX([-8, 8])
     .onStart(() => {
@@ -189,11 +422,10 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       dragStartX.value = pillCenterX.value;
     })
     .onUpdate((e) => {
-      const absVel = Math.abs(e.velocityX);
-
       const newCenter = dragStartX.value + e.translationX;
       const minCenter = TAB_WIDTH / 2;
-      const maxCenter = TAB_BAR_WIDTH - TAB_WIDTH / 2;
+      // Stop before the more tab slot
+      const maxCenter = (MORE_TAB_INDEX - 1) * TAB_WIDTH + TAB_WIDTH / 2;
       if (newCenter < minCenter) {
         pillCenterX.value = minCenter + (newCenter - minCenter) * 0.2;
       } else if (newCenter > maxCenter) {
@@ -201,28 +433,21 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       } else {
         pillCenterX.value = newCenter;
       }
-
-      // Velocity-based stretching
-      const stretchWidth = interpolate(
-        absVel,
-        [0, 200, 600, 1200, 2000],
-        [REST_WIDTH, REST_WIDTH * 1.2, REST_WIDTH * 1.6, REST_WIDTH * 2.2, REST_WIDTH * 3.0],
-        Extrapolation.CLAMP
-      );
-      pillW.value = stretchWidth;
     })
     .onEnd(() => {
       isDragging.value = 0;
 
       const clampedCenter = Math.min(
         Math.max(pillCenterX.value, TAB_WIDTH / 2),
-        TAB_BAR_WIDTH - TAB_WIDTH / 2
+        (MORE_TAB_INDEX - 1) * TAB_WIDTH + TAB_WIDTH / 2
       );
-      const nearestIndex = Math.round((clampedCenter - TAB_WIDTH / 2) / TAB_WIDTH);
+      const nearestIndex = Math.min(
+        Math.round((clampedCenter - TAB_WIDTH / 2) / TAB_WIDTH),
+        MORE_TAB_INDEX - 1
+      );
       const snapCenter = nearestIndex * TAB_WIDTH + TAB_WIDTH / 2;
 
       pillCenterX.value = withSpring(snapCenter, SNAP_SPRING);
-      pillW.value = withSpring(REST_WIDTH, MORPH_SPRING);
 
       runOnJS(navigateToTab)(nearestIndex);
       prevIndex.value = nearestIndex;
@@ -231,33 +456,55 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   // Race: if user starts dragging (>8px), use pan. Otherwise treat as tap.
   const composedGesture = Gesture.Race(panGesture, tapGesture);
 
-  // Pill animated style
-  const pillStyle = useAnimatedStyle(() => {
-    const left = pillCenterX.value - pillW.value / 2;
-    const widthRatio = pillW.value / REST_WIDTH;
-    const scaleY = interpolate(
-      widthRatio,
-      [1, 1.5, 2.5, 3],
-      [1, 0.92, 0.82, 0.75],
-      Extrapolation.CLAMP
-    );
+  // Morphing container: animates size, border radius, and rises upward
+  const morphContainerStyle = useAnimatedStyle(() => {
+    const width = interpolate(expandProgress.value, [0, 1], [TAB_BAR_WIDTH, EXPANDED_WIDTH]);
+    const height = interpolate(expandProgress.value, [0, 1], [TAB_BAR_HEIGHT, EXPANDED_HEIGHT]);
+    const borderRadius = interpolate(expandProgress.value, [0, 1], [TAB_BAR_HEIGHT / 2, 20]);
+    // Scale squish during mid-transition for morph feel
+    const scaleX = interpolate(expandProgress.value, [0, 0.4, 1], [1, 0.96, 1]);
+    const scaleY = interpolate(expandProgress.value, [0, 0.4, 1], [1, 1.04, 1]);
+    // Push the shell up so expanded panel sits directly above the tab bar
+    const marginBottom = interpolate(expandProgress.value, [0, 1], [0, TAB_BAR_HEIGHT + 8]);
 
     return {
-      left,
-      width: pillW.value,
-      transform: [{ scaleY }],
+      width,
+      height,
+      borderRadius,
+      marginBottom,
+      transform: [{ scaleX }, { scaleY }],
     };
   });
 
-  return (
-    <GestureHandlerRootView style={styles.tabBarContainer}>
-      <GestureDetector gesture={composedGesture}>
-        <Animated.View>
-          <BlurView intensity={80} tint="dark" style={styles.tabBarBlur}>
-            <View style={styles.tabBarInner}>
-              {/* Clean red pill indicator */}
-              <Animated.View style={[styles.pill, pillStyle]} />
+  // Collapsed row fades out 0 -> 0.35
+  const collapsedRowStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      expandProgress.value,
+      [0, FADE_OUT_END],
+      [1, 0],
+      Extrapolation.CLAMP
+    );
+    return { opacity };
+  });
 
+  return (
+    <GestureHandlerRootView style={[styles.tabBarContainer, showBackdrop && styles.tabBarContainerExpanded]}>
+      {/* Full-screen tap-to-close backdrop */}
+      {showBackdrop && (
+        <Pressable style={styles.backdrop} onPress={toggleExpand} />
+      )}
+
+      {/* Morphing shell */}
+      <Animated.View style={[styles.morphShell, morphContainerStyle]}>
+        {/* Glass blur background */}
+        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
+          <View style={styles.glassInner} />
+        </BlurView>
+
+        {/* Collapsed content: tab bar */}
+        <Animated.View style={[styles.collapsedRow, collapsedRowStyle]} pointerEvents={isExpanded.value ? 'none' : 'auto'}>
+          <GestureDetector gesture={composedGesture}>
+            <Animated.View style={styles.tabSection}>
               {/* Tab icons */}
               {state.routes.map((route, index) => (
                 <AnimatedTab
@@ -267,10 +514,17 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
                   pillCenter={pillCenter}
                 />
               ))}
-            </View>
-          </BlurView>
+            </Animated.View>
+          </GestureDetector>
         </Animated.View>
-      </GestureDetector>
+
+        {/* Expanded panel */}
+        <ExpandedPanel
+          expandProgress={expandProgress}
+          onClose={toggleExpand}
+          onAction={handleAction}
+        />
+      </Animated.View>
     </GestureHandlerRootView>
   );
 }
@@ -332,6 +586,9 @@ export default function TabLayout() {
   );
 }
 
+// 4 items: total width minus panel padding (14*2) minus grid padding (2*2) minus gaps (8*3)
+const QUICK_ACTION_ITEM_WIDTH = (EXPANDED_WIDTH - 28 - 4 - 24) / 4;
+
 const styles = StyleSheet.create({
   tabBarContainer: {
     position: 'absolute',
@@ -339,11 +596,20 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+    // flex direction column-reverse so children anchor from bottom
+    flexDirection: 'column-reverse',
   },
-  tabBarBlur: {
-    width: TAB_BAR_WIDTH,
-    height: TAB_BAR_HEIGHT,
-    borderRadius: TAB_BAR_HEIGHT / 2,
+  tabBarContainerExpanded: {
+    top: 0,
+  },
+  backdrop: {
+    position: 'absolute',
+    top: -1000,
+    left: -50,
+    right: -50,
+    bottom: -100,
+  },
+  morphShell: {
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.12)',
@@ -353,24 +619,24 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 24,
   },
-  tabBarInner: {
+  glassInner: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
   },
-  pill: {
+  collapsedRow: {
     position: 'absolute',
-    height: PILL_HEIGHT,
-    top: (TAB_BAR_HEIGHT - PILL_HEIGHT) / 2,
-    borderRadius: PILL_HEIGHT / 2,
-    backgroundColor: Colors.red,
-    zIndex: 0,
-    shadowColor: Colors.red,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 6,
+    bottom: 0,
+    left: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: TAB_BAR_HEIGHT,
+    width: TAB_BAR_WIDTH,
+  },
+  tabSection: {
+    width: TAB_BAR_WIDTH,
+    height: TAB_BAR_HEIGHT,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   tabItem: {
     flex: 1,
@@ -385,5 +651,68 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  expandedPanel: {
+    paddingTop: 8,
+    paddingHorizontal: 14,
+    paddingBottom: 20,
+  },
+  swipeHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    alignSelf: 'center',
+    marginBottom: 6,
+  },
+  expandedHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    marginBottom: 14,
+  },
+  expandedTitle: {
+    fontSize: 11,
+    fontFamily: Fonts.headingBlack,
+    color: Colors.textSecondary,
+    letterSpacing: 1.5,
+  },
+  closeButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    paddingHorizontal: 2,
+    gap: 8,
+  },
+  quickActionItem: {
+    width: QUICK_ACTION_ITEM_WIDTH,
+    alignItems: 'center',
+    paddingVertical: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    gap: 6,
+  },
+  quickActionIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickActionLabel: {
+    fontSize: 10,
+    fontFamily: Fonts.bodySemiBold,
+    color: Colors.textPrimary,
+    textAlign: 'center',
+    lineHeight: 13,
   },
 });

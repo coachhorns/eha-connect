@@ -8,8 +8,18 @@ export const playersApi = {
   },
 
   getBySlug: async (slug: string): Promise<Player> => {
-    const res = await api.get<{ player: Player } | Player>(`/api/players/${slug}`);
-    return 'player' in res ? res.player : res;
+    const res = await api.get<{ player: Player; careerStats?: any } | Player>(`/api/players/${slug}`);
+
+    // Handle the wrapper format { player, careerStats }
+    if ('player' in res) {
+      return {
+        ...res.player,
+        careerStats: res.careerStats
+      };
+    }
+
+    // Handle legacy/direct format
+    return res;
   },
 
   getMyPlayers: async (): Promise<Player[]> => {

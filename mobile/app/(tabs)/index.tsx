@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,19 @@ import {
   RefreshControl,
   Dimensions,
   Platform,
+  Switch,
+  Modal,
+  Pressable,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { BlurView } from 'expo-blur';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Notifications from 'expo-notifications';
+import * as SecureStore from 'expo-secure-store';
 import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
 import { useAuth } from '@/context/AuthContext';
 import { eventsApi } from '@/api/events';
@@ -28,6 +35,45 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const router = useRouter();
   const firstName = user?.name?.split(' ')[0] ?? 'Player';
+
+  // ── Notification Preferences ─────────────────────────────
+  const [showNotifPanel, setShowNotifPanel] = React.useState(false);
+  const [notifPrefs, setNotifPrefs] = React.useState({
+    newGame: false,
+    scheduleChange: false,
+    gameChange: false,
+  });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await SecureStore.getItemAsync('notifPrefs');
+        if (saved) setNotifPrefs(JSON.parse(saved));
+      } catch {}
+    })();
+  }, []);
+
+  const toggleNotifPref = useCallback(async (key: keyof typeof notifPrefs) => {
+    const turningOn = !notifPrefs[key];
+
+    if (turningOn) {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        const { status: newStatus } = await Notifications.requestPermissionsAsync();
+        if (newStatus !== 'granted') {
+          Alert.alert(
+            'Permissions Required',
+            'Enable notifications in your device settings to receive alerts.',
+          );
+          return;
+        }
+      }
+    }
+
+    const updated = { ...notifPrefs, [key]: turningOn };
+    setNotifPrefs(updated);
+    await SecureStore.setItemAsync('notifPrefs', JSON.stringify(updated));
+  }, [notifPrefs]);
 
   // ── Data Fetching ──────────────────────────────────────────
   const { data: myPlayers, refetch: refetchPlayers } = useQuery({
@@ -48,6 +94,14 @@ export default function HomeScreen() {
   const { data: emailLog, refetch: refetchEmailLog } = useQuery({
     queryKey: ['emailLog'],
     queryFn: recruitingApi.getEmailLog,
+  });
+
+  // Fetch first player's full profile (for career stats)
+  const firstPlayerSlug = [...(myPlayers ?? []), ...(guardedPlayers ?? [])][0]?.slug;
+  const { data: firstPlayerFull, refetch: refetchPlayerFull } = useQuery({
+    queryKey: ['playerFull', firstPlayerSlug],
+    queryFn: () => playersApi.getBySlug(firstPlayerSlug!),
+    enabled: !!firstPlayerSlug,
   });
 
   // Deduplicate players
@@ -88,7 +142,7 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([refetchEvents(), refetchPlayers(), refetchGuarded(), refetchEmailLog()]);
+    await Promise.all([refetchEvents(), refetchPlayers(), refetchGuarded(), refetchEmailLog(), refetchPlayerFull()]);
     setRefreshing(false);
   };
 
@@ -115,7 +169,11 @@ export default function HomeScreen() {
                 <Text style={styles.headerName}>Dashboard</Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.bellButton} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.bellButton}
+              activeOpacity={0.7}
+              onPress={() => setShowNotifPanel(true)}
+            >
               <BellIcon />
             </TouchableOpacity>
           </View>
@@ -132,122 +190,173 @@ export default function HomeScreen() {
         }
       >
 
-      {/* ── PLAYER PROFILE ────────────────────────────────── */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>PLAYER PROFILE</Text>
+      {/* ── PLAYER HERO ──────────────────────────────────── */}
+      {allPlayers.length > 0 ? (() => {
+        const player = allPlayers[0];
+        const photoUri = player.profilePhoto ?? player.profileImageUrl;
+        const pos = player.primaryPosition ?? player.position;
+        const parentGuardians = (player.guardians ?? []).filter(
+          (g) => g.role !== 'PLAYER'
+        );
 
-        {allPlayers.length > 0 ? (
-          <View style={styles.profileCards}>
-            {allPlayers.map((player) => {
-              const photoUri = player.profilePhoto ?? player.profileImageUrl;
-              const pos = player.primaryPosition ?? player.position;
-              const parentGuardians = (player.guardians ?? []).filter(
-                (g) => g.role !== 'PLAYER'
-              );
-              const gamesPlayed = player._count?.gameStats ?? 0;
+        return (
+          <TouchableOpacity
+            style={styles.heroContainer}
+            onPress={() => router.push(`/players/${player.slug}`)}
+            activeOpacity={0.9}
+          >
+            {photoUri ? (
+              <Image
+                source={{ uri: photoUri }}
+                style={styles.heroImage}
+                contentFit="cover"
+              />
+            ) : (
+              <View style={styles.heroFallback}>
+                <Text style={styles.heroFallbackInitial}>
+                  {(player.firstName?.[0] ?? '').toUpperCase()}
+                  {(player.lastName?.[0] ?? '').toUpperCase()}
+                </Text>
+              </View>
+            )}
 
-              return (
-                <TouchableOpacity
-                  key={player.id}
-                  style={styles.profileCard}
-                  onPress={() => router.push(`/players/${player.slug}`)}
-                  activeOpacity={0.7}
-                >
-                  {/* Top row: photo + info */}
-                  <View style={styles.profileCardTop}>
-                    {photoUri ? (
-                      <Image
-                        source={{ uri: photoUri }}
-                        style={styles.profilePhoto}
-                        contentFit="cover"
-                      />
-                    ) : (
-                      <View style={styles.profilePhotoFallback}>
-                        <Text style={styles.profilePhotoInitial}>
-                          {(player.firstName?.[0] ?? '').toUpperCase()}
-                        </Text>
-                      </View>
-                    )}
-                    <View style={styles.profileInfo}>
-                      <Text style={styles.profileName}>
-                        {player.firstName} {player.lastName}
-                      </Text>
-                      {player.school && (
-                        <Text style={styles.profileSchool}>{player.school}</Text>
-                      )}
-                      <View style={styles.profileBadges}>
-                        {player.graduationYear && (
-                          <View style={styles.profileBadge}>
-                            <Text style={styles.profileBadgeText}>
-                              Class of {player.graduationYear}
-                            </Text>
-                          </View>
-                        )}
-                        {pos && (
-                          <View style={[styles.profileBadge, styles.profileBadgeAlt]}>
-                            <Text style={styles.profileBadgeText}>{pos}</Text>
-                          </View>
-                        )}
-                      </View>
-                      {gamesPlayed > 0 && (
-                        <Text style={styles.profileGames}>
-                          {gamesPlayed} Game{gamesPlayed !== 1 ? 's' : ''} Played
-                        </Text>
-                      )}
-                    </View>
-                    <Text style={styles.chevron}>›</Text>
-                  </View>
+            {/* Gradient overlay */}
+            <LinearGradient
+              colors={['transparent', 'rgba(15, 23, 42, 0.6)', 'rgba(15, 23, 42, 0.92)', Colors.background]}
+              locations={[0, 0.4, 0.75, 1]}
+              style={styles.heroGradient}
+            />
 
-                  {/* Guardian / Parent Access row */}
-                  {parentGuardians.length > 0 && (
-                    <View style={styles.profileAccessRow}>
-                      <Text style={styles.profileAccessLabel}>Parent Access</Text>
-                      <View style={styles.profileAccessAvatars}>
-                        {parentGuardians.map((g) => (
-                          <View key={g.user.id} style={styles.guardianChip}>
-                            {g.user.image ? (
-                              <Image
-                                source={{ uri: g.user.image }}
-                                style={styles.guardianAvatar}
-                                contentFit="cover"
-                              />
-                            ) : (
-                              <View style={styles.guardianAvatarFallback}>
-                                <Text style={styles.guardianAvatarInitial}>
-                                  {(g.user.name?.[0] ?? g.user.email?.[0] ?? '?').toUpperCase()}
-                                </Text>
-                              </View>
-                            )}
-                            <Text style={styles.guardianName} numberOfLines={1}>
-                              {g.user.name?.split(' ')[0] ?? g.user.email?.split('@')[0]}
-                            </Text>
-                          </View>
-                        ))}
-                      </View>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        ) : (
+            {/* Player info overlay */}
+            <View style={styles.heroInfoOverlay}>
+              <Text style={styles.heroName}>
+                {player.firstName} {player.lastName}
+              </Text>
+              {player.school && (
+                <Text style={styles.heroSchool}>{player.school}</Text>
+              )}
+              <View style={styles.heroMetaRow}>
+                {player.graduationYear && (
+                  <Text style={styles.heroMetaText}>Class of {player.graduationYear}</Text>
+                )}
+                {player.graduationYear && pos && (
+                  <View style={styles.heroDot} />
+                )}
+                {pos && (
+                  <Text style={styles.heroMetaText}>{pos}</Text>
+                )}
+              </View>
+              {parentGuardians.length > 0 && (
+                <View style={styles.heroParentRow}>
+                  <Text style={styles.heroParentLabel}>Parent Access</Text>
+                  <Text style={styles.heroParentNames}>
+                    {parentGuardians.map((g) =>
+                      g.user.name?.split(' ')[0] ?? g.user.email?.split('@')[0]
+                    ).join(', ')}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        );
+      })() : (
+        <View style={styles.section}>
           <View style={styles.emptyPlayersCard}>
             <Text style={styles.emptyPlayersTitle}>No Players Yet</Text>
             <Text style={styles.emptyPlayersDesc}>
               Your player profiles will appear here once linked to your account.
             </Text>
           </View>
-        )}
-      </View>
+        </View>
+      )}
+
+      {/* ── PLAYER STATS ──────────────────────────────────── */}
+      {allPlayers.length > 0 && (
+        firstPlayerFull?.careerStats ? (
+          <TouchableOpacity
+            style={styles.statsCard}
+            onPress={() => router.push({
+              pathname: '/players/game-log',
+              params: {
+                slug: allPlayers[0].slug,
+                playerName: `${allPlayers[0].firstName} ${allPlayers[0].lastName}`,
+              },
+            })}
+            activeOpacity={0.7}
+          >
+            <View style={styles.statsHeader}>
+              <Text style={styles.statsSectionTitle}>SEASON AVERAGES</Text>
+              <Text style={styles.statsViewAll}>Game Log ›</Text>
+            </View>
+            <View style={styles.statsRow}>
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>
+                  {firstPlayerFull.careerStats.averages.ppg.toFixed(1)}
+                </Text>
+                <Text style={styles.statLabel}>PPG</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>
+                  {firstPlayerFull.careerStats.averages.rpg.toFixed(1)}
+                </Text>
+                <Text style={styles.statLabel}>RPG</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>
+                  {firstPlayerFull.careerStats.averages.apg.toFixed(1)}
+                </Text>
+                <Text style={styles.statLabel}>APG</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.statsCard}
+            onPress={() => router.push({
+              pathname: '/players/game-log',
+              params: {
+                slug: allPlayers[0].slug,
+                playerName: `${allPlayers[0].firstName} ${allPlayers[0].lastName}`,
+              },
+            })}
+            activeOpacity={0.7}
+          >
+            <View style={styles.statsHeader}>
+              <Text style={styles.statsSectionTitle}>SEASON AVERAGES</Text>
+              <Text style={styles.statsViewAll}>Game Log ›</Text>
+            </View>
+            <View style={styles.statsRow}>
+              <View style={styles.statItem}>
+                <Text style={styles.statValueEmpty}>—</Text>
+                <Text style={styles.statLabel}>PPG</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statValueEmpty}>—</Text>
+                <Text style={styles.statLabel}>RPG</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statValueEmpty}>—</Text>
+                <Text style={styles.statLabel}>APG</Text>
+              </View>
+            </View>
+            <Text style={styles.statsEmptyText}>
+              Stats will populate once games have been recorded
+            </Text>
+          </TouchableOpacity>
+        )
+      )}
 
       {/* ── UP NEXT ───────────────────────────────────────── */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>UP NEXT</Text>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/events')}>
-            <Text style={styles.seeAll}>See All</Text>
-          </TouchableOpacity>
-        </View>
+      <TouchableOpacity
+        style={styles.section}
+        onPress={() => router.push('/(tabs)/events')}
+        activeOpacity={0.7}
+      >
+        <Text style={[styles.sectionTitle, { marginBottom: Spacing.lg }]}>UP NEXT</Text>
 
         {scheduledGames.length > 0 ? (
           <View style={styles.gamesList}>
@@ -315,7 +424,7 @@ export default function HomeScreen() {
             <Text style={styles.emptyCardText}>No upcoming games scheduled</Text>
           </View>
         )}
-      </View>
+      </TouchableOpacity>
 
       {/* ── COLLEGE RECRUITING ──────────────────────────────── */}
       {allPlayers.length > 0 && (
@@ -412,72 +521,70 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {/* ── QUICK ACTIONS ─────────────────────────────────── */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>QUICK ACTIONS</Text>
-        <View style={styles.quickActionsGrid}>
-          <TouchableOpacity
-            style={styles.quickActionPill}
-            onPress={() => {
-              if (allPlayers[0]?.slug) router.push(`/players/${allPlayers[0].slug}`);
-            }}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}>
-              <ShareIcon />
-            </View>
-            <Text style={styles.quickActionLabel}>Share Profile</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.quickActionPill}
-            onPress={() => router.push('/(tabs)/events')}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}>
-              <CalendarIcon />
-            </View>
-            <Text style={styles.quickActionLabel}>View Schedule</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.quickActionPill}
-            onPress={() => router.push('/(tabs)/leaderboards')}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}>
-              <TrophyIcon />
-            </View>
-            <Text style={styles.quickActionLabel}>Rankings</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.quickActionPill}
-            onPress={() => {
-              // Scroll to recruiting card / show email log
-              if (allPlayers[0]?.slug) {
-                router.push({
-                  pathname: '/recruiting',
-                  params: {
-                    playerSlugs: allPlayers.map((p) => p.slug).join(','),
-                    playerName: allPlayers.map((p) => `${p.firstName} ${p.lastName}`).join(', '),
-                  },
-                });
-              }
-            }}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}>
-              <MailIcon />
-            </View>
-            <Text style={styles.quickActionLabel}>Email Log</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
       {/* Bottom spacer for tab bar */}
       <View style={{ height: 100 }} />
     </ScrollView>
+
+      {/* ── NOTIFICATION PANEL ─────────────────────────────── */}
+      <Modal
+        visible={showNotifPanel}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowNotifPanel(false)}
+      >
+        <Pressable style={styles.notifOverlay} onPress={() => setShowNotifPanel(false)}>
+          <Pressable style={styles.notifPanel} onPress={(e) => e.stopPropagation()}>
+            <View style={styles.notifHeader}>
+              <Text style={styles.notifTitle}>NOTIFICATIONS</Text>
+              <TouchableOpacity onPress={() => setShowNotifPanel(false)} style={styles.notifClose}>
+                <View style={{ width: 10, height: 10, alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 12, height: 1.8, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '45deg' }], position: 'absolute' }} />
+                  <View style={{ width: 12, height: 1.8, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '-45deg' }], position: 'absolute' }} />
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.notifRow}>
+              <View>
+                <Text style={styles.notifLabel}>New Game Added</Text>
+                <Text style={styles.notifDesc}>When a new game is scheduled</Text>
+              </View>
+              <Switch
+                value={notifPrefs.newGame}
+                onValueChange={() => toggleNotifPref('newGame')}
+                trackColor={{ false: Colors.surfaceLight, true: Colors.red }}
+                thumbColor="#fff"
+              />
+            </View>
+
+            <View style={styles.notifRow}>
+              <View>
+                <Text style={styles.notifLabel}>Schedule Change</Text>
+                <Text style={styles.notifDesc}>Time or date updates</Text>
+              </View>
+              <Switch
+                value={notifPrefs.scheduleChange}
+                onValueChange={() => toggleNotifPref('scheduleChange')}
+                trackColor={{ false: Colors.surfaceLight, true: Colors.red }}
+                thumbColor="#fff"
+              />
+            </View>
+
+            <View style={[styles.notifRow, { borderBottomWidth: 0 }]}>
+              <View>
+                <Text style={styles.notifLabel}>Game Update</Text>
+                <Text style={styles.notifDesc}>Score or status changes</Text>
+              </View>
+              <Switch
+                value={notifPrefs.gameChange}
+                onValueChange={() => toggleNotifPref('gameChange')}
+                trackColor={{ false: Colors.surfaceLight, true: Colors.red }}
+                thumbColor="#fff"
+              />
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -493,64 +600,6 @@ function BellIcon() {
       <View style={{
         width: 6, height: 3, backgroundColor: '#fff',
         borderBottomLeftRadius: 3, borderBottomRightRadius: 3, marginTop: 1,
-      }} />
-    </View>
-  );
-}
-
-function ShareIcon() {
-  return (
-    <View style={{ width: 18, height: 18, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ width: 2, height: 10, backgroundColor: '#fff', position: 'absolute', bottom: 2 }} />
-      <View style={{
-        width: 8, height: 8, borderRadius: 4,
-        borderWidth: 2, borderColor: '#fff', position: 'absolute', top: 0,
-      }} />
-    </View>
-  );
-}
-
-function CalendarIcon() {
-  return (
-    <View style={{ width: 18, height: 18, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{
-        width: 16, height: 14, borderWidth: 2, borderColor: '#fff',
-        borderRadius: 3, marginTop: 2,
-      }} />
-      <View style={{
-        width: 16, height: 2, backgroundColor: '#fff',
-        position: 'absolute', top: 6,
-      }} />
-    </View>
-  );
-}
-
-function TrophyIcon() {
-  return (
-    <View style={{ width: 18, height: 18, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{
-        width: 12, height: 10, borderWidth: 2, borderColor: '#fff',
-        borderBottomLeftRadius: 6, borderBottomRightRadius: 6,
-      }} />
-      <View style={{ width: 2, height: 4, backgroundColor: '#fff' }} />
-      <View style={{ width: 8, height: 2, backgroundColor: '#fff', borderRadius: 1 }} />
-    </View>
-  );
-}
-
-function MailIcon() {
-  return (
-    <View style={{ width: 18, height: 18, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{
-        width: 16, height: 12, borderWidth: 2, borderColor: '#fff',
-        borderRadius: 2,
-      }} />
-      <View style={{
-        width: 0, height: 0,
-        borderLeftWidth: 6, borderRightWidth: 6, borderTopWidth: 5,
-        borderLeftColor: 'transparent', borderRightColor: 'transparent',
-        borderTopColor: '#fff',
-        position: 'absolute', top: 2,
       }} />
     </View>
   );
@@ -599,8 +648,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   headerLogo: {
-    width: 44,
-    height: 44,
+    width: 72,
+    height: 72,
   },
   headerSubtitle: {
     fontSize: FontSize.xs,
@@ -623,16 +672,70 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.12)',
   },
+  // Notification Panel
+  notifOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingTop: Platform.OS === 'ios' ? 100 : 80,
+    paddingRight: Spacing.lg,
+  },
+  notifPanel: {
+    width: 260,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: 'hidden',
+  },
+  notifHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  notifTitle: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.headingBlack,
+    color: Colors.textMuted,
+    letterSpacing: 1.5,
+  },
+  notifClose: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notifRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  notifLabel: {
+    fontSize: FontSize.sm,
+    fontFamily: Fonts.bodySemiBold,
+    color: Colors.textPrimary,
+  },
+  notifDesc: {
+    fontSize: 10,
+    fontFamily: Fonts.body,
+    color: Colors.textMuted,
+    marginTop: 2,
+  },
 
   // Sections
   section: {
     marginBottom: Spacing.xxl,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
   },
   sectionTitle: {
     fontSize: FontSize.md,
@@ -641,134 +744,103 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1.5,
   },
-  seeAll: {
-    fontSize: FontSize.sm,
-    fontFamily: Fonts.bodySemiBold,
-    color: Colors.red,
-  },
 
-  // Profile Cards
-  profileCards: {
-    gap: Spacing.md,
-    marginTop: Spacing.md,
+  // Hero Profile Image
+  heroContainer: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_WIDTH * 1.1,
+    marginHorizontal: -Spacing.xl,
+    marginBottom: Spacing.xxl,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    overflow: 'hidden',
   },
-  profileCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.border,
+  heroImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
   },
-  profileCardTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profilePhoto: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    backgroundColor: Colors.surfaceLight,
-  },
-  profilePhotoFallback: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    backgroundColor: Colors.surfaceLight,
+  heroFallback: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.navyLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  profilePhotoInitial: {
-    fontSize: FontSize.xxl,
-    fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
+  heroFallbackInitial: {
+    fontSize: 72,
+    fontFamily: Fonts.headingBlack,
+    color: 'rgba(255, 255, 255, 0.15)',
   },
-  profileInfo: {
-    flex: 1,
-    marginLeft: Spacing.lg,
+  heroGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '55%',
   },
-  profileName: {
-    fontSize: FontSize.lg,
-    fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
+  heroInfoOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.xl,
   },
-  profileSchool: {
+  heroName: {
+    fontSize: 26,
+    fontFamily: Fonts.headingBlack,
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  heroSchool: {
+    fontSize: FontSize.md,
+    fontFamily: Fonts.bodySemiBold,
+    color: 'rgba(255, 255, 255, 0.85)',
+    marginTop: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  heroMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 6,
+  },
+  heroMetaText: {
     fontSize: FontSize.sm,
-    fontFamily: Fonts.body,
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
-  profileBadges: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    marginTop: Spacing.sm,
-  },
-  profileBadge: {
-    backgroundColor: Colors.surfaceLight,
-    borderRadius: BorderRadius.sm,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 3,
-  },
-  profileBadgeAlt: {
-    backgroundColor: Colors.red + '20',
-  },
-  profileBadgeText: {
-    fontSize: FontSize.xs,
-    fontFamily: Fonts.bodySemiBold,
-    color: Colors.textSecondary,
-  },
-  profileGames: {
-    fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textMuted,
-    marginTop: Spacing.sm,
+    color: 'rgba(255, 255, 255, 0.7)',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
-  profileAccessRow: {
+  heroDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+  },
+  heroParentRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: Spacing.md,
-    paddingTop: Spacing.md,
+    gap: 8,
+    marginTop: 10,
+    paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: 'rgba(255, 255, 255, 0.15)',
   },
-  profileAccessLabel: {
+  heroParentLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textMuted,
-    marginRight: Spacing.md,
+    color: 'rgba(255, 255, 255, 0.5)',
   },
-  profileAccessAvatars: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    flex: 1,
-  },
-  guardianChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  guardianAvatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
-  guardianAvatarFallback: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: Colors.surfaceLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  guardianAvatarInitial: {
-    fontSize: 10,
-    fontFamily: Fonts.bodySemiBold,
-    color: Colors.textSecondary,
-  },
-  guardianName: {
+  heroParentNames: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
-    maxWidth: 80,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
 
   // Empty players
@@ -844,6 +916,71 @@ const styles = StyleSheet.create({
     fontSize: FontSize.xxl,
     color: Colors.textMuted,
     fontWeight: '300',
+  },
+
+  // Player Stats
+  statsCard: {
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginBottom: Spacing.xxl,
+  },
+  statsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
+  },
+  statsSectionTitle: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.headingBlack,
+    color: Colors.textMuted,
+    letterSpacing: 1.5,
+  },
+  statsViewAll: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.bodySemiBold,
+    color: Colors.textMuted,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 28,
+    fontFamily: Fonts.headingBlack,
+    color: Colors.textPrimary,
+  },
+  statLabel: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.bodySemiBold,
+    color: Colors.textMuted,
+    marginTop: 4,
+    letterSpacing: 1,
+  },
+  statValueEmpty: {
+    fontSize: 28,
+    fontFamily: Fonts.headingBlack,
+    color: Colors.textMuted,
+  },
+  statsEmptyText: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.body,
+    color: Colors.textMuted,
+    textAlign: 'center',
+    marginTop: Spacing.md,
+  },
+  statDivider: {
+    width: 1,
+    height: 36,
+    backgroundColor: Colors.border,
   },
 
   // Empty state
@@ -1015,36 +1152,4 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
   },
 
-  // Quick Actions (2x2 grid)
-  quickActionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.md,
-    marginTop: Spacing.lg,
-  },
-  quickActionPill: {
-    width: (SCREEN_WIDTH - Spacing.xl * 2 - Spacing.md) / 2,
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  quickActionIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickActionLabel: {
-    fontSize: FontSize.sm,
-    fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
-    flexShrink: 1,
-  },
 });

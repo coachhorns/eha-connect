@@ -89,12 +89,50 @@ export default function PlayerProfileScreen() {
       )}
 
       {/* Placeholder for stats - will be populated from API */}
-      <Card variant="navy" style={styles.section}>
-        <Text style={styles.sectionLabel}>SEASON STATS</Text>
-        <Text style={styles.comingSoon}>
-          Stats are loaded from live game data
-        </Text>
-      </Card>
+      {/* Stats */}
+      {player.careerStats && player.careerStats.gamesPlayed > 0 ? (
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>SEASON STATS</Text>
+
+          <View style={styles.statsGrid}>
+            <StatBox label="PPG" value={player.careerStats.averages.ppg.toFixed(1)} highlight />
+            <StatBox label="RPG" value={player.careerStats.averages.rpg.toFixed(1)} />
+            <StatBox label="APG" value={player.careerStats.averages.apg.toFixed(1)} />
+            <StatBox label="SPG" value={player.careerStats.averages.spg.toFixed(1)} />
+            <StatBox label="BPG" value={player.careerStats.averages.bpg.toFixed(1)} />
+          </View>
+
+          <View style={styles.shootingRow}>
+            <View style={styles.shootingItem}>
+              <Text style={styles.shootingValue}>
+                {player.careerStats.shooting.fgPct.toFixed(1)}%
+              </Text>
+              <Text style={styles.shootingLabel}>FG</Text>
+            </View>
+            <View style={styles.shootingDivider} />
+            <View style={styles.shootingItem}>
+              <Text style={styles.shootingValue}>
+                {player.careerStats.shooting.fg3Pct.toFixed(1)}%
+              </Text>
+              <Text style={styles.shootingLabel}>3PT</Text>
+            </View>
+            <View style={styles.shootingDivider} />
+            <View style={styles.shootingItem}>
+              <Text style={styles.shootingValue}>
+                {player.careerStats.shooting.ftPct.toFixed(1)}%
+              </Text>
+              <Text style={styles.shootingLabel}>FT</Text>
+            </View>
+          </View>
+        </View>
+      ) : (
+        <Card variant="navy" style={styles.section}>
+          <Text style={styles.sectionLabel}>SEASON STATS</Text>
+          <Text style={styles.comingSoon}>
+            No stats available for this player yet.
+          </Text>
+        </Card>
+      )}
     </ScrollView>
   );
 }
@@ -181,5 +219,40 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     color: Colors.textSecondary,
     fontStyle: 'italic',
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+    marginBottom: Spacing.lg,
+  },
+  shootingRow: {
+    flexDirection: 'row',
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  shootingItem: {
+    alignItems: 'center',
+  },
+  shootingValue: {
+    fontSize: FontSize.lg,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  shootingLabel: {
+    fontSize: FontSize.xs,
+    color: Colors.textMuted,
+    marginTop: 2,
+    fontWeight: '600',
+  },
+  shootingDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: Colors.border,
   },
 });
