@@ -9,7 +9,6 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
-  ImageBackground,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
@@ -38,12 +37,16 @@ export default function SignInScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require('../../assets/login-bg.jpg')}
-      style={styles.bg}
-      resizeMode="cover"
-    >
-      {/* Dark gradient overlay so text stays legible */}
+    <View style={styles.bg}>
+      {/* Background photo — contentPosition shifts frame right to reveal the EHA backboard logo */}
+      <Image
+        source={require('../../assets/login-bg.jpg')}
+        style={StyleSheet.absoluteFill}
+        contentFit="cover"
+        contentPosition={{ left: '62%', top: '50%' }}
+      />
+
+      {/* Dark overlay so text stays legible */}
       <View style={styles.overlay} />
 
       <KeyboardAvoidingView
@@ -113,7 +116,7 @@ export default function SignInScreen() {
           </View>
         </View>
       </KeyboardAvoidingView>
-    </ImageBackground>
+    </View>
   );
 }
 
