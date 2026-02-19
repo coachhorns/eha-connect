@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { format } from 'date-fns';
-import { Colors, Spacing, FontSize, BorderRadius } from '@/constants/colors';
+import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
 import type { Event } from '@/types';
 
 interface EventCardProps {
@@ -13,42 +14,59 @@ interface EventCardProps {
 export function EventCard({ event, onPress }: EventCardProps) {
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
-  const isLive = event.status === 'ACTIVE';
+  const now = new Date();
+  const isLive = event.isActive && startDate <= now && endDate >= now;
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
-      {event.imageUrl && (
-        <Image
-          source={{ uri: event.imageUrl }}
-          style={styles.image}
-          contentFit="cover"
-          transition={200}
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.85}>
+      <View style={styles.imageContainer}>
+        {event.bannerImage ? (
+          <Image
+            source={{ uri: event.bannerImage }}
+            style={StyleSheet.absoluteFill}
+            contentFit="cover"
+            transition={200}
+          />
+        ) : (
+          <View style={styles.imagePlaceholder} />
+        )}
+        <LinearGradient
+          colors={['transparent', 'rgba(15, 23, 42, 0.7)', 'rgba(15, 23, 42, 0.97)']}
+          locations={[0.25, 0.65, 1]}
+          style={StyleSheet.absoluteFill}
         />
-      )}
-      <View style={styles.content}>
-        <View style={styles.header}>
+
+        {/* Top badges */}
+        <View style={styles.badges}>
           {isLive && (
             <View style={styles.liveBadge}>
               <View style={styles.liveDot} />
               <Text style={styles.liveText}>LIVE</Text>
             </View>
           )}
-          {event.ncaaCertified && (
+          {event.isNcaaCertified && (
             <View style={styles.ncaaBadge}>
-              <Text style={styles.ncaaText}>NCAA</Text>
+              <Text style={styles.ncaaText}>NCAA CERTIFIED</Text>
             </View>
           )}
         </View>
 
-        <Text style={styles.name} numberOfLines={2}>{event.name}</Text>
-
-        <View style={styles.meta}>
-          <Text style={styles.date}>
-            {format(startDate, 'MMM d')} - {format(endDate, 'MMM d, yyyy')}
-          </Text>
-          {event.city && event.state && (
-            <Text style={styles.location}>{event.city}, {event.state}</Text>
-          )}
+        {/* Title + meta overlaid on image */}
+        <View style={styles.overlay}>
+          <Text style={styles.name} numberOfLines={2}>{event.name}</Text>
+          <View style={styles.metaRow}>
+            <Text style={styles.date}>
+              {format(startDate, 'MMM d')} – {format(endDate, 'MMM d, yyyy')}
+            </Text>
+            {(event.venue || (event.city && event.state)) && (
+              <>
+                <Text style={styles.dot}> · </Text>
+                <Text style={styles.location} numberOfLines={1}>
+                  {event.venue ?? `${event.city}, ${event.state}`}
+                </Text>
+              </>
+            )}
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -57,30 +75,32 @@ export function EventCard({ event, onPress }: EventCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  image: {
-    width: '100%',
-    height: 140,
+  imageContainer: {
+    height: 185,
+    backgroundColor: Colors.surface,
   },
-  content: {
-    padding: Spacing.lg,
+  imagePlaceholder: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.surfaceLight,
   },
-  header: {
+  badges: {
+    position: 'absolute',
+    top: Spacing.md,
+    left: Spacing.md,
     flexDirection: 'row',
     gap: Spacing.sm,
-    marginBottom: Spacing.sm,
   },
   liveBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.error,
+    backgroundColor: Colors.red,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: BorderRadius.sm,
     gap: 4,
   },
@@ -93,37 +113,56 @@ const styles = StyleSheet.create({
   liveText: {
     color: Colors.textPrimary,
     fontSize: FontSize.xs,
-    fontWeight: '800',
+    fontFamily: Fonts.bodyBold,
     letterSpacing: 1,
   },
   ncaaBadge: {
-    backgroundColor: Colors.navy,
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: Colors.gold + '55',
   },
   ncaaText: {
     color: Colors.gold,
     fontSize: FontSize.xs,
-    fontWeight: '800',
+    fontFamily: Fonts.bodyBold,
     letterSpacing: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: Spacing.lg,
   },
   name: {
     fontSize: FontSize.lg,
-    fontWeight: '700',
+    fontFamily: Fonts.heading,
     color: Colors.textPrimary,
-    marginBottom: Spacing.sm,
+    marginBottom: 4,
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
-  meta: {
-    gap: 2,
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
   },
   date: {
     fontSize: FontSize.sm,
-    color: Colors.textSecondary,
-    fontWeight: '500',
+    fontFamily: Fonts.bodyMedium,
+    color: 'rgba(255,255,255,0.8)',
+  },
+  dot: {
+    fontSize: FontSize.sm,
+    color: 'rgba(255,255,255,0.4)',
   },
   location: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
+    fontFamily: Fonts.body,
+    color: 'rgba(255,255,255,0.6)',
   },
 });

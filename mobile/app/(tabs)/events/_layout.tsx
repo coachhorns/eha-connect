@@ -1,28 +1,26 @@
 import { Stack } from 'expo-router';
-import { Colors } from '@/constants/colors';
+import { Colors, Fonts, FontSize } from '@/constants/colors';
 
 export default function EventsLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: {
-          backgroundColor: Colors.surface,
-        },
+        headerStyle: { backgroundColor: Colors.surface },
         headerTintColor: Colors.textPrimary,
         headerTitleStyle: {
-          fontWeight: '700',
-          fontSize: 18,
+          fontFamily: Fonts.heading,
+          fontSize: FontSize.md,
         },
         contentStyle: { backgroundColor: Colors.background },
       }}
     >
       <Stack.Screen
         name="index"
-        options={{ headerTitle: 'Events' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="[id]"
-        options={{ headerTitle: 'Event Details' }}
+        options={{ headerShown: false }}
       />
     </Stack>
   );

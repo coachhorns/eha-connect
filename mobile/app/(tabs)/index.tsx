@@ -116,8 +116,7 @@ export default function HomeScreen() {
   // Upcoming events (next 3)
   const upcomingEvents = events
     ?.filter((e: Event) => {
-      const isUpcoming = e.status === 'PUBLISHED' || e.status === 'ACTIVE';
-      return isUpcoming && new Date(e.startDate) > new Date();
+      return e.isPublished && new Date(e.startDate) > new Date();
     })
     ?.sort((a: Event, b: Event) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
     ?.slice(0, 3) ?? [];

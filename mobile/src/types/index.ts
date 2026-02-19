@@ -144,12 +144,17 @@ export interface Event {
   description: string | null;
   startDate: string;
   endDate: string;
-  location: string | null;
+  venue: string | null;
+  address: string | null;
   city: string | null;
   state: string | null;
-  imageUrl: string | null;
-  status: 'DRAFT' | 'PUBLISHED' | 'ACTIVE' | 'COMPLETED';
-  ncaaCertified: boolean;
+  bannerImage: string | null;
+  flyerImage: string | null;
+  isPublished: boolean;
+  isActive: boolean;
+  isNcaaCertified: boolean;
+  divisions: string[];
+  entryFee: number | null;
   createdAt: string;
 }
 
@@ -200,13 +205,16 @@ export interface LeaderboardEntry {
 
 // ── Standings ────────────────────────────────────────────────
 
-export interface Standing {
-  team: Team;
+export interface EventStandingEntry {
+  teamId: string;
+  teamName: string;
+  teamLogo: string | null;
   wins: number;
   losses: number;
   pointsFor: number;
   pointsAgainst: number;
-  streak: string;
+  pointDiff: number;
+  seed: number | null;
 }
 
 // ── Recruiting ───────────────────────────────────────────────

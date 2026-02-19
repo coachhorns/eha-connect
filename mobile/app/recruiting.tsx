@@ -387,8 +387,7 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.red,
-    width: 50,
+    color: Colors.textSecondary,
   },
   headerTitle: {
     fontSize: FontSize.md,
