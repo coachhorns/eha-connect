@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
@@ -37,80 +38,96 @@ export default function SignInScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <ImageBackground
+      source={require('../../assets/login-bg.jpg')}
+      style={styles.bg}
+      resizeMode="cover"
     >
-      <View style={styles.content}>
-        {/* Logo / Brand */}
-        <View style={styles.header}>
-          <Image
-            source={require('../../assets/eha-connect-logo.png')}
-            style={styles.logo}
-            contentFit="contain"
-          />
-        </View>
+      {/* Dark gradient overlay so text stays legible */}
+      <View style={styles.overlay} />
 
-        {/* Form */}
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="your@email.com"
-              placeholderTextColor={Colors.textMuted}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View style={styles.content}>
+          {/* Logo / Brand */}
+          <View style={styles.header}>
+            <Image
+              source={require('../../assets/eha-connect-logo.png')}
+              style={styles.logo}
+              contentFit="contain"
             />
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter your password"
-              placeholderTextColor={Colors.textMuted}
-              secureTextEntry
-            />
-          </View>
+          {/* Form */}
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="your@email.com"
+                placeholderTextColor="rgba(255,255,255,0.4)"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
 
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleSignIn}
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            {loading ? (
-              <ActivityIndicator color={Colors.textPrimary} />
-            ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
-            )}
-          </TouchableOpacity>
-        </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Enter your password"
+                placeholderTextColor="rgba(255,255,255,0.4)"
+                secureTextEntry
+              />
+            </View>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account?</Text>
-          <Link href="/(auth)/register" asChild>
-            <TouchableOpacity>
-              <Text style={styles.footerLink}> Create one</Text>
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleSignIn}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              {loading ? (
+                <ActivityIndicator color={Colors.textPrimary} />
+              ) : (
+                <Text style={styles.buttonText}>Sign In</Text>
+              )}
             </TouchableOpacity>
-          </Link>
+          </View>
+
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account?</Text>
+            <Link href="/(auth)/register" asChild>
+              <TouchableOpacity>
+                <Text style={styles.footerLink}> Create one</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  bg: {
     flex: 1,
-    backgroundColor: Colors.background,
+  },
+  // Dark overlay: heavy at the bottom (where the form lives), lighter at top
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(5, 10, 25, 0.72)',
+  },
+  flex: {
+    flex: 1,
   },
   content: {
     flex: 1,
@@ -134,14 +151,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: FontSize.sm,
     fontWeight: '600',
-    color: Colors.textSecondary,
+    color: 'rgba(255,255,255,0.65)',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   input: {
-    backgroundColor: Colors.inputBackground,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: 'rgba(255,255,255,0.18)',
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md + 2,
@@ -149,7 +166,9 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
   button: {
-    backgroundColor: Colors.red,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
     borderRadius: BorderRadius.md,
     paddingVertical: Spacing.md + 4,
     alignItems: 'center',
@@ -171,11 +190,11 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: FontSize.md,
-    color: Colors.textSecondary,
+    color: 'rgba(255,255,255,0.55)',
   },
   footerLink: {
     fontSize: FontSize.md,
-    color: Colors.red,
+    color: 'rgba(255,255,255,0.85)',
     fontWeight: '600',
   },
 });
