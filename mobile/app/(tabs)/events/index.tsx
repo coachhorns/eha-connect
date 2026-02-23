@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { BlurView } from 'expo-blur';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
 import { eventsApi } from '@/api/events';
@@ -33,10 +33,22 @@ const HEADER_HEIGHT = Platform.OS === 'ios' ? 100 : 80;
 const CONTROLS_HEIGHT = 110;
 
 export default function EventsScreen() {
-  const router = useRouter();
+  const router     = useRouter();
+  const navigation = useNavigation();
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+
+  // When the Events tab icon is tapped while already on this tab,
+  // pop the stack back to this root screen.
+  useEffect(() => {
+    const unsub = navigation.addListener('tabPress' as any, () => {
+      if (navigation.canGoBack()) {
+        navigation.popToTop();
+      }
+    });
+    return unsub;
+  }, [navigation]);
 
   const controlsAnim = useRef(new Animated.Value(0)).current;
   const prevScrollY = useRef(0);

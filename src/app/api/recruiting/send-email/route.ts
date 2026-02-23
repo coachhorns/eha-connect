@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionUser } from '@/lib/get-session'
 import { sendEmail } from '@/lib/email'
 import prisma from '@/lib/prisma'
 
@@ -19,9 +18,9 @@ function formatHeight(feet: number | null, inches: number | null): string | null
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session?.user?.email) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -73,7 +72,7 @@ export async function POST(request: NextRequest) {
         })
       : []
 
-    const senderName = session.user.name || session.user.email
+    const senderName = user.name || user.email
     const baseUrl = process.env.NEXTAUTH_URL || 'https://ehaconnect.com'
 
     // Build player cards HTML
@@ -263,7 +262,7 @@ export async function POST(request: NextRequest) {
       html,
       replyTo: firstPlayer?.email
         ? (`${firstPlayer.firstName} ${firstPlayer.lastName} <${firstPlayer.email}>`)
-        : (session.user.name ? `${session.user.name} <${session.user.email}>` : session.user.email),
+        : (user.name ? `${user.name} <${user.email}>` : user.email),
     })
 
     if (!result.success) {
@@ -277,7 +276,7 @@ export async function POST(request: NextRequest) {
     try {
       await prisma.recruitingEmail.create({
         data: {
-          sentById: session.user.id,
+          sentById: user.id,
           coachId: coachId || null,
           collegeId: collegeId || null,
           coachName: coachName || '',

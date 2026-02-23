@@ -336,16 +336,31 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   }, [activeIndex]);
 
   const navigateToTab = (index: number) => {
-    const route = state.routes[index];
+    const route     = state.routes[index];
+    const isFocused = state.index === index;
     if (route) {
       const event = navigation.emit({
         type: 'tabPress',
         target: route.key,
         canPreventDefault: true,
       });
-      if (!event.defaultPrevented) {
-        navigation.navigate(route.name, route.params);
+
+      if (!event.defaultPrevented && !isFocused) {
+        // Check if the target tab's nested stack is deeper than the root screen.
+        // If so, navigate to the root screen of that stack so the tab always
+        // resets to home regardless of where you left it.
+        const nestedState   = (state.routes[index] as any).state;
+        const isDeepInStack = (nestedState?.index ?? 0) > 0;
+        const rootName      = nestedState?.routes?.[0]?.name;
+
+        if (isDeepInStack && rootName) {
+          navigation.navigate(route.name, { screen: rootName });
+        } else {
+          navigation.navigate(route.name, route.params);
+        }
       }
+      // When already focused, the tabPress emit above is enough — each tab's
+      // root screen listens for it and pops its own stack to top.
     }
   };
 
@@ -564,8 +579,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="leaderboards"
         options={{
-          title: 'Leaders',
-          headerTitle: 'Leaderboards',
+          title: 'Stats Hub',
+          headerShown: false,
         }}
       />
       <Tabs.Screen
