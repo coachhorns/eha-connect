@@ -107,7 +107,7 @@ eha-connect/                     ← Git root
 │   │   ├── sync/
 │   │   │   └── exposure.ts      ← Sync logic between EHA and Exposure Events
 │   │   ├── timezone.ts          ← Timezone utilities
-│   │   ├── utils.ts             ← cn(), general helpers
+│   │   ├── utils.ts             ← cn() (Tailwind merge), formatHeight/Position/GraduationYear, generateSlug, calculateAge, calculatePercentage, formatStatValue, getGradeFromYear, formatDate/DateTime/GameTime
 │   │   └── video.ts             ← Video URL helpers
 │   └── types/
 │       └── next-auth.d.ts       ← Extends NextAuth session to include id & role
@@ -117,7 +117,8 @@ eha-connect/                     ← Git root
 ├── mobile/                      ← Expo React Native app
 │   ├── app/                     ← Expo Router file-based navigation
 │   │   ├── (auth)/              ← Auth screens (not inside tabs)
-│   │   │   └── sign-in.tsx      ← Login screen
+│   │   │   ├── sign-in.tsx      ← Login screen
+│   │   │   └── register.tsx     ← Registration screen
 │   │   ├── (tabs)/              ← Main tab navigator
 │   │   │   ├── _layout.tsx      ← Custom morphing liquid tab bar
 │   │   │   ├── index.tsx        ← Home / Player Dashboard
@@ -138,7 +139,8 @@ eha-connect/                     ← Git root
 │   │   ├── leaderboards.ts      ← Leaderboards API calls
 │   │   ├── players.ts           ← Players API calls
 │   │   ├── recruiting.ts        ← Recruiting API calls
-│   │   └── subscription.ts      ← Subscription API calls
+│   │   ├── subscription.ts      ← Subscription API calls
+│   │   └── teams.ts             ← Teams API calls
 │   ├── components/              ← Shared mobile components
 │   │   ├── ui/
 │   │   │   ├── Button.tsx
@@ -155,6 +157,8 @@ eha-connect/                     ← Git root
 │   │   └── config.ts            ← API URL config (defaults to https://ehaconnect.com)
 │   ├── contexts/
 │   │   └── AuthContext.tsx      ← User auth state + signIn/signOut
+│   ├── lib/
+│   │   └── storage.ts           ← Token storage helpers (SecureStore on native, localStorage on web)
 │   ├── hooks/                   ← Custom hooks (if any)
 │   ├── types/
 │   │   └── index.ts             ← All TypeScript types
@@ -164,6 +168,11 @@ eha-connect/                     ← Git root
 │   └── package.json
 ├── public/                      ← Next.js public assets
 │   └── logo.png                 ← Logo used in recruiting emails
+├── prisma.config.ts             ← Prisma configuration
+├── next.config.ts               ← Next.js config (PWA via @ducanh2912/next-pwa)
+├── docker-compose.yml           ← Docker Compose (minimal, local DB)
+├── debug-games.js / debug-games.ts ← Debug utility scripts
+├── inspect_games.js             ← Game inspection utility script
 ├── CLAUDE.md                    ← This file
 └── package.json                 ← Web app dependencies
 ```
@@ -228,6 +237,10 @@ EMAIL_FROM=EHA Connect <noreply@ehaconnect.com>
 
 # File Storage
 BLOB_READ_WRITE_TOKEN=           # Vercel Blob token
+CLOUDINARY_CLOUD_NAME=           # Cloudinary cloud name (also used for media uploads)
+CLOUDINARY_API_KEY=              # Cloudinary API key
+CLOUDINARY_API_SECRET=           # Cloudinary API secret
+NEXT_PUBLIC_APP_URL=             # Public app URL (used in client-side code)
 
 # Exposure Events Integration
 EXPOSURE_API_KEY=
