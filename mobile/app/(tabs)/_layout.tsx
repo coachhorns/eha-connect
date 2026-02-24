@@ -352,8 +352,8 @@ function ExpandedPanel({
                 onPress={() => onAction(action.id)}
                 activeOpacity={0.75}
               >
-                <View style={[styles.quickActionIconWrap, { backgroundColor: `${action.color}22` }]}>
-                  <QuickActionIcon name={action.icon} color={action.color} size={18} />
+                <View style={[styles.quickActionIconWrap, { backgroundColor: 'rgba(255, 255, 255, 0.08)' }]}>
+                  <QuickActionIcon name={action.icon} color="rgba(255, 255, 255, 0.75)" size={18} />
                 </View>
                 <Text style={styles.quickActionLabel} numberOfLines={2}>{action.label}</Text>
               </TouchableOpacity>
