@@ -592,10 +592,7 @@ export default function StatsHubScreen() {
                 style={styles.headerLogo}
                 contentFit="contain"
               />
-              <View>
-                <Text style={styles.headerSubtitle}>Stats</Text>
-                <Text style={styles.headerName}>Hub</Text>
-              </View>
+              <Text style={styles.headerName}>Stats</Text>
             </View>
 
             {/* Segmented control */}
@@ -667,8 +664,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   headerLogo: {
-    width: 60,
-    height: 60,
+    width: 72,
+    height: 72,
   },
   headerSubtitle: {
     fontSize: FontSize.xs,

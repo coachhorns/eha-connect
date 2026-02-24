@@ -163,10 +163,7 @@ export default function HomeScreen() {
                 style={styles.headerLogo}
                 contentFit="contain"
               />
-              <View>
-                <Text style={styles.headerSubtitle}>Player</Text>
-                <Text style={styles.headerName}>Dashboard</Text>
-              </View>
+              <Text style={styles.headerName}>Dashboard</Text>
             </View>
             <TouchableOpacity
               style={styles.bellButton}
