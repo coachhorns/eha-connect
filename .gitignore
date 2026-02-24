@@ -55,5 +55,5 @@ public/uploads/*
 # Local dev scripts
 /scripts/
 
-# Claude Code local settings
-.claude/settings.local.json
+# Claude Code
+.claude/
