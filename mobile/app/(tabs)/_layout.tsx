@@ -1,8 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet, Platform, Dimensions, TouchableOpacity, Pressable, Share } from 'react-native';
+import { View, Text, StyleSheet, Platform, Dimensions, TouchableOpacity, Pressable } from 'react-native';
 import { BlurView } from 'expo-blur';
+import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '@/context/AuthContext';
+import { QuickMovePlayerSheet } from '@/components/QuickMovePlayerSheet';
+import { QuickCreateTeamSheet } from '@/components/QuickCreateTeamSheet';
+import { CustomizeActionsSheet, type ActionOption } from '@/components/CustomizeActionsSheet';
 import * as Haptics from 'expo-haptics';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -39,21 +43,36 @@ const FADE_IN_START = 0.35;
 // The "more" tab (index 4) triggers expand instead of navigation
 const MORE_TAB_INDEX = 4;
 
-type QuickAction = { id: string; label: string; icon: string; color: string };
+type QuickAction = { id: string; label: string; icon: string };
 
-function buildQuickActions(role: string | undefined): QuickAction[] {
-  const base: QuickAction[] = [
-    { id: 'share_profile', label: 'Share\nProfile', icon: 'share', color: Colors.info },
-    { id: 'game_log',      label: 'Game Log',      icon: 'list',   color: Colors.success },
-    { id: 'next_game',     label: 'Next\nGame',    icon: 'calendar', color: Colors.red },
+const SECURE_KEY = 'quickActionPrefs';
+
+// Full pool of available actions per role
+const DIRECTOR_POOL: (QuickAction & ActionOption)[] = [
+  { id: 'move_player',   label: 'Move\nPlayer',   icon: 'move_player', description: 'Transfer a player between teams'  },
+  { id: 'create_team',   label: 'Create\nTeam',   icon: 'team_plus',   description: 'Add a new team to your program'   },
+  { id: 'register_team', label: 'Register\nTeam', icon: 'clipboard',   description: 'Register a team for an event'     },
+  { id: 'next_game',     label: 'Next\nGame',     icon: 'calendar',    description: 'Jump to the next scheduled game'  },
+  { id: 'share_profile', label: 'Share\nProfile', icon: 'share',       description: 'Share your player profile link'   },
+  { id: 'game_log',      label: 'Game Log',       icon: 'list',        description: 'View your full game history'      },
+];
+const DIRECTOR_DEFAULTS = ['move_player', 'create_team', 'register_team', 'next_game'];
+
+function buildDefaultActions(role: string | undefined): QuickAction[] {
+  if (role === 'PARENT') return [
+    { id: 'share_profile', label: 'Share\nProfile', icon: 'share' },
+    { id: 'game_log',      label: 'Game Log',       icon: 'list' },
+    { id: 'next_game',     label: 'Next\nGame',     icon: 'calendar' },
+    { id: 'switch_player', label: 'Switch\nPlayer', icon: 'people' },
   ];
-  if (role === 'PARENT') {
-    return [...base, { id: 'switch_player', label: 'Switch\nPlayer', icon: 'people', color: Colors.gold }];
-  }
   if (role === 'PROGRAM_DIRECTOR' || role === 'ADMIN') {
-    return [...base, { id: 'register_team', label: 'Register\nTeam', icon: 'clipboard', color: Colors.gold }];
+    return DIRECTOR_DEFAULTS.map(id => DIRECTOR_POOL.find(a => a.id === id)!);
   }
-  return base;
+  return [
+    { id: 'share_profile', label: 'Share\nProfile', icon: 'share' },
+    { id: 'game_log',      label: 'Game Log',       icon: 'list' },
+    { id: 'next_game',     label: 'Next\nGame',     icon: 'calendar' },
+  ];
 }
 
 function QuickActionIcon({ name, color, size = 18 }: { name: string; color: string; size?: number }) {
@@ -145,6 +164,34 @@ function QuickActionIcon({ name, color, size = 18 }: { name: string; color: stri
           <View style={{ position: 'absolute', right: 0, top: 0, alignItems: 'center' }}>
             <View style={{ width: size * 0.35, height: size * 0.35, borderRadius: size * 0.175, borderWidth: 1.6, borderColor: color }} />
             <View style={{ width: size * 0.6, height: size * 0.26, borderTopLeftRadius: size * 0.3, borderTopRightRadius: size * 0.3, borderWidth: 1.6, borderBottomWidth: 0, borderColor: color, marginTop: 1.5 }} />
+          </View>
+        </View>
+      );
+    case 'move_player':
+      // Person silhouette + right-arrow
+      return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: size * 0.38, height: size * 0.38, borderRadius: size * 0.19, borderWidth: 1.6, borderColor: color, position: 'absolute', top: 0, left: size * 0.04 }} />
+          <View style={{ width: size * 0.62, height: size * 0.28, borderTopLeftRadius: size * 0.31, borderTopRightRadius: size * 0.31, borderWidth: 1.6, borderBottomWidth: 0, borderColor: color, position: 'absolute', bottom: size * 0.04, left: 0 }} />
+          {/* Arrow */}
+          <View style={{ position: 'absolute', right: 0, width: size * 0.38, height: 1.8, backgroundColor: color, borderRadius: 1 }} />
+          <View style={{ position: 'absolute', right: 0, top: size * 0.3,
+            width: 0, height: 0,
+            borderTopWidth: size * 0.13, borderBottomWidth: size * 0.13, borderLeftWidth: size * 0.18,
+            borderTopColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: color,
+          }} />
+        </View>
+      );
+    case 'team_plus':
+      // Two small people + a plus
+      return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: size * 0.32, height: size * 0.32, borderRadius: size * 0.16, borderWidth: 1.5, borderColor: color, position: 'absolute', top: 0, left: size * 0.04 }} />
+          <View style={{ width: size * 0.54, height: size * 0.24, borderTopLeftRadius: size * 0.27, borderTopRightRadius: size * 0.27, borderWidth: 1.5, borderBottomWidth: 0, borderColor: color, position: 'absolute', bottom: size * 0.22, left: 0 }} />
+          {/* Plus */}
+          <View style={{ position: 'absolute', right: 0, bottom: 0, width: size * 0.38, height: size * 0.38, borderRadius: size * 0.1, backgroundColor: Colors.navyLight, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: size * 0.22, height: 1.8, backgroundColor: color, borderRadius: 1 }} />
+            <View style={{ width: 1.8, height: size * 0.22, backgroundColor: color, borderRadius: 1, position: 'absolute' }} />
           </View>
         </View>
       );
@@ -261,11 +308,15 @@ function ExpandedPanel({
   onClose,
   onAction,
   actions,
+  isCustomizable,
+  onCustomize,
 }: {
   expandProgress: Animated.SharedValue<number>;
   onClose: () => void;
   onAction: (actionId: string) => void;
   actions: QuickAction[];
+  isCustomizable: boolean;
+  onCustomize: () => void;
 }) {
   const dismissTranslateY = useSharedValue(0);
   const dismissTranslateX = useSharedValue(0);
@@ -332,12 +383,27 @@ function ExpandedPanel({
         {/* Header */}
         <View style={styles.expandedHeader}>
           <Text style={styles.expandedTitle}>QUICK ACTIONS</Text>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton} activeOpacity={0.7}>
-            <View style={{ width: 12, height: 12, alignItems: 'center', justifyContent: 'center' }}>
-              <View style={{ width: 14, height: 2, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '45deg' }], position: 'absolute' }} />
-              <View style={{ width: 14, height: 2, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '-45deg' }], position: 'absolute' }} />
-            </View>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+            {isCustomizable && (
+              <TouchableOpacity
+                onPress={() => { onClose(); setTimeout(onCustomize, 350); }}
+                style={styles.editButton}
+                activeOpacity={0.7}
+              >
+                {/* Pencil icon */}
+                <View style={{ width: 12, height: 12, alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 2, height: 9, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '45deg' }] }} />
+                  <View style={{ width: 4, height: 2, backgroundColor: Colors.textSecondary, borderRadius: 1, position: 'absolute', bottom: 0 }} />
+                </View>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={onClose} style={styles.closeButton} activeOpacity={0.7}>
+              <View style={{ width: 12, height: 12, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: 14, height: 2, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '45deg' }], position: 'absolute' }} />
+                <View style={{ width: 14, height: 2, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '-45deg' }], position: 'absolute' }} />
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Action Grid — width computed from action count */}
@@ -367,7 +433,37 @@ function ExpandedPanel({
 
 function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { user } = useAuth();
-  const quickActions = buildQuickActions(user?.role);
+  const role = user?.role;
+  const isCustomizable = role === 'PROGRAM_DIRECTOR' || role === 'ADMIN';
+
+  // Load saved action prefs from SecureStore (directors/admins only)
+  const [savedIds, setSavedIds] = useState<string[] | null>(null);
+  useEffect(() => {
+    if (!isCustomizable) return;
+    SecureStore.getItemAsync(SECURE_KEY).then(val => {
+      if (val) setSavedIds(JSON.parse(val));
+    });
+  }, [isCustomizable]);
+
+  const quickActions = useMemo<QuickAction[]>(() => {
+    if (isCustomizable && savedIds) {
+      return savedIds
+        .map(id => DIRECTOR_POOL.find(a => a.id === id))
+        .filter(Boolean) as QuickAction[];
+    }
+    return buildDefaultActions(role);
+  }, [role, savedIds, isCustomizable]);
+
+  const handleSavePrefs = async (ids: string[]) => {
+    setSavedIds(ids);
+    await SecureStore.setItemAsync(SECURE_KEY, JSON.stringify(ids));
+  };
+
+  // Sheet visibility
+  const [showMovePlayer, setShowMovePlayer] = useState(false);
+  const [showCreateTeam, setShowCreateTeam] = useState(false);
+  const [showCustomize, setShowCustomize] = useState(false);
+
   const activeIndex = state.index;
 
   const pillCenterX = useSharedValue(activeIndex * TAB_WIDTH + TAB_WIDTH / 2);
@@ -444,10 +540,9 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     expandProgress.value = withSpring(0, EXPAND_SPRING);
     setTimeout(() => setShowBackdrop(false), 400);
 
-    // Navigate based on action
+    // Navigate / open sheet based on action
     switch (actionId) {
       case 'share_profile':
-        // Navigate to profile — user can copy the "View Full Profile" link from there
         navigation.navigate('profile' as any);
         break;
       case 'game_log':
@@ -457,11 +552,16 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
         navigation.navigate('events' as any);
         break;
       case 'switch_player':
-        // Profile tab shows the player switcher for parents with multiple players
         navigation.navigate('profile' as any);
         break;
       case 'register_team':
         navigation.navigate('events' as any);
+        break;
+      case 'move_player':
+        setTimeout(() => setShowMovePlayer(true), 350);
+        break;
+      case 'create_team':
+        setTimeout(() => setShowCreateTeam(true), 350);
         break;
     }
   };
@@ -592,9 +692,28 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           onClose={toggleExpand}
           onAction={handleAction}
           actions={quickActions}
+          isCustomizable={isCustomizable}
+          onCustomize={() => setShowCustomize(true)}
         />
       </Animated.View>
     </GestureHandlerRootView>
+
+    {/* Director/Admin sheets — rendered outside the gesture root */}
+    <QuickMovePlayerSheet
+      visible={showMovePlayer}
+      onClose={() => setShowMovePlayer(false)}
+    />
+    <QuickCreateTeamSheet
+      visible={showCreateTeam}
+      onClose={() => setShowCreateTeam(false)}
+    />
+    <CustomizeActionsSheet
+      visible={showCustomize}
+      currentIds={savedIds ?? DIRECTOR_DEFAULTS}
+      availableActions={DIRECTOR_POOL}
+      onSave={handleSavePrefs}
+      onClose={() => setShowCustomize(false)}
+    />
   );
 }
 
@@ -743,6 +862,14 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.headingBlack,
     color: Colors.textSecondary,
     letterSpacing: 1.5,
+  },
+  editButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   closeButton: {
     width: 28,
