@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet, Platform, Dimensions, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Platform, Dimensions, TouchableOpacity, Pressable, Share } from 'react-native';
 import { BlurView } from 'expo-blur';
+import { useAuth } from '@/context/AuthContext';
 import * as Haptics from 'expo-haptics';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -38,13 +39,22 @@ const FADE_IN_START = 0.35;
 // The "more" tab (index 4) triggers expand instead of navigation
 const MORE_TAB_INDEX = 4;
 
-// Quick actions for expanded panel — 4 items, single horizontal row
-const QUICK_ACTIONS = [
-  { id: 'email_coaches', label: 'Email\nCoaches', icon: 'mail', color: Colors.gold },
-  { id: 'schedule', label: 'Schedule', icon: 'calendar', color: Colors.info },
-  { id: 'rankings', label: 'Rankings', icon: 'trophy', color: Colors.red },
-  { id: 'my_profile', label: 'My Profile', icon: 'person', color: Colors.success },
-];
+type QuickAction = { id: string; label: string; icon: string; color: string };
+
+function buildQuickActions(role: string | undefined): QuickAction[] {
+  const base: QuickAction[] = [
+    { id: 'share_profile', label: 'Share\nProfile', icon: 'share', color: Colors.info },
+    { id: 'game_log',      label: 'Game Log',      icon: 'list',   color: Colors.success },
+    { id: 'next_game',     label: 'Next\nGame',    icon: 'calendar', color: Colors.red },
+  ];
+  if (role === 'PARENT') {
+    return [...base, { id: 'switch_player', label: 'Switch\nPlayer', icon: 'people', color: Colors.gold }];
+  }
+  if (role === 'PROGRAM_DIRECTOR' || role === 'ADMIN') {
+    return [...base, { id: 'register_team', label: 'Register\nTeam', icon: 'clipboard', color: Colors.gold }];
+  }
+  return base;
+}
 
 function QuickActionIcon({ name, color, size = 18 }: { name: string; color: string; size?: number }) {
   switch (name) {
@@ -106,11 +116,51 @@ function QuickActionIcon({ name, color, size = 18 }: { name: string; color: stri
         <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
           <View style={{ width: size * 0.5, height: size * 0.5, borderRadius: size * 0.25, borderWidth: 1.6, borderColor: color }} />
           <View style={{ width: size * 0.2, height: size * 0.2, borderRadius: size * 0.1, backgroundColor: color, position: 'absolute' }} />
-          {/* Gear teeth */}
           <View style={{ width: 2, height: size, backgroundColor: color, position: 'absolute', borderRadius: 1 }} />
           <View style={{ width: size, height: 2, backgroundColor: color, position: 'absolute', borderRadius: 1 }} />
           <View style={{ width: 2, height: size, backgroundColor: color, position: 'absolute', borderRadius: 1, transform: [{ rotate: '45deg' }] }} />
           <View style={{ width: size, height: 2, backgroundColor: color, position: 'absolute', borderRadius: 1, transform: [{ rotate: '45deg' }] }} />
+        </View>
+      );
+    case 'list':
+      // Horizontal lines — game log / list view
+      return (
+        <View style={{ width: size, height: size, justifyContent: 'center', gap: size * 0.18 }}>
+          <View style={{ width: size, height: 1.8, backgroundColor: color, borderRadius: 1 }} />
+          <View style={{ width: size * 0.75, height: 1.8, backgroundColor: color, borderRadius: 1 }} />
+          <View style={{ width: size * 0.88, height: 1.8, backgroundColor: color, borderRadius: 1 }} />
+          <View style={{ width: size * 0.6, height: 1.8, backgroundColor: color, borderRadius: 1 }} />
+        </View>
+      );
+    case 'people':
+      // Two overlapping person silhouettes — switch player
+      return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+          {/* Back person (offset left) */}
+          <View style={{ position: 'absolute', left: 0, top: 0, alignItems: 'center', opacity: 0.55 }}>
+            <View style={{ width: size * 0.35, height: size * 0.35, borderRadius: size * 0.175, borderWidth: 1.4, borderColor: color }} />
+            <View style={{ width: size * 0.6, height: size * 0.26, borderTopLeftRadius: size * 0.3, borderTopRightRadius: size * 0.3, borderWidth: 1.4, borderBottomWidth: 0, borderColor: color, marginTop: 1.5 }} />
+          </View>
+          {/* Front person (offset right) */}
+          <View style={{ position: 'absolute', right: 0, top: 0, alignItems: 'center' }}>
+            <View style={{ width: size * 0.35, height: size * 0.35, borderRadius: size * 0.175, borderWidth: 1.6, borderColor: color }} />
+            <View style={{ width: size * 0.6, height: size * 0.26, borderTopLeftRadius: size * 0.3, borderTopRightRadius: size * 0.3, borderWidth: 1.6, borderBottomWidth: 0, borderColor: color, marginTop: 1.5 }} />
+          </View>
+        </View>
+      );
+    case 'clipboard':
+      // Clipboard with plus — register team
+      return (
+        <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: size * 0.78, height: size * 0.88, borderWidth: 1.6, borderColor: color, borderRadius: 2.5, position: 'absolute', bottom: 0 }}>
+            {/* Clip at top */}
+            <View style={{ width: size * 0.35, height: size * 0.16, backgroundColor: color, alignSelf: 'center', borderBottomLeftRadius: 2, borderBottomRightRadius: 2, marginTop: -1 }} />
+            {/* Plus sign */}
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: size * 0.32, height: 1.8, backgroundColor: color, borderRadius: 1 }} />
+              <View style={{ width: 1.8, height: size * 0.32, backgroundColor: color, borderRadius: 1, position: 'absolute' }} />
+            </View>
+          </View>
         </View>
       );
     default:
@@ -210,10 +260,12 @@ function ExpandedPanel({
   expandProgress,
   onClose,
   onAction,
+  actions,
 }: {
   expandProgress: Animated.SharedValue<number>;
   onClose: () => void;
   onAction: (actionId: string) => void;
+  actions: QuickAction[];
 }) {
   const dismissTranslateY = useSharedValue(0);
   const dismissTranslateX = useSharedValue(0);
@@ -288,21 +340,25 @@ function ExpandedPanel({
           </TouchableOpacity>
         </View>
 
-        {/* Action Grid */}
+        {/* Action Grid — width computed from action count */}
         <View style={styles.quickActionsGrid}>
-          {QUICK_ACTIONS.map((action) => (
-            <TouchableOpacity
-              key={action.id}
-              style={styles.quickActionItem}
-              onPress={() => onAction(action.id)}
-              activeOpacity={0.75}
-            >
-              <View style={[styles.quickActionIconWrap, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}>
-                <QuickActionIcon name={action.icon} color="#fff" />
-              </View>
-              <Text style={styles.quickActionLabel} numberOfLines={2}>{action.label}</Text>
-            </TouchableOpacity>
-          ))}
+          {actions.map((action) => {
+            const gaps = (actions.length - 1) * 8;
+            const itemWidth = (EXPANDED_WIDTH - 28 - 4 - gaps) / actions.length;
+            return (
+              <TouchableOpacity
+                key={action.id}
+                style={[styles.quickActionItem, { width: itemWidth }]}
+                onPress={() => onAction(action.id)}
+                activeOpacity={0.75}
+              >
+                <View style={[styles.quickActionIconWrap, { backgroundColor: `${action.color}22` }]}>
+                  <QuickActionIcon name={action.icon} color={action.color} size={18} />
+                </View>
+                <Text style={styles.quickActionLabel} numberOfLines={2}>{action.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </Animated.View>
     </GestureDetector>
@@ -310,6 +366,8 @@ function ExpandedPanel({
 }
 
 function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const { user } = useAuth();
+  const quickActions = buildQuickActions(user?.role);
   const activeIndex = state.index;
 
   const pillCenterX = useSharedValue(activeIndex * TAB_WIDTH + TAB_WIDTH / 2);
@@ -388,27 +446,22 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 
     // Navigate based on action
     switch (actionId) {
-      case 'email_coaches':
-        navigation.navigate('index' as any);
-        // Small delay to let tab switch, then navigate to recruiting
-        setTimeout(() => {
-          (navigation as any).getParent()?.navigate('recruiting');
-        }, 100);
+      case 'share_profile':
+        // Navigate to profile — user can copy the "View Full Profile" link from there
+        navigation.navigate('profile' as any);
         break;
-      case 'schedule':
+      case 'game_log':
+        (navigation as any).getParent()?.navigate('players/game-log');
+        break;
+      case 'next_game':
         navigation.navigate('events' as any);
         break;
-      case 'rankings':
-        navigation.navigate('leaderboards' as any);
-        break;
-      case 'my_profile':
+      case 'switch_player':
+        // Profile tab shows the player switcher for parents with multiple players
         navigation.navigate('profile' as any);
         break;
-      case 'share':
-        navigation.navigate('profile' as any);
-        break;
-      case 'settings':
-        navigation.navigate('more' as any);
+      case 'register_team':
+        navigation.navigate('events' as any);
         break;
     }
   };
@@ -538,6 +591,7 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           expandProgress={expandProgress}
           onClose={toggleExpand}
           onAction={handleAction}
+          actions={quickActions}
         />
       </Animated.View>
     </GestureHandlerRootView>
@@ -600,9 +654,6 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-// 4 items: total width minus panel padding (14*2) minus grid padding (2*2) minus gaps (8*3)
-const QUICK_ACTION_ITEM_WIDTH = (EXPANDED_WIDTH - 28 - 4 - 24) / 4;
 
 const styles = StyleSheet.create({
   tabBarContainer: {
@@ -707,7 +758,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   quickActionItem: {
-    width: QUICK_ACTION_ITEM_WIDTH,
     alignItems: 'center',
     paddingVertical: 12,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
