@@ -12,10 +12,13 @@ import {
   Trophy,
   Activity,
   ChevronRight,
+  ChevronDown,
   MapPin,
   Building2,
   UserCog,
   GraduationCap,
+  ClipboardList,
+  Download,
 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 
@@ -31,11 +34,56 @@ interface Stats {
   recentGames: any[]
 }
 
+interface WaitlistEntry {
+  id: string
+  name: string
+  email: string
+  source: string | null
+  createdAt: string
+}
+
+interface DirectorPlayer {
+  id: string
+  firstName: string
+  lastName: string
+  jerseyNumber: string | null
+  position: string | null
+  graduationYear: number | null
+  school: string | null
+}
+
+interface DirectorTeam {
+  id: string
+  name: string
+  division: string | null
+  coachName: string | null
+  playerCount: number
+  players: DirectorPlayer[]
+}
+
+interface DirectorEntry {
+  id: string
+  programName: string
+  logo: string | null
+  city: string | null
+  state: string | null
+  directorName: string
+  directorEmail: string
+  teamCount: number
+  createdAt: string
+  teams: DirectorTeam[]
+}
+
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [stats, setStats] = useState<Stats | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([])
+  const [waitlistOpen, setWaitlistOpen] = useState(false)
+  const [directors, setDirectors] = useState<DirectorEntry[]>([])
+  const [directorsOpen, setDirectorsOpen] = useState(false)
+  const [expandedDirector, setExpandedDirector] = useState<string | null>(null)
 
   useEffect(() => {
     if (status === 'loading') return
@@ -49,6 +97,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchStats()
+    fetchWaitlist()
+    fetchDirectors()
   }, [])
 
   const fetchStats = async () => {
@@ -60,6 +110,30 @@ export default function AdminDashboard() {
       console.error('Error fetching stats:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchWaitlist = async () => {
+    try {
+      const res = await fetch('/api/admin/waitlist')
+      if (res.ok) {
+        const data = await res.json()
+        setWaitlist(data.entries || [])
+      }
+    } catch (error) {
+      console.error('Error fetching waitlist:', error)
+    }
+  }
+
+  const fetchDirectors = async () => {
+    try {
+      const res = await fetch('/api/admin/directors')
+      if (res.ok) {
+        const data = await res.json()
+        setDirectors(data.entries || [])
+      }
+    } catch (error) {
+      console.error('Error fetching directors:', error)
     }
   }
 
@@ -270,6 +344,203 @@ export default function AdminDashboard() {
             </div>
           </div>
         </section>
+
+        {/* Director Signups (temporary — remove after launch) */}
+        {directors.length > 0 && (
+          <section className="mt-10">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setDirectorsOpen(!directorsOpen)}
+                className="flex items-center gap-2 text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                <Building2 className="w-4 h-4" />
+                <span className="text-[10px] font-extrabold uppercase tracking-widest">
+                  Director Signups ({directors.length})
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${directorsOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {directorsOpen && (
+                <button
+                  onClick={() => {
+                    const header = 'Program,Director,Email,Teams,City,State,Date'
+                    const rows = directors.map((e) =>
+                      `"${e.programName.replace(/"/g, '""')}","${e.directorName.replace(/"/g, '""')}","${e.directorEmail}","${e.teamCount}","${e.city || ''}","${e.state || ''}","${new Date(e.createdAt).toLocaleDateString()}"`
+                    )
+                    const csv = [header, ...rows].join('\n')
+                    const blob = new Blob([csv], { type: 'text/csv' })
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `eha-directors-${new Date().toISOString().slice(0, 10)}.csv`
+                    a.click()
+                    URL.revokeObjectURL(url)
+                  }}
+                  className="flex items-center gap-1.5 text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest">Export CSV</span>
+                </button>
+              )}
+            </div>
+
+            {directorsOpen && (
+              <div className="mt-4 space-y-2">
+                {directors.map((entry) => (
+                  <div key={entry.id} className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
+                    <button
+                      onClick={() => setExpandedDirector(expandedDirector === entry.id ? null : entry.id)}
+                      className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors"
+                    >
+                      <div className="flex items-center gap-4">
+                        {entry.logo ? (
+                          <img src={entry.logo} alt="" className="w-8 h-8 rounded object-cover" />
+                        ) : (
+                          <div className="w-8 h-8 bg-white/10 rounded flex items-center justify-center">
+                            <Building2 className="w-4 h-4 text-gray-500" />
+                          </div>
+                        )}
+                        <div className="text-left">
+                          <span className="text-white text-sm font-medium">{entry.programName}</span>
+                          <span className="text-gray-500 text-xs ml-3">
+                            {entry.directorName} · {entry.directorEmail}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-500 text-xs">{entry.teamCount} teams</span>
+                        <span className="text-gray-600 font-mono text-xs">{new Date(entry.createdAt).toLocaleDateString()}</span>
+                        <ChevronDown className={`w-3.5 h-3.5 text-gray-500 transition-transform ${expandedDirector === entry.id ? 'rotate-180' : ''}`} />
+                      </div>
+                    </button>
+
+                    {expandedDirector === entry.id && (
+                      <div className="border-t border-white/5 px-4 py-3">
+                        {entry.teams.length === 0 ? (
+                          <p className="text-gray-500 text-sm">No teams created yet.</p>
+                        ) : (
+                          <div className="space-y-4">
+                            {entry.teams.map((team) => (
+                              <div key={team.id}>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="text-white text-sm font-semibold">{team.name}</span>
+                                  {team.division && (
+                                    <Badge variant="default">{team.division}</Badge>
+                                  )}
+                                  {team.coachName && (
+                                    <span className="text-gray-500 text-xs">Coach: {team.coachName}</span>
+                                  )}
+                                  <span className="text-gray-600 text-xs ml-auto">{team.playerCount} players</span>
+                                </div>
+
+                                {team.players.length > 0 ? (
+                                  <div className="bg-white/5 rounded overflow-hidden">
+                                    <table className="w-full text-xs">
+                                      <thead>
+                                        <tr className="border-b border-white/5">
+                                          <th className="text-left px-3 py-2 text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">#</th>
+                                          <th className="text-left px-3 py-2 text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Name</th>
+                                          <th className="text-left px-3 py-2 text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Pos</th>
+                                          <th className="text-left px-3 py-2 text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Class</th>
+                                          <th className="text-left px-3 py-2 text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">School</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {team.players.map((player) => (
+                                          <tr key={player.id} className="border-b border-white/5 last:border-0">
+                                            <td className="px-3 py-2 text-gray-500 font-mono">{player.jerseyNumber || '—'}</td>
+                                            <td className="px-3 py-2 text-white">{player.firstName} {player.lastName}</td>
+                                            <td className="px-3 py-2 text-gray-400">{player.position || '—'}</td>
+                                            <td className="px-3 py-2 text-gray-400">{player.graduationYear || '—'}</td>
+                                            <td className="px-3 py-2 text-gray-400">{player.school || '—'}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                ) : (
+                                  <p className="text-gray-500 text-xs">No players added yet.</p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Waitlist (temporary — remove after launch) */}
+        {waitlist.length > 0 && (
+          <section className="mt-10">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setWaitlistOpen(!waitlistOpen)}
+                className="flex items-center gap-2 text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                <ClipboardList className="w-4 h-4" />
+                <span className="text-[10px] font-extrabold uppercase tracking-widest">
+                  Waitlist Signups ({waitlist.length})
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${waitlistOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {waitlistOpen && (
+                <button
+                  onClick={() => {
+                    const header = 'Name,Email,Source,Date'
+                    const rows = waitlist.map((e) =>
+                      `"${e.name.replace(/"/g, '""')}","${e.email}","${e.source || ''}","${new Date(e.createdAt).toLocaleDateString()}"`
+                    )
+                    const csv = [header, ...rows].join('\n')
+                    const blob = new Blob([csv], { type: 'text/csv' })
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `eha-waitlist-${new Date().toISOString().slice(0, 10)}.csv`
+                    a.click()
+                    URL.revokeObjectURL(url)
+                  }}
+                  className="flex items-center gap-1.5 text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest">Export CSV</span>
+                </button>
+              )}
+            </div>
+
+            {waitlistOpen && (
+              <div className="mt-4 bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white/5">
+                      <th className="text-left px-4 py-3 text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Name</th>
+                      <th className="text-left px-4 py-3 text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Email</th>
+                      <th className="text-left px-4 py-3 text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Source</th>
+                      <th className="text-left px-4 py-3 text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {waitlist.map((entry) => (
+                      <tr key={entry.id} className="border-b border-white/5 last:border-0">
+                        <td className="px-4 py-3 text-white">{entry.name}</td>
+                        <td className="px-4 py-3 text-gray-400">{entry.email}</td>
+                        <td className="px-4 py-3 text-gray-500">{entry.source || '—'}</td>
+                        <td className="px-4 py-3 text-gray-500 font-mono text-xs">
+                          {new Date(entry.createdAt).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        )}
 
       </main>
     </div>
