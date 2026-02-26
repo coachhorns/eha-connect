@@ -67,7 +67,7 @@ function SignUpContent() {
     setIsGoogleLoading(true)
     setError('')
     try {
-      await signIn('google', { callbackUrl: '/dashboard' })
+      await signIn('google', { callbackUrl: '/auth/complete-profile' })
     } catch (err) {
       setError('Failed to sign up with Google. Please try again.')
       setIsGoogleLoading(false)

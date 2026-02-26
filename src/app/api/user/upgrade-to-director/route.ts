@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { role: 'PROGRAM_DIRECTOR' },
+    data: { role: 'PROGRAM_DIRECTOR', roleSelected: true },
   })
 
   return NextResponse.json({ role: 'PROGRAM_DIRECTOR', message: 'Upgraded to director' })

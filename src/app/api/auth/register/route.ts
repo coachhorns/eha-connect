@@ -35,6 +35,7 @@ export async function POST(request: Request) {
         password: hashedPassword,
         name,
         role: role || 'PARENT',
+        roleSelected: true,
       },
     })
 

@@ -12,6 +12,11 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          prompt: 'select_account',
+        },
+      },
     }),
     CredentialsProvider({
       name: 'credentials',
@@ -46,6 +51,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
+          roleSelected: user.roleSelected,
           image: user.image,
         }
       },
@@ -59,22 +65,27 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.role = (user as any).role
+        token.roleSelected = (user as any).roleSelected ?? false
       }
-      // For OAuth users, fetch role from database if not set
+      // For OAuth users, fetch role + roleSelected from database if not set
       if (account?.provider === 'google' && !token.role) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true },
+          select: { role: true, roleSelected: true },
         })
-        token.role = dbUser?.role || 'PLAYER'
+        token.role = dbUser?.role || 'PARENT'
+        token.roleSelected = dbUser?.roleSelected ?? false
       }
-      // Re-fetch role from DB when session is manually refreshed
+      // Re-fetch from DB when session is manually refreshed
       if (trigger === 'update') {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true },
+          select: { role: true, roleSelected: true },
         })
-        if (dbUser) token.role = dbUser.role
+        if (dbUser) {
+          token.role = dbUser.role
+          token.roleSelected = dbUser.roleSelected
+        }
       }
       return token
     },
@@ -82,6 +93,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        session.user.roleSelected = (token.roleSelected as boolean) ?? false
       }
       return session
     },

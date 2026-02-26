@@ -46,7 +46,7 @@ function SignInForm() {
     setIsGoogleLoading(true)
     setError('')
     try {
-      await signIn('google', { callbackUrl })
+      await signIn('google', { callbackUrl: '/auth/complete-profile' })
     } catch (err) {
       setError('Failed to sign in with Google. Please try again.')
       setIsGoogleLoading(false)
