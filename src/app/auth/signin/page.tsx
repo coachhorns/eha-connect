@@ -92,7 +92,7 @@ function SignInForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center px-4 pt-32 pb-12 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center px-4 py-12 relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"

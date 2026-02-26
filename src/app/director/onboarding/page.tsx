@@ -112,7 +112,7 @@ function OnboardingContent() {
               // Complete - redirect to callback
               router.push(callbackUrl)
             } else {
-              router.push('/director/dashboard')
+              router.push('/director/welcome')
             }
           } else {
             // Has program but no teams - skip to teams step
@@ -152,10 +152,7 @@ function OnboardingContent() {
     setError('')
   }
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  const uploadLogo = async (file: File) => {
     setIsUploading(true)
     setError('')
 
@@ -181,6 +178,12 @@ function OnboardingContent() {
     } finally {
       setIsUploading(false)
     }
+  }
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    uploadLogo(file)
   }
 
   const handleRemoveLogo = () => {
@@ -440,7 +443,7 @@ function OnboardingContent() {
     if (callbackUrl) {
       router.push(callbackUrl)
     } else {
-      router.push('/director/dashboard')
+      router.push('/director/welcome')
     }
   }
 
@@ -449,7 +452,7 @@ function OnboardingContent() {
   const currentRoster = rosters[currentTeamId] || []
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden [&_input]:!bg-white/5 [&_select]:!bg-white/5">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -463,7 +466,7 @@ function OnboardingContent() {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E31837] blur-[150px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500 blur-[120px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 pt-32 pb-12">
+      <div className="relative z-10 max-w-2xl mx-auto px-4 pt-12 pb-12">
         {/* Logo */}
         <div className="text-center mb-8">
           <Image
@@ -506,7 +509,7 @@ function OnboardingContent() {
 
         {/* Step 1: Program */}
         {currentStep === 'program' && (
-          <Card className="p-6">
+          <Card className="p-6 !bg-white/5 !border-white/10 !shadow-none">
             <h1 className="text-2xl font-bold text-white mb-2">Create Your Program</h1>
             <p className="text-gray-400 mb-6">
               Welcome, {session.user.name || 'Director'}! Let's set up your program.
@@ -529,11 +532,11 @@ function OnboardingContent() {
               {/* Logo Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Logo (Optional)
+                  Program Logo *
                 </label>
                 {programData.logo ? (
                   <div className="flex items-start gap-4">
-                    <div className="relative w-24 h-24 bg-[#1a3a6e] rounded-lg overflow-hidden">
+                    <div className="relative w-24 h-24 bg-white/5 rounded-lg overflow-hidden">
                       <img
                         src={programData.logo}
                         alt="Logo preview"
@@ -551,7 +554,26 @@ function OnboardingContent() {
                 ) : (
                   <div
                     onClick={() => !isUploading && fileInputRef.current?.click()}
-                    className={`border-2 border-dashed border-[#1a3a6e] rounded-lg p-6 text-center cursor-pointer hover:border-[#E31837]/50 transition-colors ${
+                    onDragOver={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      e.currentTarget.classList.add('!border-[#E31837]/50')
+                    }}
+                    onDragLeave={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      e.currentTarget.classList.remove('!border-[#E31837]/50')
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      e.currentTarget.classList.remove('!border-[#E31837]/50')
+                      const file = e.dataTransfer.files?.[0]
+                      if (file && file.type.startsWith('image/')) {
+                        uploadLogo(file)
+                      }
+                    }}
+                    className={`border-2 border-dashed border-white/20 rounded-lg p-6 text-center cursor-pointer hover:border-[#E31837]/50 transition-colors ${
                       isUploading ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
@@ -560,7 +582,7 @@ function OnboardingContent() {
                     ) : (
                       <ImageIcon className="w-8 h-8 text-gray-500 mx-auto mb-2" />
                     )}
-                    <p className="text-sm text-gray-400">Click to upload logo</p>
+                    <p className="text-sm text-gray-400">Click or drag & drop to upload logo</p>
                   </div>
                 )}
                 <input
@@ -610,7 +632,7 @@ function OnboardingContent() {
 
         {/* Step 2: Teams */}
         {currentStep === 'teams' && (
-          <Card className="p-6">
+          <Card className="p-6 !bg-white/5 !border-white/10 !shadow-none">
             <h1 className="text-2xl font-bold text-white mb-2">Add Your Teams</h1>
             <p className="text-gray-400 mb-6">
               Add the teams in your program. You need at least one team.
@@ -644,7 +666,7 @@ function OnboardingContent() {
                     <select
                       value={team.division}
                       onChange={(e) => handleTeamChange(index, 'division', e.target.value)}
-                      className="w-full bg-[#0a1628] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#E31837]"
+                      className="w-full bg-[#0a1628] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#E31837] [&_option]:bg-[#0A1D37] [&_option]:text-white"
                     >
                       <option value="">Division</option>
                       {divisions.map(d => (
@@ -684,7 +706,7 @@ function OnboardingContent() {
 
         {/* Step 3: Rosters */}
         {currentStep === 'rosters' && (
-          <Card className="p-6">
+          <Card className="p-6 !bg-white/5 !border-white/10 !shadow-none">
             <h1 className="text-2xl font-bold text-white mb-2">Add Players</h1>
             <p className="text-gray-400 mb-6">
               Add at least one player to each team. You can add more later.
@@ -703,8 +725,8 @@ function OnboardingContent() {
                     onClick={() => setActiveTeamIndex(index)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
                       activeTeamIndex === index
-                        ? 'bg-[#E31837] text-white'
-                        : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                        ? 'bg-white/15 text-white border border-white/20'
+                        : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
                     }`}
                   >
                     {team.name || `Team ${index + 1}`}
@@ -719,19 +741,22 @@ function OnboardingContent() {
             </div>
 
             {/* Roster Image Upload Banner */}
-            <div className="bg-gradient-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/30 rounded-xl p-4 mb-6">
+            <div className="bg-gradient-to-r from-[#E31837]/15 to-[#E31837]/5 border border-[#E31837]/30 rounded-xl p-4 mb-6">
               <div className="flex items-start gap-3">
-                <Camera className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
+                <Camera className="w-6 h-6 text-[#E31837] flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-white mb-1">Quick Tip: Upload a photo of your roster!</h3>
-                  <p className="text-sm text-gray-400 mb-3">
-                    Take a picture of your printed roster or screenshot from your team app. We'll automatically extract player information.
+                  <h3 className="text-sm font-semibold text-white mb-1">Quick Tip: Save Time — Upload Your Roster</h3>
+                  <p className="text-sm text-gray-400 mb-2">
+                    Upload a photo of your roster, a screenshot from Google Sheets or Excel, or even a handwritten document — our AI will automatically extract player info.
+                  </p>
+                  <p className="text-xs text-[#E31837]/80 mb-3">
+                    Include (in no particular order): <span className="text-white font-medium">first name, last name, jersey number, position, graduating class, height, and high school</span> for best results.
                   </p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => rosterImageRef.current?.click()}
                       disabled={isParsing}
-                      className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+                      className="px-4 py-2 bg-[#E31837] hover:bg-[#c01530] text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
                     >
                       {isParsing ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -821,7 +846,7 @@ function OnboardingContent() {
 
         {/* Step 4: Complete */}
         {currentStep === 'complete' && (
-          <Card className="p-6 text-center">
+          <Card className="p-6 text-center !bg-white/5 !border-white/10 !shadow-none">
             <div className="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Check className="w-8 h-8 text-green-400" />
             </div>

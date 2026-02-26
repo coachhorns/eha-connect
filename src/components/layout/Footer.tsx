@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 
 const footerLinks = {
   players: [
@@ -23,6 +24,11 @@ const footerLinks = {
 }
 
 export function Footer() {
+  const pathname = usePathname()
+
+  // Hide Footer on standalone marketing pages
+  if (pathname === '/coming-soon' || pathname.startsWith('/join/') || pathname.startsWith('/auth/') || pathname === '/director/onboarding' || pathname === '/director/welcome') return null
+
   return (
     <footer className="mt-16 border-t border-white/5">
       <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-12">

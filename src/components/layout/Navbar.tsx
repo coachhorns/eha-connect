@@ -20,6 +20,10 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname()
+
+  // Hide Navbar on standalone marketing pages
+  if (pathname === '/coming-soon' || pathname.startsWith('/join/') || pathname.startsWith('/auth/') || pathname === '/director/onboarding' || pathname === '/director/welcome') return null
+
   const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
