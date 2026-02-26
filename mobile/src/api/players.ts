@@ -35,11 +35,24 @@ export const playersApi = {
   updatePlayer: (id: string, data: Partial<Player>) =>
     api.put<Player>(`/api/user/players/${id}`, data),
 
-  getMedia: (id: string) =>
-    api.get<PlayerMedia[]>(`/api/user/players/${id}/media`),
+  getMedia: async (id: string): Promise<PlayerMedia[]> => {
+    const res = await api.get<{ media: PlayerMedia[] }>(`/api/user/players/${id}/media`);
+    return res.media ?? [];
+  },
 
-  uploadMedia: (id: string, data: FormData) =>
-    api.post<PlayerMedia>(`/api/user/players/${id}/media`, data),
+  createMedia: (id: string, data: { url: string; type: string; title?: string; thumbnail?: string }) =>
+    api.post<{ media: PlayerMedia }>(`/api/user/players/${id}/media`, data),
+
+  deleteMedia: (playerId: string, mediaId: string) =>
+    api.delete<{ success: boolean }>(`/api/user/players/${playerId}/media?mediaId=${mediaId}`),
+
+  uploadFile: (formData: FormData) =>
+    api.uploadFile<{ url: string }>('/api/upload', formData),
+
+  getUpcomingGames: async (id: string) => {
+    const res = await api.get<{ games: any[] }>(`/api/user/players/${id}/upcoming-games`);
+    return res.games ?? [];
+  },
 
   claimPlayer: (data: { playerId: string }) =>
     api.post<{ success: boolean }>('/api/claim-player', data),

@@ -43,6 +43,7 @@ export default function GameLogScreen() {
       <Stack.Screen
         options={{
           title: 'Game Log',
+          headerBackTitle: 'Back',
           headerStyle: { backgroundColor: Colors.background },
           headerTintColor: Colors.textPrimary,
           headerTitleStyle: { fontFamily: Fonts.heading, fontSize: 18 },

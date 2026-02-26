@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionUser } from '@/lib/get-session'
 import prisma from '@/lib/prisma'
 
 async function verifyPlayerOwnership(playerId: string, userId: string) {
@@ -20,15 +19,15 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { id } = await params
 
-    const player = await verifyPlayerOwnership(id, session.user.id)
+    const player = await verifyPlayerOwnership(id, user.id)
     if (!player) {
       return NextResponse.json({ error: 'Player not found' }, { status: 404 })
     }
@@ -50,15 +49,15 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { id } = await params
 
-    const player = await verifyPlayerOwnership(id, session.user.id)
+    const player = await verifyPlayerOwnership(id, user.id)
     if (!player) {
       return NextResponse.json({ error: 'Player not found' }, { status: 403 })
     }
@@ -96,15 +95,15 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { id } = await params
 
-    const player = await verifyPlayerOwnership(id, session.user.id)
+    const player = await verifyPlayerOwnership(id, user.id)
     if (!player) {
       return NextResponse.json({ error: 'Player not found' }, { status: 403 })
     }
