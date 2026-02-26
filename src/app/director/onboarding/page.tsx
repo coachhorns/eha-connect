@@ -43,7 +43,7 @@ interface TeamWithRoster extends TeamData {
 type OnboardingStep = 'program' | 'teams' | 'rosters' | 'complete'
 
 function OnboardingContent() {
-  const { data: session, status } = useSession()
+  const { data: session, status, update } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl')
@@ -81,10 +81,31 @@ function OnboardingContent() {
     jerseyNumber: '',
   })
 
+  // Auto-upgrade PARENT/PLAYER users to PROGRAM_DIRECTOR (Google OAuth from join page)
+  const [isUpgrading, setIsUpgrading] = useState(false)
+  useEffect(() => {
+    const upgradeRole = async () => {
+      if (status !== 'authenticated') return
+      const role = session?.user?.role
+      if (role === 'PARENT' || role === 'PLAYER') {
+        setIsUpgrading(true)
+        try {
+          await fetch('/api/user/upgrade-to-director', { method: 'POST' })
+          await update() // Refresh JWT with new role
+        } catch (err) {
+          console.error('Failed to upgrade role:', err)
+        }
+        setIsUpgrading(false)
+      }
+    }
+    upgradeRole()
+  }, [status, session?.user?.role, update])
+
   // Check for existing program
   useEffect(() => {
     const checkExistingProgram = async () => {
-      if (status !== 'authenticated' || session?.user?.role !== 'PROGRAM_DIRECTOR') return
+      if (status !== 'authenticated') return
+      if (session?.user?.role !== 'PROGRAM_DIRECTOR' && session?.user?.role !== 'ADMIN') return
 
       try {
         const res = await fetch('/api/director/program')
@@ -141,7 +162,15 @@ function OnboardingContent() {
     return null
   }
 
-  if (session?.user.role !== 'PROGRAM_DIRECTOR') {
+  if (session?.user.role !== 'PROGRAM_DIRECTOR' && session?.user.role !== 'ADMIN') {
+    // Still upgrading — show loading instead of redirecting
+    if (isUpgrading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-[#0A1D37]">
+          <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
+        </div>
+      )
+    }
     router.push('/')
     return null
   }
