@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: 'EHA Connect',
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: '/icons/icon-192x192.png',
     apple: '/icons/icon-192x192.png',
   },
   openGraph: {
