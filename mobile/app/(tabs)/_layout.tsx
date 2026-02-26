@@ -58,21 +58,35 @@ const DIRECTOR_POOL: (QuickAction & ActionOption)[] = [
 ];
 const DIRECTOR_DEFAULTS = ['move_player', 'create_team', 'register_team', 'next_game'];
 
-function buildDefaultActions(role: string | undefined): QuickAction[] {
-  if (role === 'PARENT') return [
-    { id: 'share_profile', label: 'Share\nProfile', icon: 'share' },
-    { id: 'game_log',      label: 'Game Log',       icon: 'list' },
-    { id: 'next_game',     label: 'Next\nGame',     icon: 'calendar' },
-    { id: 'switch_player', label: 'Switch\nPlayer', icon: 'people' },
-  ];
-  if (role === 'PROGRAM_DIRECTOR' || role === 'ADMIN') {
-    return DIRECTOR_DEFAULTS.map(id => DIRECTOR_POOL.find(a => a.id === id)!);
-  }
-  return [
-    { id: 'share_profile', label: 'Share\nProfile', icon: 'share' },
-    { id: 'game_log',      label: 'Game Log',       icon: 'list' },
-    { id: 'next_game',     label: 'Next\nGame',     icon: 'calendar' },
-  ];
+const PLAYER_POOL: (QuickAction & ActionOption)[] = [
+  { id: 'share_profile', label: 'Share\nProfile', icon: 'share',    description: 'Share your player profile link'      },
+  { id: 'game_log',      label: 'Game Log',       icon: 'list',     description: 'View your full game history'         },
+  { id: 'next_game',     label: 'Next\nGame',     icon: 'calendar', description: 'Jump to the next scheduled game'     },
+  { id: 'recruiting',    label: 'Recruiting',     icon: 'mail',     description: 'Send recruiting emails to coaches'   },
+  { id: 'leaderboards',  label: 'Leaders',        icon: 'trophy',   description: 'View stats and leaderboards'        },
+];
+const PLAYER_DEFAULTS = ['share_profile', 'game_log', 'next_game'];
+
+const PARENT_POOL: (QuickAction & ActionOption)[] = [
+  { id: 'share_profile', label: 'Share\nProfile', icon: 'share',    description: 'Share player profile link'           },
+  { id: 'game_log',      label: 'Game Log',       icon: 'list',     description: 'View full game history'              },
+  { id: 'next_game',     label: 'Next\nGame',     icon: 'calendar', description: 'Jump to the next scheduled game'     },
+  { id: 'switch_player', label: 'Switch\nPlayer', icon: 'people',   description: 'Switch between your players'         },
+  { id: 'recruiting',    label: 'Recruiting',     icon: 'mail',     description: 'Send recruiting emails to coaches'   },
+  { id: 'leaderboards',  label: 'Leaders',        icon: 'trophy',   description: 'View stats and leaderboards'        },
+];
+const PARENT_DEFAULTS = ['share_profile', 'game_log', 'next_game', 'switch_player'];
+
+function getActionPool(role: string | undefined): (QuickAction & ActionOption)[] {
+  if (role === 'PROGRAM_DIRECTOR' || role === 'ADMIN') return DIRECTOR_POOL;
+  if (role === 'PARENT') return PARENT_POOL;
+  return PLAYER_POOL;
+}
+
+function getDefaultIds(role: string | undefined): string[] {
+  if (role === 'PROGRAM_DIRECTOR' || role === 'ADMIN') return DIRECTOR_DEFAULTS;
+  if (role === 'PARENT') return PARENT_DEFAULTS;
+  return PLAYER_DEFAULTS;
 }
 
 function QuickActionIcon({ name, color, size = 18 }: { name: string; color: string; size?: number }) {
@@ -390,10 +404,23 @@ function ExpandedPanel({
                 style={styles.editButton}
                 activeOpacity={0.7}
               >
-                {/* Pencil icon */}
-                <View style={{ width: 12, height: 12, alignItems: 'center', justifyContent: 'center' }}>
-                  <View style={{ width: 2, height: 9, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '45deg' }] }} />
-                  <View style={{ width: 4, height: 2, backgroundColor: Colors.textSecondary, borderRadius: 1, position: 'absolute', bottom: 0 }} />
+                {/* Sliders / tune icon */}
+                <View style={{ width: 14, height: 14, justifyContent: 'space-between', paddingVertical: 1 }}>
+                  {/* Top bar with dot on left */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: Colors.textSecondary }} />
+                    <View style={{ flex: 1, height: 1.5, backgroundColor: Colors.textSecondary, marginLeft: 1, borderRadius: 1 }} />
+                  </View>
+                  {/* Middle bar with dot on right */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flex: 1, height: 1.5, backgroundColor: Colors.textSecondary, marginRight: 1, borderRadius: 1 }} />
+                    <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: Colors.textSecondary }} />
+                  </View>
+                  {/* Bottom bar with dot on left */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: Colors.textSecondary }} />
+                    <View style={{ flex: 1, height: 1.5, backgroundColor: Colors.textSecondary, marginLeft: 1, borderRadius: 1 }} />
+                  </View>
                 </View>
               </TouchableOpacity>
             )}
@@ -434,25 +461,29 @@ function ExpandedPanel({
 function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { user } = useAuth();
   const role = user?.role;
-  const isCustomizable = role === 'PROGRAM_DIRECTOR' || role === 'ADMIN';
+  const actionPool = useMemo(() => getActionPool(role), [role]);
+  const defaultIds = useMemo(() => getDefaultIds(role), [role]);
 
-  // Load saved action prefs from SecureStore (directors/admins only)
+  // Load saved action prefs from SecureStore
   const [savedIds, setSavedIds] = useState<string[] | null>(null);
   useEffect(() => {
-    if (!isCustomizable) return;
     SecureStore.getItemAsync(SECURE_KEY).then(val => {
-      if (val) setSavedIds(JSON.parse(val));
+      if (val) {
+        // Validate stored IDs against current pool
+        const ids = JSON.parse(val) as string[];
+        const poolIds = new Set(actionPool.map(a => a.id));
+        const valid = ids.filter(id => poolIds.has(id));
+        if (valid.length > 0) setSavedIds(valid);
+      }
     });
-  }, [isCustomizable]);
+  }, [actionPool]);
 
   const quickActions = useMemo<QuickAction[]>(() => {
-    if (isCustomizable && savedIds) {
-      return savedIds
-        .map(id => DIRECTOR_POOL.find(a => a.id === id))
-        .filter(Boolean) as QuickAction[];
-    }
-    return buildDefaultActions(role);
-  }, [role, savedIds, isCustomizable]);
+    const ids = savedIds ?? defaultIds;
+    return ids
+      .map(id => actionPool.find(a => a.id === id))
+      .filter(Boolean) as QuickAction[];
+  }, [actionPool, savedIds, defaultIds]);
 
   const handleSavePrefs = async (ids: string[]) => {
     setSavedIds(ids);
@@ -563,6 +594,12 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       case 'create_team':
         setTimeout(() => setShowCreateTeam(true), 350);
         break;
+      case 'recruiting':
+        (navigation as any).getParent()?.navigate('recruiting');
+        break;
+      case 'leaderboards':
+        navigation.navigate('leaderboards' as any);
+        break;
     }
   };
 
@@ -575,11 +612,19 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     }
   };
 
-  // Tap gesture: tap an icon to switch tabs (or expand for more)
+  // Long-press on more tab → open customize sheet directly
+  const handleLongPressMore = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    setShowCustomize(true);
+  };
+
+  // Tap gesture: tap an icon to switch tabs (skips more tab — handled by Pressable overlay)
   const tapGesture = Gesture.Tap()
     .onEnd((e) => {
       const tapIndex = Math.min(Math.max(Math.floor(e.x / TAB_WIDTH), 0), TAB_COUNT - 1);
-      runOnJS(handleTap)(tapIndex);
+      if (tapIndex < MORE_TAB_INDEX) {
+        runOnJS(handleTap)(tapIndex);
+      }
     });
 
   // Pan gesture: drag the pill across (clamped before the more tab)
@@ -621,7 +666,7 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       prevIndex.value = nearestIndex;
     });
 
-  // Race: if user starts dragging (>8px), use pan. Otherwise treat as tap.
+  // Race: pan (>8px drag) or tap (quick lift). More tab handled by Pressable overlay.
   const composedGesture = Gesture.Race(panGesture, tapGesture);
 
   // Morphing container: animates size, border radius, and rises upward
@@ -656,64 +701,73 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   });
 
   return (
-    <GestureHandlerRootView style={[styles.tabBarContainer, showBackdrop && styles.tabBarContainerExpanded]}>
-      {/* Full-screen tap-to-close backdrop */}
-      {showBackdrop && (
-        <Pressable style={styles.backdrop} onPress={toggleExpand} />
-      )}
+    <>
+      <GestureHandlerRootView style={[styles.tabBarContainer, showBackdrop && styles.tabBarContainerExpanded]}>
+        {/* Full-screen tap-to-close backdrop */}
+        {showBackdrop && (
+          <Pressable style={styles.backdrop} onPress={toggleExpand} />
+        )}
 
-      {/* Morphing shell */}
-      <Animated.View style={[styles.morphShell, morphContainerStyle]}>
-        {/* Glass blur background */}
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
-          <View style={styles.glassInner} />
-        </BlurView>
+        {/* Morphing shell */}
+        <Animated.View style={[styles.morphShell, morphContainerStyle]}>
+          {/* Glass blur background */}
+          <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
+            <View style={styles.glassInner} />
+          </BlurView>
 
-        {/* Collapsed content: tab bar */}
-        <Animated.View style={[styles.collapsedRow, collapsedRowStyle]} pointerEvents={isExpanded.value ? 'none' : 'auto'}>
-          <GestureDetector gesture={composedGesture}>
-            <Animated.View style={styles.tabSection}>
-              {/* Tab icons */}
-              {state.routes.map((route, index) => (
-                <AnimatedTab
-                  key={route.key}
-                  index={index}
-                  name={route.name}
-                  pillCenter={pillCenter}
-                />
-              ))}
-            </Animated.View>
-          </GestureDetector>
+          {/* Collapsed content: tab bar */}
+          <Animated.View style={[styles.collapsedRow, collapsedRowStyle]} pointerEvents={isExpanded.value ? 'none' : 'auto'}>
+            <GestureDetector gesture={composedGesture}>
+              <Animated.View style={styles.tabSection}>
+                {/* Tab icons */}
+                {state.routes.map((route, index) => (
+                  <AnimatedTab
+                    key={route.key}
+                    index={index}
+                    name={route.name}
+                    pillCenter={pillCenter}
+                  />
+                ))}
+              </Animated.View>
+            </GestureDetector>
+            {/* More tab overlay: tap to expand, long-press to customize */}
+            <Pressable
+              onPress={toggleExpand}
+              onLongPress={handleLongPressMore}
+              delayLongPress={500}
+              style={styles.moreTabOverlay}
+            />
+          </Animated.View>
+
+          {/* Expanded panel */}
+          <ExpandedPanel
+            expandProgress={expandProgress}
+            onClose={toggleExpand}
+            onAction={handleAction}
+            actions={quickActions}
+            isCustomizable={true}
+            onCustomize={() => setShowCustomize(true)}
+          />
         </Animated.View>
+      </GestureHandlerRootView>
 
-        {/* Expanded panel */}
-        <ExpandedPanel
-          expandProgress={expandProgress}
-          onClose={toggleExpand}
-          onAction={handleAction}
-          actions={quickActions}
-          isCustomizable={isCustomizable}
-          onCustomize={() => setShowCustomize(true)}
-        />
-      </Animated.View>
-    </GestureHandlerRootView>
-
-    {/* Director/Admin sheets — rendered outside the gesture root */}
-    <QuickMovePlayerSheet
-      visible={showMovePlayer}
-      onClose={() => setShowMovePlayer(false)}
-    />
-    <QuickCreateTeamSheet
-      visible={showCreateTeam}
-      onClose={() => setShowCreateTeam(false)}
-    />
-    <CustomizeActionsSheet
-      visible={showCustomize}
-      currentIds={savedIds ?? DIRECTOR_DEFAULTS}
-      availableActions={DIRECTOR_POOL}
-      onSave={handleSavePrefs}
-      onClose={() => setShowCustomize(false)}
-    />
+      {/* Sheets — rendered outside the gesture root */}
+      <QuickMovePlayerSheet
+        visible={showMovePlayer}
+        onClose={() => setShowMovePlayer(false)}
+      />
+      <QuickCreateTeamSheet
+        visible={showCreateTeam}
+        onClose={() => setShowCreateTeam(false)}
+      />
+      <CustomizeActionsSheet
+        visible={showCustomize}
+        currentIds={savedIds ?? defaultIds}
+        availableActions={actionPool}
+        onSave={handleSavePrefs}
+        onClose={() => setShowCustomize(false)}
+      />
+    </>
   );
 }
 
@@ -906,5 +960,12 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     textAlign: 'center',
     lineHeight: 13,
+  },
+  moreTabOverlay: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: TAB_WIDTH,
+    height: TAB_BAR_HEIGHT,
   },
 });
