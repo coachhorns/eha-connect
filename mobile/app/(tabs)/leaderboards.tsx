@@ -616,7 +616,6 @@ export default function StatsHubScreen() {
             </View>
           </View>
         </BlurView>
-        <View style={styles.headerBorder} />
       </View>
 
       {/* ── SCROLLABLE CONTENT ───────────────────────────── */}
@@ -655,6 +654,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.sm,
     backgroundColor: 'rgba(15, 23, 42, 0.5)',
     gap: Spacing.sm,
   },
@@ -664,8 +664,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   headerLogo: {
-    width: 72,
-    height: 72,
+    width: 40,
+    height: 40,
   },
   headerSubtitle: {
     fontSize: FontSize.xs,
@@ -678,13 +678,6 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     marginTop: -1,
   },
-  headerBorder: {
-    position: 'absolute',
-    bottom: 0, left: 0, right: 0,
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-  },
-
   // ── Segmented control ────────────────────────────────────────
   segmentedControl: {
     flexDirection: 'row',

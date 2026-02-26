@@ -84,6 +84,25 @@ class ApiClient {
     }
     return res.json();
   }
+
+  async uploadFile<T>(path: string, formData: FormData): Promise<T> {
+    const token = await this.getToken();
+    const h: Record<string, string> = {};
+    if (token) {
+      h['Authorization'] = `Bearer ${token}`;
+    }
+    // Do NOT set Content-Type — fetch sets multipart/form-data with boundary automatically
+    const res = await fetch(`${this.baseUrl}${path}`, {
+      method: 'POST',
+      headers: h,
+      body: formData,
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new ApiError(res.status, text);
+    }
+    return res.json();
+  }
 }
 
 export class ApiError extends Error {

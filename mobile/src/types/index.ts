@@ -130,10 +130,13 @@ export interface PlayerStats {
 
 export interface PlayerMedia {
   id: string;
+  playerId: string;
   url: string;
-  type: 'IMAGE' | 'VIDEO';
-  caption: string | null;
-  createdAt: string;
+  type: 'PHOTO' | 'VIDEO' | 'HIGHLIGHT';
+  title: string | null;
+  thumbnail: string | null;
+  isPublic: boolean;
+  uploadedAt: string;
 }
 
 // ── Events ───────────────────────────────────────────────────

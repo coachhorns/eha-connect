@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet, Platform, Dimensions, TouchableOpacity, Pressable } from 'react-native';
+import { Tabs, useRouter } from 'expo-router';
+import { View, Text, StyleSheet, Platform, Dimensions, TouchableOpacity, Pressable, Share, Alert } from 'react-native';
 import { BlurView } from 'expo-blur';
 import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '@/context/AuthContext';
@@ -8,6 +8,8 @@ import { QuickMovePlayerSheet } from '@/components/QuickMovePlayerSheet';
 import { QuickCreateTeamSheet } from '@/components/QuickCreateTeamSheet';
 import { CustomizeActionsSheet, type ActionOption } from '@/components/CustomizeActionsSheet';
 import * as Haptics from 'expo-haptics';
+import { useQuery } from '@tanstack/react-query';
+import { playersApi } from '@/api/players';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -459,6 +461,7 @@ function ExpandedPanel({
 }
 
 function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const router = useRouter();
   const { user } = useAuth();
   const role = user?.role;
   const actionPool = useMemo(() => getActionPool(role), [role]);
@@ -489,6 +492,26 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     setSavedIds(ids);
     await SecureStore.setItemAsync(SECURE_KEY, JSON.stringify(ids));
   };
+
+  // Fetch player for share action
+  const { data: myPlayers } = useQuery({
+    queryKey: ['myPlayers'],
+    queryFn: playersApi.getMyPlayers,
+    enabled: !!user,
+  });
+  const { data: guardedPlayers } = useQuery({
+    queryKey: ['guardedPlayers'],
+    queryFn: playersApi.getGuardedPlayers,
+    enabled: !!user,
+  });
+  const sharePlayer = useMemo(() => {
+    const seen = new Set<string>();
+    return [...(myPlayers ?? []), ...(guardedPlayers ?? [])].find(p => {
+      if (seen.has(p.id)) return false;
+      seen.add(p.id);
+      return true;
+    }) ?? null;
+  }, [myPlayers, guardedPlayers]);
 
   // Sheet visibility
   const [showMovePlayer, setShowMovePlayer] = useState(false);
@@ -574,13 +597,45 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     // Navigate / open sheet based on action
     switch (actionId) {
       case 'share_profile':
-        navigation.navigate('profile' as any);
+        if (sharePlayer?.slug) {
+          Share.share({
+            message: `Check out ${sharePlayer.firstName} ${sharePlayer.lastName}'s player profile on EHA Connect!\nhttps://ehaconnect.com/players/${sharePlayer.slug}`,
+          });
+        }
         break;
       case 'game_log':
-        (navigation as any).getParent()?.navigate('players/game-log');
+        if (sharePlayer?.slug) {
+          router.push({ pathname: '/players/game-log', params: { slug: sharePlayer.slug } });
+        }
         break;
       case 'next_game':
-        navigation.navigate('events' as any);
+        if (sharePlayer?.id) {
+          playersApi.getUpcomingGames(sharePlayer.id).then(games => {
+            if (games.length === 0) {
+              Alert.alert('No Upcoming Games', 'There are no scheduled games for your team right now.');
+              return;
+            }
+            const g = games[0];
+            const isHome = sharePlayer.teamRosters?.some((r: any) => r.teamId === g.homeTeamId || r.team?.id === g.homeTeamId);
+            const opponent = isHome ? g.awayTeam?.name : g.homeTeam?.name;
+            const dateStr = g.scheduledAt
+              ? new Date(g.scheduledAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+              : 'TBD';
+            const court = g.assignedCourt?.name || g.court || '';
+            const event = g.event?.name || '';
+            const details = [
+              opponent ? `vs ${opponent}` : '',
+              dateStr,
+              court ? `Court: ${court}` : '',
+              event,
+            ].filter(Boolean).join('\n');
+            Alert.alert('Next Game', details);
+          }).catch(() => {
+            Alert.alert('Error', 'Could not load upcoming games.');
+          });
+        } else {
+          navigation.navigate('events' as any);
+        }
         break;
       case 'switch_player':
         navigation.navigate('profile' as any);
