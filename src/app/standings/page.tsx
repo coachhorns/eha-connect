@@ -3,60 +3,14 @@
 import { useState, useEffect } from 'react'
 import {
   Trophy,
-  Calendar,
   ChevronDown,
-  ArrowRight,
-  Radio,
-  Shield,
-  TrendingUp,
   Activity
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui'
-
-// Mock Data
-const atlanticEliteTeams = [
-  { pos: 1, abbr: 'BE', name: 'Brooklyn Elite', wins: 12, losses: 2, pct: '.857', streak: 'W6', streakType: 'W', lastTen: '9-1' },
-  { pos: 2, abbr: 'NJS', name: 'NJ Scholars', wins: 11, losses: 3, pct: '.786', streak: 'W2', streakType: 'W', lastTen: '7-3' },
-  { pos: 3, abbr: 'DCG', name: 'DC Grads', wins: 9, losses: 5, pct: '.643', streak: 'L1', streakType: 'L', lastTen: '6-4' },
-  { pos: 4, abbr: 'PHX', name: 'Philly Xpress', wins: 8, losses: 6, pct: '.571', streak: 'L2', streakType: 'L', lastTen: '4-6' }
-]
-
-const coastalPremierTeams = [
-  { pos: 1, abbr: 'MIA', name: 'Miami Tropics', wins: 14, losses: 0, pct: '1.000', streak: 'W14', streakType: 'W', lastTen: '10-0' },
-  { pos: 2, abbr: 'ORL', name: 'Orlando Magic AAU', wins: 10, losses: 4, pct: '.714', streak: 'W1', streakType: 'W', lastTen: '8-2' }
-]
-
-const matchups = [
-  {
-    date: 'Saturday • Oct 12 • 4:30 PM',
-    team1Abbr: 'BE',
-    team1Name: 'Brooklyn Elite',
-    team1Record: '12-2',
-    team1Color: '#0A1D37',
-    team2Abbr: 'NJS',
-    team2Name: 'NJ Scholars',
-    team2Record: '11-3',
-    team2Color: '#E31837',
-    buttonText: 'Watch Preview'
-  },
-  {
-    date: 'Saturday • Oct 12 • 6:00 PM',
-    team1Abbr: 'DCG',
-    team1Name: 'DC Grads',
-    team1Record: '9-5',
-    team1Color: '#cbd5e1', // Using gray/silver
-    team2Abbr: 'PHX',
-    team2Name: 'Philly Xpress',
-    team2Record: '8-6',
-    team2Color: '#cbd5e1',
-    buttonText: 'Watch Live'
-  }
-]
 
 export default function StandingsPage() {
   const [division, setDivision] = useState('All Divisions')
   const [teams, setTeams] = useState<any[]>([])
+  const [availableDivisions, setAvailableDivisions] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -67,6 +21,21 @@ export default function StandingsPage() {
         const data = await res.json()
         if (data.teams) {
           setTeams(data.teams)
+          // Extract unique divisions from the data (only on "All Divisions" fetch)
+          if (division === 'All Divisions') {
+            const uniqueDivisions = [...new Set(data.teams.map((t: any) => t.division).filter(Boolean))] as string[]
+            // Sort by the canonical order from constants, with any unknown divisions at the end
+            const { divisions: divisionOrder } = require('@/lib/constants')
+            uniqueDivisions.sort((a: string, b: string) => {
+              const idxA = divisionOrder.indexOf(a)
+              const idxB = divisionOrder.indexOf(b)
+              if (idxA === -1 && idxB === -1) return a.localeCompare(b)
+              if (idxA === -1) return 1
+              if (idxB === -1) return -1
+              return idxA - idxB
+            })
+            setAvailableDivisions(uniqueDivisions)
+          }
         } else {
           setTeams([])
         }
@@ -103,9 +72,9 @@ export default function StandingsPage() {
                   onChange={(e) => setDivision(e.target.value)}
                 >
                   <option value="All Divisions">All Divisions</option>
-                  <option value="EPL">EPL</option>
-                  <option value="Gold">Gold</option>
-                  <option value="Silver">Silver</option>
+                  {availableDivisions.map((div) => (
+                    <option key={div} value={div}>{div}</option>
+                  ))}
                 </select>
                 <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
               </div>
@@ -153,20 +122,19 @@ export default function StandingsPage() {
                 </div>
               ) : division === 'All Divisions' ? (
                 <>
-                  <StandingsTable
-                    division="EPL"
-                    teams={teams.filter(t => t.division === 'EPL')}
-                  />
-                  <div className="h-px bg-surface-glass my-12" />
-                  <StandingsTable
-                    division="Gold"
-                    teams={teams.filter(t => t.division === 'Gold')}
-                  />
-                  <div className="h-px bg-surface-glass my-12" />
-                  <StandingsTable
-                    division="Silver"
-                    teams={teams.filter(t => t.division === 'Silver')}
-                  />
+                  {availableDivisions.map((div, i) => {
+                    const divTeams = teams.filter(t => t.division === div)
+                    if (divTeams.length === 0) return null
+                    return (
+                      <div key={div}>
+                        {i > 0 && <div className="h-px bg-surface-glass my-12" />}
+                        <StandingsTable
+                          division={div}
+                          teams={divTeams}
+                        />
+                      </div>
+                    )
+                  })}
                 </>
               ) : (
                 <StandingsTable
@@ -178,24 +146,6 @@ export default function StandingsPage() {
 
             {/* Sidebar */}
             <div className="space-y-12">
-
-              {/* Matchups - Hide if no games */}
-              {/* <div>
-                <div className="flex justify-between items-baseline mb-6">
-                  <h3 className="text-xl font-heading font-bold text-white">
-                    Featured Matchups
-                  </h3>
-                  <a href="#" className="text-[10px] font-bold uppercase tracking-widest text-eha-red hover:text-white transition-colors">
-                    Full Schedule
-                  </a>
-                </div>
-
-                <div className="space-y-4">
-                  {matchups.map((matchup, index) => (
-                    <MatchupCard key={index} matchup={matchup} />
-                  ))}
-                </div>
-              </div> */}
 
               {/* Conference Leaders Widget - Placeholder */}
               <div className="bg-page-bg-alt border border-border-default p-8 rounded-sm shadow-xl">
@@ -274,47 +224,3 @@ const StandingsTable = ({ division, teams }: { division: string, teams: any[] })
   )
 }
 
-const MatchupCard = ({ matchup }: { matchup: any }) => {
-  return (
-    <div className="bg-page-bg-alt border border-border-default p-5 rounded-sm hover:border-eha-red/50 transition-colors shadow-lg group">
-      <div className="text-[10px] font-extrabold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
-        <Calendar className="w-3 h-3 text-eha-red" />
-        {matchup.date}
-      </div>
-
-      {/* Team 1 */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div
-            className="w-6 h-6 text-white text-[8px] flex items-center justify-center rounded-sm font-bold shadow-sm"
-            style={{ backgroundColor: matchup.team1Color }}
-          >
-            {matchup.team1Abbr}
-          </div>
-          <span className="text-sm font-bold text-text-primary">{matchup.team1Name}</span>
-        </div>
-        <span className="text-[10px] font-bold text-text-muted uppercase">{matchup.team1Record}</span>
-      </div>
-
-      {/* Team 2 */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div
-            className="w-6 h-6 text-white text-[8px] flex items-center justify-center rounded-sm font-bold shadow-sm"
-            style={{ backgroundColor: matchup.team2Color }}
-          >
-            {matchup.team2Abbr}
-          </div>
-          <span className="text-sm font-bold text-text-primary">{matchup.team2Name}</span>
-        </div>
-        <span className="text-[10px] font-bold text-text-muted uppercase">{matchup.team2Record}</span>
-      </div>
-
-      <div className="mt-4 pt-4 border-t border-border-subtle">
-        <button className="w-full py-2 bg-surface-glass text-[10px] font-extrabold text-text-primary uppercase tracking-widest rounded-sm hover:bg-eha-red hover:text-white transition-all">
-          {matchup.buttonText}
-        </button>
-      </div>
-    </div>
-  )
-}
