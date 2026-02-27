@@ -126,7 +126,7 @@ export const divisions = [
   '14U', '13U', '12U', '11U', '10U', '9U', '8U',
 ]
 
-/** Extract age number from a combined division string (e.g. "EPL 17" -> 17, "14U Gold" -> 14) */
+/** Extract age number from a combined division string (e.g. "EPL 17" -> 17, "14U" -> 14) */
 export function getAgeFromDivision(division: string): number | null {
   const match = division.match(/(\d+)/)
   return match ? parseInt(match[1], 10) : null

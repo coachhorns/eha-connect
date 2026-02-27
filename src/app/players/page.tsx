@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { Button, Badge, Avatar, VerifiedBadge } from '@/components/ui'
 import { cn } from '@/lib/utils'
-import { positions, states } from '@/lib/constants'
+import { positions, states, divisions } from '@/lib/constants'
 
 interface Player {
   id: string
@@ -156,9 +156,7 @@ const FilterSidebar = ({
 }) => {
   const divisionOptions = [
     { value: '', label: 'All Divisions' },
-    { value: 'EPL', label: 'EPL' },
-    { value: 'Gold', label: 'Gold' },
-    { value: 'Silver', label: 'Silver' },
+    ...divisions.map(d => ({ value: d, label: d })),
   ]
 
   return (

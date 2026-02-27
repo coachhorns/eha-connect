@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { Button, Badge, Avatar, VerifiedBadge } from '@/components/ui'
 import { cn } from '@/lib/utils'
+import { divisions } from '@/lib/constants'
 
 export default function LeaderboardsPage() {
   const [division, setDivision] = useState('All Divisions')
@@ -142,7 +143,7 @@ export default function LeaderboardsPage() {
           <div className="flex flex-wrap items-center gap-8">
             <FilterSelect
               label="Division"
-              options={['All Divisions', 'EPL', 'Gold', 'Silver']}
+              options={['All Divisions', ...divisions]}
               value={division}
               onChange={(e: any) => setDivision(e.target.value)}
             />
