@@ -74,14 +74,24 @@ export async function PUT(
     }
 
     const body = await request.json()
+
+    // Defense in depth: non-admin users cannot change firstName or lastName
+    if (user.role !== 'ADMIN') {
+      delete body.firstName
+      delete body.lastName
+    }
+
     const {
       firstName,
       lastName,
       heightFeet,
       heightInches,
+      weight,
       school,
       graduationYear,
       primaryPosition,
+      secondaryPosition,
+      jerseyNumber,
       profilePhoto,
       bio,
       email,
@@ -119,6 +129,9 @@ export async function PUT(
         ...(school !== undefined && { school: school?.trim() || null }),
         ...(graduationYear !== undefined && { graduationYear: graduationYear ? parseInt(String(graduationYear), 10) : null }),
         ...(primaryPosition !== undefined && { primaryPosition: primaryPosition || null }),
+        ...(secondaryPosition !== undefined && { secondaryPosition: secondaryPosition || null }),
+        ...(jerseyNumber !== undefined && { jerseyNumber: jerseyNumber?.trim() || null }),
+        ...(weight !== undefined && { weight: weight ? parseInt(String(weight), 10) : null }),
         ...(profilePhoto !== undefined && { profilePhoto: profilePhoto?.trim() || null }),
         ...(bio !== undefined && { bio: bio?.trim() || null }),
         ...(email !== undefined && { email: email?.trim() || null }),

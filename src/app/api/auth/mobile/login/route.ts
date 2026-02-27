@@ -14,11 +14,28 @@ export async function POST(request: Request) {
       )
     }
 
+    const normalizedEmail = email.toLowerCase().trim()
+
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+      where: { email: normalizedEmail },
+      include: { accounts: { select: { provider: true } } },
     })
 
-    if (!user || !user.password) {
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Invalid email or password' },
+        { status: 401 }
+      )
+    }
+
+    if (!user.password) {
+      const hasGoogle = user.accounts.some((a) => a.provider === 'google')
+      if (hasGoogle) {
+        return NextResponse.json(
+          { error: 'This account uses Google Sign-In. Please sign in with Google instead.' },
+          { status: 401 }
+        )
+      }
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }

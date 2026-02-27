@@ -60,13 +60,17 @@ function SignInForm() {
 
     try {
       const result = await signIn('credentials', {
-        email,
+        email: email.toLowerCase().trim(),
         password,
         redirect: false,
       })
 
       if (result?.error) {
-        setError('Invalid email or password')
+        if (result.error.includes('Google')) {
+          setError('This account uses Google Sign-In. Please click "Continue with Google" above.')
+        } else {
+          setError('Invalid email or password')
+        }
       } else {
         const session = await getSession()
         const role = session?.user?.role

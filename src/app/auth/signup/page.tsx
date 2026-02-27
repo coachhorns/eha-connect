@@ -95,12 +95,14 @@ function SignUpContent() {
     setIsLoading(true)
 
     try {
+      const normalizedEmail = formData.email.toLowerCase().trim()
+
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
-          email: formData.email,
+          email: normalizedEmail,
           password: formData.password,
           role: formData.role,
         }),
@@ -114,7 +116,7 @@ function SignUpContent() {
       }
 
       const result = await signIn('credentials', {
-        email: formData.email,
+        email: normalizedEmail,
         password: formData.password,
         redirect: false,
       })

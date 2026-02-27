@@ -28,7 +28,7 @@ import {
   Upload,
   X,
 } from 'lucide-react'
-import { Card, Button, Input } from '@/components/ui'
+import { Card, Button, Input, Select } from '@/components/ui'
 import { formatHeight, formatPosition } from '@/lib/utils'
 import { extractYouTubeId, getYouTubeThumbnail } from '@/lib/video'
 
@@ -118,6 +118,32 @@ interface PlayerData {
   teamRosters: TeamRoster[]
 }
 
+const positionOptions = [
+  { value: '', label: 'Select Position' },
+  { value: 'PG', label: 'Point Guard (PG)' },
+  { value: 'SG', label: 'Shooting Guard (SG)' },
+  { value: 'SF', label: 'Small Forward (SF)' },
+  { value: 'PF', label: 'Power Forward (PF)' },
+  { value: 'C', label: 'Center (C)' },
+]
+
+const heightFeetOptions = [
+  { value: '', label: 'Ft' },
+  { value: '3', label: "3'" },
+  { value: '4', label: "4'" },
+  { value: '5', label: "5'" },
+  { value: '6', label: "6'" },
+  { value: '7', label: "7'" },
+]
+
+const heightInchesOptions = [
+  { value: '', label: 'In' },
+  ...Array.from({ length: 12 }, (_, i) => ({
+    value: String(i),
+    label: `${i}"`,
+  })),
+]
+
 export default function EditPlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const { data: session, status } = useSession()
@@ -156,6 +182,14 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
   const [highlightUrl, setHighlightUrl] = useState('')
   const [maxPrepsUrl, setMaxPrepsUrl] = useState('')
   const [gpa, setGpa] = useState('')
+  const [graduationYear, setGraduationYear] = useState('')
+  const [heightFt, setHeightFt] = useState('')
+  const [heightIn, setHeightIn] = useState('')
+  const [primaryPosition, setPrimaryPosition] = useState('')
+  const [secondaryPosition, setSecondaryPosition] = useState('')
+  const [school, setSchool] = useState('')
+  const [jerseyNumber, setJerseyNumber] = useState('')
+  const [weight, setWeight] = useState('')
   const [transcriptUrl, setTranscriptUrl] = useState('')
   const [isUploadingTranscript, setIsUploadingTranscript] = useState(false)
   const [videoUrl, setVideoUrl] = useState('')
@@ -187,6 +221,14 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           setHighlightUrl(p.highlightUrl || '')
           setMaxPrepsUrl(p.maxPrepsUrl || '')
           setGpa(p.gpa ? String(p.gpa) : '')
+          setGraduationYear(p.graduationYear ? String(p.graduationYear) : '')
+          setHeightFt(p.heightFeet ? String(p.heightFeet) : '')
+          setHeightIn(p.heightInches != null ? String(p.heightInches) : '')
+          setPrimaryPosition(p.primaryPosition || '')
+          setSecondaryPosition(p.secondaryPosition || '')
+          setSchool(p.school || '')
+          setJerseyNumber(p.jerseyNumber || '')
+          setWeight(p.weight ? String(p.weight) : '')
           setTranscriptUrl(p.transcriptUrl || '')
         } else if (res.status === 404 || res.status === 403) {
           setError('Player not found or access denied')
@@ -504,6 +546,14 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           highlightUrl: highlightUrl.trim() || null,
           maxPrepsUrl: maxPrepsUrl.trim() || null,
           gpa: gpa ? parseFloat(gpa) : null,
+          graduationYear: graduationYear ? parseInt(graduationYear, 10) : null,
+          heightFeet: heightFt ? parseInt(heightFt, 10) : null,
+          heightInches: heightIn !== '' ? parseInt(heightIn, 10) : null,
+          primaryPosition: primaryPosition || null,
+          secondaryPosition: secondaryPosition || null,
+          school: school.trim() || null,
+          jerseyNumber: jerseyNumber.trim() || null,
+          weight: weight ? parseInt(weight, 10) : null,
         }),
       })
 
@@ -615,9 +665,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             {/* Player Info — read-only display */}
             <div className="flex-1 text-center lg:text-left">
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-3">
-                {player.graduationYear && (
+                {graduationYear && (
                   <span className="px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20">
-                    Class of {player.graduationYear}
+                    Class of {graduationYear}
                   </span>
                 )}
                 {player.isVerified && (
@@ -626,14 +676,14 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     Verified
                   </span>
                 )}
-                {player.primaryPosition && (
+                {primaryPosition && (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest bg-surface-overlay text-white/60 border border-border-default">
-                    {formatPosition(player.primaryPosition)}
+                    {formatPosition(primaryPosition)}
                   </span>
                 )}
-                {player.jerseyNumber && (
+                {jerseyNumber && (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest bg-surface-overlay text-text-secondary border border-border-default">
-                    #{player.jerseyNumber}
+                    #{jerseyNumber}
                   </span>
                 )}
               </div>
@@ -643,20 +693,20 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
               </h1>
 
               <div className="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-white/60 font-bold text-sm uppercase tracking-widest">
-                {player.primaryPosition && (
-                  <span>{formatPosition(player.primaryPosition)}</span>
+                {primaryPosition && (
+                  <span>{formatPosition(primaryPosition)}</span>
                 )}
-                {player.heightFeet && (
-                  <span>• {formatHeight(player.heightFeet, player.heightInches)}</span>
+                {heightFt && (
+                  <span>• {formatHeight(parseInt(heightFt, 10), heightIn !== '' ? parseInt(heightIn, 10) : null)}</span>
                 )}
-                {player.weight && <span>• {player.weight} lbs</span>}
+                {weight && <span>• {weight} lbs</span>}
               </div>
 
               <div className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-6 lg:gap-8 text-white/80">
-                {player.school && (
+                {school && (
                   <span className="flex items-center gap-2">
                     <GraduationCap className="w-5 h-5 text-eha-red" />
-                    <span className="font-bold text-sm uppercase tracking-wider">{player.school}</span>
+                    <span className="font-bold text-sm uppercase tracking-wider">{school}</span>
                   </span>
                 )}
                 {(player.city || player.state) && (
@@ -731,6 +781,113 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-2 gap-6">
+            {/* Player Information */}
+            <Card className="lg:col-span-2 rounded-sm p-0">
+              <div className="p-4 border-b border-border-subtle">
+                <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold">Player Information</h2>
+                <p className="text-sm text-text-muted mt-1">
+                  Name changes require contacting an administrator.
+                </p>
+              </div>
+              <div className="p-4 space-y-6">
+                {/* Name — read-only */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">First Name</label>
+                    <div className="w-full px-4 py-2.5 bg-surface-raised/50 border border-border-subtle rounded-lg text-text-muted cursor-not-allowed">
+                      {player.firstName}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">Last Name</label>
+                    <div className="w-full px-4 py-2.5 bg-surface-raised/50 border border-border-subtle rounded-lg text-text-muted cursor-not-allowed">
+                      {player.lastName}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row: Grad Year, School, Jersey, Weight */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">Graduation Year</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 2027"
+                      value={graduationYear}
+                      onChange={(e) => setGraduationYear(e.target.value)}
+                      min={2020}
+                      max={2040}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">School</label>
+                    <Input
+                      type="text"
+                      placeholder="School name"
+                      value={school}
+                      onChange={(e) => setSchool(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">Jersey Number</label>
+                    <Input
+                      type="text"
+                      placeholder="#"
+                      value={jerseyNumber}
+                      onChange={(e) => setJerseyNumber(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">Weight (lbs)</label>
+                    <Input
+                      type="number"
+                      placeholder="Weight"
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      min={50}
+                      max={400}
+                    />
+                  </div>
+                </div>
+
+                {/* Row: Height, Positions */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">Height (ft)</label>
+                    <Select
+                      value={heightFt}
+                      onChange={(e) => setHeightFt(e.target.value)}
+                      options={heightFeetOptions}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">Height (in)</label>
+                    <Select
+                      value={heightIn}
+                      onChange={(e) => setHeightIn(e.target.value)}
+                      options={heightInchesOptions}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">Primary Position</label>
+                    <Select
+                      value={primaryPosition}
+                      onChange={(e) => setPrimaryPosition(e.target.value)}
+                      options={positionOptions}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-2">Secondary Position</label>
+                    <Select
+                      value={secondaryPosition}
+                      onChange={(e) => setSecondaryPosition(e.target.value)}
+                      options={positionOptions}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             {/* About Me */}
             <Card className="lg:col-span-2 rounded-sm p-0">
               <div className="p-4 border-b border-border-subtle">

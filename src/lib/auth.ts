@@ -29,11 +29,22 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email and password are required')
         }
 
+        const normalizedEmail = credentials.email.toLowerCase().trim()
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email: normalizedEmail },
+          include: { accounts: { select: { provider: true } } },
         })
 
-        if (!user || !user.password) {
+        if (!user) {
+          throw new Error('Invalid email or password')
+        }
+
+        if (!user.password) {
+          const hasGoogle = user.accounts.some((a) => a.provider === 'google')
+          if (hasGoogle) {
+            throw new Error('This account uses Google Sign-In. Please sign in with Google instead.')
+          }
           throw new Error('Invalid email or password')
         }
 
