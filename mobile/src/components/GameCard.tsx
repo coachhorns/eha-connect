@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { format } from 'date-fns';
-import { Colors, Spacing, FontSize, BorderRadius } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import type { Game } from '@/types';
 
 interface GameCardProps {
@@ -10,12 +11,13 @@ interface GameCardProps {
 }
 
 export function GameCard({ game, onPress }: GameCardProps) {
+  const colors = useColors();
   const isLive = game.status === 'LIVE';
   const isFinal = game.status === 'FINAL';
 
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
       onPress={onPress}
       activeOpacity={onPress ? 0.7 : 1}
       disabled={!onPress}
@@ -24,37 +26,37 @@ export function GameCard({ game, onPress }: GameCardProps) {
       <View style={styles.statusRow}>
         {isLive ? (
           <View style={styles.liveBadge}>
-            <View style={styles.liveDot} />
-            <Text style={styles.liveText}>LIVE - Q{game.period}</Text>
+            <View style={[styles.liveDot, { backgroundColor: colors.error }]} />
+            <Text style={[styles.liveText, { color: colors.error }]}>LIVE - Q{game.period}</Text>
           </View>
         ) : isFinal ? (
-          <Text style={styles.finalText}>FINAL</Text>
+          <Text style={[styles.finalText, { color: colors.textMuted }]}>FINAL</Text>
         ) : (
-          <Text style={styles.timeText}>
+          <Text style={[styles.timeText, { color: colors.textSecondary }]}>
             {game.scheduledTime ? format(new Date(game.scheduledTime), 'h:mm a') : 'TBD'}
           </Text>
         )}
-        {game.court && <Text style={styles.courtText}>{game.court}</Text>}
+        {game.court && <Text style={[styles.courtText, { color: colors.textMuted }]}>{game.court}</Text>}
       </View>
 
       {/* Teams */}
       <View style={styles.matchup}>
         <View style={styles.teamRow}>
-          <Text style={[styles.teamName, isFinal && game.awayScore > game.homeScore && styles.winner]} numberOfLines={1}>
+          <Text style={[styles.teamName, { color: colors.textSecondary }, isFinal && game.awayScore > game.homeScore && { color: colors.textPrimary }]} numberOfLines={1}>
             {game.awayTeam?.name ?? 'TBD'}
           </Text>
-          <Text style={[styles.score, isFinal && game.awayScore > game.homeScore && styles.winnerScore]}>
+          <Text style={[styles.score, { color: colors.textSecondary }, isFinal && game.awayScore > game.homeScore && { color: colors.textPrimary }]}>
             {game.awayScore}
           </Text>
         </View>
 
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         <View style={styles.teamRow}>
-          <Text style={[styles.teamName, isFinal && game.homeScore > game.awayScore && styles.winner]} numberOfLines={1}>
+          <Text style={[styles.teamName, { color: colors.textSecondary }, isFinal && game.homeScore > game.awayScore && { color: colors.textPrimary }]} numberOfLines={1}>
             {game.homeTeam?.name ?? 'TBD'}
           </Text>
-          <Text style={[styles.score, isFinal && game.homeScore > game.awayScore && styles.winnerScore]}>
+          <Text style={[styles.score, { color: colors.textSecondary }, isFinal && game.homeScore > game.awayScore && { color: colors.textPrimary }]}>
             {game.homeScore}
           </Text>
         </View>
@@ -65,11 +67,9 @@ export function GameCard({ game, onPress }: GameCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   statusRow: {
     flexDirection: 'row',
@@ -86,27 +86,22 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.error,
   },
   liveText: {
-    color: Colors.error,
     fontSize: FontSize.xs,
     fontWeight: '800',
     letterSpacing: 1,
   },
   finalText: {
-    color: Colors.textMuted,
     fontSize: FontSize.xs,
     fontWeight: '700',
     letterSpacing: 1,
   },
   timeText: {
-    color: Colors.textSecondary,
     fontSize: FontSize.sm,
     fontWeight: '500',
   },
   courtText: {
-    color: Colors.textMuted,
     fontSize: FontSize.xs,
     fontWeight: '500',
   },
@@ -122,24 +117,15 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: FontSize.md,
     fontWeight: '600',
-    color: Colors.textSecondary,
     marginRight: Spacing.md,
   },
   score: {
     fontSize: FontSize.xl,
     fontWeight: '800',
-    color: Colors.textSecondary,
     minWidth: 36,
     textAlign: 'right',
   },
-  winner: {
-    color: Colors.textPrimary,
-  },
-  winnerScore: {
-    color: Colors.textPrimary,
-  },
   divider: {
     height: 1,
-    backgroundColor: Colors.border,
   },
 });

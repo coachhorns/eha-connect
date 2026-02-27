@@ -15,6 +15,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { format } from 'date-fns';
 import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { eventsApi } from '@/api/events';
 import { GameCard } from '@/components/GameCard';
 import { Loading } from '@/components/ui/Loading';
@@ -37,6 +38,7 @@ export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const colors = useColors();
   const [segment, setSegment] = useState<Segment>('info');
   const [divisionFilter, setDivisionFilter] = useState<string>('all');
   const [refreshing, setRefreshing] = useState(false);
@@ -129,18 +131,18 @@ export default function EventDetailScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={Colors.textMuted}
+          tintColor={colors.textMuted}
         />
       }
     >
-      {/* ── Hero ── */}
-      <View style={styles.hero}>
+      {/* ── Hero — text on image, keep hardcoded dark styling ── */}
+      <View style={[styles.hero, { backgroundColor: colors.surfaceLight }]}>
         {event.bannerImage ? (
           <Image
             source={{ uri: event.bannerImage }}
@@ -148,26 +150,26 @@ export default function EventDetailScreen() {
             contentFit="cover"
           />
         ) : (
-          <View style={styles.heroPlaceholder} />
+          <View style={[styles.heroPlaceholder, { backgroundColor: colors.surfaceLight }]} />
         )}
         <LinearGradient
           colors={[
             'transparent',
             'rgba(15, 23, 42, 0.45)',
             'rgba(15, 23, 42, 0.92)',
-            Colors.background,
+            colors.background,
           ]}
           locations={[0, 0.4, 0.75, 1]}
           style={StyleSheet.absoluteFill}
         />
 
-        {/* Back button */}
+        {/* Back button — on image, keep hardcoded */}
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
           <Text style={styles.backChevron}>‹</Text>
           <Text style={styles.backLabel}>Events</Text>
         </TouchableOpacity>
 
-        {/* Event info */}
+        {/* Event info — on image, keep hardcoded white text */}
         <View style={styles.heroInfo}>
           <View style={styles.badges}>
             {event.isActive && new Date(event.startDate) <= new Date() && new Date(event.endDate) >= new Date() && (
@@ -196,18 +198,22 @@ export default function EventDetailScreen() {
       </View>
 
       {/* ── Segment bar ── */}
-      <View style={styles.segmentBar}>
+      <View style={[styles.segmentBar, { borderBottomColor: colors.border, backgroundColor: colors.background }]}>
         {SEGMENTS.map(seg => (
           <TouchableOpacity
             key={seg.key}
-            style={[styles.segment, segment === seg.key && styles.segmentActive]}
+            style={[
+              styles.segment,
+              segment === seg.key && { borderBottomColor: colors.textPrimary },
+            ]}
             onPress={() => setSegment(seg.key)}
             activeOpacity={0.7}
           >
             <Text
               style={[
                 styles.segmentText,
-                segment === seg.key && styles.segmentTextActive,
+                { color: colors.textMuted },
+                segment === seg.key && { color: colors.textPrimary, fontFamily: Fonts.bodySemiBold },
               ]}
             >
               {seg.label}
@@ -223,34 +229,34 @@ export default function EventDetailScreen() {
         {segment === 'info' && (
           <View style={styles.infoStack}>
             {event.description ? (
-              <View style={styles.card}>
-                <Text style={styles.cardLabel}>About This Event</Text>
-                <Text style={styles.description}>{event.description}</Text>
+              <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Text style={[styles.cardLabel, { color: colors.textMuted }]}>About This Event</Text>
+                <Text style={[styles.description, { color: colors.textSecondary }]}>{event.description}</Text>
               </View>
             ) : null}
 
             {event.divisions?.length > 0 && (
-              <View style={styles.card}>
-                <Text style={styles.cardLabel}>Divisions</Text>
+              <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Text style={[styles.cardLabel, { color: colors.textMuted }]}>Divisions</Text>
                 <View style={styles.divisionsWrap}>
                   {event.divisions.map(div => (
-                    <View key={div} style={styles.divisionChip}>
-                      <Text style={styles.divisionChipText}>{div}</Text>
+                    <View key={div} style={[styles.divisionChip, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}>
+                      <Text style={[styles.divisionChipText, { color: colors.textSecondary }]}>{div}</Text>
                     </View>
                   ))}
                 </View>
               </View>
             )}
 
-            <View style={styles.card}>
-              <Text style={styles.cardLabel}>Venue</Text>
+            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Text style={[styles.cardLabel, { color: colors.textMuted }]}>Venue</Text>
               {(event.venue || event.city) && (() => {
                 const q = encodeURIComponent(
                   [event.venue, event.address, event.city, event.state].filter(Boolean).join(', ')
                 );
                 const mapHtml = `<!DOCTYPE html><html><head><style>*{margin:0;padding:0;}html,body,iframe{width:100%;height:100%;border:0;}</style></head><body><iframe src="https://maps.google.com/maps?q=${q}&t=&z=14&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" allowfullscreen></iframe></body></html>`;
                 return (
-                  <View style={styles.mapContainer}>
+                  <View style={[styles.mapContainer, { backgroundColor: colors.surfaceLight }]}>
                     <WebView
                       source={{ html: mapHtml }}
                       style={styles.map}
@@ -261,68 +267,68 @@ export default function EventDetailScreen() {
                 );
               })()}
               <View style={styles.venueRow}>
-                <View style={styles.pinIcon}>
-                  <Ionicons name="location-outline" size={20} color={Colors.textMuted} />
+                <View style={[styles.pinIcon, { backgroundColor: colors.surfaceLight }]}>
+                  <Ionicons name="location-outline" size={20} color={colors.textMuted} />
                 </View>
                 <View style={styles.venueText}>
                   {event.venue ? (
-                    <Text style={styles.venueName}>{event.venue}</Text>
+                    <Text style={[styles.venueName, { color: colors.textPrimary }]}>{event.venue}</Text>
                   ) : null}
                   {event.city && event.state ? (
-                    <Text style={styles.venueCity}>
+                    <Text style={[styles.venueCity, { color: colors.textMuted }]}>
                       {event.city}, {event.state}
                     </Text>
                   ) : null}
                   {!event.venue && !event.city && (
-                    <Text style={styles.venueCity}>Location TBA</Text>
+                    <Text style={[styles.venueCity, { color: colors.textMuted }]}>Location TBA</Text>
                   )}
                 </View>
               </View>
               <TouchableOpacity
-                style={styles.directionsBtn}
+                style={[styles.directionsBtn, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}
                 onPress={openDirections}
                 activeOpacity={0.85}
               >
-                <Text style={styles.directionsBtnText}>Get Directions</Text>
+                <Text style={[styles.directionsBtnText, { color: colors.textSecondary }]}>Get Directions</Text>
               </TouchableOpacity>
             </View>
 
             {/* College Recruiting Packet */}
             <TouchableOpacity
-              style={styles.actionCard}
+              style={[styles.actionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
               onPress={() => setShowPacket(true)}
               activeOpacity={0.8}
             >
-              <View style={styles.actionCardIcon}>
-                <Ionicons name="school-outline" size={22} color={Colors.textSecondary} />
+              <View style={[styles.actionCardIcon, { backgroundColor: colors.surfaceLight }]}>
+                <Ionicons name="school-outline" size={22} color={colors.textSecondary} />
               </View>
               <View style={styles.actionCardText}>
-                <Text style={styles.actionCardTitle}>College Recruiting Packet</Text>
-                <Text style={styles.actionCardSub}>
+                <Text style={[styles.actionCardTitle, { color: colors.textPrimary }]}>College Recruiting Packet</Text>
+                <Text style={[styles.actionCardSub, { color: colors.textMuted }]}>
                   Access rosters, contacts & live stats for college coaches
                 </Text>
               </View>
-              <Text style={styles.actionCardChevron}>›</Text>
+              <Text style={[styles.actionCardChevron, { color: colors.textMuted }]}>›</Text>
             </TouchableOpacity>
 
             {/* Register Your Team */}
             <TouchableOpacity
-              style={styles.actionCard}
+              style={[styles.actionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
               onPress={() => setShowRegister(true)}
               activeOpacity={0.8}
             >
-              <View style={styles.actionCardIcon}>
-                <Ionicons name="people-outline" size={22} color={Colors.textSecondary} />
+              <View style={[styles.actionCardIcon, { backgroundColor: colors.surfaceLight }]}>
+                <Ionicons name="people-outline" size={22} color={colors.textSecondary} />
               </View>
               <View style={styles.actionCardText}>
-                <Text style={styles.actionCardTitle}>Register Your Team</Text>
-                <Text style={styles.actionCardSub}>
+                <Text style={[styles.actionCardTitle, { color: colors.textPrimary }]}>Register Your Team</Text>
+                <Text style={[styles.actionCardSub, { color: colors.textMuted }]}>
                   {user?.role === 'PROGRAM_DIRECTOR'
                     ? 'Submit your team(s) and scheduling preferences'
                     : 'Club directors can register teams for this event'}
                 </Text>
               </View>
-              <Text style={styles.actionCardChevron}>›</Text>
+              <Text style={[styles.actionCardChevron, { color: colors.textMuted }]}>›</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -340,7 +346,8 @@ export default function EventDetailScreen() {
                 <TouchableOpacity
                   style={[
                     styles.divChip,
-                    divisionFilter === 'all' && styles.divChipActive,
+                    { backgroundColor: colors.surface, borderColor: colors.border },
+                    divisionFilter === 'all' && { backgroundColor: colors.surfaceLight, borderColor: colors.textSecondary },
                   ]}
                   onPress={() => setDivisionFilter('all')}
                   activeOpacity={0.7}
@@ -348,7 +355,8 @@ export default function EventDetailScreen() {
                   <Text
                     style={[
                       styles.divChipText,
-                      divisionFilter === 'all' && styles.divChipTextActive,
+                      { color: colors.textSecondary },
+                      divisionFilter === 'all' && { color: colors.textPrimary },
                     ]}
                   >
                     All Divisions
@@ -359,7 +367,8 @@ export default function EventDetailScreen() {
                     key={div}
                     style={[
                       styles.divChip,
-                      divisionFilter === div && styles.divChipActive,
+                      { backgroundColor: colors.surface, borderColor: colors.border },
+                      divisionFilter === div && { backgroundColor: colors.surfaceLight, borderColor: colors.textSecondary },
                     ]}
                     onPress={() => setDivisionFilter(div)}
                     activeOpacity={0.7}
@@ -367,7 +376,8 @@ export default function EventDetailScreen() {
                     <Text
                       style={[
                         styles.divChipText,
-                        divisionFilter === div && styles.divChipTextActive,
+                        { color: colors.textSecondary },
+                        divisionFilter === div && { color: colors.textPrimary },
                       ]}
                     >
                       {div}
@@ -378,11 +388,11 @@ export default function EventDetailScreen() {
             )}
 
             {gamesByDay.length === 0 ? (
-              <Text style={styles.emptyText}>No games scheduled yet</Text>
+              <Text style={[styles.emptyText, { color: colors.textMuted }]}>No games scheduled yet</Text>
             ) : (
               gamesByDay.map(day => (
                 <View key={day.dateKey} style={styles.dayGroup}>
-                  <Text style={styles.dayLabel}>{day.label}</Text>
+                  <Text style={[styles.dayLabel, { color: colors.textMuted }]}>{day.label}</Text>
                   <View style={styles.dayGames}>
                     {day.games.map(game => (
                       <GameCard key={game.id} game={game} />
@@ -398,19 +408,23 @@ export default function EventDetailScreen() {
         {segment === 'standings' && (
           <View>
             {poolKeys.length === 0 && (
-              <Text style={styles.emptyText}>No standings available yet</Text>
+              <Text style={[styles.emptyText, { color: colors.textMuted }]}>No standings available yet</Text>
             )}
 
             {poolKeys.map(pool => (
-              <View key={pool} style={[styles.table, multiPool && { marginBottom: Spacing.lg }]}>
+              <View key={pool} style={[styles.table, { borderColor: colors.border }, multiPool && { marginBottom: Spacing.lg }]}>
                 {multiPool && (
-                  <Text style={styles.poolLabel}>{pool}</Text>
+                  <Text style={[styles.poolLabel, { color: colors.textMuted, backgroundColor: colors.surfaceLight }]}>{pool}</Text>
                 )}
 
                 {/* Header row */}
-                <View style={[styles.tableRow, styles.tableHeader]}>
-                  <Text style={[styles.cell, styles.rankCell, styles.headerCell]}>#</Text>
-                  <Text style={[styles.cell, styles.teamCell, styles.headerCell]}>Team</Text>
+                <View style={[styles.tableRow, { backgroundColor: colors.navy }]}>
+                  <Text style={[styles.cell, styles.rankCell, styles.headerCell]}>
+                    #
+                  </Text>
+                  <Text style={[styles.cell, styles.teamCell, styles.headerCell]}>
+                    Team
+                  </Text>
                   <Text style={[styles.cell, styles.headerCell]}>W</Text>
                   <Text style={[styles.cell, styles.headerCell]}>L</Text>
                   <Text style={[styles.cell, styles.headerCell]}>Diff</Text>
@@ -419,25 +433,30 @@ export default function EventDetailScreen() {
                 {standings![pool].map((s: EventStandingEntry, i: number) => (
                   <View
                     key={s.teamId}
-                    style={[styles.tableRow, i % 2 !== 0 && styles.tableRowAlt]}
+                    style={[
+                      styles.tableRow,
+                      { backgroundColor: colors.surface },
+                      i % 2 !== 0 && { backgroundColor: colors.surfaceLight },
+                    ]}
                   >
-                    <Text style={[styles.cell, styles.rankCell, styles.rankText]}>
+                    <Text style={[styles.cell, styles.rankCell, styles.rankText, { color: colors.textMuted }]}>
                       {i + 1}
                     </Text>
                     <Text
-                      style={[styles.cell, styles.teamCell, styles.teamNameText]}
+                      style={[styles.cell, styles.teamCell, styles.teamNameText, { color: colors.textPrimary }]}
                       numberOfLines={1}
                     >
                       {s.teamName}
                     </Text>
-                    <Text style={[styles.cell, styles.statText]}>{s.wins}</Text>
-                    <Text style={[styles.cell, styles.statText]}>{s.losses}</Text>
+                    <Text style={[styles.cell, styles.statText, { color: colors.textSecondary }]}>{s.wins}</Text>
+                    <Text style={[styles.cell, styles.statText, { color: colors.textSecondary }]}>{s.losses}</Text>
                     <Text
                       style={[
                         styles.cell,
                         styles.statText,
-                        s.pointDiff > 0 && styles.diffPositive,
-                        s.pointDiff < 0 && styles.diffNegative,
+                        { color: colors.textSecondary },
+                        s.pointDiff > 0 && { color: colors.success, fontFamily: Fonts.bodySemiBold },
+                        s.pointDiff < 0 && { color: colors.red, fontFamily: Fonts.bodySemiBold },
                       ]}
                     >
                       {s.pointDiff > 0 ? `+${s.pointDiff}` : s.pointDiff}
@@ -470,17 +489,14 @@ export default function EventDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
 
-  // Hero
+  // Hero — text on image, hardcoded dark colors kept in JSX
   hero: {
     height: 340,
-    backgroundColor: Colors.surfaceLight,
   },
   heroPlaceholder: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.surfaceLight,
   },
   backBtn: {
     position: 'absolute',
@@ -575,8 +591,6 @@ const styles = StyleSheet.create({
   segmentBar: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    backgroundColor: Colors.background,
   },
   segment: {
     flex: 1,
@@ -585,17 +599,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
   },
-  segmentActive: {
-    borderBottomColor: Colors.textPrimary,
-  },
   segmentText: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textMuted,
-  },
-  segmentTextActive: {
-    color: Colors.textPrimary,
-    fontFamily: Fonts.bodySemiBold,
   },
 
   content: {
@@ -608,16 +614,13 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
   card: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   cardLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyBold,
-    color: Colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
     marginBottom: Spacing.md,
@@ -625,7 +628,6 @@ const styles = StyleSheet.create({
   description: {
     fontSize: FontSize.md,
     fontFamily: Fonts.body,
-    color: Colors.textSecondary,
     lineHeight: 22,
   },
   divisionsWrap: {
@@ -637,21 +639,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs + 2,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.surfaceLight,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   divisionChipText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
   },
   mapContainer: {
     height: 180,
     borderRadius: BorderRadius.md,
     overflow: 'hidden',
     marginBottom: Spacing.lg,
-    backgroundColor: Colors.surfaceLight,
   },
   map: {
     flex: 1,
@@ -667,7 +665,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surfaceLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -679,32 +676,25 @@ const styles = StyleSheet.create({
   venueName: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textPrimary,
     marginBottom: 2,
   },
   venueCity: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   directionsBtn: {
-    backgroundColor: Colors.surfaceLight,
     borderRadius: BorderRadius.md,
     paddingVertical: Spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   directionsBtnText: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodyBold,
-    color: Colors.textSecondary,
   },
   actionCard: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
     padding: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
@@ -714,7 +704,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surfaceLight,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
@@ -725,18 +714,15 @@ const styles = StyleSheet.create({
   actionCardTitle: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
     marginBottom: 2,
   },
   actionCardSub: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     lineHeight: 16,
   },
   actionCardChevron: {
     fontSize: 22,
-    color: Colors.textMuted,
     lineHeight: 26,
     flexShrink: 0,
   },
@@ -751,21 +737,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs + 2,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.surface,
     borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  divChipActive: {
-    backgroundColor: Colors.surfaceLight,
-    borderColor: Colors.textSecondary,
   },
   divChipText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
-  },
-  divChipTextActive: {
-    color: Colors.textPrimary,
   },
   dayGroup: {
     marginBottom: Spacing.xl,
@@ -773,7 +749,6 @@ const styles = StyleSheet.create({
   dayLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyBold,
-    color: Colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: Spacing.md,
@@ -782,7 +757,6 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   emptyText: {
-    color: Colors.textMuted,
     fontSize: FontSize.md,
     fontFamily: Fonts.body,
     textAlign: 'center',
@@ -792,12 +766,10 @@ const styles = StyleSheet.create({
   poolLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyBold,
-    color: Colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 1,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    backgroundColor: Colors.surfaceLight,
   },
 
   // Standings table
@@ -805,27 +777,18 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
-    backgroundColor: Colors.surface,
-  },
-  tableHeader: {
-    backgroundColor: Colors.navy,
-  },
-  tableRowAlt: {
-    backgroundColor: Colors.surfaceLight,
   },
   cell: {
     width: 44,
     textAlign: 'center',
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textSecondary,
   },
   rankCell: {
     width: 28,
@@ -844,23 +807,12 @@ const styles = StyleSheet.create({
   },
   rankText: {
     fontFamily: Fonts.bodyBold,
-    color: Colors.textMuted,
     fontSize: FontSize.sm,
   },
   teamNameText: {
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   statText: {
     fontFamily: Fonts.body,
-    color: Colors.textSecondary,
-  },
-  diffPositive: {
-    color: Colors.success,
-    fontFamily: Fonts.bodySemiBold,
-  },
-  diffNegative: {
-    color: Colors.red,
-    fontFamily: Fonts.bodySemiBold,
   },
 });

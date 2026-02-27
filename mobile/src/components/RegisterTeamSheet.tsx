@@ -9,7 +9,8 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { api } from '@/api/client';
 import type { Event } from '@/types';
 import { DynamicSheet, SHEET_BODY_MAX } from './DynamicSheet';
@@ -74,6 +75,7 @@ function defaultSchedule(): ScheduleRequest {
 }
 
 export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) {
+  const colors = useColors();
   const [step, setStep] = useState<Step>('teams');
   const [program, setProgram] = useState<Program | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -208,8 +210,8 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
   // ── Render helpers ─────────────────────────────────────────
   const renderNotDirector = () => (
     <View style={styles.centeredBox}>
-      <Text style={styles.centeredTitle}>Director Account Required</Text>
-      <Text style={styles.centeredDesc}>
+      <Text style={[styles.centeredTitle, { color: colors.textPrimary }]}>Director Account Required</Text>
+      <Text style={[styles.centeredDesc, { color: colors.textMuted }]}>
         Only Program Directors can register teams for events. Log in with a director account to access this feature.
       </Text>
     </View>
@@ -219,8 +221,8 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
     <>
       {!program || program.teams.length === 0 ? (
         <View style={styles.centeredBox}>
-          <Text style={styles.centeredTitle}>No Teams Found</Text>
-          <Text style={styles.centeredDesc}>
+          <Text style={[styles.centeredTitle, { color: colors.textPrimary }]}>No Teams Found</Text>
+          <Text style={[styles.centeredDesc, { color: colors.textMuted }]}>
             Create teams in your program before registering for events.
           </Text>
         </View>
@@ -236,9 +238,10 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
           return (
             <View key={team.id} style={[
               styles.teamCard,
+              { borderColor: colors.border, backgroundColor: colors.background },
               alreadyIn && styles.teamCardDisabled,
-              !eligible && !alreadyIn && styles.teamCardWarning,
-              isSelected && styles.teamCardSelected,
+              !eligible && !alreadyIn && { borderColor: colors.warningBorder },
+              isSelected && { borderColor: colors.textSecondary },
             ]}>
               <TouchableOpacity
                 style={styles.teamCardRow}
@@ -247,35 +250,36 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
               >
                 <View style={[
                   styles.teamCheckbox,
-                  alreadyIn && styles.teamCheckboxGray,
-                  isSelected && styles.teamCheckboxChecked,
-                  !eligible && !alreadyIn && styles.teamCheckboxWarning,
+                  { borderColor: colors.border },
+                  alreadyIn && { borderColor: colors.textMuted, backgroundColor: colors.surfaceLight },
+                  isSelected && { borderColor: colors.textSecondary, backgroundColor: colors.surfaceLight },
+                  !eligible && !alreadyIn && { borderColor: colors.warningBorder },
                 ]}>
-                  {(isSelected || alreadyIn) && <Text style={[styles.teamCheckTick, alreadyIn && styles.teamCheckGray]}>✓</Text>}
+                  {(isSelected || alreadyIn) && <Text style={[styles.teamCheckTick, { color: colors.textPrimary }, alreadyIn && { color: colors.textMuted }]}>✓</Text>}
                 </View>
                 <View style={styles.teamInfo}>
                   <View style={styles.teamNameRow}>
-                    <Text style={styles.teamName}>{team.name}</Text>
-                    {alreadyIn && <View style={styles.registeredBadge}><Text style={styles.registeredBadgeText}>Registered</Text></View>}
+                    <Text style={[styles.teamName, { color: colors.textPrimary }]}>{team.name}</Text>
+                    {alreadyIn && <View style={[styles.registeredBadge, { backgroundColor: colors.surfaceLight }]}><Text style={[styles.registeredBadgeText, { color: colors.textMuted }]}>Registered</Text></View>}
                   </View>
                   <View style={styles.teamMeta}>
-                    {team.division && <View style={styles.divChip}><Text style={styles.divChipText}>{team.division}</Text></View>}
-                    <Text style={styles.teamRoster}>{team.rosterCount} players</Text>
+                    {team.division && <View style={[styles.divChip, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}><Text style={[styles.divChipText, { color: colors.textSecondary }]}>{team.division}</Text></View>}
+                    <Text style={[styles.teamRoster, { color: colors.textMuted }]}>{team.rosterCount} players</Text>
                   </View>
                 </View>
-                <Text style={[styles.eligIcon, !eligible && !alreadyIn ? styles.eligWarn : styles.eligOk]}>
+                <Text style={[styles.eligIcon, !eligible && !alreadyIn ? { color: colors.warning } : { color: colors.success }]}>
                   {alreadyIn ? '✓' : eligible ? '✓' : '⚠'}
                 </Text>
               </TouchableOpacity>
 
               {!eligible && !alreadyIn && (
                 <View style={styles.ineligibleRow}>
-                  <Text style={styles.ineligibleText}>⚠ {reason}</Text>
+                  <Text style={[styles.ineligibleText, { color: colors.warning }]}>⚠ {reason}</Text>
                 </View>
               )}
 
               {isSelected && (
-                <View style={styles.schedSection}>
+                <View style={[styles.schedSection, { borderTopColor: colors.border }]}>
                   <TouchableOpacity
                     style={styles.schedToggle}
                     onPress={() => setExpandedScheduleIds(prev => {
@@ -285,10 +289,10 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
                     })}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.schedToggleLabel}>
+                    <Text style={[styles.schedToggleLabel, { color: colors.textSecondary }]}>
                       Scheduling Restrictions{schedCount > 0 ? ` (${schedCount})` : ''}
                     </Text>
-                    <Text style={styles.schedToggleChevron}>{schedExpanded ? '▲' : '▼'}</Text>
+                    <Text style={[styles.schedToggleChevron, { color: colors.textMuted }]}>{schedExpanded ? '▲' : '▼'}</Text>
                   </TouchableOpacity>
 
                   {schedExpanded && (
@@ -299,37 +303,37 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
                         onPress={() => updateSched(team.id, { coachConflict: !sched.coachConflict })}
                         activeOpacity={0.7}
                       >
-                        <View style={[styles.smallCheck, sched.coachConflict && styles.smallCheckOn]}>
-                          {sched.coachConflict && <Text style={styles.smallCheckTick}>✓</Text>}
+                        <View style={[styles.smallCheck, { borderColor: colors.border }, sched.coachConflict && { borderColor: colors.textSecondary, backgroundColor: colors.surfaceLight }]}>
+                          {sched.coachConflict && <Text style={[styles.smallCheckTick, { color: colors.textPrimary }]}>✓</Text>}
                         </View>
                         <View style={styles.schedOptionText}>
-                          <Text style={styles.schedOptionTitle}>Coach has another team in this event</Text>
-                          <Text style={styles.schedOptionDesc}>Avoid scheduling conflicts with another coached team</Text>
+                          <Text style={[styles.schedOptionTitle, { color: colors.textPrimary }]}>Coach has another team in this event</Text>
+                          <Text style={[styles.schedOptionDesc, { color: colors.textMuted }]}>Avoid scheduling conflicts with another coached team</Text>
                         </View>
                       </TouchableOpacity>
 
                       {/* Max games per day */}
                       <View style={styles.schedRow}>
-                        <Text style={styles.schedRowLabel}>Max Games Per Day</Text>
+                        <Text style={[styles.schedRowLabel, { color: colors.textSecondary }]}>Max Games Per Day</Text>
                         <View style={styles.stepper}>
                           <TouchableOpacity
-                            style={styles.stepBtn}
+                            style={[styles.stepBtn, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}
                             onPress={() => updateSched(team.id, { maxGamesPerDay: Math.max(1, (sched.maxGamesPerDay ?? 1) - 1) })}
                           >
-                            <Text style={styles.stepBtnText}>−</Text>
+                            <Text style={[styles.stepBtnText, { color: colors.textPrimary }]}>−</Text>
                           </TouchableOpacity>
-                          <Text style={styles.stepValue}>
+                          <Text style={[styles.stepValue, { color: colors.textPrimary }]}>
                             {sched.maxGamesPerDay ?? '—'}
                           </Text>
                           <TouchableOpacity
-                            style={styles.stepBtn}
+                            style={[styles.stepBtn, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}
                             onPress={() => updateSched(team.id, { maxGamesPerDay: Math.min(10, (sched.maxGamesPerDay ?? 0) + 1) })}
                           >
-                            <Text style={styles.stepBtnText}>+</Text>
+                            <Text style={[styles.stepBtnText, { color: colors.textPrimary }]}>+</Text>
                           </TouchableOpacity>
                           {sched.maxGamesPerDay !== null && (
                             <TouchableOpacity onPress={() => updateSched(team.id, { maxGamesPerDay: null })}>
-                              <Text style={styles.clearStep}>Clear</Text>
+                              <Text style={[styles.clearStep, { color: colors.textMuted }]}>Clear</Text>
                             </TouchableOpacity>
                           )}
                         </View>
@@ -337,21 +341,21 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
 
                       {/* Time constraints */}
                       <View style={styles.schedRow}>
-                        <Text style={styles.schedRowLabel}>Date/Time Restrictions</Text>
+                        <Text style={[styles.schedRowLabel, { color: colors.textSecondary }]}>Date/Time Restrictions</Text>
                         <TouchableOpacity onPress={() => addConstraint(team.id)}>
-                          <Text style={styles.addConstraintBtn}>+ Add</Text>
+                          <Text style={[styles.addConstraintBtn, { color: colors.textSecondary }]}>+ Add</Text>
                         </TouchableOpacity>
                       </View>
                       {sched.constraints.map((c, ci) => (
-                        <View key={ci} style={styles.constraintRow}>
+                        <View key={ci} style={[styles.constraintRow, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}>
                           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                             {CONSTRAINT_TYPES.map(ct => (
                               <TouchableOpacity
                                 key={ct.value}
-                                style={[styles.chipOption, c.type === ct.value && styles.chipOptionActive]}
+                                style={[styles.chipOption, { backgroundColor: colors.background, borderColor: colors.border }, c.type === ct.value && { backgroundColor: colors.surfaceLight, borderColor: colors.textSecondary }]}
                                 onPress={() => updateConstraint(team.id, ci, { type: ct.value })}
                               >
-                                <Text style={[styles.chipOptionText, c.type === ct.value && styles.chipOptionTextActive]}>{ct.label}</Text>
+                                <Text style={[styles.chipOptionText, { color: colors.textMuted }, c.type === ct.value && { color: colors.textPrimary }]}>{ct.label}</Text>
                               </TouchableOpacity>
                             ))}
                           </ScrollView>
@@ -359,37 +363,37 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
                             {DAYS.map(d => (
                               <TouchableOpacity
                                 key={d}
-                                style={[styles.chipOption, c.day === d && styles.chipOptionActive]}
+                                style={[styles.chipOption, { backgroundColor: colors.background, borderColor: colors.border }, c.day === d && { backgroundColor: colors.surfaceLight, borderColor: colors.textSecondary }]}
                                 onPress={() => updateConstraint(team.id, ci, { day: d })}
                               >
-                                <Text style={[styles.chipOptionText, c.day === d && styles.chipOptionTextActive]}>{d}</Text>
+                                <Text style={[styles.chipOptionText, { color: colors.textMuted }, c.day === d && { color: colors.textPrimary }]}>{d}</Text>
                               </TouchableOpacity>
                             ))}
                           </ScrollView>
                           <View style={styles.timesRow}>
                             <TextInput
-                              style={styles.timeInput}
+                              style={[styles.timeInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.textPrimary }]}
                               value={c.time}
                               onChangeText={v => updateConstraint(team.id, ci, { time: v })}
                               placeholder="08:00"
-                              placeholderTextColor={Colors.textMuted}
+                              placeholderTextColor={colors.textMuted}
                               keyboardType="numbers-and-punctuation"
                             />
                             {c.type === 'NOT_BETWEEN' && (
                               <>
-                                <Text style={styles.toText}>to</Text>
+                                <Text style={[styles.toText, { color: colors.textMuted }]}>to</Text>
                                 <TextInput
-                                  style={styles.timeInput}
+                                  style={[styles.timeInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.textPrimary }]}
                                   value={c.endTime ?? ''}
                                   onChangeText={v => updateConstraint(team.id, ci, { endTime: v })}
                                   placeholder="17:00"
-                                  placeholderTextColor={Colors.textMuted}
+                                  placeholderTextColor={colors.textMuted}
                                   keyboardType="numbers-and-punctuation"
                                 />
                               </>
                             )}
-                            <TouchableOpacity onPress={() => removeConstraint(team.id, ci)} style={styles.removeBtn}>
-                              <Text style={styles.removeBtnText}>✕</Text>
+                            <TouchableOpacity onPress={() => removeConstraint(team.id, ci)} style={[styles.removeBtn, { backgroundColor: colors.background }]}>
+                              <Text style={[styles.removeBtnText, { color: colors.textMuted }]}>✕</Text>
                             </TouchableOpacity>
                           </View>
                         </View>
@@ -398,22 +402,22 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
                       {/* Matchup restrictions */}
                       {selectedTeams.filter(t => t.id !== team.id).length > 0 && (
                         <View>
-                          <Text style={styles.schedRowLabel}>Matchup Restrictions</Text>
-                          <Text style={styles.schedOptionDesc}>Prevent this team from playing your other teams</Text>
+                          <Text style={[styles.schedRowLabel, { color: colors.textSecondary }]}>Matchup Restrictions</Text>
+                          <Text style={[styles.schedOptionDesc, { color: colors.textMuted }]}>Prevent this team from playing your other teams</Text>
                           {selectedTeams.filter(t => t.id !== team.id).map(other => {
                             const restricted = sched.matchupRestrictions.includes(other.id);
                             return (
                               <TouchableOpacity
                                 key={other.id}
-                                style={styles.matchupRow}
+                                style={[styles.matchupRow, { backgroundColor: colors.background }]}
                                 onPress={() => toggleMatchup(team.id, other.id)}
                                 activeOpacity={0.7}
                               >
-                                <View style={[styles.smallCheck, restricted && styles.smallCheckOn]}>
-                                  {restricted && <Text style={styles.smallCheckTick}>✓</Text>}
+                                <View style={[styles.smallCheck, { borderColor: colors.border }, restricted && { borderColor: colors.textSecondary, backgroundColor: colors.surfaceLight }]}>
+                                  {restricted && <Text style={[styles.smallCheckTick, { color: colors.textPrimary }]}>✓</Text>}
                                 </View>
-                                <Text style={styles.matchupName}>{other.name}</Text>
-                                {other.division && <Text style={styles.matchupDiv}>{other.division}</Text>}
+                                <Text style={[styles.matchupName, { color: colors.textPrimary }]}>{other.name}</Text>
+                                {other.division && <Text style={[styles.matchupDiv, { color: colors.textMuted }]}>{other.division}</Text>}
                               </TouchableOpacity>
                             );
                           })}
@@ -427,18 +431,18 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
           );
         })
       )}
-      {!!error && <Text style={styles.errorText}>{error}</Text>}
+      {!!error && <Text style={[styles.errorText, { color: colors.redLight, backgroundColor: colors.redTint, borderColor: colors.redTint }]}>{error}</Text>}
     </>
   );
 
   const renderRosters = () => (
     <>
-      <Text style={styles.stepDesc}>Please verify that rosters for your selected teams are up to date.</Text>
+      <Text style={[styles.stepDesc, { color: colors.textMuted }]}>Please verify that rosters for your selected teams are up to date.</Text>
       {selectedTeams.map(team => {
         const expanded = expandedRosterIds.has(team.id);
         const empty = team.rosterCount === 0;
         return (
-          <View key={team.id} style={styles.rosterCard}>
+          <View key={team.id} style={[styles.rosterCard, { borderColor: colors.border, backgroundColor: colors.background }]}>
             <TouchableOpacity
               style={styles.rosterCardHeader}
               onPress={() => setExpandedRosterIds(prev => {
@@ -446,26 +450,26 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
               })}
               activeOpacity={0.7}
             >
-              <View style={[styles.rosterStatusIcon, empty ? styles.rosterWarnIcon : styles.rosterOkIcon]}>
+              <View style={[styles.rosterStatusIcon, empty ? { backgroundColor: colors.warningTint } : { backgroundColor: colors.successTint }]}>
                 <Text style={styles.rosterStatusText}>{empty ? '⚠' : '✓'}</Text>
               </View>
               <View style={styles.rosterInfo}>
-                <Text style={styles.rosterTeamName}>{team.name}</Text>
-                <Text style={[styles.rosterCount, empty && styles.rosterCountWarn]}>
+                <Text style={[styles.rosterTeamName, { color: colors.textPrimary }]}>{team.name}</Text>
+                <Text style={[styles.rosterCount, { color: colors.textMuted }, empty && { color: colors.warning }]}>
                   {team.rosterCount} players{empty ? ' — Roster is empty!' : ''}
                 </Text>
               </View>
-              <Text style={styles.chevron}>{expanded ? '▲' : '▼'}</Text>
+              <Text style={[styles.chevron, { color: colors.textMuted }]}>{expanded ? '▲' : '▼'}</Text>
             </TouchableOpacity>
             {expanded && (
-              <View style={styles.rosterList}>
+              <View style={[styles.rosterList, { borderTopColor: colors.border }]}>
                 {empty ? (
-                  <Text style={styles.rosterEmpty}>No players on this roster yet.</Text>
+                  <Text style={[styles.rosterEmpty, { color: colors.textMuted }]}>No players on this roster yet.</Text>
                 ) : (
                   team.roster.map((p, i) => (
                     <View key={i} style={styles.rosterPlayerRow}>
-                      <Text style={styles.rosterJersey}>{p.jerseyNumber ? `#${p.jerseyNumber}` : '—'}</Text>
-                      <Text style={styles.rosterPlayerName}>{p.firstName} {p.lastName}</Text>
+                      <Text style={[styles.rosterJersey, { color: colors.textMuted }]}>{p.jerseyNumber ? `#${p.jerseyNumber}` : '—'}</Text>
+                      <Text style={[styles.rosterPlayerName, { color: colors.textSecondary }]}>{p.firstName} {p.lastName}</Text>
                     </View>
                   ))
                 )}
@@ -476,73 +480,73 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
       })}
 
       <TouchableOpacity
-        style={styles.confirmRow}
+        style={[styles.confirmRow, { backgroundColor: colors.background, borderColor: colors.border }]}
         onPress={() => setRostersConfirmed(v => !v)}
         activeOpacity={0.7}
       >
-        <View style={[styles.checkbox, rostersConfirmed && styles.checkboxConfirmed]}>
-          {rostersConfirmed && <Text style={styles.checkboxTick}>✓</Text>}
+        <View style={[styles.checkbox, { borderColor: colors.border }, rostersConfirmed && { borderColor: colors.textSecondary, backgroundColor: colors.surfaceLight }]}>
+          {rostersConfirmed && <Text style={[styles.checkboxTick, { color: colors.textPrimary }]}>✓</Text>}
         </View>
-        <Text style={styles.confirmText}>
+        <Text style={[styles.confirmText, { color: colors.textSecondary }]}>
           I confirm that all rosters are up-to-date and accurate. I understand rosters may be verified before or during the event.
         </Text>
       </TouchableOpacity>
-      {!!error && <Text style={styles.errorText}>{error}</Text>}
+      {!!error && <Text style={[styles.errorText, { color: colors.redLight, backgroundColor: colors.redTint, borderColor: colors.redTint }]}>{error}</Text>}
     </>
   );
 
   const renderConfirm = () => (
     <>
-      <Text style={styles.sectionLabel}>TEAMS</Text>
+      <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>TEAMS</Text>
       {selectedTeams.map(team => (
-        <View key={team.id} style={styles.summaryTeamRow}>
+        <View key={team.id} style={[styles.summaryTeamRow, { backgroundColor: colors.background, borderColor: colors.border }]}>
           <View>
-            <Text style={styles.summaryTeamName}>{team.name}</Text>
-            {team.division && <Text style={styles.summaryTeamDiv}>{team.division}</Text>}
+            <Text style={[styles.summaryTeamName, { color: colors.textPrimary }]}>{team.name}</Text>
+            {team.division && <Text style={[styles.summaryTeamDiv, { color: colors.textMuted }]}>{team.division}</Text>}
           </View>
-          {!isFree && <Text style={styles.summaryFee}>${Number(event.entryFee).toFixed(0)}</Text>}
+          {!isFree && <Text style={[styles.summaryFee, { color: colors.textPrimary }]}>${Number(event.entryFee).toFixed(0)}</Text>}
         </View>
       ))}
 
       {!isFree && (
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalAmount}>${totalFee.toFixed(0)}</Text>
+        <View style={[styles.totalRow, { borderTopColor: colors.border }]}>
+          <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>Total</Text>
+          <Text style={[styles.totalAmount, { color: colors.textPrimary }]}>${totalFee.toFixed(0)}</Text>
         </View>
       )}
 
       {isFree && (
-        <View style={styles.freeNotice}>
-          <Text style={styles.freeNoticeText}>✓ This is a free event — no payment required</Text>
+        <View style={[styles.freeNotice, { backgroundColor: colors.successTint, borderColor: colors.successBorder }]}>
+          <Text style={[styles.freeNoticeText, { color: colors.success }]}>✓ This is a free event — no payment required</Text>
         </View>
       )}
 
       {!isFree && (
-        <View style={styles.paymentNotice}>
-          <Text style={styles.paymentNoticeText}>
+        <View style={[styles.paymentNotice, { backgroundColor: colors.warningTint, borderColor: colors.warningBorder }]}>
+          <Text style={[styles.paymentNoticeText, { color: colors.warning }]}>
             ⚠ Payment integration coming soon. Registration will be confirmed without payment.
           </Text>
         </View>
       )}
 
-      {!!error && <Text style={styles.errorText}>{error}</Text>}
+      {!!error && <Text style={[styles.errorText, { color: colors.redLight, backgroundColor: colors.redTint, borderColor: colors.redTint }]}>{error}</Text>}
     </>
   );
 
   const renderSuccess = () => (
     <View style={styles.centeredBox}>
-      <Text style={styles.successIcon}>✓</Text>
-      <Text style={styles.centeredTitle}>Registration Complete!</Text>
-      <Text style={styles.centeredDesc}>
+      <Text style={[styles.successIcon, { color: colors.success }]}>✓</Text>
+      <Text style={[styles.centeredTitle, { color: colors.textPrimary }]}>Registration Complete!</Text>
+      <Text style={[styles.centeredDesc, { color: colors.textMuted }]}>
         Your teams have been registered for {event.name}.
       </Text>
       <View style={styles.successTeams}>
         {registeredTeams.map(t => (
-          <View key={t.id} style={styles.successTeamRow}>
-            <Text style={styles.successTeamCheck}>✓</Text>
+          <View key={t.id} style={[styles.successTeamRow, { backgroundColor: colors.background, borderColor: colors.border }]}>
+            <Text style={[styles.successTeamCheck, { color: colors.success }]}>✓</Text>
             <View>
-              <Text style={styles.successTeamName}>{t.name}</Text>
-              {t.division && <Text style={styles.successTeamDiv}>{t.division}</Text>}
+              <Text style={[styles.successTeamName, { color: colors.textPrimary }]}>{t.name}</Text>
+              {t.division && <Text style={[styles.successTeamDiv, { color: colors.textMuted }]}>{t.division}</Text>}
             </View>
           </View>
         ))}
@@ -560,26 +564,26 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
   return (
     <DynamicSheet visible={visible} onClose={onClose}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.headerText}>
-          <Text style={styles.headerTitle}>Register Your Team</Text>
-          <Text style={styles.headerSub}>{event.name}</Text>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Register Your Team</Text>
+          <Text style={[styles.headerSub, { color: colors.textMuted }]}>{event.name}</Text>
         </View>
-        <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-          <Text style={styles.closeBtnText}>✕</Text>
+        <TouchableOpacity onPress={onClose} style={[styles.closeBtn, { backgroundColor: colors.surfaceLight }]}>
+          <Text style={[styles.closeBtnText, { color: colors.textMuted }]}>✕</Text>
         </TouchableOpacity>
       </View>
 
       {/* Progress bar */}
       {userRole === 'PROGRAM_DIRECTOR' && step !== 'success' && (
-        <View style={styles.progress}>
+        <View style={[styles.progress, { borderBottomColor: colors.border }]}>
           {(['teams', 'rosters', 'confirm'] as Step[]).map((s, i) => (
             <React.Fragment key={s}>
-              <View style={[styles.progressStep, (step === s || (i < ['teams','rosters','confirm'].indexOf(step))) && styles.progressStepActive]}>
-                <Text style={styles.progressStepNum}>{i + 1}</Text>
-                <Text style={styles.progressStepLabel}>{stepTitle[s]}</Text>
+              <View style={[styles.progressStep, (step === s || (i < ['teams','rosters','confirm'].indexOf(step))) && { backgroundColor: colors.surfaceLight }]}>
+                <Text style={[styles.progressStepNum, { backgroundColor: colors.border, color: colors.textPrimary }]}>{i + 1}</Text>
+                <Text style={[styles.progressStepLabel, { color: colors.textSecondary }]}>{stepTitle[s]}</Text>
               </View>
-              {i < 2 && <View style={styles.progressLine} />}
+              {i < 2 && <View style={[styles.progressLine, { backgroundColor: colors.border }]} />}
             </React.Fragment>
           ))}
         </View>
@@ -594,7 +598,7 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
         {userRole !== 'PROGRAM_DIRECTOR'
           ? renderNotDirector()
           : isLoading
-            ? <ActivityIndicator size="large" color={Colors.textMuted} style={{ marginTop: 40 }} />
+            ? <ActivityIndicator size="large" color={colors.textMuted} style={{ marginTop: 40 }} />
             : step === 'teams' ? renderTeams()
               : step === 'rosters' ? renderRosters()
                 : step === 'confirm' ? renderConfirm()
@@ -604,7 +608,7 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
 
       {/* Footer navigation */}
       {userRole === 'PROGRAM_DIRECTOR' && !isLoading && step !== 'success' && (
-        <View style={styles.footer}>
+        <View style={[styles.footer, { borderTopColor: colors.border }]}>
           {step !== 'teams' ? (
             <TouchableOpacity
               style={styles.backBtn}
@@ -613,7 +617,7 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
                 else if (step === 'confirm') setStep('rosters');
               }}
             >
-              <Text style={styles.backBtnText}>Back</Text>
+              <Text style={[styles.backBtnText, { color: colors.textMuted }]}>Back</Text>
             </TouchableOpacity>
           ) : (
             <View />
@@ -621,6 +625,7 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
           <TouchableOpacity
             style={[
               styles.primaryBtn,
+              { backgroundColor: colors.surfaceLight, borderColor: colors.border },
               (isSubmitting || (step === 'teams' && selectedIds.size === 0) || (step === 'rosters' && !rostersConfirmed)) && styles.primaryBtnDisabled,
             ]}
             disabled={isSubmitting || (step === 'teams' && selectedIds.size === 0) || (step === 'rosters' && !rostersConfirmed)}
@@ -633,8 +638,8 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
             activeOpacity={0.85}
           >
             {isSubmitting
-              ? <ActivityIndicator size="small" color={Colors.textPrimary} />
-              : <Text style={styles.primaryBtnText}>
+              ? <ActivityIndicator size="small" color={colors.textPrimary} />
+              : <Text style={[styles.primaryBtnText, { color: colors.textPrimary }]}>
                   {step === 'teams' ? 'Continue ›'
                     : step === 'rosters' ? 'Continue ›'
                       : 'Complete Registration'}
@@ -645,10 +650,10 @@ export function RegisterTeamSheet({ visible, onClose, event, userRole }: Props) 
       )}
 
       {step === 'success' && (
-        <View style={styles.footer}>
+        <View style={[styles.footer, { borderTopColor: colors.border }]}>
           <View />
-          <TouchableOpacity style={styles.primaryBtn} onPress={onClose} activeOpacity={0.85}>
-            <Text style={styles.primaryBtnText}>Done</Text>
+          <TouchableOpacity style={[styles.primaryBtn, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]} onPress={onClose} activeOpacity={0.85}>
+            <Text style={[styles.primaryBtnText, { color: colors.textPrimary }]}>Done</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -664,28 +669,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   headerText: { flex: 1, marginRight: Spacing.md },
   headerTitle: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
   },
   headerSub: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   closeBtn: {
     width: 28, height: 28, borderRadius: 14,
-    backgroundColor: Colors.surfaceLight,
     alignItems: 'center', justifyContent: 'center',
   },
   closeBtnText: {
     fontSize: 12,
-    color: Colors.textMuted,
     fontFamily: Fonts.bodyMedium,
   },
   progress: {
@@ -694,7 +694,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
     gap: 4,
   },
   progressStep: {
@@ -706,48 +705,36 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
     backgroundColor: 'transparent',
   },
-  progressStepActive: {
-    backgroundColor: Colors.surfaceLight,
-  },
   progressStepNum: {
     width: 18, height: 18, borderRadius: 9,
-    backgroundColor: Colors.border,
     fontSize: 10,
     fontFamily: Fonts.bodyBold,
-    color: Colors.textPrimary,
     textAlign: 'center',
     lineHeight: 18,
   },
   progressStepLabel: {
     fontSize: 10,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
   },
   progressLine: {
     flex: 1,
     height: 1,
-    backgroundColor: Colors.border,
   },
   body: {},
   bodyContent: { padding: Spacing.lg, gap: Spacing.md },
   stepDesc: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginBottom: Spacing.sm,
   },
 
   // Team cards
   teamCard: {
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    backgroundColor: Colors.background,
   },
   teamCardDisabled: { opacity: 0.5 },
-  teamCardWarning: { borderColor: 'rgba(251,191,36,0.4)' },
-  teamCardSelected: { borderColor: Colors.textSecondary },
   teamCardRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -756,195 +743,182 @@ const styles = StyleSheet.create({
   },
   teamCheckbox: {
     width: 22, height: 22, borderRadius: 5,
-    borderWidth: 2, borderColor: Colors.border,
+    borderWidth: 2,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
-  teamCheckboxGray: { borderColor: Colors.textMuted, backgroundColor: Colors.surfaceLight },
-  teamCheckboxChecked: { borderColor: Colors.textSecondary, backgroundColor: Colors.surfaceLight },
-  teamCheckboxWarning: { borderColor: 'rgba(251,191,36,0.5)' },
-  teamCheckTick: { fontSize: 12, color: Colors.textPrimary, fontFamily: Fonts.bodyBold },
-  teamCheckGray: { color: Colors.textMuted },
+  teamCheckTick: { fontSize: 12, fontFamily: Fonts.bodyBold },
   teamInfo: { flex: 1 },
   teamNameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, flexWrap: 'wrap' },
-  teamName: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold, color: Colors.textPrimary },
+  teamName: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold },
   registeredBadge: {
-    backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.sm,
+    borderRadius: BorderRadius.sm,
     paddingHorizontal: 6, paddingVertical: 2,
   },
-  registeredBadgeText: { fontSize: 9, fontFamily: Fonts.bodyMedium, color: Colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 },
+  registeredBadgeText: { fontSize: 9, fontFamily: Fonts.bodyMedium, textTransform: 'uppercase', letterSpacing: 0.5 },
   teamMeta: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginTop: 2 },
   divChip: {
-    backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.full,
+    borderRadius: BorderRadius.full,
     paddingHorizontal: Spacing.sm, paddingVertical: 1,
-    borderWidth: 1, borderColor: Colors.border,
+    borderWidth: 1,
   },
-  divChipText: { fontSize: 10, fontFamily: Fonts.bodyMedium, color: Colors.textSecondary },
-  teamRoster: { fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textMuted },
+  divChipText: { fontSize: 10, fontFamily: Fonts.bodyMedium },
+  teamRoster: { fontSize: FontSize.xs, fontFamily: Fonts.body },
   eligIcon: { fontSize: 14, fontFamily: Fonts.bodyBold },
-  eligOk: { color: 'rgb(34,197,94)' },
-  eligWarn: { color: 'rgb(251,191,36)' },
   ineligibleRow: { paddingHorizontal: Spacing.md, paddingBottom: Spacing.sm },
-  ineligibleText: { fontSize: FontSize.xs, fontFamily: Fonts.body, color: 'rgb(251,191,36)' },
+  ineligibleText: { fontSize: FontSize.xs, fontFamily: Fonts.body },
 
   // Schedule
-  schedSection: { borderTopWidth: 1, borderTopColor: Colors.border },
+  schedSection: { borderTopWidth: 1 },
   schedToggle: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm + 2,
   },
-  schedToggleLabel: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium, color: Colors.textSecondary },
-  schedToggleChevron: { fontSize: 10, color: Colors.textMuted },
+  schedToggleLabel: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium },
+  schedToggleChevron: { fontSize: 10 },
   schedBody: { paddingHorizontal: Spacing.md, paddingBottom: Spacing.md, gap: Spacing.md },
   schedToggleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm },
   schedOptionText: { flex: 1 },
-  schedOptionTitle: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium, color: Colors.textPrimary },
-  schedOptionDesc: { fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textMuted, marginTop: 1 },
+  schedOptionTitle: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium },
+  schedOptionDesc: { fontSize: FontSize.xs, fontFamily: Fonts.body, marginTop: 1 },
   schedRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  schedRowLabel: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium, color: Colors.textSecondary },
+  schedRowLabel: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   stepBtn: {
     width: 28, height: 28, borderRadius: 6,
-    backgroundColor: Colors.surfaceLight, borderWidth: 1, borderColor: Colors.border,
+    borderWidth: 1,
     alignItems: 'center', justifyContent: 'center',
   },
-  stepBtnText: { fontSize: 16, color: Colors.textPrimary, lineHeight: 20 },
-  stepValue: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium, color: Colors.textPrimary, minWidth: 24, textAlign: 'center' },
-  clearStep: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium, color: Colors.textMuted },
-  addConstraintBtn: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium, color: Colors.textSecondary },
+  stepBtnText: { fontSize: 16, lineHeight: 20 },
+  stepValue: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium, minWidth: 24, textAlign: 'center' },
+  clearStep: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium },
+  addConstraintBtn: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium },
   constraintRow: {
-    backgroundColor: Colors.surfaceLight, borderRadius: BorderRadius.md,
-    padding: Spacing.sm, gap: 4, borderWidth: 1, borderColor: Colors.border,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.sm, gap: 4, borderWidth: 1,
   },
   chipOption: {
     paddingHorizontal: Spacing.sm, paddingVertical: 3,
-    borderRadius: BorderRadius.full, backgroundColor: Colors.background,
-    borderWidth: 1, borderColor: Colors.border, marginRight: 4,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1, marginRight: 4,
   },
-  chipOptionActive: { backgroundColor: Colors.surfaceLight, borderColor: Colors.textSecondary },
-  chipOptionText: { fontSize: 10, fontFamily: Fonts.bodyMedium, color: Colors.textMuted },
-  chipOptionTextActive: { color: Colors.textPrimary },
+  chipOptionText: { fontSize: 10, fontFamily: Fonts.bodyMedium },
   timesRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginTop: 4 },
   timeInput: {
-    backgroundColor: Colors.background, borderWidth: 1, borderColor: Colors.border,
+    borderWidth: 1,
     borderRadius: BorderRadius.sm, paddingHorizontal: Spacing.sm, paddingVertical: 4,
-    fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textPrimary, width: 72,
+    fontSize: FontSize.xs, fontFamily: Fonts.body, width: 72,
   },
-  toText: { fontSize: FontSize.xs, color: Colors.textMuted, fontFamily: Fonts.body },
+  toText: { fontSize: FontSize.xs, fontFamily: Fonts.body },
   removeBtn: {
     marginLeft: 'auto', width: 22, height: 22, borderRadius: 11,
-    backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center',
   },
-  removeBtnText: { fontSize: 10, color: Colors.textMuted },
+  removeBtnText: { fontSize: 10 },
   matchupRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     paddingVertical: Spacing.sm, paddingHorizontal: Spacing.sm,
-    backgroundColor: Colors.background, borderRadius: BorderRadius.md, marginTop: 4,
+    borderRadius: BorderRadius.md, marginTop: 4,
   },
-  matchupName: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium, color: Colors.textPrimary, flex: 1 },
-  matchupDiv: { fontSize: 10, fontFamily: Fonts.body, color: Colors.textMuted },
+  matchupName: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium, flex: 1 },
+  matchupDiv: { fontSize: 10, fontFamily: Fonts.body },
 
   // Rosters
   rosterCard: {
-    borderWidth: 1, borderColor: Colors.border,
-    borderRadius: BorderRadius.lg, overflow: 'hidden', backgroundColor: Colors.background,
+    borderWidth: 1,
+    borderRadius: BorderRadius.lg, overflow: 'hidden',
   },
   rosterCardHeader: { flexDirection: 'row', alignItems: 'center', padding: Spacing.md, gap: Spacing.md },
   rosterStatusIcon: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  rosterOkIcon: { backgroundColor: 'rgba(34,197,94,0.15)' },
-  rosterWarnIcon: { backgroundColor: 'rgba(251,191,36,0.15)' },
   rosterStatusText: { fontSize: 14 },
   rosterInfo: { flex: 1 },
-  rosterTeamName: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold, color: Colors.textPrimary },
-  rosterCount: { fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textMuted, marginTop: 1 },
-  rosterCountWarn: { color: 'rgb(251,191,36)' },
-  chevron: { fontSize: 10, color: Colors.textMuted },
+  rosterTeamName: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold },
+  rosterCount: { fontSize: FontSize.xs, fontFamily: Fonts.body, marginTop: 1 },
+  chevron: { fontSize: 10 },
   rosterList: {
-    borderTopWidth: 1, borderTopColor: Colors.border,
+    borderTopWidth: 1,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
   },
-  rosterEmpty: { fontSize: FontSize.sm, fontFamily: Fonts.body, color: Colors.textMuted, paddingVertical: Spacing.sm },
+  rosterEmpty: { fontSize: FontSize.sm, fontFamily: Fonts.body, paddingVertical: Spacing.sm },
   rosterPlayerRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 3, gap: Spacing.md },
-  rosterJersey: { width: 32, textAlign: 'right', fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textMuted },
-  rosterPlayerName: { fontSize: FontSize.sm, fontFamily: Fonts.body, color: Colors.textSecondary },
+  rosterJersey: { width: 32, textAlign: 'right', fontSize: FontSize.xs, fontFamily: Fonts.body },
+  rosterPlayerName: { fontSize: FontSize.sm, fontFamily: Fonts.body },
   confirmRow: {
     flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.md,
-    backgroundColor: Colors.background, borderRadius: BorderRadius.lg,
-    borderWidth: 1, borderColor: Colors.border, padding: Spacing.md, marginTop: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1, padding: Spacing.md, marginTop: Spacing.sm,
   },
   checkbox: {
-    width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: Colors.border,
+    width: 22, height: 22, borderRadius: 5, borderWidth: 2,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1,
   },
-  checkboxConfirmed: { borderColor: Colors.textSecondary, backgroundColor: Colors.surfaceLight },
-  checkboxTick: { fontSize: 12, color: Colors.textPrimary, fontFamily: Fonts.bodyBold },
-  confirmText: { flex: 1, fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textSecondary, lineHeight: 18 },
+  checkboxTick: { fontSize: 12, fontFamily: Fonts.bodyBold },
+  confirmText: { flex: 1, fontSize: FontSize.xs, fontFamily: Fonts.body, lineHeight: 18 },
 
   // Summary
   sectionLabel: {
-    fontSize: 10, fontFamily: Fonts.bodyBold, color: Colors.textMuted,
+    fontSize: 10, fontFamily: Fonts.bodyBold,
     letterSpacing: 1.5, marginBottom: Spacing.xs,
   },
   summaryTeamRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: Colors.background, borderRadius: BorderRadius.md,
-    padding: Spacing.md, borderWidth: 1, borderColor: Colors.border,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md, borderWidth: 1,
   },
-  summaryTeamName: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold, color: Colors.textPrimary },
-  summaryTeamDiv: { fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textMuted, marginTop: 1 },
-  summaryFee: { fontSize: FontSize.md, fontFamily: Fonts.bodyBold, color: Colors.textPrimary },
+  summaryTeamName: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold },
+  summaryTeamDiv: { fontSize: FontSize.xs, fontFamily: Fonts.body, marginTop: 1 },
+  summaryFee: { fontSize: FontSize.md, fontFamily: Fonts.bodyBold },
   totalRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingTop: Spacing.md, borderTopWidth: 1, borderTopColor: Colors.border, marginTop: Spacing.sm,
+    paddingTop: Spacing.md, borderTopWidth: 1, marginTop: Spacing.sm,
   },
-  totalLabel: { fontSize: FontSize.md, fontFamily: Fonts.bodyMedium, color: Colors.textSecondary },
-  totalAmount: { fontSize: 28, fontFamily: Fonts.headingBlack, color: Colors.textPrimary },
+  totalLabel: { fontSize: FontSize.md, fontFamily: Fonts.bodyMedium },
+  totalAmount: { fontSize: 28, fontFamily: Fonts.headingBlack },
   freeNotice: {
-    backgroundColor: 'rgba(34,197,94,0.08)', borderWidth: 1,
-    borderColor: 'rgba(34,197,94,0.25)', borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderRadius: BorderRadius.md,
     padding: Spacing.md, marginTop: Spacing.sm,
   },
-  freeNoticeText: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium, color: 'rgb(34,197,94)' },
+  freeNoticeText: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium },
   paymentNotice: {
-    backgroundColor: 'rgba(251,191,36,0.06)', borderWidth: 1,
-    borderColor: 'rgba(251,191,36,0.2)', borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderRadius: BorderRadius.md,
     padding: Spacing.md, marginTop: Spacing.sm,
   },
-  paymentNoticeText: { fontSize: FontSize.xs, fontFamily: Fonts.body, color: 'rgb(251,191,36)', lineHeight: 18 },
+  paymentNoticeText: { fontSize: FontSize.xs, fontFamily: Fonts.body, lineHeight: 18 },
 
   // Success
-  successIcon: { fontSize: 48, color: 'rgb(34,197,94)', textAlign: 'center', marginBottom: Spacing.md },
+  successIcon: { fontSize: 48, textAlign: 'center', marginBottom: Spacing.md },
   successTeams: { width: '100%', marginTop: Spacing.lg, gap: Spacing.sm },
   successTeamRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
-    backgroundColor: Colors.background, borderRadius: BorderRadius.md,
-    padding: Spacing.md, borderWidth: 1, borderColor: Colors.border,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md, borderWidth: 1,
   },
-  successTeamCheck: { fontSize: 16, color: 'rgb(34,197,94)' },
-  successTeamName: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold, color: Colors.textPrimary },
-  successTeamDiv: { fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textMuted, marginTop: 1 },
+  successTeamCheck: { fontSize: 16 },
+  successTeamName: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold },
+  successTeamDiv: { fontSize: FontSize.xs, fontFamily: Fonts.body, marginTop: 1 },
 
   // Centered states
   centeredBox: { alignItems: 'center', paddingVertical: Spacing.xl, paddingHorizontal: Spacing.lg },
   centeredTitle: {
-    fontSize: FontSize.lg, fontFamily: Fonts.heading, color: Colors.textPrimary,
+    fontSize: FontSize.lg, fontFamily: Fonts.heading,
     marginBottom: Spacing.sm, textAlign: 'center',
   },
   centeredDesc: {
-    fontSize: FontSize.sm, fontFamily: Fonts.body, color: Colors.textMuted,
+    fontSize: FontSize.sm, fontFamily: Fonts.body,
     textAlign: 'center', lineHeight: 20,
   },
 
   // Shared
   smallCheck: {
-    width: 18, height: 18, borderRadius: 4, borderWidth: 2, borderColor: Colors.border,
+    width: 18, height: 18, borderRadius: 4, borderWidth: 2,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
-  smallCheckOn: { borderColor: Colors.textSecondary, backgroundColor: Colors.surfaceLight },
-  smallCheckTick: { fontSize: 10, color: Colors.textPrimary, fontFamily: Fonts.bodyBold },
+  smallCheckTick: { fontSize: 10, fontFamily: Fonts.bodyBold },
   errorText: {
-    fontSize: FontSize.sm, fontFamily: Fonts.body, color: '#f87171',
-    backgroundColor: 'rgba(239,68,68,0.08)', borderWidth: 1,
-    borderColor: 'rgba(239,68,68,0.2)', borderRadius: BorderRadius.md,
+    fontSize: FontSize.sm, fontFamily: Fonts.body,
+    borderWidth: 1,
+    borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
   },
   footer: {
@@ -954,16 +928,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
     paddingBottom: Platform.OS === 'ios' ? Spacing.xl : Spacing.md,
   },
   backBtn: { paddingVertical: Spacing.sm },
-  backBtnText: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium, color: Colors.textMuted },
+  backBtnText: { fontSize: FontSize.sm, fontFamily: Fonts.bodyMedium },
   primaryBtn: {
-    backgroundColor: Colors.surfaceLight, borderWidth: 1, borderColor: Colors.border,
+    borderWidth: 1,
     borderRadius: BorderRadius.md, paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md,
     alignItems: 'center', justifyContent: 'center', minWidth: 160,
   },
   primaryBtnDisabled: { opacity: 0.4 },
-  primaryBtnText: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold, color: Colors.textPrimary },
+  primaryBtnText: { fontSize: FontSize.md, fontFamily: Fonts.bodySemiBold },
 });

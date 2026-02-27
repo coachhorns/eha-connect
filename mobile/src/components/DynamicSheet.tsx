@@ -20,7 +20,8 @@ import {
   Keyboard,
   PanResponder,
 } from 'react-native';
-import { Colors, Spacing } from '@/constants/colors';
+import { Spacing } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -40,6 +41,8 @@ interface Props {
 }
 
 export function DynamicSheet({ visible, onClose, children }: Props) {
+  const colors = useColors();
+
   // Keep modal mounted through the close animation
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -194,7 +197,7 @@ export function DynamicSheet({ visible, onClose, children }: Props) {
     >
       {/* Backdrop: full-screen tint, never intercepts touches */}
       <Animated.View
-        style={[styles.backdrop, { opacity: backdropOpacity }]}
+        style={[styles.backdrop, { opacity: backdropOpacity, backgroundColor: colors.modalBackdrop }]}
         pointerEvents="none"
       />
 
@@ -209,14 +212,21 @@ export function DynamicSheet({ visible, onClose, children }: Props) {
 
         {/* The sheet itself */}
         <Animated.View
-          style={[styles.sheet, { transform: [{ translateY }] }]}
+          style={[
+            styles.sheet,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              transform: [{ translateY }],
+            },
+          ]}
         >
           {/*
            * Handle + drag area — tall enough for a comfortable swipe target.
            * PanResponder lives here so it doesn't compete with inner ScrollViews.
            */}
           <View style={styles.handleArea} {...panResponder.panHandlers}>
-            <View style={styles.handle} />
+            <View style={[styles.handle, { backgroundColor: colors.border }]} />
           </View>
 
           {children}
@@ -229,7 +239,6 @@ export function DynamicSheet({ visible, onClose, children }: Props) {
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.55)',
   },
   container: {
     flex: 1,
@@ -239,13 +248,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sheet: {
-    backgroundColor: Colors.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: SHEET_MAX_HEIGHT,
     borderWidth: 1,
     borderBottomWidth: 0,
-    borderColor: Colors.border,
     overflow: 'hidden',
   },
   // Generous drag target height so users can easily grab it
@@ -258,6 +265,5 @@ const styles = StyleSheet.create({
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.border,
   },
 });

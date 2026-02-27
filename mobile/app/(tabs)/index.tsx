@@ -21,7 +21,8 @@ import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Notifications from 'expo-notifications';
 import * as SecureStore from 'expo-secure-store';
-import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { eventsApi } from '@/api/events';
 import { playersApi } from '@/api/players';
@@ -33,6 +34,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const { user } = useAuth();
+  const colors = useColors();
   const router = useRouter();
   const firstName = user?.name?.split(' ')[0] ?? 'Player';
 
@@ -152,21 +154,21 @@ export default function HomeScreen() {
   const HEADER_HEIGHT = Platform.OS === 'ios' ? 100 : 80;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* ── FROSTED GLASS HEADER (sticky) ─────────────────── */}
       <View style={[styles.stickyHeader, { height: HEADER_HEIGHT }]}>
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
-          <View style={[styles.headerInner, { paddingTop: Platform.OS === 'ios' ? 50 : 30 }]}>
+        <BlurView intensity={80} tint={colors.glassTint} style={StyleSheet.absoluteFill}>
+          <View style={[styles.headerInner, { paddingTop: Platform.OS === 'ios' ? 50 : 30, backgroundColor: colors.headerOverlay }]}>
             <View style={styles.headerLeft}>
               <Image
                 source={require('../../assets/eha-connect-logo.png')}
                 style={styles.headerLogo}
                 contentFit="contain"
               />
-              <Text style={styles.headerName}>Dashboard</Text>
+              <Text style={[styles.headerName, { color: colors.textPrimary }]}>Dashboard</Text>
             </View>
             <TouchableOpacity
-              style={styles.bellButton}
+              style={[styles.bellButton, { backgroundColor: colors.inputOverlay, borderColor: colors.inputBorder }]}
               activeOpacity={0.7}
               onPress={() => setShowNotifPanel(true)}
             >
@@ -174,7 +176,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
         </BlurView>
-        <View style={styles.headerBorder} />
+        <View style={[styles.headerBorder, { backgroundColor: colors.headerBorder }]} />
       </View>
 
       <ScrollView
@@ -182,11 +184,12 @@ export default function HomeScreen() {
         contentContainerStyle={[styles.content, { paddingTop: HEADER_HEIGHT + 16 }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.red} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.red} />
         }
       >
 
       {/* ── PLAYER HERO ──────────────────────────────────── */}
+      {/* Hero section overlays text on an image — keep hardcoded dark styling */}
       {allPlayers.length > 0 ? (() => {
         const player = allPlayers[0];
         const photoUri = player.profilePhoto ?? player.profileImageUrl;
@@ -208,7 +211,7 @@ export default function HomeScreen() {
                 contentFit="cover"
               />
             ) : (
-              <View style={styles.heroFallback}>
+              <View style={[styles.heroFallback, { backgroundColor: colors.navyLight }]}>
                 <Text style={styles.heroFallbackInitial}>
                   {(player.firstName?.[0] ?? '').toUpperCase()}
                   {(player.lastName?.[0] ?? '').toUpperCase()}
@@ -216,14 +219,14 @@ export default function HomeScreen() {
               </View>
             )}
 
-            {/* Gradient overlay */}
+            {/* Gradient overlay — hardcoded dark for image readability */}
             <LinearGradient
-              colors={['transparent', 'rgba(15, 23, 42, 0.6)', 'rgba(15, 23, 42, 0.92)', Colors.background]}
+              colors={['transparent', 'rgba(15, 23, 42, 0.6)', 'rgba(15, 23, 42, 0.92)', colors.background]}
               locations={[0, 0.4, 0.75, 1]}
               style={styles.heroGradient}
             />
 
-            {/* Player info overlay */}
+            {/* Player info overlay — hardcoded white text on image */}
             <View style={styles.heroInfoOverlay}>
               <Text style={styles.heroName}>
                 {player.firstName} {player.lastName}
@@ -257,9 +260,9 @@ export default function HomeScreen() {
         );
       })() : (
         <View style={styles.section}>
-          <View style={styles.emptyPlayersCard}>
-            <Text style={styles.emptyPlayersTitle}>No Players Yet</Text>
-            <Text style={styles.emptyPlayersDesc}>
+          <View style={[styles.emptyPlayersCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.emptyPlayersTitle, { color: colors.textPrimary }]}>No Players Yet</Text>
+            <Text style={[styles.emptyPlayersDesc, { color: colors.textMuted }]}>
               Your player profiles will appear here once linked to your account.
             </Text>
           </View>
@@ -270,7 +273,7 @@ export default function HomeScreen() {
       {allPlayers.length > 0 && (
         firstPlayerFull?.careerStats ? (
           <TouchableOpacity
-            style={styles.statsCard}
+            style={[styles.statsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={() => router.push({
               pathname: '/players/game-log',
               params: {
@@ -281,35 +284,35 @@ export default function HomeScreen() {
             activeOpacity={0.7}
           >
             <View style={styles.statsHeader}>
-              <Text style={styles.statsSectionTitle}>SEASON AVERAGES</Text>
-              <Text style={styles.statsViewAll}>Game Log ›</Text>
+              <Text style={[styles.statsSectionTitle, { color: colors.textMuted }]}>SEASON AVERAGES</Text>
+              <Text style={[styles.statsViewAll, { color: colors.textMuted }]}>Game Log ›</Text>
             </View>
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>
+                <Text style={[styles.statValue, { color: colors.textPrimary }]}>
                   {firstPlayerFull.careerStats.averages.ppg.toFixed(1)}
                 </Text>
-                <Text style={styles.statLabel}>PPG</Text>
+                <Text style={[styles.statLabel, { color: colors.textMuted }]}>PPG</Text>
               </View>
-              <View style={styles.statDivider} />
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>
+                <Text style={[styles.statValue, { color: colors.textPrimary }]}>
                   {firstPlayerFull.careerStats.averages.rpg.toFixed(1)}
                 </Text>
-                <Text style={styles.statLabel}>RPG</Text>
+                <Text style={[styles.statLabel, { color: colors.textMuted }]}>RPG</Text>
               </View>
-              <View style={styles.statDivider} />
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>
+                <Text style={[styles.statValue, { color: colors.textPrimary }]}>
                   {firstPlayerFull.careerStats.averages.apg.toFixed(1)}
                 </Text>
-                <Text style={styles.statLabel}>APG</Text>
+                <Text style={[styles.statLabel, { color: colors.textMuted }]}>APG</Text>
               </View>
             </View>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            style={styles.statsCard}
+            style={[styles.statsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={() => router.push({
               pathname: '/players/game-log',
               params: {
@@ -320,26 +323,26 @@ export default function HomeScreen() {
             activeOpacity={0.7}
           >
             <View style={styles.statsHeader}>
-              <Text style={styles.statsSectionTitle}>SEASON AVERAGES</Text>
-              <Text style={styles.statsViewAll}>Game Log ›</Text>
+              <Text style={[styles.statsSectionTitle, { color: colors.textMuted }]}>SEASON AVERAGES</Text>
+              <Text style={[styles.statsViewAll, { color: colors.textMuted }]}>Game Log ›</Text>
             </View>
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
-                <Text style={styles.statValueEmpty}>—</Text>
-                <Text style={styles.statLabel}>PPG</Text>
+                <Text style={[styles.statValueEmpty, { color: colors.textMuted }]}>—</Text>
+                <Text style={[styles.statLabel, { color: colors.textMuted }]}>PPG</Text>
               </View>
-              <View style={styles.statDivider} />
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statItem}>
-                <Text style={styles.statValueEmpty}>—</Text>
-                <Text style={styles.statLabel}>RPG</Text>
+                <Text style={[styles.statValueEmpty, { color: colors.textMuted }]}>—</Text>
+                <Text style={[styles.statLabel, { color: colors.textMuted }]}>RPG</Text>
               </View>
-              <View style={styles.statDivider} />
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statItem}>
-                <Text style={styles.statValueEmpty}>—</Text>
-                <Text style={styles.statLabel}>APG</Text>
+                <Text style={[styles.statValueEmpty, { color: colors.textMuted }]}>—</Text>
+                <Text style={[styles.statLabel, { color: colors.textMuted }]}>APG</Text>
               </View>
             </View>
-            <Text style={styles.statsEmptyText}>
+            <Text style={[styles.statsEmptyText, { color: colors.textMuted }]}>
               Stats will populate once games have been recorded
             </Text>
           </TouchableOpacity>
@@ -352,34 +355,34 @@ export default function HomeScreen() {
         onPress={() => router.push('/(tabs)/events')}
         activeOpacity={0.7}
       >
-        <Text style={[styles.sectionTitle, { marginBottom: Spacing.lg }]}>UP NEXT</Text>
+        <Text style={[styles.sectionTitle, { marginBottom: Spacing.lg, color: colors.textPrimary }]}>UP NEXT</Text>
 
         {scheduledGames.length > 0 ? (
           <View style={styles.gamesList}>
             {scheduledGames.map((game: Game) => (
-              <View key={game.id} style={styles.gameCard}>
+              <View key={game.id} style={[styles.gameCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <View style={styles.gameCardLeft}>
                   {game.scheduledTime && (
-                    <Text style={styles.gameDate}>
+                    <Text style={[styles.gameDate, { color: colors.red }]}>
                       {format(new Date(game.scheduledTime), 'MMM d')}
                     </Text>
                   )}
                   {game.scheduledTime && (
-                    <Text style={styles.gameTime}>
+                    <Text style={[styles.gameTime, { color: colors.textMuted }]}>
                       {format(new Date(game.scheduledTime), 'h:mm a')}
                     </Text>
                   )}
                 </View>
                 <View style={styles.gameCardCenter}>
-                  <Text style={styles.gameTeams} numberOfLines={1}>
+                  <Text style={[styles.gameTeams, { color: colors.textPrimary }]} numberOfLines={1}>
                     {game.homeTeam?.name ?? 'TBD'} vs {game.awayTeam?.name ?? 'TBD'}
                   </Text>
                   {game.court && (
-                    <Text style={styles.gameCourt}>{game.court}</Text>
+                    <Text style={[styles.gameCourt, { color: colors.textMuted }]}>{game.court}</Text>
                   )}
                 </View>
                 <View style={styles.gameCardChevron}>
-                  <Text style={styles.chevron}>›</Text>
+                  <Text style={[styles.chevron, { color: colors.textMuted }]}>›</Text>
                 </View>
               </View>
             ))}
@@ -389,35 +392,35 @@ export default function HomeScreen() {
             {upcomingEvents.map((event: Event) => (
               <TouchableOpacity
                 key={event.id}
-                style={styles.gameCard}
+                style={[styles.gameCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 onPress={() => router.push(`/(tabs)/events/${event.id}`)}
                 activeOpacity={0.7}
               >
                 <View style={styles.gameCardLeft}>
-                  <Text style={styles.gameDate}>
+                  <Text style={[styles.gameDate, { color: colors.red }]}>
                     {format(new Date(event.startDate), 'MMM d')}
                   </Text>
-                  <Text style={styles.gameTime}>
+                  <Text style={[styles.gameTime, { color: colors.textMuted }]}>
                     {format(new Date(event.startDate), 'yyyy')}
                   </Text>
                 </View>
                 <View style={styles.gameCardCenter}>
-                  <Text style={styles.gameTeams} numberOfLines={1}>
+                  <Text style={[styles.gameTeams, { color: colors.textPrimary }]} numberOfLines={1}>
                     {event.name}
                   </Text>
                   {event.city && event.state && (
-                    <Text style={styles.gameCourt}>{event.city}, {event.state}</Text>
+                    <Text style={[styles.gameCourt, { color: colors.textMuted }]}>{event.city}, {event.state}</Text>
                   )}
                 </View>
                 <View style={styles.gameCardChevron}>
-                  <Text style={styles.chevron}>›</Text>
+                  <Text style={[styles.chevron, { color: colors.textMuted }]}>›</Text>
                 </View>
               </TouchableOpacity>
             ))}
           </View>
         ) : (
-          <View style={styles.emptyCard}>
-            <Text style={styles.emptyCardText}>No upcoming games scheduled</Text>
+          <View style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.emptyCardText, { color: colors.textMuted }]}>No upcoming games scheduled</Text>
           </View>
         )}
       </TouchableOpacity>
@@ -425,51 +428,51 @@ export default function HomeScreen() {
       {/* ── COLLEGE RECRUITING ──────────────────────────────── */}
       {allPlayers.length > 0 && (
         <View style={styles.section}>
-          <View style={styles.recruitingCard}>
+          <View style={[styles.recruitingCard, { backgroundColor: colors.surface, borderColor: colors.gold + '30' }]}>
             {/* Gold accent top bar */}
-            <View style={styles.recruitingAccent} />
+            <View style={[styles.recruitingAccent, { backgroundColor: colors.gold }]} />
 
             {/* Header */}
-            <View style={styles.recruitingHeader}>
+            <View style={[styles.recruitingHeader, { borderBottomColor: colors.gold + '15' }]}>
               <View>
-                <Text style={styles.recruitingTitle}>COLLEGE RECRUITING</Text>
-                <Text style={styles.recruitingDesc}>
+                <Text style={[styles.recruitingTitle, { color: colors.gold }]}>COLLEGE RECRUITING</Text>
+                <Text style={[styles.recruitingDesc, { color: colors.textMuted }]}>
                   Send your profile directly to college coaches
                 </Text>
               </View>
-              <View style={styles.premiumBadge}>
-                <Text style={styles.premiumBadgeText}>PREMIUM</Text>
+              <View style={[styles.premiumBadge, { backgroundColor: colors.gold + '15', borderColor: colors.gold + '30' }]}>
+                <Text style={[styles.premiumBadgeText, { color: colors.gold }]}>PREMIUM</Text>
               </View>
             </View>
 
             {/* Player rows with Email Coaches button */}
             {allPlayers.map((player) => (
-              <View key={player.id} style={styles.recruitingPlayerRow}>
+              <View key={player.id} style={[styles.recruitingPlayerRow, { borderBottomColor: colors.border }]}>
                 <View style={styles.recruitingPlayerInfo}>
                   {(player.profilePhoto ?? player.profileImageUrl) ? (
                     <Image
                       source={{ uri: (player.profilePhoto ?? player.profileImageUrl)! }}
-                      style={styles.recruitingPlayerAvatar}
+                      style={[styles.recruitingPlayerAvatar, { backgroundColor: colors.surfaceLight }]}
                       contentFit="cover"
                     />
                   ) : (
-                    <View style={styles.recruitingPlayerAvatarFallback}>
-                      <Text style={styles.recruitingPlayerInitial}>
+                    <View style={[styles.recruitingPlayerAvatarFallback, { backgroundColor: colors.surfaceLight }]}>
+                      <Text style={[styles.recruitingPlayerInitial, { color: colors.textPrimary }]}>
                         {(player.firstName?.[0] ?? '').toUpperCase()}
                       </Text>
                     </View>
                   )}
                   <View>
-                    <Text style={styles.recruitingPlayerName}>
+                    <Text style={[styles.recruitingPlayerName, { color: colors.textPrimary }]}>
                       {player.firstName} {player.lastName}
                     </Text>
-                    <Text style={styles.recruitingPlayerMeta}>
+                    <Text style={[styles.recruitingPlayerMeta, { color: colors.textMuted }]}>
                       {player.graduationYear ? `Class of ${player.graduationYear}` : 'No grad year'}
                     </Text>
                   </View>
                 </View>
                 <TouchableOpacity
-                  style={styles.emailCoachesBtn}
+                  style={[styles.emailCoachesBtn, { backgroundColor: colors.gold }]}
                   onPress={() =>
                     router.push({
                       pathname: '/recruiting',
@@ -481,31 +484,31 @@ export default function HomeScreen() {
                   }
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.emailCoachesBtnText}>Email Coaches</Text>
+                  <Text style={[styles.emailCoachesBtnText, { color: colors.textInverse }]}>Email Coaches</Text>
                 </TouchableOpacity>
               </View>
             ))}
 
             {/* Email Log */}
-            <View style={styles.recruitingLogSection}>
-              <Text style={styles.recruitingLogTitle}>SENT EMAILS</Text>
+            <View style={[styles.recruitingLogSection, { borderTopColor: colors.gold + '15' }]}>
+              <Text style={[styles.recruitingLogTitle, { color: colors.textMuted }]}>SENT EMAILS</Text>
               {(!emailLog || emailLog.length === 0) ? (
-                <Text style={styles.recruitingLogEmpty}>
+                <Text style={[styles.recruitingLogEmpty, { color: colors.textMuted }]}>
                   No emails sent yet. Start by emailing a college coach above.
                 </Text>
               ) : (
                 <View style={styles.recruitingLogList}>
                   {emailLog.slice(0, 5).map((log: RecruitingEmailLog) => (
-                    <View key={log.id} style={styles.recruitingLogRow}>
+                    <View key={log.id} style={[styles.recruitingLogRow, { backgroundColor: colors.surfaceLight + '40', borderColor: colors.border }]}>
                       <View style={styles.recruitingLogInfo}>
-                        <Text style={styles.recruitingLogCoach} numberOfLines={1}>
+                        <Text style={[styles.recruitingLogCoach, { color: colors.textPrimary }]} numberOfLines={1}>
                           {log.coachName}
                         </Text>
-                        <Text style={styles.recruitingLogCollege} numberOfLines={1}>
+                        <Text style={[styles.recruitingLogCollege, { color: colors.textMuted }]} numberOfLines={1}>
                           {log.collegeName}
                         </Text>
                       </View>
-                      <Text style={styles.recruitingLogDate}>
+                      <Text style={[styles.recruitingLogDate, { color: colors.textMuted }]}>
                         {format(new Date(log.sentAt), 'MM/dd/yy')}
                       </Text>
                     </View>
@@ -528,53 +531,53 @@ export default function HomeScreen() {
         animationType="fade"
         onRequestClose={() => setShowNotifPanel(false)}
       >
-        <Pressable style={styles.notifOverlay} onPress={() => setShowNotifPanel(false)}>
-          <Pressable style={styles.notifPanel} onPress={(e) => e.stopPropagation()}>
-            <View style={styles.notifHeader}>
-              <Text style={styles.notifTitle}>NOTIFICATIONS</Text>
-              <TouchableOpacity onPress={() => setShowNotifPanel(false)} style={styles.notifClose}>
+        <Pressable style={[styles.notifOverlay, { backgroundColor: colors.modalBackdrop }]} onPress={() => setShowNotifPanel(false)}>
+          <Pressable style={[styles.notifPanel, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={(e) => e.stopPropagation()}>
+            <View style={[styles.notifHeader, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.notifTitle, { color: colors.textMuted }]}>NOTIFICATIONS</Text>
+              <TouchableOpacity onPress={() => setShowNotifPanel(false)} style={[styles.notifClose, { backgroundColor: colors.inputOverlay }]}>
                 <View style={{ width: 10, height: 10, alignItems: 'center', justifyContent: 'center' }}>
-                  <View style={{ width: 12, height: 1.8, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '45deg' }], position: 'absolute' }} />
-                  <View style={{ width: 12, height: 1.8, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '-45deg' }], position: 'absolute' }} />
+                  <View style={{ width: 12, height: 1.8, backgroundColor: colors.textSecondary, borderRadius: 1, transform: [{ rotate: '45deg' }], position: 'absolute' }} />
+                  <View style={{ width: 12, height: 1.8, backgroundColor: colors.textSecondary, borderRadius: 1, transform: [{ rotate: '-45deg' }], position: 'absolute' }} />
                 </View>
               </TouchableOpacity>
             </View>
 
-            <View style={styles.notifRow}>
+            <View style={[styles.notifRow, { borderBottomColor: colors.border }]}>
               <View>
-                <Text style={styles.notifLabel}>New Game Added</Text>
-                <Text style={styles.notifDesc}>When a new game is scheduled</Text>
+                <Text style={[styles.notifLabel, { color: colors.textPrimary }]}>New Game Added</Text>
+                <Text style={[styles.notifDesc, { color: colors.textMuted }]}>When a new game is scheduled</Text>
               </View>
               <Switch
                 value={notifPrefs.newGame}
                 onValueChange={() => toggleNotifPref('newGame')}
-                trackColor={{ false: Colors.surfaceLight, true: Colors.red }}
+                trackColor={{ false: colors.surfaceLight, true: colors.red }}
                 thumbColor="#fff"
               />
             </View>
 
-            <View style={styles.notifRow}>
+            <View style={[styles.notifRow, { borderBottomColor: colors.border }]}>
               <View>
-                <Text style={styles.notifLabel}>Schedule Change</Text>
-                <Text style={styles.notifDesc}>Time or date updates</Text>
+                <Text style={[styles.notifLabel, { color: colors.textPrimary }]}>Schedule Change</Text>
+                <Text style={[styles.notifDesc, { color: colors.textMuted }]}>Time or date updates</Text>
               </View>
               <Switch
                 value={notifPrefs.scheduleChange}
                 onValueChange={() => toggleNotifPref('scheduleChange')}
-                trackColor={{ false: Colors.surfaceLight, true: Colors.red }}
+                trackColor={{ false: colors.surfaceLight, true: colors.red }}
                 thumbColor="#fff"
               />
             </View>
 
             <View style={[styles.notifRow, { borderBottomWidth: 0 }]}>
               <View>
-                <Text style={styles.notifLabel}>Game Update</Text>
-                <Text style={styles.notifDesc}>Score or status changes</Text>
+                <Text style={[styles.notifLabel, { color: colors.textPrimary }]}>Game Update</Text>
+                <Text style={[styles.notifDesc, { color: colors.textMuted }]}>Score or status changes</Text>
               </View>
               <Switch
                 value={notifPrefs.gameChange}
                 onValueChange={() => toggleNotifPref('gameChange')}
-                trackColor={{ false: Colors.surfaceLight, true: Colors.red }}
+                trackColor={{ false: colors.surfaceLight, true: colors.red }}
                 thumbColor="#fff"
               />
             </View>
@@ -605,7 +608,6 @@ function BellIcon() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   scrollView: {
     flex: 1,
@@ -628,7 +630,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   headerBorder: {
     position: 'absolute',
@@ -636,7 +637,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -650,28 +650,23 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textMuted,
   },
   headerName: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textPrimary,
     marginTop: -1,
   },
   bellButton: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
   },
   // Notification Panel
   notifOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
     paddingTop: Platform.OS === 'ios' ? 100 : 80,
@@ -679,10 +674,8 @@ const styles = StyleSheet.create({
   },
   notifPanel: {
     width: 260,
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
     overflow: 'hidden',
   },
   notifHeader: {
@@ -692,19 +685,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   notifTitle: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textMuted,
     letterSpacing: 1.5,
   },
   notifClose: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -715,17 +705,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   notifLabel: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   notifDesc: {
     fontSize: 10,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
 
@@ -736,12 +723,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: FontSize.md,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
   },
 
-  // Hero Profile Image
+  // Hero Profile Image — text on image, keep hardcoded dark
   heroContainer: {
     width: SCREEN_WIDTH,
     height: SCREEN_WIDTH * 1.1,
@@ -758,7 +744,6 @@ const styles = StyleSheet.create({
   },
   heroFallback: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.navyLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -841,23 +826,19 @@ const styles = StyleSheet.create({
 
   // Empty players
   emptyPlayersCard: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.xxl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   emptyPlayersTitle: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
     marginBottom: Spacing.sm,
   },
   emptyPlayersDesc: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -869,11 +850,9 @@ const styles = StyleSheet.create({
   gameCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   gameCardLeft: {
     width: 52,
@@ -883,12 +862,10 @@ const styles = StyleSheet.create({
   gameDate: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.headingSemiBold,
-    color: Colors.red,
   },
   gameTime: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   gameCardCenter: {
@@ -897,12 +874,10 @@ const styles = StyleSheet.create({
   gameTeams: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   gameCourt: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   gameCardChevron: {
@@ -910,17 +885,14 @@ const styles = StyleSheet.create({
   },
   chevron: {
     fontSize: FontSize.xxl,
-    color: Colors.textMuted,
     fontWeight: '300',
   },
 
   // Player Stats
   statsCard: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
     marginBottom: Spacing.xxl,
   },
   statsHeader: {
@@ -932,13 +904,11 @@ const styles = StyleSheet.create({
   statsSectionTitle: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textMuted,
     letterSpacing: 1.5,
   },
   statsViewAll: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textMuted,
   },
   statsRow: {
     flexDirection: 'row',
@@ -952,59 +922,48 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 28,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textPrimary,
   },
   statLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textMuted,
     marginTop: 4,
     letterSpacing: 1,
   },
   statValueEmpty: {
     fontSize: 28,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textMuted,
   },
   statsEmptyText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     textAlign: 'center',
     marginTop: Spacing.md,
   },
   statDivider: {
     width: 1,
     height: 36,
-    backgroundColor: Colors.border,
   },
 
   // Empty state
   emptyCard: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.xxl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   emptyCardText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
 
   // Recruiting Card
   recruitingCard: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: Colors.gold + '30',
   },
   recruitingAccent: {
     height: 3,
-    backgroundColor: Colors.gold,
   },
   recruitingHeader: {
     flexDirection: 'row',
@@ -1012,24 +971,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: Spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.gold + '15',
   },
   recruitingTitle: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.headingBlack,
-    color: Colors.gold,
     letterSpacing: 2,
   },
   recruitingDesc: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 4,
   },
   premiumBadge: {
-    backgroundColor: Colors.gold + '15',
     borderWidth: 1,
-    borderColor: Colors.gold + '30',
     borderRadius: BorderRadius.full,
     paddingHorizontal: Spacing.md,
     paddingVertical: 3,
@@ -1037,7 +991,6 @@ const styles = StyleSheet.create({
   premiumBadgeText: {
     fontSize: 9,
     fontFamily: Fonts.headingBlack,
-    color: Colors.gold,
     letterSpacing: 1.5,
   },
   recruitingPlayerRow: {
@@ -1047,7 +1000,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   recruitingPlayerInfo: {
     flexDirection: 'row',
@@ -1059,35 +1011,29 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.surfaceLight,
   },
   recruitingPlayerAvatarFallback: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.surfaceLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
   recruitingPlayerInitial: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
   },
   recruitingPlayerName: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   recruitingPlayerMeta: {
     fontSize: 10,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   emailCoachesBtn: {
-    backgroundColor: Colors.gold,
     borderRadius: BorderRadius.sm,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
@@ -1095,24 +1041,20 @@ const styles = StyleSheet.create({
   emailCoachesBtnText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textInverse,
   },
   recruitingLogSection: {
     padding: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: Colors.gold + '15',
   },
   recruitingLogTitle: {
     fontSize: 10,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textMuted,
     letterSpacing: 2,
     marginBottom: Spacing.sm,
   },
   recruitingLogEmpty: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   recruitingLogList: {
     gap: Spacing.sm,
@@ -1121,12 +1063,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: Colors.surfaceLight + '40',
     borderRadius: BorderRadius.sm,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   recruitingLogInfo: {
     flex: 1,
@@ -1135,17 +1075,14 @@ const styles = StyleSheet.create({
   recruitingLogCoach: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textPrimary,
   },
   recruitingLogCollege: {
     fontSize: 10,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   recruitingLogDate: {
     fontSize: 10,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
 
 });

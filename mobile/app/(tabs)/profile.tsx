@@ -19,7 +19,8 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { WebView } from 'react-native-webview';
 import { format } from 'date-fns';
-import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { playersApi } from '@/api/players';
 import { Card } from '@/components/ui/Card';
@@ -69,50 +70,13 @@ interface FilmItem {
   type: 'youtube' | 'hudl' | 'other';
 }
 
-// ── Sub-components ────────────────────────────────────────────
-
-function InfoRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
-  return (
-    <View style={styles.infoRow}>
-      <Text style={styles.infoLabel}>{label}</Text>
-      <Text style={[styles.infoValue, highlight && styles.infoValueHighlight]}>{value}</Text>
-    </View>
-  );
-}
-
-function BigStat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
-  return (
-    <View style={styles.bigStat}>
-      <Text style={[styles.bigStatValue, highlight && styles.bigStatHighlight]}>{value}</Text>
-      <Text style={styles.bigStatLabel}>{label}</Text>
-    </View>
-  );
-}
-
-function SmallStat({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.smallStat}>
-      <Text style={styles.smallStatValue}>{value}</Text>
-      <Text style={styles.smallStatLabel}>{label}</Text>
-    </View>
-  );
-}
-
-function ShootingStat({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.shootingStatItem}>
-      <Text style={styles.shootingStatValue}>{value}</Text>
-      <Text style={styles.shootingStatLabel}>{label}</Text>
-    </View>
-  );
-}
-
 // ── Main Screen ───────────────────────────────────────────────
 
 export default function ProfileScreen() {
   const { user } = useAuth();
   const router = useRouter();
   const navigation = useNavigation();
+  const colors = useColors();
 
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -128,6 +92,44 @@ export default function ProfileScreen() {
     });
     return unsub;
   }, [navigation]);
+
+  // ── Sub-components (inside to access colors) ─────────────────
+
+  function InfoRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+    return (
+      <View style={[styles.infoRow, { borderBottomColor: colors.border }]}>
+        <Text style={[styles.infoLabel, { color: colors.textMuted }]}>{label}</Text>
+        <Text style={[styles.infoValue, { color: colors.textPrimary }, highlight && { color: colors.gold }]}>{value}</Text>
+      </View>
+    );
+  }
+
+  function BigStat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+    return (
+      <View style={styles.bigStat}>
+        <Text style={[styles.bigStatValue, { color: colors.textPrimary }, highlight && { color: colors.red }]}>{value}</Text>
+        <Text style={[styles.bigStatLabel, { color: colors.textMuted }]}>{label}</Text>
+      </View>
+    );
+  }
+
+  function SmallStat({ label, value }: { label: string; value: string }) {
+    return (
+      <View style={styles.smallStat}>
+        <Text style={[styles.smallStatValue, { color: colors.textPrimary }]}>{value}</Text>
+        <Text style={[styles.smallStatLabel, { color: colors.textMuted }]}>{label}</Text>
+      </View>
+    );
+  }
+
+  function ShootingStat({ label, value }: { label: string; value: string }) {
+    return (
+      <View style={styles.shootingStatItem}>
+        <Text style={[styles.shootingStatValue, { color: colors.textPrimary }]}>{value}</Text>
+        <Text style={[styles.shootingStatLabel, { color: colors.textMuted }]}>{label}</Text>
+      </View>
+    );
+  }
 
   // ── Fetch player list ──────────────────────────────────────
   const { data: myPlayers, refetch: refetchMine } = useQuery({
@@ -167,9 +169,9 @@ export default function ProfileScreen() {
 
   if (!selectedBase && !isLoading) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>No Player Profile</Text>
-        <Text style={styles.emptyDesc}>
+      <View style={[styles.emptyContainer, { backgroundColor: colors.background }]}>
+        <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No Player Profile</Text>
+        <Text style={[styles.emptyDesc, { color: colors.textSecondary }]}>
           You don't have a player profile linked to your account yet.
         </Text>
       </View>
@@ -277,31 +279,31 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* ── FROSTED GLASS HEADER ──────────────────────────── */}
       <View style={[styles.stickyHeader, { height: HEADER_HEIGHT }]}>
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
-          <View style={[styles.headerInner, { paddingTop: Platform.OS === 'ios' ? 50 : 30 }]}>
+        <BlurView intensity={80} tint={colors.glassTint} style={StyleSheet.absoluteFill}>
+          <View style={[styles.headerInner, { paddingTop: Platform.OS === 'ios' ? 50 : 30, backgroundColor: colors.headerOverlay }]}>
             <View style={styles.headerLeft}>
               <Image
                 source={require('../../assets/eha-connect-logo.png')}
                 style={styles.headerLogo}
                 contentFit="contain"
               />
-              <Text style={styles.headerName}>My Profile</Text>
+              <Text style={[styles.headerName, { color: colors.textPrimary }]}>My Profile</Text>
             </View>
             {selectedBase && (
               <TouchableOpacity
-                style={styles.editBtn}
+                style={[styles.editBtn, { borderColor: colors.border, backgroundColor: colors.surface }]}
                 onPress={() => router.push({ pathname: '/players/edit', params: { id: selectedBase.id, slug: selectedBase.slug } })}
                 activeOpacity={0.7}
               >
-                <Text style={styles.editBtnText}>Edit</Text>
+                <Text style={[styles.editBtnText, { color: colors.textPrimary }]}>Edit</Text>
               </TouchableOpacity>
             )}
           </View>
         </BlurView>
-        <View style={styles.headerBorder} />
+        <View style={[styles.headerBorder, { backgroundColor: colors.headerBorder }]} />
       </View>
 
       <ScrollView
@@ -309,7 +311,7 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingTop: HEADER_HEIGHT, paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.red} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.red} />
         }
       >
         {/* ── Player switcher (parents with multiple players only) */}
@@ -317,22 +319,30 @@ export default function ProfileScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.switcherBar}
+            style={[styles.switcherBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}
             contentContainerStyle={styles.switcherContent}
           >
             {allPlayers.map((pl, idx) => (
               <TouchableOpacity
                 key={pl.id}
-                style={[styles.switcherChip, idx === selectedIdx && styles.switcherChipActive]}
+                style={[
+                  styles.switcherChip,
+                  { borderColor: colors.border },
+                  idx === selectedIdx && { borderColor: colors.red, backgroundColor: colors.redTint },
+                ]}
                 onPress={() => setSelectedIdx(idx)}
                 activeOpacity={0.7}
               >
                 <Image
                   source={{ uri: (pl as any).profilePhoto ?? pl.profileImageUrl ?? undefined }}
-                  style={styles.switcherAvatar}
+                  style={[styles.switcherAvatar, { backgroundColor: colors.surfaceLight }]}
                   contentFit="cover"
                 />
-                <Text style={[styles.switcherName, idx === selectedIdx && styles.switcherNameActive]}>
+                <Text style={[
+                  styles.switcherName,
+                  { color: colors.textSecondary },
+                  idx === selectedIdx && { color: colors.red, fontFamily: Fonts.bodySemiBold },
+                ]}>
                   {pl.firstName}
                 </Text>
               </TouchableOpacity>
@@ -341,7 +351,8 @@ export default function ProfileScreen() {
         )}
 
         {/* ── Hero Photo ────────────────────────────────────── */}
-        <View style={[styles.hero, { height: HERO_HEIGHT }]}>
+        {/* KEY EXCEPTION: Hero section keeps hardcoded dark styling for text readability on images */}
+        <View style={[styles.hero, { height: HERO_HEIGHT, backgroundColor: colors.surfaceLight }]}>
           <Image
             source={{ uri: p.profilePhoto ?? p.profileImageUrl ?? undefined }}
             style={StyleSheet.absoluteFill}
@@ -349,13 +360,13 @@ export default function ProfileScreen() {
             transition={200}
           />
           <LinearGradient
-            colors={['transparent', 'rgba(15,23,42,0.65)', Colors.background]}
+            colors={['transparent', 'rgba(15,23,42,0.65)', colors.background]}
             locations={[0.35, 0.7, 1]}
             style={StyleSheet.absoluteFill}
           />
           {isVerified && (
             <View style={styles.verifiedBadge}>
-              <Text style={styles.verifiedText}>✓  VERIFIED ATHLETE</Text>
+              <Text style={styles.verifiedText}>&#10003;  VERIFIED ATHLETE</Text>
             </View>
           )}
           <View style={styles.heroInfo}>
@@ -387,7 +398,7 @@ export default function ProfileScreen() {
 
         {/* ── Athlete Info ──────────────────────────────────── */}
         <Card style={styles.card}>
-          <Text style={styles.cardLabel}>ATHLETE INFO</Text>
+          <Text style={[styles.cardLabel, { color: colors.gold }]}>ATHLETE INFO</Text>
           <View style={styles.infoGrid}>
             {heightDisplay && <InfoRow label="Height" value={heightDisplay} />}
             {p.weight && <InfoRow label="Weight" value={`${p.weight} lbs`} />}
@@ -399,42 +410,42 @@ export default function ProfileScreen() {
             {p.gradeLevel && <InfoRow label="Grade" value={`${p.gradeLevel}th`} />}
             {p.maxPrepsUrl && (
               <TouchableOpacity
-                style={styles.infoRowLink}
+                style={[styles.infoRowLink, { borderBottomColor: colors.border }]}
                 onPress={() => Linking.openURL(p.maxPrepsUrl)}
                 activeOpacity={0.7}
               >
                 <View style={styles.infoLinkLeft}>
                   <View style={[styles.brandDot, { backgroundColor: '#005CA9' }]} />
-                  <Text style={styles.infoLabel}>MaxPreps</Text>
+                  <Text style={[styles.infoLabel, { color: colors.textMuted }]}>MaxPreps</Text>
                 </View>
-                <Text style={styles.infoLinkArrow}>View Profile  ↗</Text>
+                <Text style={[styles.infoLinkArrow, { color: colors.textMuted }]}>View Profile  ↗</Text>
               </TouchableOpacity>
             )}
           </View>
           {p.transcriptUrl && (
             <TouchableOpacity
-              style={styles.transcriptBtn}
+              style={[styles.transcriptBtn, { borderColor: colors.border, backgroundColor: colors.background }]}
               onPress={() => Linking.openURL(p.transcriptUrl)}
               activeOpacity={0.7}
             >
-              <Text style={styles.transcriptBtnText}>Download Transcript (PDF)</Text>
+              <Text style={[styles.transcriptBtnText, { color: colors.textSecondary }]}>Download Transcript (PDF)</Text>
             </TouchableOpacity>
           )}
           {(twitterUrl || instagramUrl) && (
             <View style={styles.socialRow}>
               {twitterUrl && (
                 <TouchableOpacity
-                  style={styles.socialBtn}
+                  style={[styles.socialBtn, { borderColor: colors.border, backgroundColor: colors.background }]}
                   onPress={() => Linking.openURL(twitterUrl!)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.socialLogoX}>𝕏</Text>
-                  <Text style={styles.socialBtnText}>Twitter / X</Text>
+                  <Text style={[styles.socialLogoX, { color: colors.textPrimary }]}>&#120143;</Text>
+                  <Text style={[styles.socialBtnText, { color: colors.textSecondary }]}>Twitter / X</Text>
                 </TouchableOpacity>
               )}
               {instagramUrl && (
                 <TouchableOpacity
-                  style={styles.socialBtn}
+                  style={[styles.socialBtn, { borderColor: colors.border, backgroundColor: colors.background }]}
                   onPress={() => Linking.openURL(instagramUrl!)}
                   activeOpacity={0.7}
                 >
@@ -444,7 +455,7 @@ export default function ProfileScreen() {
                     contentFit="contain"
                     tintColor="#FFFFFF"
                   />
-                  <Text style={styles.socialBtnText}>Instagram</Text>
+                  <Text style={[styles.socialBtnText, { color: colors.textSecondary }]}>Instagram</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -453,7 +464,7 @@ export default function ProfileScreen() {
 
         {/* ── Season Stats ──────────────────────────────────── */}
         <Card style={styles.card}>
-          <Text style={styles.cardLabel}>SEASON AVERAGES</Text>
+          <Text style={[styles.cardLabel, { color: colors.gold }]}>SEASON AVERAGES</Text>
           {player.careerStats && player.careerStats.gamesPlayed > 0 ? (
             <>
               <View style={styles.mainStatsRow}>
@@ -466,59 +477,59 @@ export default function ProfileScreen() {
                 <SmallStat label="BLK" value={player.careerStats.averages.bpg.toFixed(1)} />
                 <SmallStat label="TOV" value={player.careerStats.averages.topg.toFixed(1)} />
               </View>
-              <View style={styles.shootingRow}>
+              <View style={[styles.shootingRow, { backgroundColor: colors.background }]}>
                 <ShootingStat label="FG%" value={`${player.careerStats.shooting.fgPct.toFixed(1)}%`} />
-                <View style={styles.shootingDivider} />
+                <View style={[styles.shootingDivider, { backgroundColor: colors.border }]} />
                 <ShootingStat label="3PT%" value={`${player.careerStats.shooting.fg3Pct.toFixed(1)}%`} />
-                <View style={styles.shootingDivider} />
+                <View style={[styles.shootingDivider, { backgroundColor: colors.border }]} />
                 <ShootingStat label="FT%" value={`${player.careerStats.shooting.ftPct.toFixed(1)}%`} />
               </View>
-              <Text style={styles.gamesPlayedText}>{player.careerStats.gamesPlayed} games played</Text>
+              <Text style={[styles.gamesPlayedText, { color: colors.textMuted }]}>{player.careerStats.gamesPlayed} games played</Text>
             </>
           ) : (
-            <Text style={styles.noData}>No stats recorded yet</Text>
+            <Text style={[styles.noData, { color: colors.textMuted }]}>No stats recorded yet</Text>
           )}
         </Card>
 
         {/* ── Bio ───────────────────────────────────────────── */}
         {p.bio ? (
           <Card style={styles.card}>
-            <Text style={styles.cardLabel}>ABOUT</Text>
-            <Text style={styles.bioText}>{p.bio}</Text>
+            <Text style={[styles.cardLabel, { color: colors.gold }]}>ABOUT</Text>
+            <Text style={[styles.bioText, { color: colors.textSecondary }]}>{p.bio}</Text>
           </Card>
         ) : null}
 
         {/* ── Recent Game Log ───────────────────────────────── */}
         {p.gameStats && p.gameStats.length > 0 && (
           <Card style={styles.card}>
-            <Text style={styles.cardLabel}>RECENT GAMES</Text>
+            <Text style={[styles.cardLabel, { color: colors.gold }]}>RECENT GAMES</Text>
             {(p.gameStats as any[]).slice(0, 5).map((stat: any) => {
               const dateStr = stat.game?.scheduledAt
                 ? format(new Date(stat.game.scheduledAt), 'MMM d')
                 : '—';
               const eventName = stat.game?.event?.name ?? null;
               return (
-                <View key={stat.id} style={styles.gameRow}>
+                <View key={stat.id} style={[styles.gameRow, { borderBottomColor: colors.border }]}>
                   <View style={styles.gameRowLeft}>
-                    <Text style={styles.gameDate}>{dateStr}{eventName ? `  ·  ${eventName}` : ''}</Text>
+                    <Text style={[styles.gameDate, { color: colors.textMuted }]}>{dateStr}{eventName ? `  ·  ${eventName}` : ''}</Text>
                     <View style={styles.gameTeams}>
-                      <Text style={styles.gameTeamName} numberOfLines={1}>
+                      <Text style={[styles.gameTeamName, { color: colors.textPrimary }]} numberOfLines={1}>
                         {stat.game?.homeTeam?.name ?? '—'} vs {stat.game?.awayTeam?.name ?? '—'}
                       </Text>
                     </View>
                   </View>
                   <View style={styles.gameRowStats}>
                     <View style={styles.gameStatCol}>
-                      <Text style={styles.gameStatVal}>{stat.points}</Text>
-                      <Text style={styles.gameStatLabel}>PTS</Text>
+                      <Text style={[styles.gameStatVal, { color: colors.textPrimary }]}>{stat.points}</Text>
+                      <Text style={[styles.gameStatLabel, { color: colors.textMuted }]}>PTS</Text>
                     </View>
                     <View style={styles.gameStatCol}>
-                      <Text style={styles.gameStatVal}>{stat.rebounds}</Text>
-                      <Text style={styles.gameStatLabel}>REB</Text>
+                      <Text style={[styles.gameStatVal, { color: colors.textPrimary }]}>{stat.rebounds}</Text>
+                      <Text style={[styles.gameStatLabel, { color: colors.textMuted }]}>REB</Text>
                     </View>
                     <View style={styles.gameStatCol}>
-                      <Text style={styles.gameStatVal}>{stat.assists}</Text>
-                      <Text style={styles.gameStatLabel}>AST</Text>
+                      <Text style={[styles.gameStatVal, { color: colors.textPrimary }]}>{stat.assists}</Text>
+                      <Text style={[styles.gameStatLabel, { color: colors.textMuted }]}>AST</Text>
                     </View>
                   </View>
                 </View>
@@ -530,7 +541,7 @@ export default function ProfileScreen() {
                 onPress={() => router.push({ pathname: '/players/game-log', params: { slug: p.slug } })}
                 activeOpacity={0.7}
               >
-                <Text style={styles.viewMoreText}>View Full Game Log →</Text>
+                <Text style={[styles.viewMoreText, { color: colors.red }]}>View Full Game Log →</Text>
               </TouchableOpacity>
             )}
           </Card>
@@ -539,14 +550,14 @@ export default function ProfileScreen() {
         {/* ── Achievements ──────────────────────────────────── */}
         {p.achievements && (p.achievements as any[]).length > 0 && (
           <Card style={styles.card}>
-            <Text style={styles.cardLabel}>ACHIEVEMENTS</Text>
+            <Text style={[styles.cardLabel, { color: colors.gold }]}>ACHIEVEMENTS</Text>
             <View style={styles.achievementsGrid}>
               {(p.achievements as any[]).slice(0, 6).map((a: any) => (
-                <View key={a.id} style={[styles.achievementChip, { width: ACHIEVEMENT_SIZE }]}>
-                  <Text style={styles.achievementIcon}>🏆</Text>
-                  <Text style={styles.achievementTitle} numberOfLines={2}>{a.title}</Text>
+                <View key={a.id} style={[styles.achievementChip, { width: ACHIEVEMENT_SIZE, backgroundColor: colors.background, borderColor: colors.border }]}>
+                  <Text style={styles.achievementIcon}>&#127942;</Text>
+                  <Text style={[styles.achievementTitle, { color: colors.textPrimary }]} numberOfLines={2}>{a.title}</Text>
                   {a.eventName && (
-                    <Text style={styles.achievementEvent} numberOfLines={1}>{a.eventName}</Text>
+                    <Text style={[styles.achievementEvent, { color: colors.textMuted }]} numberOfLines={1}>{a.eventName}</Text>
                   )}
                 </View>
               ))}
@@ -561,7 +572,7 @@ export default function ProfileScreen() {
           const activeItems = filmItems.filter(i => i.type === activeSegment);
           return (
             <Card style={styles.card}>
-              <Text style={styles.cardLabel}>FILM ROOM</Text>
+              <Text style={[styles.cardLabel, { color: colors.gold }]}>FILM ROOM</Text>
               {/* Logo toggle buttons */}
               {types.length > 1 && (
                 <View style={styles.filmSegmentRow}>
@@ -570,7 +581,11 @@ export default function ProfileScreen() {
                     return (
                       <TouchableOpacity
                         key={t}
-                        style={[styles.filmSegmentBtn, isActive && styles.filmSegmentBtnActive]}
+                        style={[
+                          styles.filmSegmentBtn,
+                          { backgroundColor: colors.surface, borderColor: colors.border },
+                          isActive && { backgroundColor: colors.surface, borderColor: colors.border },
+                        ]}
                         onPress={() => setFilmSegment(t)}
                         activeOpacity={0.7}
                       >
@@ -589,7 +604,11 @@ export default function ProfileScreen() {
                           />
                         )}
                         {t === 'other' && (
-                          <Text style={[styles.filmSegmentText, isActive && styles.filmSegmentTextActive]}>
+                          <Text style={[
+                            styles.filmSegmentText,
+                            { color: colors.textSecondary },
+                            isActive && { color: '#FFFFFF' },
+                          ]}>
                             Video
                           </Text>
                         )}
@@ -611,7 +630,7 @@ export default function ProfileScreen() {
                 scrollEnabled={activeItems.length > 1}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    style={styles.filmVideoCard}
+                    style={[styles.filmVideoCard, { backgroundColor: colors.surfaceLight }]}
                     onPress={() => handleFilmPress(item)}
                     activeOpacity={0.85}
                   >
@@ -632,6 +651,7 @@ export default function ProfileScreen() {
                         )}
                       </View>
                     )}
+                    {/* Gradient overlay on film card — stays dark for text readability on images */}
                     <LinearGradient
                       colors={['transparent', 'rgba(0,0,0,0.75)']}
                       style={StyleSheet.absoluteFill}
@@ -640,7 +660,7 @@ export default function ProfileScreen() {
                     <View style={styles.filmPlayCircle}>
                       <View style={styles.filmPlayTriangle} />
                     </View>
-                    {/* Title */}
+                    {/* Title — hardcoded white for readability on image overlay */}
                     <View style={styles.filmCardInfo}>
                       <Text style={styles.filmCardTitle} numberOfLines={1}>{item.title}</Text>
                     </View>
@@ -654,7 +674,7 @@ export default function ProfileScreen() {
         {/* ── Photos ────────────────────────────────────────── */}
         {photos.length > 0 && (
           <View style={styles.photosSection}>
-            <Text style={styles.photosSectionLabel}>PHOTOS</Text>
+            <Text style={[styles.photosSectionLabel, { color: colors.gold }]}>PHOTOS</Text>
             <View style={styles.photosGrid}>
               {photos.slice(0, 6).map((photo: any, idx: number) => (
                 <TouchableOpacity
@@ -664,7 +684,7 @@ export default function ProfileScreen() {
                 >
                   <Image
                     source={{ uri: photo.url }}
-                    style={[styles.photoThumb, { width: PHOTO_SIZE, height: PHOTO_SIZE }]}
+                    style={[styles.photoThumb, { width: PHOTO_SIZE, height: PHOTO_SIZE, backgroundColor: colors.surfaceLight }]}
                     contentFit="cover"
                   />
                 </TouchableOpacity>
@@ -675,6 +695,7 @@ export default function ProfileScreen() {
       </ScrollView>
 
       {/* ── Video Player Modal ────────────────────────────── */}
+      {/* Video modal keeps hardcoded #000 background */}
       <Modal
         visible={!!videoModal}
         animationType="slide"
@@ -687,7 +708,7 @@ export default function ProfileScreen() {
               {videoModal?.title}
             </Text>
             <TouchableOpacity onPress={() => setVideoModal(null)} style={styles.videoModalClose}>
-              <Text style={styles.videoModalCloseText}>✕</Text>
+              <Text style={styles.videoModalCloseText}>&#10005;</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.videoPlayer}>
@@ -722,6 +743,7 @@ export default function ProfileScreen() {
       </Modal>
 
       {/* ── Photo Lightbox Modal ──────────────────────────── */}
+      {/* Photo lightbox keeps hardcoded dark background for full-screen photo viewing */}
       <Modal
         visible={!!photoModal}
         transparent
@@ -734,7 +756,7 @@ export default function ProfileScreen() {
             style={[styles.photoModalClose, { top: Platform.OS === 'ios' ? 54 : 32 }]}
             onPress={() => setPhotoModal(null)}
           >
-            <Text style={styles.photoModalCloseText}>✕</Text>
+            <Text style={styles.photoModalCloseText}>&#10005;</Text>
           </TouchableOpacity>
           {photoModal && (
             <FlatList
@@ -785,7 +807,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   scrollView: {
     flex: 1,
@@ -805,7 +826,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   headerBorder: {
     position: 'absolute',
@@ -813,7 +833,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -827,7 +846,6 @@ const styles = StyleSheet.create({
   headerName: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textPrimary,
     marginTop: -1,
   },
   editBtn: {
@@ -835,20 +853,15 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
   },
   editBtnText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
 
   // ── Player switcher ────────────────────────────────────────
   switcherBar: {
-    backgroundColor: Colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   switcherContent: {
     paddingHorizontal: Spacing.lg,
@@ -864,39 +877,28 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
     borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  switcherChipActive: {
-    borderColor: Colors.red,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
   },
   switcherAvatar: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: Colors.surfaceLight,
   },
   switcherName: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
-  },
-  switcherNameActive: {
-    color: Colors.red,
-    fontFamily: Fonts.bodySemiBold,
   },
 
   // ── Hero ───────────────────────────────────────────────────
+  // Hero section keeps hardcoded dark styling for text readability on images
   hero: {
     width: SCREEN_WIDTH,
-    backgroundColor: Colors.surfaceLight,
     position: 'relative',
   },
   verifiedBadge: {
     position: 'absolute',
     top: Spacing.lg,
     right: Spacing.lg,
-    backgroundColor: Colors.red,
+    backgroundColor: '#EF4444',
     paddingHorizontal: Spacing.md,
     paddingVertical: 4,
     borderRadius: BorderRadius.sm,
@@ -904,7 +906,7 @@ const styles = StyleSheet.create({
   verifiedText: {
     fontSize: 9,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
     letterSpacing: 1,
   },
   heroInfo: {
@@ -932,31 +934,31 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.heading,
-    color: Colors.gold,
+    color: '#F59E0B',
     letterSpacing: 0.5,
   },
   heroName: {
     fontSize: FontSize.xxxl,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
     lineHeight: FontSize.xxxl * 1.1,
   },
   heroSchool: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textSecondary,
+    color: '#94A3B8',
     marginTop: 2,
   },
   heroTeam: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
+    color: '#64748B',
     marginTop: 1,
   },
   heroLocation: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
+    color: '#64748B',
   },
 
   // ── Athlete info ───────────────────────────────────────────
@@ -966,7 +968,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   infoLinkLeft: {
     flexDirection: 'row',
@@ -981,7 +982,6 @@ const styles = StyleSheet.create({
   infoLinkArrow: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textMuted,
   },
   transcriptBtn: {
     marginTop: Spacing.md,
@@ -989,14 +989,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.background,
     alignItems: 'center',
   },
   transcriptBtnText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
   },
   socialRow: {
     flexDirection: 'row',
@@ -1009,13 +1006,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.background,
   },
   socialBtnText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
     letterSpacing: 0.3,
   },
   socialLogoImg: {
@@ -1026,7 +1020,6 @@ const styles = StyleSheet.create({
   socialLogoX: {
     fontSize: 15,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textPrimary,
     marginBottom: 2,
     lineHeight: 18,
   },
@@ -1039,7 +1032,6 @@ const styles = StyleSheet.create({
   cardLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.heading,
-    color: Colors.gold,
     letterSpacing: 2,
     marginBottom: Spacing.md,
   },
@@ -1054,20 +1046,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   infoLabel: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textMuted,
   },
   infoValue: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
-  },
-  infoValueHighlight: {
-    color: Colors.gold,
   },
 
   // ── Season stats ───────────────────────────────────────────
@@ -1082,15 +1068,10 @@ const styles = StyleSheet.create({
   bigStatValue: {
     fontSize: FontSize.xxxl,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textPrimary,
-  },
-  bigStatHighlight: {
-    color: Colors.red,
   },
   bigStatLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   secondaryStatsRow: {
@@ -1104,16 +1085,13 @@ const styles = StyleSheet.create({
   smallStatValue: {
     fontSize: FontSize.xl,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
   },
   smallStatLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   shootingRow: {
     flexDirection: 'row',
-    backgroundColor: Colors.background,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     alignItems: 'center',
@@ -1126,30 +1104,25 @@ const styles = StyleSheet.create({
   shootingStatValue: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
   },
   shootingStatLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   shootingDivider: {
     width: 1,
     height: 30,
-    backgroundColor: Colors.border,
   },
   gamesPlayedText: {
     textAlign: 'center',
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: Spacing.sm,
   },
   noData: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     fontStyle: 'italic',
   },
 
@@ -1157,7 +1130,6 @@ const styles = StyleSheet.create({
   bioText: {
     fontSize: FontSize.md,
     fontFamily: Fonts.body,
-    color: Colors.textSecondary,
     lineHeight: 22,
   },
 
@@ -1167,7 +1139,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   gameRowLeft: {
     flex: 1,
@@ -1176,7 +1147,6 @@ const styles = StyleSheet.create({
   gameDate: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   gameTeams: {
     marginTop: 2,
@@ -1184,7 +1154,6 @@ const styles = StyleSheet.create({
   gameTeamName: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textPrimary,
   },
   gameRowStats: {
     flexDirection: 'row',
@@ -1197,12 +1166,10 @@ const styles = StyleSheet.create({
   gameStatVal: {
     fontSize: FontSize.md,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
   },
   gameStatLabel: {
     fontSize: 9,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   viewMoreBtn: {
     marginTop: Spacing.md,
@@ -1212,7 +1179,6 @@ const styles = StyleSheet.create({
   viewMoreText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.red,
   },
 
   // ── Achievements ───────────────────────────────────────────
@@ -1222,10 +1188,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   achievementChip: {
-    backgroundColor: Colors.background,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.border,
     padding: Spacing.sm,
     alignItems: 'center',
   },
@@ -1236,13 +1200,11 @@ const styles = StyleSheet.create({
   achievementTitle: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textPrimary,
     textAlign: 'center',
   },
   achievementEvent: {
     fontSize: 9,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     textAlign: 'center',
     marginTop: 2,
   },
@@ -1257,15 +1219,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.surface,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  filmSegmentBtnActive: {
-    backgroundColor: Colors.surface,
-    borderColor: Colors.border,
   },
   filmSegmentLogo: {
     width: 24,
@@ -1274,10 +1230,6 @@ const styles = StyleSheet.create({
   filmSegmentText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textSecondary,
-  },
-  filmSegmentTextActive: {
-    color: '#FFFFFF',
   },
   filmList: {
     marginHorizontal: -Spacing.lg,
@@ -1292,8 +1244,8 @@ const styles = StyleSheet.create({
     height: FILM_EMBED_HEIGHT,
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    backgroundColor: Colors.surfaceLight,
   },
+  // Film fallback bg — stays hardcoded dark (image/photo overlay area)
   filmFallbackBg: {
     backgroundColor: '#1A1A2E',
     alignItems: 'center',
@@ -1327,6 +1279,7 @@ const styles = StyleSheet.create({
     borderLeftColor: '#FFFFFF',
     marginLeft: 3,
   },
+  // Film card info — stays hardcoded white (text on image overlay)
   filmCardInfo: {
     position: 'absolute',
     bottom: 0,
@@ -1338,10 +1291,11 @@ const styles = StyleSheet.create({
   filmCardTitle: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
   },
 
   // ── Video modal ────────────────────────────────────────────
+  // Video modal keeps hardcoded #000 background
   videoModalContainer: {
     flex: 1,
     backgroundColor: '#000',
@@ -1357,7 +1311,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: FontSize.md,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
     marginRight: Spacing.md,
   },
   videoModalClose: {
@@ -1365,7 +1319,7 @@ const styles = StyleSheet.create({
   },
   videoModalCloseText: {
     fontSize: 20,
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
     fontFamily: Fonts.heading,
   },
   videoPlayer: {
@@ -1380,7 +1334,6 @@ const styles = StyleSheet.create({
   photosSectionLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.heading,
-    color: Colors.gold,
     letterSpacing: 2,
     marginBottom: Spacing.sm,
   },
@@ -1391,10 +1344,10 @@ const styles = StyleSheet.create({
   },
   photoThumb: {
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surfaceLight,
   },
 
   // ── Photo lightbox modal ────────────────────────────────────
+  // Photo lightbox keeps hardcoded dark background
   photoModalContainer: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.96)',
@@ -1408,7 +1361,7 @@ const styles = StyleSheet.create({
   },
   photoModalCloseText: {
     fontSize: 24,
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
     fontFamily: Fonts.heading,
   },
   photoModalSlide: {
@@ -1431,7 +1384,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.3)',
   },
   photoDotActive: {
-    backgroundColor: Colors.textPrimary,
+    backgroundColor: '#FFFFFF',
     width: 18,
     borderRadius: 3,
   },
@@ -1439,7 +1392,6 @@ const styles = StyleSheet.create({
   // ── Empty state ────────────────────────────────────────────
   emptyContainer: {
     flex: 1,
-    backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: Spacing.xxl,
@@ -1448,12 +1400,10 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: FontSize.xl,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
   },
   emptyDesc: {
     fontSize: FontSize.md,
     fontFamily: Fonts.body,
-    color: Colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },

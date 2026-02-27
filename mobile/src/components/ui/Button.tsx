@@ -8,7 +8,8 @@ import {
   TextStyle,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Colors, Spacing, FontSize, BorderRadius } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 
 interface ButtonProps {
   title: string;
@@ -29,16 +30,30 @@ export function Button({
   disabled = false,
   style,
 }: ButtonProps) {
+  const colors = useColors();
+
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress();
   };
 
+  const variantStyle: ViewStyle =
+    variant === 'primary'
+      ? { backgroundColor: colors.red, borderRadius: BorderRadius.md }
+      : variant === 'secondary'
+        ? { backgroundColor: colors.navy, borderRadius: BorderRadius.md }
+        : variant === 'outline'
+          ? { backgroundColor: 'transparent', borderRadius: BorderRadius.md, borderWidth: 1.5, borderColor: colors.red }
+          : { backgroundColor: 'transparent' };
+
+  const textColor: string =
+    variant === 'outline' || variant === 'ghost' ? colors.red : colors.textInverse;
+
   return (
     <TouchableOpacity
       style={[
         styles.base,
-        variantStyles[variant],
+        variantStyle,
         sizeStyles[size],
         (disabled || loading) && styles.disabled,
         style,
@@ -49,11 +64,11 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'outline' || variant === 'ghost' ? Colors.red : Colors.textPrimary}
+          color={variant === 'outline' || variant === 'ghost' ? colors.red : colors.textInverse}
           size="small"
         />
       ) : (
-        <Text style={[styles.text, textVariants[variant], textSizes[size]]}>
+        <Text style={[styles.text, { color: textColor }, textSizes[size]]}>
           {title}
         </Text>
       )}
@@ -75,33 +90,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
-
-const variantStyles: Record<string, ViewStyle> = {
-  primary: {
-    backgroundColor: Colors.red,
-    borderRadius: BorderRadius.md,
-  },
-  secondary: {
-    backgroundColor: Colors.navy,
-    borderRadius: BorderRadius.md,
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    borderRadius: BorderRadius.md,
-    borderWidth: 1.5,
-    borderColor: Colors.red,
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-  },
-};
-
-const textVariants: Record<string, TextStyle> = {
-  primary: { color: Colors.textPrimary },
-  secondary: { color: Colors.textPrimary },
-  outline: { color: Colors.red },
-  ghost: { color: Colors.red },
-};
 
 const sizeStyles: Record<string, ViewStyle> = {
   sm: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.lg, minHeight: 36 },
