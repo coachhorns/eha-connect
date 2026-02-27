@@ -159,11 +159,11 @@ export default function PaymentSettingsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
         <div className="w-full max-w-4xl mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
           <Link
             href="/admin"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Admin
@@ -171,7 +171,7 @@ export default function PaymentSettingsPage() {
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
               <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
-              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter flex items-center gap-3">
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-text-primary uppercase tracking-tighter flex items-center gap-3">
                 <CreditCard className="w-10 h-10 text-eha-red" />
                 Payment Settings
               </h1>
@@ -214,7 +214,7 @@ export default function PaymentSettingsPage() {
             <CardContent className="space-y-4">
               {/* Secret Key */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                <label className="block text-sm font-medium text-text-secondary mb-1.5">
                   Secret Key
                   {settings?.STRIPE_SECRET_KEY?.hasValue && (
                     <span className="ml-2 text-xs text-green-400">(configured)</span>
@@ -228,12 +228,12 @@ export default function PaymentSettingsPage() {
                       setFormData((prev) => ({ ...prev, STRIPE_SECRET_KEY: e.target.value }))
                     }
                     placeholder={settings?.STRIPE_SECRET_KEY?.hasValue ? '••••••••' : 'sk_live_...'}
-                    className="w-full px-4 py-2.5 bg-dark-surface border border-eha-silver/20 rounded-lg text-white placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 pr-12"
+                    className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-text-primary placeholder-text-muted transition-all duration-200 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 pr-12"
                   />
                   <button
                     type="button"
                     onClick={() => toggleShowSecret('STRIPE_SECRET_KEY')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
                   >
                     {showSecrets['STRIPE_SECRET_KEY'] ? (
                       <EyeOff className="w-5 h-5" />
@@ -242,7 +242,7 @@ export default function PaymentSettingsPage() {
                     )}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-text-muted">
                   Leave blank to keep existing value. Find this in Stripe Dashboard &gt; Developers &gt; API Keys
                 </p>
               </div>
@@ -270,7 +270,7 @@ export default function PaymentSettingsPage() {
             </CardHeader>
             <CardContent>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                <label className="block text-sm font-medium text-text-secondary mb-1.5">
                   Webhook Secret
                   {settings?.STRIPE_WEBHOOK_SECRET?.hasValue && (
                     <span className="ml-2 text-xs text-green-400">(configured)</span>
@@ -284,12 +284,12 @@ export default function PaymentSettingsPage() {
                       setFormData((prev) => ({ ...prev, STRIPE_WEBHOOK_SECRET: e.target.value }))
                     }
                     placeholder={settings?.STRIPE_WEBHOOK_SECRET?.hasValue ? '••••••••' : 'whsec_...'}
-                    className="w-full px-4 py-2.5 bg-dark-surface border border-eha-silver/20 rounded-lg text-white placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 pr-12"
+                    className="w-full px-4 py-2.5 bg-input-bg border border-eha-silver/20 rounded-lg text-text-primary placeholder-text-muted transition-all duration-200 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 pr-12"
                   />
                   <button
                     type="button"
                     onClick={() => toggleShowSecret('STRIPE_WEBHOOK_SECRET')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
                   >
                     {showSecrets['STRIPE_WEBHOOK_SECRET'] ? (
                       <EyeOff className="w-5 h-5" />
@@ -298,7 +298,7 @@ export default function PaymentSettingsPage() {
                     )}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-text-muted">
                   Leave blank to keep existing value. Find this in Stripe Dashboard &gt; Developers &gt; Webhooks
                 </p>
               </div>

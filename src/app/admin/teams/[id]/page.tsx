@@ -135,7 +135,7 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
           <p className="text-red-400">{error}</p>
           <button
             onClick={() => router.push('/admin/teams')}
-            className="mt-4 text-white hover:underline"
+            className="mt-4 text-text-primary hover:underline"
           >
             Back to Teams
           </button>
@@ -156,7 +156,7 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
       <div className="mb-8">
         <Link
           href="/admin/teams"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Teams
@@ -165,20 +165,20 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-white uppercase tracking-wider">{team.name}</h1>
+              <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">{team.name}</h1>
               {team.division && <Badge variant="default">{team.division}</Badge>}
             </div>
             {team.program && (
               <Link
                 href={`/admin/programs/${team.program.id}`}
-                className="flex items-center gap-2 text-gray-400 hover:text-eha-red transition-colors"
+                className="flex items-center gap-2 text-text-muted hover:text-eha-red transition-colors"
               >
                 <Building2 className="w-4 h-4" />
                 <span>{team.program.name}</span>
               </Link>
             )}
             {(team.city || team.state) && (
-              <div className="flex items-center gap-1 text-gray-500 mt-1">
+              <div className="flex items-center gap-1 text-text-muted mt-1">
                 <MapPin className="w-4 h-4" />
                 <span>{team.city}{team.city && team.state ? ', ' : ''}{team.state}</span>
               </div>
@@ -198,45 +198,45 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-lg">
+            <div className="p-2 bg-surface-overlay rounded-lg">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{team.roster.length}</p>
-              <p className="text-sm text-gray-400">Players</p>
+              <p className="text-2xl font-bold text-text-primary">{team.roster.length}</p>
+              <p className="text-sm text-text-muted">Players</p>
             </div>
           </div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-lg">
+            <div className="p-2 bg-surface-overlay rounded-lg">
               <Gamepad2 className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{totalGames}</p>
-              <p className="text-sm text-gray-400">Games</p>
+              <p className="text-2xl font-bold text-text-primary">{totalGames}</p>
+              <p className="text-sm text-text-muted">Games</p>
             </div>
           </div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-lg">
+            <div className="p-2 bg-surface-overlay rounded-lg">
               <Gamepad2 className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{team.wins}-{team.losses}</p>
-              <p className="text-sm text-gray-400">Record</p>
+              <p className="text-2xl font-bold text-text-primary">{team.wins}-{team.losses}</p>
+              <p className="text-sm text-text-muted">Record</p>
             </div>
           </div>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-lg">
+            <div className="p-2 bg-surface-overlay rounded-lg">
               <Calendar className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{team.eventTeams.length}</p>
-              <p className="text-sm text-gray-400">Events</p>
+              <p className="text-2xl font-bold text-text-primary">{team.eventTeams.length}</p>
+              <p className="text-sm text-text-muted">Events</p>
             </div>
           </div>
         </Card>
@@ -245,15 +245,15 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Coach Info */}
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Coach Information</h2>
+          <h2 className="text-lg font-semibold text-text-primary mb-4">Coach Information</h2>
           {team.coachName ? (
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-gray-500">Name</p>
-                <p className="text-white font-medium">{team.coachName}</p>
+                <p className="text-sm text-text-muted">Name</p>
+                <p className="text-text-primary font-medium">{team.coachName}</p>
               </div>
               {team.coachEmail && (
-                <div className="flex items-center gap-2 text-gray-400">
+                <div className="flex items-center gap-2 text-text-muted">
                   <Mail className="w-4 h-4" />
                   <a href={`mailto:${team.coachEmail}`} className="hover:text-eha-red">
                     {team.coachEmail}
@@ -261,7 +261,7 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
                 </div>
               )}
               {team.coachPhone && (
-                <div className="flex items-center gap-2 text-gray-400">
+                <div className="flex items-center gap-2 text-text-muted">
                   <Phone className="w-4 h-4" />
                   <a href={`tel:${team.coachPhone}`} className="hover:text-eha-red">
                     {team.coachPhone}
@@ -270,14 +270,14 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
               )}
             </div>
           ) : (
-            <p className="text-gray-500">No coach information</p>
+            <p className="text-text-muted">No coach information</p>
           )}
         </Card>
 
         {/* Roster */}
         <Card className="p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">Roster ({team.roster.length})</h2>
+            <h2 className="text-lg font-semibold text-text-primary">Roster ({team.roster.length})</h2>
             <Link href={`/admin/players/new?teamId=${team.id}`}>
               <Button size="sm" className="flex items-center gap-1">
                 <Plus className="w-4 h-4" />
@@ -288,8 +288,8 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
 
           {team.roster.length === 0 ? (
             <div className="text-center py-8">
-              <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-500 mb-4">No players on roster</p>
+              <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
+              <p className="text-text-muted mb-4">No players on roster</p>
               <Link href={`/admin/players/new?teamId=${team.id}`}>
                 <Button size="sm">Add First Player</Button>
               </Link>
@@ -298,38 +298,38 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#1a3a6e]">
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">#</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Player</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Pos</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Ht</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Class</th>
+                  <tr className="border-b border-border-default">
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-text-muted uppercase">#</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-text-muted uppercase">Player</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-text-muted uppercase">Pos</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-text-muted uppercase">Ht</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-text-muted uppercase">Class</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1a3a6e]">
+                <tbody className="divide-y divide-border-default">
                   {team.roster.map((entry) => (
                     <tr
                       key={entry.id}
-                      className="hover:bg-[#1a3a6e]/50 transition-colors cursor-pointer"
+                      className="hover:bg-surface-overlay transition-colors cursor-pointer"
                       onClick={() => router.push(`/players/${entry.player.slug}`)}
                     >
-                      <td className="px-3 py-3 text-white font-bold">
+                      <td className="px-3 py-3 text-text-primary font-bold">
                         {entry.jerseyNumber || entry.player.jerseyNumber || '-'}
                       </td>
                       <td className="px-3 py-3">
-                        <span className="text-white font-medium">
+                        <span className="text-text-primary font-medium">
                           {entry.player.firstName} {entry.player.lastName}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-gray-400">
+                      <td className="px-3 py-3 text-text-muted">
                         {formatPosition(entry.player.primaryPosition)}
                       </td>
-                      <td className="px-3 py-3 text-gray-400">
+                      <td className="px-3 py-3 text-text-muted">
                         {entry.player.heightFeet
                           ? formatHeight(entry.player.heightFeet, entry.player.heightInches)
                           : '-'}
                       </td>
-                      <td className="px-3 py-3 text-gray-400">
+                      <td className="px-3 py-3 text-text-muted">
                         {entry.player.graduationYear || '-'}
                       </td>
                     </tr>
@@ -344,17 +344,17 @@ export default function TeamDashboardPage({ params }: { params: Promise<{ id: st
       {/* Recent Events */}
       {team.eventTeams.length > 0 && (
         <Card className="mt-6 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Recent Events</h2>
+          <h2 className="text-lg font-semibold text-text-primary mb-4">Recent Events</h2>
           <div className="space-y-3">
             {team.eventTeams.map((et) => (
               <div
                 key={et.id}
-                className="flex items-center justify-between p-3 bg-[#1a3a6e] rounded-lg hover:bg-[#1a3a6e]/70 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-3 bg-surface-raised rounded-lg hover:bg-surface-overlay transition-colors cursor-pointer"
                 onClick={() => router.push(`/admin/events/${et.event.id}`)}
               >
                 <div>
-                  <p className="text-white font-medium">{et.event.name}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-text-primary font-medium">{et.event.name}</p>
+                  <p className="text-sm text-text-muted">
                     {safeParseDate(et.event.startDate).toLocaleDateString()} - {safeParseDate(et.event.endDate).toLocaleDateString()}
                   </p>
                 </div>

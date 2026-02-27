@@ -18,11 +18,11 @@ export default function StatsPaywall({
   if (variant === 'inline') {
     return (
       <div className="text-center py-8 px-4">
-        <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Lock className="w-8 h-8 text-gray-400" />
+        <div className="w-16 h-16 bg-surface-overlay rounded-full flex items-center justify-center mx-auto mb-4">
+          <Lock className="w-8 h-8 text-text-muted" />
         </div>
-        <h3 className="text-lg font-bold text-white mb-2">Stats Locked</h3>
-        <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+        <h3 className="text-lg font-bold text-text-primary mb-2">Stats Locked</h3>
+        <p className="text-text-muted text-sm mb-6 max-w-md mx-auto">
           Subscribe to view detailed player statistics, game logs, and performance data
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -51,10 +51,10 @@ export default function StatsPaywall({
         <div className="w-14 h-14 bg-eha-red/20 rounded-full flex items-center justify-center mx-auto mb-4">
           <Lock className="w-7 h-7 text-eha-red" />
         </div>
-        <h3 className="text-lg font-bold text-white mb-2">
+        <h3 className="text-lg font-bold text-text-primary mb-2">
           Subscribe to View Stats
         </h3>
-        <p className="text-gray-400 text-sm mb-5">
+        <p className="text-text-muted text-sm mb-5">
           Get access to detailed statistics, game logs, and performance analytics
         </p>
         <div className="flex flex-col gap-2">

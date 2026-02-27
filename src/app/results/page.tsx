@@ -74,17 +74,17 @@ function GameCard({ game }: { game: Game }) {
     <Link href={`/games/${game.id}`}>
       <article
         className={cn(
-          "bg-[#0a1628] rounded-sm p-0 border cursor-pointer group flex flex-col overflow-hidden relative transition-all duration-300",
+          "bg-page-bg-alt rounded-sm p-0 border cursor-pointer group flex flex-col overflow-hidden relative transition-all duration-300",
           isLive
             ? "ring-2 ring-eha-red/20 border-eha-red/30 shadow-lg shadow-eha-red/10 hover:shadow-xl hover:shadow-eha-red/20"
-            : "border-white/10 shadow-md hover:shadow-lg hover:-translate-y-0.5 hover:border-white/20"
+            : "border-border-default shadow-md hover:shadow-lg hover:-translate-y-0.5 hover:border-border-default"
         )}
       >
         {/* Left Border Indicator */}
         <div
           className={cn(
             "absolute top-0 left-0 w-1 h-full",
-            isLive ? "bg-eha-red" : homeWon || awayWon ? "bg-green-500" : "bg-white/20"
+            isLive ? "bg-eha-red" : homeWon || awayWon ? "bg-green-500" : "bg-border-default"
           )}
         />
 
@@ -92,7 +92,7 @@ function GameCard({ game }: { game: Game }) {
           {/* Header */}
           <div className="flex justify-between items-start mb-5">
             <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1">
                 {category || 'Game'}
               </span>
               {isLive ? (
@@ -112,7 +112,7 @@ function GameCard({ game }: { game: Game }) {
                       "text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider w-fit",
                       isFinal
                         ? "text-green-400 bg-green-500/10"
-                        : "text-gray-400 bg-white/5"
+                        : "text-text-muted bg-surface-glass"
                     )}
                   >
                     {isFinal ? 'Final' : game.status}
@@ -130,7 +130,7 @@ function GameCard({ game }: { game: Game }) {
                 {format(new Date(game.scheduledAt), 'h:mm a')}
               </span>
             ) : (
-              <span className="text-xs font-medium text-gray-400 flex items-center gap-1">
+              <span className="text-xs font-medium text-text-muted flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {format(new Date(game.scheduledAt), 'h:mm a')}
               </span>
@@ -142,7 +142,7 @@ function GameCard({ game }: { game: Game }) {
             {/* Away Team */}
             <div className={cn("flex items-center justify-between", !isLive && !awayWon && isFinal && "opacity-60")}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#153361] flex items-center justify-center border border-white/10 overflow-hidden">
+                <div className="w-10 h-10 rounded-lg bg-surface-raised flex items-center justify-center border border-border-default overflow-hidden">
                   {game.awayTeam.logo ? (
                     <Image
                       src={game.awayTeam.logo}
@@ -152,11 +152,11 @@ function GameCard({ game }: { game: Game }) {
                       className="w-8 h-8 object-contain"
                     />
                   ) : (
-                    <Users className="w-5 h-5 text-gray-400" />
+                    <Users className="w-5 h-5 text-text-muted" />
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-white text-base leading-tight font-heading">
+                  <span className="font-bold text-text-primary text-base leading-tight font-heading">
                     {game.awayTeam.name}
                   </span>
                 </div>
@@ -164,7 +164,7 @@ function GameCard({ game }: { game: Game }) {
               <span
                 className={cn(
                   "text-2xl font-black font-stats",
-                  isLive || awayWon ? "text-white" : "text-gray-500"
+                  isLive || awayWon ? "text-text-primary" : "text-text-muted"
                 )}
               >
                 {game.awayScore}
@@ -174,7 +174,7 @@ function GameCard({ game }: { game: Game }) {
             {/* Home Team */}
             <div className={cn("flex items-center justify-between", !isLive && !homeWon && isFinal && "opacity-60")}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#153361] flex items-center justify-center border border-white/10 overflow-hidden">
+                <div className="w-10 h-10 rounded-lg bg-surface-raised flex items-center justify-center border border-border-default overflow-hidden">
                   {game.homeTeam.logo ? (
                     <Image
                       src={game.homeTeam.logo}
@@ -184,11 +184,11 @@ function GameCard({ game }: { game: Game }) {
                       className="w-8 h-8 object-contain"
                     />
                   ) : (
-                    <Users className="w-5 h-5 text-gray-400" />
+                    <Users className="w-5 h-5 text-text-muted" />
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-white text-base leading-tight font-heading">
+                  <span className="font-bold text-text-primary text-base leading-tight font-heading">
                     {game.homeTeam.name}
                   </span>
                 </div>
@@ -196,7 +196,7 @@ function GameCard({ game }: { game: Game }) {
               <span
                 className={cn(
                   "text-2xl font-black font-stats",
-                  isLive || homeWon ? "text-white" : "text-gray-500"
+                  isLive || homeWon ? "text-text-primary" : "text-text-muted"
                 )}
               >
                 {game.homeScore}
@@ -205,17 +205,17 @@ function GameCard({ game }: { game: Game }) {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-between items-center pt-4 border-t border-white/5 mt-auto">
-            <div className="flex items-center gap-1.5 text-gray-500 text-xs font-medium">
+          <div className="flex justify-between items-center pt-4 border-t border-border-subtle mt-auto">
+            <div className="flex items-center gap-1.5 text-text-muted text-xs font-medium">
               <MapPin className="w-3 h-3" />
               <span>{game.court || 'TBD'}</span>
             </div>
             {isLive ? (
-              <span className="text-xs font-bold text-eha-red group-hover:text-white transition-colors flex items-center gap-1">
+              <span className="text-xs font-bold text-eha-red group-hover:text-text-primary transition-colors flex items-center gap-1">
                 Watch Live <PlayCircle className="w-4 h-4" />
               </span>
             ) : (
-              <span className="text-xs font-bold text-white group-hover:text-eha-red transition-colors flex items-center gap-1">
+              <span className="text-xs font-bold text-text-primary group-hover:text-eha-red transition-colors flex items-center gap-1">
                 Box Score <ChevronRight className="w-4 h-4" />
               </span>
             )}
@@ -232,33 +232,33 @@ function GameCard({ game }: { game: Game }) {
 
 function GameCardSkeleton() {
   return (
-    <div className="bg-[#0a1628] rounded-sm border border-white/5 p-5 animate-pulse">
+    <div className="bg-page-bg-alt rounded-sm border border-border-subtle p-5 animate-pulse">
       <div className="flex justify-between mb-5">
         <div className="space-y-2">
-          <div className="h-3 bg-[#153361] rounded w-24" />
-          <div className="h-4 bg-[#153361] rounded w-16" />
+          <div className="h-3 bg-surface-raised rounded w-24" />
+          <div className="h-4 bg-surface-raised rounded w-16" />
         </div>
-        <div className="h-4 bg-[#153361] rounded w-16" />
+        <div className="h-4 bg-surface-raised rounded w-16" />
       </div>
       <div className="space-y-4 mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#153361] rounded-lg" />
-            <div className="h-4 bg-[#153361] rounded w-28" />
+            <div className="w-10 h-10 bg-surface-raised rounded-lg" />
+            <div className="h-4 bg-surface-raised rounded w-28" />
           </div>
-          <div className="h-6 bg-[#153361] rounded w-8" />
+          <div className="h-6 bg-surface-raised rounded w-8" />
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#153361] rounded-lg" />
-            <div className="h-4 bg-[#153361] rounded w-24" />
+            <div className="w-10 h-10 bg-surface-raised rounded-lg" />
+            <div className="h-4 bg-surface-raised rounded w-24" />
           </div>
-          <div className="h-6 bg-[#153361] rounded w-8" />
+          <div className="h-6 bg-surface-raised rounded w-8" />
         </div>
       </div>
-      <div className="pt-4 border-t border-white/5 flex justify-between">
-        <div className="h-3 bg-[#153361] rounded w-20" />
-        <div className="h-3 bg-[#153361] rounded w-16" />
+      <div className="pt-4 border-t border-border-subtle flex justify-between">
+        <div className="h-3 bg-surface-raised rounded w-20" />
+        <div className="h-3 bg-surface-raised rounded w-16" />
       </div>
     </div>
   )
@@ -414,9 +414,9 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37]">
+    <div className="min-h-screen bg-page-bg">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-12 bg-[#0a1628] border-b border-white/5">
+      <section className="relative overflow-hidden pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle">
         <div
           className="absolute inset-0 opacity-5"
           style={{
@@ -429,30 +429,30 @@ export default function ResultsPage() {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
             <div className="space-y-4">
               {/* Live Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full border border-white/10 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-overlay rounded-full border border-border-default backdrop-blur-sm">
                 <span className="w-2 h-2 rounded-full bg-eha-red animate-pulse" />
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-white">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-text-primary">
                   Live Updates Enabled
                 </span>
               </div>
 
-              <h1 className="text-4xl lg:text-5xl text-white tracking-tighter font-heading font-bold">
+              <h1 className="text-4xl lg:text-5xl text-text-primary tracking-tighter font-heading font-bold">
                 Game Results
               </h1>
-              <p className="text-lg text-gray-400 font-light max-w-xl">
+              <p className="text-lg text-text-muted font-light max-w-xl">
                 Real-time scores, box scores, and analytics from EHA events.
               </p>
             </div>
 
             {/* Search Bar */}
             <div className="w-full lg:w-auto relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-eha-red transition-colors" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5 group-focus-within:text-eha-red transition-colors" />
               <input
                 type="text"
                 placeholder="Search team or event..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full lg:w-80 pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 text-sm focus:outline-none focus:bg-white/10 focus:border-eha-red/50 transition-all"
+                className="w-full lg:w-80 pl-12 pr-4 py-4 bg-surface-glass border border-border-default rounded-lg text-text-primary placeholder-text-muted text-sm focus:outline-none focus:bg-surface-overlay focus:border-eha-red/50 transition-all"
               />
             </div>
           </div>
@@ -460,7 +460,7 @@ export default function ResultsPage() {
       </section>
 
       {/* Sticky Filter Bar */}
-      <section className="sticky top-20 z-40 bg-[#0a1628]/95 backdrop-blur-md border-b border-white/5 shadow-xl">
+      <section className="sticky top-20 z-40 bg-page-bg-alt/95 backdrop-blur-md border-b border-border-subtle shadow-xl">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-4">
           <div className="flex flex-col lg:flex-row gap-4 justify-between items-center">
             <div className="flex flex-wrap gap-3 w-full lg:w-auto">
@@ -470,7 +470,7 @@ export default function ResultsPage() {
                   value={selectedEvent}
                   onChange={(e) => setSelectedEvent(e.target.value)}
                   style={selectStyle}
-                  className="pl-4 pr-10 py-2.5 bg-[#0a1628] border border-white/10 rounded-sm text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:border-eha-red hover:bg-white/5 min-w-[180px] text-white"
+                  className="pl-4 pr-10 py-2.5 bg-page-bg-alt border border-border-default rounded-sm text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:border-eha-red hover:bg-surface-glass min-w-[180px] text-text-primary"
                 >
                   <option value="">All Events</option>
                   {filters.events.map((event) => (
@@ -487,7 +487,7 @@ export default function ResultsPage() {
                   value={selectedDivision}
                   onChange={(e) => setSelectedDivision(e.target.value)}
                   style={selectStyle}
-                  className="pl-4 pr-10 py-2.5 bg-[#0a1628] border border-white/10 rounded-sm text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:border-eha-red hover:bg-white/5 min-w-[140px] text-white"
+                  className="pl-4 pr-10 py-2.5 bg-page-bg-alt border border-border-default rounded-sm text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:border-eha-red hover:bg-surface-glass min-w-[140px] text-text-primary"
                 >
                   <option value="">All Divisions</option>
                   {filters.divisions.map((div) => (
@@ -504,7 +504,7 @@ export default function ResultsPage() {
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   style={selectStyle}
-                  className="pl-4 pr-10 py-2.5 bg-[#0a1628] border border-white/10 rounded-sm text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:border-eha-red hover:bg-white/5 min-w-[140px] text-white"
+                  className="pl-4 pr-10 py-2.5 bg-page-bg-alt border border-border-default rounded-sm text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:border-eha-red hover:bg-surface-glass min-w-[140px] text-text-primary"
                 >
                   <option value="">All Dates</option>
                   {filters.dates.map((date) => (
@@ -528,20 +528,20 @@ export default function ResultsPage() {
             <div className="flex items-center gap-3 w-full lg:w-auto justify-end text-sm">
               {/* Sort Dropdown */}
               <div className="flex items-center gap-2">
-                <span className="text-gray-500 text-xs font-medium uppercase tracking-wide">Sort:</span>
+                <span className="text-text-muted text-xs font-medium uppercase tracking-wide">Sort:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   style={selectStyle}
-                  className="pl-3 pr-8 py-2 bg-[#0a1628] border border-white/10 rounded-sm text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:border-eha-red hover:bg-white/5 text-white"
+                  className="pl-3 pr-8 py-2 bg-page-bg-alt border border-border-default rounded-sm text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:border-eha-red hover:bg-surface-glass text-text-primary"
                 >
                   <option value="date">Date</option>
                   <option value="division">Division</option>
                   <option value="event">Event</option>
                 </select>
               </div>
-              <span className="text-gray-500 font-medium">
-                Showing <span className="text-white">{sortedGames.length}</span> Results
+              <span className="text-text-muted font-medium">
+                Showing <span className="text-text-primary">{sortedGames.length}</span> Results
               </span>
             </div>
           </div>
@@ -558,10 +558,10 @@ export default function ResultsPage() {
               ))}
             </div>
           ) : sortedGames.length === 0 ? (
-            <div className="text-center py-20 bg-[#0a1628] border border-white/5 rounded-sm">
-              <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">No Results Yet</h3>
-              <p className="text-gray-400 max-w-md mx-auto">
+            <div className="text-center py-20 bg-page-bg-alt border border-border-subtle rounded-sm">
+              <Trophy className="w-16 h-16 text-text-muted mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-text-primary mb-2">No Results Yet</h3>
+              <p className="text-text-muted max-w-md mx-auto">
                 There are no completed or live games to display with the current filters.
               </p>
               {hasFilters && (
@@ -578,13 +578,13 @@ export default function ResultsPage() {
               {sortedKeys.map((groupKey) => (
                 <div key={groupKey}>
                   {/* Group Header */}
-                  <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-4">
+                  <h2 className="text-sm font-bold text-text-muted uppercase tracking-widest mb-6 flex items-center gap-4">
                     <Calendar className="w-4 h-4" />
                     <span>{formatGroupHeader(groupKey)}</span>
-                    <span className="text-gray-600">
+                    <span className="text-text-muted">
                       ({gamesByGroup[groupKey].length} {gamesByGroup[groupKey].length === 1 ? 'game' : 'games'})
                     </span>
-                    <div className="h-px bg-white/10 flex-grow" />
+                    <div className="h-px bg-surface-overlay flex-grow" />
                   </h2>
 
                   {/* Games Grid */}

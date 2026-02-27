@@ -135,9 +135,9 @@ export default async function TeamPage({ params }: PageProps) {
   const logoUrl = team.logo || team.program?.logo
 
   return (
-    <div className="min-h-screen bg-[#0A1D37]">
+    <div className="min-h-screen bg-page-bg">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-[#0a1628] pt-32 pb-16 border-b border-white/5">
+      <section className="relative overflow-hidden bg-page-bg-alt pt-32 pb-16 border-b border-border-subtle">
         {/* Radial Dot Pattern */}
         <div
           className="absolute inset-0 opacity-5"
@@ -162,7 +162,7 @@ export default async function TeamPage({ params }: PageProps) {
                     className="w-full h-full object-contain"
                   />
                 ) : (
-                  <Shield className="w-16 h-16 text-[#0A1D37]" />
+                  <Shield className="w-16 h-16 text-page-bg" />
                 )}
               </div>
 
@@ -178,7 +178,7 @@ export default async function TeamPage({ params }: PageProps) {
                 </div>
 
                 {/* Team Name */}
-                <h1 className="text-4xl lg:text-5xl font-heading font-bold tracking-tighter text-white">
+                <h1 className="text-4xl lg:text-5xl font-heading font-bold tracking-tighter text-text-primary">
                   {team.name}
                 </h1>
 
@@ -209,11 +209,11 @@ export default async function TeamPage({ params }: PageProps) {
 
             {/* Right: Stats */}
             <div className="flex gap-6 sm:gap-8">
-              <div className="text-center sm:text-right border-r border-white/10 pr-6 sm:pr-8">
+              <div className="text-center sm:text-right border-r border-border-default pr-6 sm:pr-8">
                 <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                   Overall Record
                 </span>
-                <span className="text-3xl sm:text-4xl font-black text-white font-heading">
+                <span className="text-3xl sm:text-4xl font-black text-text-primary font-heading">
                   {team.wins}-{team.losses}
                 </span>
               </div>

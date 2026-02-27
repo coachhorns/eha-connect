@@ -40,7 +40,7 @@ export default function ComingSoonPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden flex items-center justify-center px-4">
+    <div className="min-h-screen bg-page-bg relative overflow-hidden flex items-center justify-center px-4">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -85,22 +85,22 @@ export default function ComingSoonPage() {
         </div>
 
         {/* Badge */}
-        <div className="inline-flex items-center gap-2.5 bg-white/5 border border-white/10 px-4 py-2 rounded-full mb-8">
+        <div className="inline-flex items-center gap-2.5 bg-surface-glass border border-border-default px-4 py-2 rounded-full mb-8">
           <span className="w-2 h-2 rounded-full bg-[#E31837] animate-pulse" />
-          <span className="text-[11px] font-bold text-white/60 uppercase tracking-widest">
+          <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest">
             Launching 2026
           </span>
         </div>
 
         {/* Headline */}
-        <h1 className="font-heading font-black text-5xl sm:text-6xl lg:text-7xl text-white leading-tight tracking-tight mb-4">
+        <h1 className="font-heading font-black text-5xl sm:text-6xl lg:text-7xl text-text-primary leading-tight tracking-tight mb-4">
           THE FUTURE OF{' '}
           <span className="text-[#E31837]">BASKETBALL</span>{' '}
           IS COMING
         </h1>
 
         {/* Description */}
-        <p className="text-gray-400 text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
+        <p className="text-text-muted text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
           The official platform for the EHA Circuit is almost here.
         </p>
 
@@ -116,7 +116,7 @@ export default function ComingSoonPage() {
           ].map((feature) => (
             <span
               key={feature}
-              className="inline-flex items-center bg-white/5 border border-white/10 text-gray-300 text-sm font-medium px-4 py-2 rounded-full"
+              className="inline-flex items-center bg-surface-glass border border-border-default text-text-secondary text-sm font-medium px-4 py-2 rounded-full"
             >
               {feature}
             </span>
@@ -124,25 +124,25 @@ export default function ComingSoonPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-6 sm:p-8 shadow-2xl">
           {isSuccess ? (
             <div className="py-4">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-green-400" />
               </div>
-              <h3 className="text-xl font-heading font-bold text-white mb-2">
+              <h3 className="text-xl font-heading font-bold text-text-primary mb-2">
                 You&apos;re on the list!
               </h3>
-              <p className="text-gray-400 text-sm">
+              <p className="text-text-muted text-sm">
                 We&apos;ll notify you as soon as EHA Connect launches.
               </p>
             </div>
           ) : (
             <>
-              <h3 className="text-lg font-heading font-semibold text-white mb-1">
+              <h3 className="text-lg font-heading font-semibold text-text-primary mb-1">
                 Join the Waitlist
               </h3>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm text-text-muted mb-6">
                 Be the first to know when we go live.
               </p>
 
@@ -152,7 +152,7 @@ export default function ComingSoonPage() {
                   placeholder="Your name"
                   value={name}
                   onChange={(e) => { setName(e.target.value); setError('') }}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
+                  className="w-full bg-surface-glass border border-border-default rounded-lg px-4 py-3 text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
                   required
                 />
                 <input
@@ -160,7 +160,7 @@ export default function ComingSoonPage() {
                   placeholder="Your email"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setError('') }}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
+                  className="w-full bg-surface-glass border border-border-default rounded-lg px-4 py-3 text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
                   required
                 />
 
@@ -187,22 +187,22 @@ export default function ComingSoonPage() {
         {/* Stats */}
         <div className="mt-10 flex items-center justify-center gap-8 text-center">
           <div>
-            <span className="block font-heading font-bold text-2xl text-white">1,850+</span>
-            <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">
+            <span className="block font-heading font-bold text-2xl text-text-primary">1,850+</span>
+            <span className="text-[10px] text-text-muted font-medium uppercase tracking-wide">
               Colleges
             </span>
           </div>
-          <div className="w-px h-10 bg-white/10" />
+          <div className="w-px h-10 bg-border-default" />
           <div>
-            <span className="block font-heading font-bold text-2xl text-white">10k</span>
-            <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">
+            <span className="block font-heading font-bold text-2xl text-text-primary">10k</span>
+            <span className="text-[10px] text-text-muted font-medium uppercase tracking-wide">
               Athletes
             </span>
           </div>
-          <div className="w-px h-10 bg-white/10" />
+          <div className="w-px h-10 bg-border-default" />
           <div>
-            <span className="block font-heading font-bold text-2xl text-white">24+</span>
-            <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">
+            <span className="block font-heading font-bold text-2xl text-text-primary">24+</span>
+            <span className="text-[10px] text-text-muted font-medium uppercase tracking-wide">
               Programs
             </span>
           </div>

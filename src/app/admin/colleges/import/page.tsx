@@ -84,10 +84,10 @@ export default function CollegeImportPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-white uppercase tracking-wider">
+          <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">
             Import College Data
           </h1>
-          <p className="mt-2 text-gray-400">
+          <p className="mt-2 text-text-muted">
             Upload CSV files (d1.csv, d2.csv, etc.) to populate the college recruiting database
           </p>
         </div>
@@ -98,21 +98,21 @@ export default function CollegeImportPage() {
         <div className="space-y-6">
           {/* Instructions */}
           <div>
-            <h2 className="text-lg font-semibold text-white mb-3">CSV Format</h2>
-            <p className="text-gray-400 text-sm mb-2">
+            <h2 className="text-lg font-semibold text-text-primary mb-3">CSV Format</h2>
+            <p className="text-text-muted text-sm mb-2">
               Your CSV should include these column headers:
             </p>
-            <div className="bg-[#0A1D37] rounded-lg p-4 font-mono text-xs text-gray-300">
+            <div className="bg-page-bg rounded-lg p-4 font-mono text-xs text-text-secondary">
               School, Division, Conference, City, State, Region, First name, Last name, Position, Email address
             </div>
           </div>
 
           {/* File Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Select CSV File
             </label>
-            <div className="border-2 border-dashed border-white/10 rounded-xl p-6 text-center hover:border-white/30 transition-colors">
+            <div className="border-2 border-dashed border-border-default rounded-xl p-6 text-center hover:border-white/30 transition-colors">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -126,19 +126,19 @@ export default function CollegeImportPage() {
                   <div className="flex items-center justify-center gap-3">
                     <FileText className="w-8 h-8 text-[#E31837]" />
                     <div className="text-left">
-                      <p className="text-white font-medium">{file.name}</p>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-text-primary font-medium">{file.name}</p>
+                      <p className="text-text-muted text-sm">
                         {(file.size / 1024).toFixed(1)} KB
                       </p>
                     </div>
                   </div>
                 ) : (
                   <>
-                    <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-                    <p className="text-white font-medium mb-1">
+                    <Upload className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                    <p className="text-text-primary font-medium mb-1">
                       Click to select a CSV file
                     </p>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-text-muted text-sm">
                       Supports .csv files only
                     </p>
                   </>
@@ -173,17 +173,17 @@ export default function CollegeImportPage() {
                 <p className="text-green-300 font-medium">Import Complete</p>
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="text-gray-400">Total Rows:</div>
-                <div className="text-white">{result.totalRows}</div>
-                <div className="text-gray-400">Colleges Created:</div>
-                <div className="text-white">{result.collegesCreated}</div>
-                <div className="text-gray-400">Colleges Updated:</div>
-                <div className="text-white">{result.collegesUpdated}</div>
-                <div className="text-gray-400">Coaches Created:</div>
-                <div className="text-white">{result.coachesCreated}</div>
+                <div className="text-text-muted">Total Rows:</div>
+                <div className="text-text-primary">{result.totalRows}</div>
+                <div className="text-text-muted">Colleges Created:</div>
+                <div className="text-text-primary">{result.collegesCreated}</div>
+                <div className="text-text-muted">Colleges Updated:</div>
+                <div className="text-text-primary">{result.collegesUpdated}</div>
+                <div className="text-text-muted">Coaches Created:</div>
+                <div className="text-text-primary">{result.coachesCreated}</div>
                 {result.skipped > 0 && (
                   <>
-                    <div className="text-gray-400">Skipped:</div>
+                    <div className="text-text-muted">Skipped:</div>
                     <div className="text-yellow-400">{result.skipped}</div>
                   </>
                 )}

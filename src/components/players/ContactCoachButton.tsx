@@ -67,33 +67,33 @@ export default function ContactCoachButton({ playerName, profileUrl }: ContactCo
           />
 
           {/* Modal Content */}
-          <div className="relative bg-[#0A1D37] border border-white/10 rounded-lg shadow-2xl w-full max-w-md overflow-hidden">
+          <div className="relative bg-page-bg border border-border-default rounded-lg shadow-2xl w-full max-w-md overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/10">
+            <div className="flex items-center justify-between p-4 border-b border-border-default">
               <div>
-                <h3 className="text-lg font-bold text-white">Contact a Coach</h3>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <h3 className="text-lg font-bold text-text-primary">Contact a Coach</h3>
+                <p className="text-xs text-text-muted mt-0.5">
                   Select a coach to send a recruiting email
                 </p>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 text-gray-400 hover:text-white transition-colors"
+                className="p-1.5 text-text-muted hover:text-text-primary transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Search */}
-            <div className="p-4 border-b border-white/10">
+            <div className="p-4 border-b border-border-default">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                 <input
                   type="text"
                   placeholder="Search by coach name or school..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-eha-red/50"
+                  className="w-full bg-surface-glass border border-border-default rounded-lg pl-10 pr-4 py-2.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-eha-red/50"
                 />
               </div>
             </div>
@@ -102,15 +102,15 @@ export default function ContactCoachButton({ playerName, profileUrl }: ContactCo
             <div className="max-h-[300px] overflow-y-auto">
               {coaches.length === 0 ? (
                 <div className="p-8 text-center">
-                  <GraduationCap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                  <p className="text-white font-medium mb-1">Coming Soon</p>
-                  <p className="text-xs text-gray-400">
+                  <GraduationCap className="w-12 h-12 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-primary font-medium mb-1">Coming Soon</p>
+                  <p className="text-xs text-text-muted">
                     College coach directory is being built. Check back soon to connect with coaches directly!
                   </p>
                 </div>
               ) : filteredCoaches.length === 0 ? (
                 <div className="p-8 text-center">
-                  <p className="text-gray-400 text-sm">No coaches found matching "{searchQuery}"</p>
+                  <p className="text-text-muted text-sm">No coaches found matching "{searchQuery}"</p>
                 </div>
               ) : (
                 <div className="divide-y divide-white/5">
@@ -118,7 +118,7 @@ export default function ContactCoachButton({ playerName, profileUrl }: ContactCo
                     <button
                       key={coach.id}
                       onClick={() => handleSelectCoach(coach)}
-                      className="w-full flex items-center gap-4 p-4 hover:bg-white/5 transition-colors text-left"
+                      className="w-full flex items-center gap-4 p-4 hover:bg-surface-glass transition-colors text-left"
                     >
                       <div className="w-10 h-10 bg-eha-red/20 rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-sm font-bold text-eha-red">
@@ -126,12 +126,12 @@ export default function ContactCoachButton({ playerName, profileUrl }: ContactCo
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{coach.name}</p>
-                        <p className="text-xs text-gray-400 truncate">
+                        <p className="text-sm font-medium text-text-primary truncate">{coach.name}</p>
+                        <p className="text-xs text-text-muted truncate">
                           {coach.position} • {coach.school}
                         </p>
                       </div>
-                      <Mail className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                      <Mail className="w-4 h-4 text-text-muted flex-shrink-0" />
                     </button>
                   ))}
                 </div>
@@ -139,8 +139,8 @@ export default function ContactCoachButton({ playerName, profileUrl }: ContactCo
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-white/10 bg-white/5">
-              <p className="text-[10px] text-gray-500 text-center">
+            <div className="p-4 border-t border-border-default bg-surface-glass">
+              <p className="text-[10px] text-text-muted text-center">
                 Emails open in your default email app with your profile link included
               </p>
             </div>

@@ -79,7 +79,7 @@ function SortableTeamItem({ team, index }: { team: Team; index: number }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-3 p-3 bg-dark-surface border border-eha-silver/20 rounded-lg ${
+      className={`flex items-center gap-3 p-3 bg-input-bg border border-eha-silver/20 rounded-lg ${
         isDragging ? 'opacity-50 ring-2 ring-eha-red' : ''
       }`}
     >
@@ -88,15 +88,15 @@ function SortableTeamItem({ team, index }: { team: Team; index: number }) {
         {...listeners}
         className="cursor-grab active:cursor-grabbing"
       >
-        <GripVertical className="w-4 h-4 text-gray-500" />
+        <GripVertical className="w-4 h-4 text-text-muted" />
       </div>
       <div className="w-8 h-8 bg-eha-red/20 rounded-full flex items-center justify-center">
         <span className="text-sm font-bold text-eha-red">{index + 1}</span>
       </div>
       <div className="flex-1">
-        <p className="font-medium text-white">{team.name}</p>
+        <p className="font-medium text-text-primary">{team.name}</p>
         {team.program?.name && (
-          <p className="text-xs text-gray-500">{team.program?.name}</p>
+          <p className="text-xs text-text-muted">{team.program?.name}</p>
         )}
       </div>
       {team.division && (
@@ -311,8 +311,8 @@ export default function NewBracketWizardPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Create Bracket / Pool</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-text-primary">Create Bracket / Pool</h1>
+          <p className="text-sm text-text-muted">
             Generate tournament matchups automatically
           </p>
         </div>
@@ -335,7 +335,7 @@ export default function NewBracketWizardPage() {
                         ? 'bg-eha-red text-white'
                         : isCompleted || isPast
                         ? 'bg-green-600 text-white'
-                        : 'bg-dark-surface text-gray-500 border border-eha-silver/20'
+                        : 'bg-input-bg text-text-muted border border-eha-silver/20'
                     }`}
                   >
                     {isCompleted || isPast ? (
@@ -346,7 +346,7 @@ export default function NewBracketWizardPage() {
                   </div>
                   <span
                     className={`mt-2 text-xs ${
-                      isActive ? 'text-white' : 'text-gray-500'
+                      isActive ? 'text-text-primary' : 'text-text-muted'
                     }`}
                   >
                     {step.label}
@@ -384,19 +384,19 @@ export default function NewBracketWizardPage() {
         {/* Step 1: Select Event */}
         {currentStep === 'event' && (
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-eha-red" />
               Select Event
             </h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-text-muted mb-6">
               Choose the tournament or event for this bracket.
             </p>
 
             <div className="space-y-3">
               {events.length === 0 ? (
                 <div className="text-center py-8">
-                  <Calendar className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-400">No active events found</p>
+                  <Calendar className="w-12 h-12 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-muted">No active events found</p>
                   <Link href="/admin/events/new">
                     <Button variant="outline" className="mt-4">
                       Create Event
@@ -411,10 +411,10 @@ export default function NewBracketWizardPage() {
                     className={`w-full p-4 rounded-lg border text-left transition-all ${
                       selectedEvent?.id === event.id
                         ? 'border-eha-red bg-eha-red/10'
-                        : 'border-eha-silver/20 bg-dark-surface hover:border-eha-silver/40'
+                        : 'border-eha-silver/20 bg-input-bg hover:border-eha-silver/40'
                     }`}
                   >
-                    <p className="font-medium text-white">{event.name}</p>
+                    <p className="font-medium text-text-primary">{event.name}</p>
                   </button>
                 ))
               )}
@@ -425,11 +425,11 @@ export default function NewBracketWizardPage() {
         {/* Step 2: Select Type */}
         {currentStep === 'type' && (
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
               <GitBranch className="w-5 h-5 text-eha-red" />
               Select Type
             </h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-text-muted mb-6">
               Choose how teams will compete against each other.
             </p>
 
@@ -439,12 +439,12 @@ export default function NewBracketWizardPage() {
                 className={`p-6 rounded-lg border text-left transition-all ${
                   bracketType === 'POOL'
                     ? 'border-eha-red bg-eha-red/10'
-                    : 'border-eha-silver/20 bg-dark-surface hover:border-eha-silver/40'
+                    : 'border-eha-silver/20 bg-input-bg hover:border-eha-silver/40'
                 }`}
               >
                 <LayoutGrid className="w-10 h-10 text-blue-400 mb-3" />
-                <h3 className="font-semibold text-white mb-1">Round Robin Pool</h3>
-                <p className="text-sm text-gray-400">
+                <h3 className="font-semibold text-text-primary mb-1">Round Robin Pool</h3>
+                <p className="text-sm text-text-muted">
                   Every team plays every other team once. Great for group stages.
                 </p>
               </button>
@@ -454,14 +454,14 @@ export default function NewBracketWizardPage() {
                 className={`p-6 rounded-lg border text-left transition-all ${
                   bracketType === 'BRACKET'
                     ? 'border-eha-red bg-eha-red/10'
-                    : 'border-eha-silver/20 bg-dark-surface hover:border-eha-silver/40'
+                    : 'border-eha-silver/20 bg-input-bg hover:border-eha-silver/40'
                 }`}
               >
                 <GitBranch className="w-10 h-10 text-green-400 mb-3" />
-                <h3 className="font-semibold text-white mb-1">
+                <h3 className="font-semibold text-text-primary mb-1">
                   Single Elimination Bracket
                 </h3>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-text-muted">
                   Win or go home. Classic tournament bracket format.
                 </p>
               </button>
@@ -472,17 +472,17 @@ export default function NewBracketWizardPage() {
         {/* Step 3: Select Teams */}
         {currentStep === 'teams' && (
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
               <Users className="w-5 h-5 text-eha-red" />
               Select Teams
             </h2>
-            <p className="text-gray-400 mb-4">
+            <p className="text-text-muted mb-4">
               Choose which teams will participate in this{' '}
               {bracketType === 'POOL' ? 'pool' : 'bracket'}.
             </p>
 
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-text-muted">
                 {selectedTeams.length} of {teams.length} teams selected
               </span>
               <div className="flex gap-2">
@@ -497,12 +497,12 @@ export default function NewBracketWizardPage() {
 
             {isLoadingTeams ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                <Loader2 className="w-6 h-6 animate-spin text-text-muted" />
               </div>
             ) : teams.length === 0 ? (
               <div className="text-center py-8">
-                <Users className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-400">No teams registered for this event</p>
+                <Users className="w-12 h-12 text-text-muted mx-auto mb-3" />
+                <p className="text-text-muted">No teams registered for this event</p>
                 <Link href="/admin/teams">
                   <Button variant="outline" className="mt-4">
                     Manage Teams
@@ -520,22 +520,22 @@ export default function NewBracketWizardPage() {
                       className={`w-full p-3 rounded-lg border text-left transition-all flex items-center gap-3 ${
                         isSelected
                           ? 'border-eha-red bg-eha-red/10'
-                          : 'border-eha-silver/20 bg-dark-surface hover:border-eha-silver/40'
+                          : 'border-eha-silver/20 bg-input-bg hover:border-eha-silver/40'
                       }`}
                     >
                       <div
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                           isSelected
                             ? 'bg-eha-red border-eha-red'
-                            : 'border-gray-500'
+                            : 'border-border-default'
                         }`}
                       >
                         {isSelected && <Check className="w-3 h-3 text-white" />}
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-white">{team.name}</p>
+                        <p className="font-medium text-text-primary">{team.name}</p>
                         {team.program?.name && (
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-text-muted">
                             {team.program?.name}
                           </p>
                         )}
@@ -556,7 +556,7 @@ export default function NewBracketWizardPage() {
         {/* Step 4: Configure */}
         {currentStep === 'configure' && (
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
               Configure {bracketType === 'POOL' ? 'Pool' : 'Bracket'}
             </h2>
 
@@ -584,10 +584,10 @@ export default function NewBracketWizardPage() {
 
               {bracketType === 'BRACKET' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-3">
+                  <label className="block text-sm font-medium text-text-secondary mb-3">
                     Seed Order (drag to reorder)
                   </label>
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-text-muted mb-4">
                     #1 seed will play #{orderedTeams.length} seed, #2 plays #
                     {orderedTeams.length - 1}, etc.
                   </p>
@@ -653,36 +653,36 @@ export default function NewBracketWizardPage() {
               )}
             </div>
 
-            <h2 className="text-2xl font-bold text-white mb-2">Ready to Generate</h2>
-            <p className="text-gray-400 mb-6 max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-text-primary mb-2">Ready to Generate</h2>
+            <p className="text-text-muted mb-6 max-w-md mx-auto">
               Click the button below to create all matchups. Games will appear in
               the Scheduling Grid.
             </p>
 
-            <div className="bg-dark-surface rounded-lg p-6 max-w-md mx-auto mb-6 text-left">
-              <h3 className="font-medium text-white mb-3">Summary</h3>
+            <div className="bg-input-bg rounded-lg p-6 max-w-md mx-auto mb-6 text-left">
+              <h3 className="font-medium text-text-primary mb-3">Summary</h3>
               <dl className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-gray-500">Event</dt>
-                  <dd className="text-white">{selectedEvent?.name}</dd>
+                  <dt className="text-text-muted">Event</dt>
+                  <dd className="text-text-primary">{selectedEvent?.name}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-gray-500">Type</dt>
-                  <dd className="text-white">
+                  <dt className="text-text-muted">Type</dt>
+                  <dd className="text-text-primary">
                     {bracketType === 'POOL' ? 'Round Robin Pool' : 'Single Elimination'}
                   </dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-gray-500">Name</dt>
-                  <dd className="text-white">{bracketName}</dd>
+                  <dt className="text-text-muted">Name</dt>
+                  <dd className="text-text-primary">{bracketName}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-gray-500">Teams</dt>
-                  <dd className="text-white">{selectedTeams.length}</dd>
+                  <dt className="text-text-muted">Teams</dt>
+                  <dd className="text-text-primary">{selectedTeams.length}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-gray-500">Games to Create</dt>
-                  <dd className="text-white font-semibold">
+                  <dt className="text-text-muted">Games to Create</dt>
+                  <dd className="text-text-primary font-semibold">
                     {bracketType === 'POOL'
                       ? (selectedTeams.length * (selectedTeams.length - 1)) / 2
                       : selectedTeams.length - 1}

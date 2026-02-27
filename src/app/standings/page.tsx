@@ -81,9 +81,9 @@ export default function StandingsPage() {
   }, [division])
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] text-white font-sans selection:bg-eha-red selection:text-white">
+    <div className="min-h-screen bg-page-bg text-text-primary font-sans selection:bg-eha-red selection:text-white">
       {/* Header / Hero */}
-      <header className="pt-32 pb-12 bg-[#0a1628] border-b border-white/5 relative overflow-hidden">
+      <header className="pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle relative overflow-hidden">
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#E2E8F0 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 relative z-10">
 
@@ -92,13 +92,13 @@ export default function StandingsPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-eha-red/10 border border-eha-red/20 rounded-full">
                 <span className="text-[10px] font-extrabold uppercase tracking-widest text-eha-red">Season 2026</span>
               </div>
-              <h1 className="text-5xl lg:text-6xl font-heading font-bold tracking-tighter text-white">League Standings</h1>
+              <h1 className="text-5xl lg:text-6xl font-heading font-bold tracking-tighter text-text-primary">League Standings</h1>
             </div>
 
             <div className="flex gap-4">
               <div className="relative">
                 <select
-                  className="appearance-none bg-[#0a1628] border border-white/10 pl-4 pr-10 py-3 text-[11px] font-extrabold uppercase tracking-widest rounded-sm focus:outline-none focus:border-eha-red text-white min-w-[180px]"
+                  className="appearance-none bg-page-bg-alt border border-border-default pl-4 pr-10 py-3 text-[11px] font-extrabold uppercase tracking-widest rounded-sm focus:outline-none focus:border-eha-red text-text-primary min-w-[180px]"
                   value={division}
                   onChange={(e) => setDivision(e.target.value)}
                 >
@@ -107,7 +107,7 @@ export default function StandingsPage() {
                   <option value="Gold">Gold</option>
                   <option value="Silver">Silver</option>
                 </select>
-                <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
               </div>
             </div>
           </div>
@@ -124,13 +124,13 @@ export default function StandingsPage() {
             {/* If we strictly want NO empty/fake data, conditionally render these only if we have highlights. 
                  Since user asked for "records yet because we don't have any games", maybe hide highlights or show a "Season Starts Soon" card.
              */}
-            <div className="p-6 border border-white/10 rounded-sm flex items-center justify-between bg-eha-red/10 border-eha-red/20 shadow-lg relative overflow-hidden md:col-span-3">
+            <div className="p-6 border border-border-default rounded-sm flex items-center justify-between bg-eha-red/10 border-eha-red/20 shadow-lg relative overflow-hidden md:col-span-3">
               <div className="absolute top-0 right-0 p-16 bg-eha-red/20 blur-3xl rounded-full translate-x-10 -translate-y-10"></div>
               <div className="flex flex-col relative z-10">
                 <span className="text-[10px] font-extrabold uppercase tracking-widest mb-1 text-eha-red">
                   Season 2026
                 </span>
-                <span className="text-white font-bold text-sm">Official Season begins soon on EHA Connect</span>
+                <span className="text-text-primary font-bold text-sm">Official Season begins soon on EHA Connect</span>
               </div>
               <Activity className="w-6 h-6 text-eha-red animate-pulse relative z-10" />
             </div>
@@ -143,13 +143,13 @@ export default function StandingsPage() {
               {isLoading ? (
                 <div className="text-center py-20">
                   <div className="w-16 h-16 border-4 border-eha-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-gray-400">Loading standings...</p>
+                  <p className="text-text-muted">Loading standings...</p>
                 </div>
               ) : teams.length === 0 ? (
-                <div className="text-center py-20 border border-white/10 rounded-sm bg-[#0a1628]">
-                  <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-xl font-bold text-white mb-2">No Teams Found</h3>
-                  <p className="text-gray-400">No teams found for the selected filters.</p>
+                <div className="text-center py-20 border border-border-default rounded-sm bg-page-bg-alt">
+                  <Trophy className="w-16 h-16 text-text-muted mx-auto mb-4 opacity-50" />
+                  <h3 className="text-xl font-bold text-text-primary mb-2">No Teams Found</h3>
+                  <p className="text-text-muted">No teams found for the selected filters.</p>
                 </div>
               ) : division === 'All Divisions' ? (
                 <>
@@ -157,12 +157,12 @@ export default function StandingsPage() {
                     division="EPL"
                     teams={teams.filter(t => t.division === 'EPL')}
                   />
-                  <div className="h-px bg-white/5 my-12" />
+                  <div className="h-px bg-surface-glass my-12" />
                   <StandingsTable
                     division="Gold"
                     teams={teams.filter(t => t.division === 'Gold')}
                   />
-                  <div className="h-px bg-white/5 my-12" />
+                  <div className="h-px bg-surface-glass my-12" />
                   <StandingsTable
                     division="Silver"
                     teams={teams.filter(t => t.division === 'Silver')}
@@ -198,12 +198,12 @@ export default function StandingsPage() {
               </div> */}
 
               {/* Conference Leaders Widget - Placeholder */}
-              <div className="bg-[#0a1628] border border-white/10 p-8 rounded-sm shadow-xl">
+              <div className="bg-page-bg-alt border border-border-default p-8 rounded-sm shadow-xl">
                 <h4 className="text-xs font-extrabold uppercase mb-6 text-eha-red tracking-[0.2em]">
                   League Leaders
                 </h4>
                 <div className="space-y-6">
-                  <p className="text-sm text-gray-400 italic">Stats will appear here once the season begins.</p>
+                  <p className="text-sm text-text-muted italic">Stats will appear here once the season begins.</p>
                 </div>
               </div>
 
@@ -223,48 +223,48 @@ const StandingsTable = ({ division, teams }: { division: string, teams: any[] })
     <div>
       <div className="flex items-center gap-3 mb-6">
         <div className="h-6 w-1 bg-eha-red"></div>
-        <h2 className="text-2xl font-heading font-bold text-white">
+        <h2 className="text-2xl font-heading font-bold text-text-primary">
           Division: {division}
         </h2>
       </div>
 
-      <div className="bg-[#0a1628] border border-white/10 overflow-hidden rounded-sm shadow-xl">
+      <div className="bg-page-bg-alt border border-border-default overflow-hidden rounded-sm shadow-xl">
         <table className="w-full text-left">
           <thead>
-            <tr className="bg-[#153361] border-b border-white/5">
-              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">Pos</th>
-              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">Team Name</th>
-              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 text-center">W</th>
-              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 text-center">L</th>
-              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 text-center">PCT</th>
-              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400 text-center">Strk</th>
-              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">L10</th>
+            <tr className="bg-surface-raised border-b border-border-subtle">
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted">Pos</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted">Team Name</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted text-center">W</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted text-center">L</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted text-center">PCT</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted text-center">Strk</th>
+              <th className="px-6 py-4 text-[10px] font-extrabold uppercase tracking-widest text-text-muted">L10</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border-subtle">
             {teams.map((team, index) => (
-              <tr key={index} className="transition-colors group hover:bg-white/5">
-                <td className="px-6 py-5 font-bold text-white">{team.pos}</td>
+              <tr key={index} className="transition-colors group hover:bg-surface-glass">
+                <td className="px-6 py-5 font-bold text-text-primary">{team.pos}</td>
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-[10px] font-black text-white">
+                    <div className="w-8 h-8 bg-surface-overlay rounded-full flex items-center justify-center text-[10px] font-black text-text-primary">
                       {team.abbr}
                     </div>
-                    <span className="font-bold text-white group-hover:text-eha-red transition-colors">
+                    <span className="font-bold text-text-primary group-hover:text-eha-red transition-colors">
                       {team.name}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-5 text-center font-bold text-white">{team.wins}</td>
-                <td className="px-6 py-5 text-center font-bold text-white">{team.losses}</td>
-                <td className="px-6 py-5 text-center text-gray-400 font-medium">{team.pct}</td>
+                <td className="px-6 py-5 text-center font-bold text-text-primary">{team.wins}</td>
+                <td className="px-6 py-5 text-center font-bold text-text-primary">{team.losses}</td>
+                <td className="px-6 py-5 text-center text-text-muted font-medium">{team.pct}</td>
                 <td
                   className="px-6 py-5 text-center font-bold"
                   style={{ color: team.streakType === 'W' ? '#4ade80' : '#E31837' }}
                 >
                   {team.streak}
                 </td>
-                <td className="px-6 py-5 text-xs font-bold text-gray-500">{team.lastTen}</td>
+                <td className="px-6 py-5 text-xs font-bold text-text-muted">{team.lastTen}</td>
               </tr>
             ))}
           </tbody>
@@ -276,8 +276,8 @@ const StandingsTable = ({ division, teams }: { division: string, teams: any[] })
 
 const MatchupCard = ({ matchup }: { matchup: any }) => {
   return (
-    <div className="bg-[#0a1628] border border-white/10 p-5 rounded-sm hover:border-eha-red/50 transition-colors shadow-lg group">
-      <div className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+    <div className="bg-page-bg-alt border border-border-default p-5 rounded-sm hover:border-eha-red/50 transition-colors shadow-lg group">
+      <div className="text-[10px] font-extrabold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
         <Calendar className="w-3 h-3 text-eha-red" />
         {matchup.date}
       </div>
@@ -291,9 +291,9 @@ const MatchupCard = ({ matchup }: { matchup: any }) => {
           >
             {matchup.team1Abbr}
           </div>
-          <span className="text-sm font-bold text-white">{matchup.team1Name}</span>
+          <span className="text-sm font-bold text-text-primary">{matchup.team1Name}</span>
         </div>
-        <span className="text-[10px] font-bold text-gray-500 uppercase">{matchup.team1Record}</span>
+        <span className="text-[10px] font-bold text-text-muted uppercase">{matchup.team1Record}</span>
       </div>
 
       {/* Team 2 */}
@@ -305,13 +305,13 @@ const MatchupCard = ({ matchup }: { matchup: any }) => {
           >
             {matchup.team2Abbr}
           </div>
-          <span className="text-sm font-bold text-white">{matchup.team2Name}</span>
+          <span className="text-sm font-bold text-text-primary">{matchup.team2Name}</span>
         </div>
-        <span className="text-[10px] font-bold text-gray-500 uppercase">{matchup.team2Record}</span>
+        <span className="text-[10px] font-bold text-text-muted uppercase">{matchup.team2Record}</span>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-white/5">
-        <button className="w-full py-2 bg-white/5 text-[10px] font-extrabold text-white uppercase tracking-widest rounded-sm hover:bg-eha-red hover:text-white transition-all">
+      <div className="mt-4 pt-4 border-t border-border-subtle">
+        <button className="w-full py-2 bg-surface-glass text-[10px] font-extrabold text-text-primary uppercase tracking-widest rounded-sm hover:bg-eha-red hover:text-white transition-all">
           {matchup.buttonText}
         </button>
       </div>

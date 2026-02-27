@@ -35,7 +35,7 @@ export default function FilmRoomSection({ videos }: FilmRoomSectionProps) {
               key={video.id}
               type="button"
               onClick={() => setSelectedVideo(video)}
-              className="group relative aspect-video bg-[#0A1D37] rounded-sm overflow-hidden border border-white/10 cursor-pointer text-left"
+              className="group relative aspect-video bg-page-bg rounded-sm overflow-hidden border border-border-default cursor-pointer text-left"
             >
               {thumbUrl && (
                 <Image
@@ -84,7 +84,7 @@ export default function FilmRoomSection({ videos }: FilmRoomSectionProps) {
           </div>
         ) : selectedVideo ? (
           <div className="text-center py-8">
-            <p className="text-gray-400 mb-4">This video is hosted externally</p>
+            <p className="text-text-muted mb-4">This video is hosted externally</p>
             <a href={selectedVideo.url} target="_blank" rel="noopener noreferrer">
               <Button className="inline-flex items-center gap-2">
                 <ExternalLink className="w-4 h-4" />

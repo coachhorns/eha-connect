@@ -109,9 +109,9 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-dark-base">
       {/* Header Section */}
-      <div className="bg-gradient-to-br from-[#0A1D37] to-[#152e50] pt-40 pb-20 px-4 sm:px-6 lg:px-8 border-b border-white/5">
+      <div className="bg-gradient-to-br from-[#0A1D37] to-[#152e50] pt-40 pb-20 px-4 sm:px-6 lg:px-8 border-b border-border-subtle">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="font-heading font-bold text-5xl lg:text-7xl uppercase tracking-tighter text-white mb-6">
+          <h1 className="font-heading font-bold text-5xl lg:text-7xl uppercase tracking-tighter text-text-primary mb-6">
             Get Connected
           </h1>
           <p className="text-blue-200/80 text-xl max-w-2xl mx-auto font-sans leading-relaxed">
@@ -133,9 +133,9 @@ export default function PricingPage() {
           {plans.map((plan) => (
             <div
               key={plan.key}
-              className={`bg-dark-surface border relative overflow-hidden rounded-xl p-8 lg:p-10 transition-all duration-300 shadow-2xl ${plan.popular
+              className={`bg-input-bg border relative overflow-hidden rounded-xl p-8 lg:p-10 transition-all duration-300 shadow-2xl ${plan.popular
                 ? 'border-eha-red/50 scale-105 z-10 shadow-eha-red/10'
-                : 'border-white/5 opacity-95 hover:opacity-100 hover:border-white/10'
+                : 'border-border-subtle opacity-95 hover:opacity-100 hover:border-border-default'
                 }`}
             >
               {plan.popular && (
@@ -148,20 +148,20 @@ export default function PricingPage() {
               )}
 
               <div className="mb-6">
-                <h3 className="font-heading text-xl font-bold text-white mb-1">{plan.name}</h3>
-                <p className="text-sm text-gray-400">{plan.description}</p>
+                <h3 className="font-heading text-xl font-bold text-text-primary mb-1">{plan.name}</h3>
+                <p className="text-sm text-text-muted">{plan.description}</p>
               </div>
 
               <div className="mb-8">
-                <span className="text-6xl font-heading font-bold text-white">${plan.price}</span>
-                <span className="text-gray-400 text-lg ml-1">/{plan.interval}</span>
+                <span className="text-6xl font-heading font-bold text-text-primary">${plan.price}</span>
+                <span className="text-text-muted text-lg ml-1">/{plan.interval}</span>
               </div>
 
               <ul className="space-y-3 mb-8">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-eha-red flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-300 text-sm">{feature}</span>
+                    <span className="text-text-secondary text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -184,27 +184,27 @@ export default function PricingPage() {
 
         {/* FAQ Section */}
         <div className="max-w-3xl mx-auto pb-20">
-          <h2 className="font-heading text-2xl font-bold text-white text-center mb-8 uppercase tracking-tight">
+          <h2 className="font-heading text-2xl font-bold text-text-primary text-center mb-8 uppercase tracking-tight">
             Frequently Asked Questions
           </h2>
 
           <div className="space-y-4">
-            <div className="bg-dark-surface rounded-xl p-6">
-              <h3 className="font-heading font-semibold text-white mb-2">
+            <div className="bg-input-bg rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-text-primary mb-2">
                 What&apos;s included with the Connect Pass?
               </h3>
-              <p className="text-gray-400 text-sm">
+              <p className="text-text-muted text-sm">
                 You get a full player profile with photos and bio, live stats tracked by official
                 scorekeepers at every EHA event, leaderboard rankings, a shareable profile URL for
                 recruiting, and direct email access to over 10,000 college coaches across all divisions.
               </p>
             </div>
 
-            <div className="bg-dark-surface rounded-xl p-6">
-              <h3 className="font-heading font-semibold text-white mb-2">
+            <div className="bg-input-bg rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-text-primary mb-2">
                 How does the college recruiting tool work?
               </h3>
-              <p className="text-gray-400 text-sm">
+              <p className="text-text-muted text-sm">
                 Your Connect Pass gives you access to a database of 10,000+ college coaches across
                 NCAA Division I, II, III, NAIA, and JUCO programs. You can search by school, state,
                 or conference and email coaches directly from the platform with your profile link
@@ -212,42 +212,42 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-dark-surface rounded-xl p-6">
-              <h3 className="font-heading font-semibold text-white mb-2">
+            <div className="bg-input-bg rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-text-primary mb-2">
                 How are stats tracked during events?
               </h3>
-              <p className="text-gray-400 text-sm">
+              <p className="text-text-muted text-sm">
                 Official EHA scorekeepers are stationed at every court during events. They record
                 points, rebounds, assists, steals, blocks, and shooting stats in real-time using our
                 scoring system. Your stats automatically appear on your profile and the leaderboards.
               </p>
             </div>
 
-            <div className="bg-dark-surface rounded-xl p-6">
-              <h3 className="font-heading font-semibold text-white mb-2">
+            <div className="bg-input-bg rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-text-primary mb-2">
                 What if my child plays for multiple teams?
               </h3>
-              <p className="text-gray-400 text-sm">
+              <p className="text-text-muted text-sm">
                 The Connect Pass follows the player, not the team. All stats from every EHA event
                 are tracked on one profile regardless of which team they play for.
               </p>
             </div>
 
-            <div className="bg-dark-surface rounded-xl p-6">
-              <h3 className="font-heading font-semibold text-white mb-2">
+            <div className="bg-input-bg rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-text-primary mb-2">
                 Do you offer family discounts?
               </h3>
-              <p className="text-gray-400 text-sm">
+              <p className="text-text-muted text-sm">
                 Yes! If you have multiple children playing in EHA events, additional players on your
                 account are discounted. Contact us for details on family pricing.
               </p>
             </div>
 
-            <div className="bg-dark-surface rounded-xl p-6">
-              <h3 className="font-heading font-semibold text-white mb-2">
+            <div className="bg-input-bg rounded-xl p-6">
+              <h3 className="font-heading font-semibold text-text-primary mb-2">
                 Can I cancel anytime?
               </h3>
-              <p className="text-gray-400 text-sm">
+              <p className="text-text-muted text-sm">
                 Absolutely. You can cancel your subscription from your account dashboard at any time.
                 Your access continues through the end of your current billing period.
               </p>
@@ -257,9 +257,9 @@ export default function PricingPage() {
 
         {/* CTA */}
         <div className="pb-16 text-center">
-          <p className="text-gray-400 mb-4">
+          <p className="text-text-muted mb-4">
             Have questions? Contact us at{' '}
-            <a href="mailto:support@ehacircuit.com" className="text-white hover:underline">
+            <a href="mailto:support@ehacircuit.com" className="text-text-primary hover:underline">
               support@ehacircuit.com
             </a>
           </p>

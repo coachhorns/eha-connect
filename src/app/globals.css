@@ -1,7 +1,44 @@
 @import "tailwindcss";
 
+/* ========== LIGHT THEME (DEFAULT) ========== */
 :root {
-  /* EHA Brand Colors - Athletic Professional */
+  /* Page backgrounds */
+  --page-bg: #F8FAFC;
+  --page-bg-alt: #F1F5F9;
+
+  /* Surface/card colors */
+  --surface: #FFFFFF;
+  --surface-raised: #F8FAFC;
+  --surface-overlay: rgba(0, 0, 0, 0.04);
+  --surface-glass: rgba(0, 0, 0, 0.02);
+
+  /* Text colors */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --text-inverted: #FFFFFF;
+
+  /* Border colors */
+  --border-default: #E2E8F0;
+  --border-subtle: #F1F5F9;
+
+  /* Input/form colors */
+  --input-bg: #FFFFFF;
+  --input-border: #CBD5E1;
+  --input-text: #0F172A;
+
+  /* Scrollbar */
+  --scrollbar-track: #F1F5F9;
+  --scrollbar-thumb: #CBD5E1;
+  --scrollbar-thumb-hover: #94A3B8;
+
+  /* Modal */
+  --modal-bg: rgba(255, 255, 255, 0.97);
+
+  /* Shadow */
+  --shadow-color: rgba(0, 0, 0, 0.08);
+
+  /* EHA Brand Colors (unchanged across themes) */
   --color-eha-navy: #0D2B5B;
   --color-eha-red: #C8102E;
   --color-eha-silver: #A2AAAD;
@@ -12,29 +49,82 @@
   --color-secondary: #1A1A2E;
   --color-accent: #FFD700;
 
-  /* Dark Theme - Athletic Professional */
-  --dark-base: #0D2B5B;
-  --dark-surface: #153361;
-
-  /* Legacy Dark Theme */
-  --background: #0F0F1A;
-  --background-secondary: #1A1A2E;
-  --background-tertiary: #1a3a6e;
-  --foreground: #FFFFFF;
-  --foreground-muted: #9CA3AF;
-
   /* Status Colors */
   --color-success: #10B981;
   --color-error: #EF4444;
   --color-warning: #F59E0B;
   --color-info: #3B82F6;
+
+  /* Legacy variables (kept for compatibility) */
+  --background: #F8FAFC;
+  --background-secondary: #F1F5F9;
+  --background-tertiary: #E2E8F0;
+  --foreground: #0F172A;
+  --foreground-muted: #64748B;
+  --dark-base: #0D2B5B;
+  --dark-surface: #153361;
+}
+
+/* ========== DARK THEME ========== */
+.dark {
+  --page-bg: #0A1D37;
+  --page-bg-alt: #0a1628;
+
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-raised: #152e50;
+  --surface-overlay: rgba(255, 255, 255, 0.1);
+  --surface-glass: rgba(255, 255, 255, 0.05);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #D1D5DB;
+  --text-muted: #9CA3AF;
+  --text-inverted: #0F172A;
+
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+
+  --input-bg: #1A1A2E;
+  --input-border: rgba(162, 170, 173, 0.2);
+  --input-text: #FFFFFF;
+
+  --scrollbar-track: #1A1A2E;
+  --scrollbar-thumb: #1a3a6e;
+  --scrollbar-thumb-hover: #3a3a5c;
+
+  --modal-bg: rgba(10, 29, 55, 0.95);
+
+  --shadow-color: rgba(0, 0, 0, 0.5);
+
+  /* Legacy variables for dark */
+  --background: #0F0F1A;
+  --background-secondary: #1A1A2E;
+  --background-tertiary: #1a3a6e;
+  --foreground: #FFFFFF;
+  --foreground-muted: #9CA3AF;
 }
 
 @theme inline {
-  --color-background: #0D2B5B;
+  --color-background: var(--page-bg);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Semantic theme colors */
+  --color-page-bg: var(--page-bg);
+  --color-page-bg-alt: var(--page-bg-alt);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-glass: var(--surface-glass);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverted: var(--text-inverted);
+  --color-border-default: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+  --color-input-bg: var(--input-bg);
+  --color-input-border: var(--input-border);
+  --color-modal-bg: var(--modal-bg);
 
   /* Athletic Professional Colors */
   --color-eha-navy: #0D2B5B;
@@ -52,9 +142,10 @@
 }
 
 body {
-  background: #0D2B5B;
-  color: var(--foreground);
+  background: var(--page-bg);
+  color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Heading font - Outfit for modern geometric look */
@@ -80,16 +171,16 @@ h1, h2, h3, h4, h5, h6,
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background-secondary);
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--background-tertiary);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a5c;
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Custom utilities */
@@ -108,13 +199,17 @@ h1, h2, h3, h4, h5, h6,
   background-clip: text;
 }
 
-/* Background with gradient and noise */
+/* Background with gradient and noise - dark mode only */
 .bg-navy-gradient {
-  background: linear-gradient(180deg, #0D2B5B 0%, #071832 40%, #0A2245 70%, #0D2B5B 100%);
+  background: var(--page-bg);
   position: relative;
 }
 
-.bg-navy-gradient::before {
+.dark .bg-navy-gradient {
+  background: linear-gradient(180deg, #0D2B5B 0%, #071832 40%, #0A2245 70%, #0D2B5B 100%);
+}
+
+.dark .bg-navy-gradient::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -129,26 +224,39 @@ h1, h2, h3, h4, h5, h6,
   transition: all 0.3s ease-out;
 }
 
-.liquid-hover:hover {
+.dark .liquid-hover:hover {
   background: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
   border: 1px solid rgba(255,255,255,0.4);
   box-shadow: 0 0 20px rgba(255,255,255,0.2), inset 0 0 10px rgba(255,255,255,0.1);
   transform: translateY(-2px);
 }
 
+:root:not(.dark) .liquid-hover:hover {
+  background: rgba(0,0,0,0.02);
+  border: 1px solid var(--border-default);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
 /* Card styling */
 .card {
-  background: #153361;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border-default);
   border-radius: 1.25rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 30px var(--shadow-color);
   transition: all 0.3s ease-out;
 }
 
-.card:hover {
+.dark .card:hover {
   background: linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%), #153361;
   border: 1px solid rgba(255,255,255,0.4);
   box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.2), inset 0 0 10px rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+
+:root:not(.dark) .card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
   transform: translateY(-2px);
 }
 
@@ -181,20 +289,20 @@ h1, h2, h3, h4, h5, h6,
 .stats-table td {
   padding: 0.75rem 1rem;
   text-align: center;
-  border-bottom: 1px solid var(--background-tertiary);
+  border-bottom: 1px solid var(--border-default);
 }
 
 .stats-table th {
-  background: var(--background-tertiary);
+  background: var(--surface-raised);
   font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--foreground-muted);
+  color: var(--text-muted);
 }
 
 .stats-table tbody tr:hover {
-  background: var(--background-tertiary);
+  background: var(--surface-glass);
 }
 
 /* Badge styling */
@@ -284,8 +392,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Player card */
 .player-card {
-  background: var(--background-secondary);
-  border: 1px solid var(--background-tertiary);
+  background: var(--surface);
+  border: 1px solid var(--border-default);
   border-radius: 1rem;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;

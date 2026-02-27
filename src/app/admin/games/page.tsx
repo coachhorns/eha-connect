@@ -161,12 +161,12 @@ export default function AdminGamesPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
               <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
-              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Manage Games</h1>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-text-primary uppercase tracking-tighter">Manage Games</h1>
               <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">Schedule and manage games across all events</p>
             </div>
             <Link href="/admin/games/new">
@@ -181,12 +181,12 @@ export default function AdminGamesPage() {
       <form onSubmit={handleSearch} className="flex flex-col lg:flex-row gap-4 mb-8">
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
             <input
               placeholder="Search by team or event name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+              className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-text-muted rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
             />
           </div>
         </div>
@@ -197,10 +197,10 @@ export default function AdminGamesPage() {
               setStatusFilter(e.target.value)
               setPage(1)
             }}
-            className="bg-white/5 border border-white/10 text-white rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
+            className="bg-surface-glass border border-border-default text-text-primary rounded-sm px-4 py-3 text-sm w-40 focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 appearance-none cursor-pointer transition-all"
           >
             {statusOptions.map((opt) => (
-              <option key={opt.value} value={opt.value} className="bg-[#0A1D37] text-white">
+              <option key={opt.value} value={opt.value} className="bg-page-bg text-text-primary">
                 {opt.label}
               </option>
             ))}
@@ -212,16 +212,16 @@ export default function AdminGamesPage() {
       </form>
 
       {/* Games Table */}
-      <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
+      <div className="bg-surface-raised/30 border border-border-subtle rounded-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
           </div>
         ) : games.length === 0 ? (
           <div className="text-center py-12">
-            <Gamepad2 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No games found</h3>
-            <p className="text-gray-500 mb-4">Get started by scheduling your first game</p>
+            <Gamepad2 className="w-12 h-12 text-text-muted mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-text-primary mb-2">No games found</h3>
+            <p className="text-text-muted mb-4">Get started by scheduling your first game</p>
             <Link href="/admin/games/new">
               <Button>Schedule Game</Button>
             </Link>
@@ -229,65 +229,65 @@ export default function AdminGamesPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-white/5 border-b border-white/5">
+              <thead className="bg-surface-glass border-b border-border-subtle">
                 <tr>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Date
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Home Team
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Away Team
                   </th>
-                  <th className="px-6 py-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-center text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Score
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Event
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-border-subtle">
                 {games.map((game) => {
                   const statusBadge = getStatusBadge(game.status)
                   return (
                     <tr
                       key={game.id}
-                      className="hover:bg-white/5 transition-colors cursor-pointer"
+                      className="hover:bg-surface-glass transition-colors cursor-pointer"
                       onClick={() => router.push(`/admin/games/${game.id}`)}
                     >
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-sm text-white">
-                          <Calendar className="w-4 h-4 text-gray-400" />
+                        <div className="flex items-center gap-2 text-sm text-text-primary">
+                          <Calendar className="w-4 h-4 text-text-muted" />
                           <div>
                             <div>{format(new Date(game.scheduledAt), 'MMM d, yyyy')}</div>
-                            <div className="text-gray-500">{format(new Date(game.scheduledAt), 'h:mm a')}</div>
+                            <div className="text-text-muted">{format(new Date(game.scheduledAt), 'h:mm a')}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="font-medium text-white">{game.homeTeam.name}</div>
+                        <div className="font-medium text-text-primary">{game.homeTeam.name}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="font-medium text-white">{game.awayTeam.name}</div>
+                        <div className="font-medium text-text-primary">{game.awayTeam.name}</div>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className="font-bold text-white">
+                        <span className="font-bold text-text-primary">
                           {game.homeScore} - {game.awayScore}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         {game.event ? (
-                          <span className="text-sm text-gray-400">{game.event.name}</span>
+                          <span className="text-sm text-text-muted">{game.event.name}</span>
                         ) : (
-                          <span className="text-gray-600">-</span>
+                          <span className="text-text-muted">-</span>
                         )}
                       </td>
                       <td className="px-6 py-4">
@@ -312,13 +312,13 @@ export default function AdminGamesPage() {
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                             {openDropdown === game.id && (
-                              <div className="absolute right-0 top-full mt-1 w-48 bg-[#0A1D37] border border-white/10 rounded-sm shadow-xl z-10">
+                              <div className="absolute right-0 top-full mt-1 w-48 bg-page-bg border border-border-default rounded-sm shadow-xl z-10">
                                 <button
                                   onClick={() => {
                                     setDeleteModal({ isOpen: true, game })
                                     setOpenDropdown(null)
                                   }}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-white/10 transition-colors"
+                                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-surface-overlay transition-colors"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                   Delete
@@ -338,8 +338,8 @@ export default function AdminGamesPage() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border-subtle">
+            <p className="text-sm text-text-muted">
               Showing {((page - 1) * pagination.limit) + 1} to{' '}
               {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} games
             </p>
@@ -352,7 +352,7 @@ export default function AdminGamesPage() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-text-muted">
                 Page {page} of {pagination.totalPages}
               </span>
               <Button
@@ -375,10 +375,10 @@ export default function AdminGamesPage() {
         title="Delete Game"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
+          <p className="text-text-secondary">
             Are you sure you want to delete the game between{' '}
-            <strong className="text-white">{deleteModal.game?.homeTeam.name}</strong> and{' '}
-            <strong className="text-white">{deleteModal.game?.awayTeam.name}</strong>?
+            <strong className="text-text-primary">{deleteModal.game?.homeTeam.name}</strong> and{' '}
+            <strong className="text-text-primary">{deleteModal.game?.awayTeam.name}</strong>?
           </p>
           <div className="flex gap-3 justify-end">
             <Button

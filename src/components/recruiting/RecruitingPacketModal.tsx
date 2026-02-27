@@ -178,17 +178,17 @@ export default function RecruitingPacketModal({
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg bg-[#0A1D37]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-lg bg-modal-bg backdrop-blur-xl border border-border-default rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border-default">
           <div>
-            <h2 className="text-lg font-heading font-bold text-white">
+            <h2 className="text-lg font-heading font-bold text-text-primary">
               {step === 'form' && 'College Recruiting Packet'}
               {step === 'summary' && 'Packet Summary'}
             </h2>
-            <p className="text-sm text-gray-400 mt-0.5">{eventName}</p>
+            <p className="text-sm text-text-muted mt-0.5">{eventName}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -202,21 +202,21 @@ export default function RecruitingPacketModal({
                 <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 shrink-0" />
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-text-primary">
                       {confirmedCoach.firstName} {confirmedCoach.lastName}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-text-muted">
                       {confirmedCoach.title && `${confirmedCoach.title} · `}
                       {confirmedCoach.college.name}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-text-muted">
                       {confirmedCoach.college.division}
                       {confirmedCoach.college.conference && ` · ${confirmedCoach.college.conference}`}
                     </p>
                   </div>
                   <button
                     onClick={handleClearCoach}
-                    className="text-xs text-gray-500 hover:text-white"
+                    className="text-xs text-text-muted hover:text-text-primary"
                   >
                     Change
                   </button>
@@ -261,7 +261,7 @@ export default function RecruitingPacketModal({
 
               {/* Autocomplete suggestions */}
               {showSuggestions && !confirmedCoach && (
-                <div className="bg-[#0D2B5B] border border-white/10 rounded-xl overflow-hidden">
+                <div className="bg-surface-raised border border-border-default rounded-xl overflow-hidden">
                   <p className="px-4 py-2 text-xs font-semibold text-amber-400 uppercase tracking-wider border-b border-white/10">
                     Is this you?
                   </p>
@@ -269,16 +269,16 @@ export default function RecruitingPacketModal({
                     <button
                       key={coach.id}
                       onClick={() => handleSelectCoach(coach)}
-                      className="w-full px-4 py-3 text-left hover:bg-white/5 transition-colors border-b border-white/5 last:border-0"
+                      className="w-full px-4 py-3 text-left hover:bg-surface-glass transition-colors border-b border-border-subtle last:border-0"
                     >
-                      <p className="text-sm font-semibold text-white">
+                      <p className="text-sm font-semibold text-text-primary">
                         {coach.firstName} {coach.lastName}
                       </p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-text-muted">
                         {coach.title && `${coach.title} · `}
                         {coach.college.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-text-muted">
                         {coach.college.division}
                         {coach.college.state && ` · ${coach.college.state}`}
                       </p>
@@ -288,7 +288,7 @@ export default function RecruitingPacketModal({
               )}
 
               {isSearching && (
-                <p className="text-xs text-gray-500 flex items-center gap-2">
+                <p className="text-xs text-text-muted flex items-center gap-2">
                   <span className="w-3 h-3 border-2 border-eha-red border-t-transparent rounded-full animate-spin" />
                   Searching coaches...
                 </p>
@@ -310,56 +310,56 @@ export default function RecruitingPacketModal({
                   What&apos;s Included
                 </h3>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-3 text-sm text-gray-300">
+                  <li className="flex items-start gap-3 text-sm text-text-secondary">
                     <Users className="w-4 h-4 text-eha-red mt-0.5 shrink-0" />
                     Up-to-date rosters for all participating teams
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-gray-300">
+                  <li className="flex items-start gap-3 text-sm text-text-secondary">
                     <Mail className="w-4 h-4 text-eha-red mt-0.5 shrink-0" />
                     Player information and email contacts
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-gray-300">
+                  <li className="flex items-start gap-3 text-sm text-text-secondary">
                     <BookOpen className="w-4 h-4 text-eha-red mt-0.5 shrink-0" />
                     Coaches and directors emails for all programs
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-gray-300">
+                  <li className="flex items-start gap-3 text-sm text-text-secondary">
                     <BarChart3 className="w-4 h-4 text-eha-red mt-0.5 shrink-0" />
                     Live stats throughout the event
                   </li>
                 </ul>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <div className="bg-surface-glass border border-border-default rounded-xl p-4">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-400">Division</span>
+                  <span className="text-sm text-text-muted">Division</span>
                   <Badge variant="info" size="sm">
                     {division}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Total</span>
-                  <span className="text-2xl font-heading font-bold text-white">
+                  <span className="text-sm text-text-muted">Total</span>
+                  <span className="text-2xl font-heading font-bold text-text-primary">
                     ${price.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               {/* Physical copy option */}
-              <label className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl p-4 cursor-pointer hover:bg-white/[0.07] transition-colors">
+              <label className="flex items-start gap-3 bg-surface-glass border border-border-default rounded-xl p-4 cursor-pointer hover:bg-surface-overlay transition-colors">
                 <input
                   type="checkbox"
                   checked={wantsPhysicalCopy}
                   onChange={(e) => setWantsPhysicalCopy(e.target.checked)}
-                  className="w-4 h-4 mt-0.5 rounded-sm border-white/10 bg-[#0A1D37] text-eha-red focus:ring-eha-red"
+                  className="w-4 h-4 mt-0.5 rounded-sm border-border-default bg-page-bg text-eha-red focus:ring-eha-red"
                 />
                 <div>
                   <div className="flex items-center gap-2">
                     <Printer className="w-4 h-4 text-amber-400" />
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-sm font-semibold text-text-primary">
                       Request a physical printed copy
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-text-muted mt-1">
                     A printed recruiting packet booklet will be available for you at check-in when you arrive to the event.
                   </p>
                 </div>
@@ -375,11 +375,11 @@ export default function RecruitingPacketModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-border-default flex items-center justify-between">
           {step === 'summary' && (
             <button
               onClick={() => { setStep('form'); setError('') }}
-              className="text-sm text-gray-400 hover:text-white transition-colors"
+              className="text-sm text-text-muted hover:text-text-primary transition-colors"
             >
               Back
             </button>

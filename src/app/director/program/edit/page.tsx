@@ -172,7 +172,7 @@ export default function EditProgramPage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
@@ -183,7 +183,7 @@ export default function EditProgramPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -201,7 +201,7 @@ export default function EditProgramPage() {
         {/* Back Link */}
         <Link
           href="/director/dashboard"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
@@ -227,16 +227,16 @@ export default function EditProgramPage() {
           </div>
         )}
 
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl">
-          <h1 className="text-2xl md:text-3xl font-heading font-bold text-white mb-2">Edit Program</h1>
-          <p className="text-gray-400 mb-8">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-6 md:p-8 shadow-2xl">
+          <h1 className="text-2xl md:text-3xl font-heading font-bold text-text-primary mb-2">Edit Program</h1>
+          <p className="text-text-muted mb-8">
             Update your program information.
           </p>
 
           <div className="space-y-6">
             {/* Program Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Program Name *
               </label>
               <Input
@@ -250,12 +250,12 @@ export default function EditProgramPage() {
 
             {/* Logo Upload */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Logo
               </label>
               {programData.logo ? (
                 <div className="flex items-start gap-4">
-                  <div className="relative w-24 h-24 bg-white/5 rounded-xl overflow-hidden border border-white/10">
+                  <div className="relative w-24 h-24 bg-surface-glass rounded-xl overflow-hidden border border-border-default">
                     <Image
                       src={programData.logo}
                       alt="Logo preview"
@@ -273,7 +273,7 @@ export default function EditProgramPage() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                    className="text-sm text-text-muted hover:text-text-primary transition-colors"
                   >
                     Change logo
                   </button>
@@ -281,16 +281,16 @@ export default function EditProgramPage() {
               ) : (
                 <div
                   onClick={() => !isUploading && fileInputRef.current?.click()}
-                  className={`border-2 border-dashed border-white/10 rounded-xl p-6 text-center cursor-pointer hover:border-white/30 transition-colors ${
+                  className={`border-2 border-dashed border-border-default rounded-xl p-6 text-center cursor-pointer hover:border-white/30 transition-colors ${
                     isUploading ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
                   {isUploading ? (
-                    <Loader2 className="w-8 h-8 text-white animate-spin mx-auto" />
+                    <Loader2 className="w-8 h-8 text-text-muted animate-spin mx-auto" />
                   ) : (
-                    <ImageIcon className="w-8 h-8 text-white mx-auto mb-2" />
+                    <ImageIcon className="w-8 h-8 text-text-muted mx-auto mb-2" />
                   )}
-                  <p className="text-sm text-gray-400">Click to upload logo</p>
+                  <p className="text-sm text-text-muted">Click to upload logo</p>
                 </div>
               )}
               <input
@@ -305,7 +305,7 @@ export default function EditProgramPage() {
             {/* Location */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">City</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">City</label>
                 <Input
                   type="text"
                   placeholder="Los Angeles"
@@ -314,7 +314,7 @@ export default function EditProgramPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">State</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">State</label>
                 <Input
                   type="text"
                   placeholder="CA"
@@ -330,7 +330,7 @@ export default function EditProgramPage() {
               <Link href="/director/dashboard" className="flex-1">
                 <Button
                   variant="outline"
-                  className="w-full border-white/20 text-gray-300 hover:bg-white/10"
+                  className="w-full border-border-default text-text-secondary hover:bg-surface-overlay"
                 >
                   Cancel
                 </Button>

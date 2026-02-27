@@ -268,7 +268,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest"
+          className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors text-sm font-bold uppercase tracking-widest"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
@@ -282,7 +282,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               </Button>
             </Link>
           )}
-          <label className="flex items-center gap-2 text-sm text-gray-400">
+          <label className="flex items-center gap-2 text-sm text-text-muted">
             <input
               type="checkbox"
               name="isNcaaCertified"
@@ -298,7 +298,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               name="isPublished"
               checked={formData.isPublished}
               onChange={handleChange}
-              className="w-4 h-4 rounded-sm border-white/10 bg-[#0A1D37] text-eha-red focus:ring-eha-red"
+              className="w-4 h-4 rounded-sm border-border-default bg-page-bg text-eha-red focus:ring-eha-red"
             />
             Published
           </label>
@@ -318,7 +318,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Main Info */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="rounded-sm border border-white/5">
+          <Card className="rounded-sm border border-border-subtle">
             <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Event Details</h2>
             <div className="space-y-4">
               <Input
@@ -353,7 +353,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">
                   Description
                 </label>
                 <textarea
@@ -361,14 +361,14 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   value={formData.description}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-4 py-2.5 bg-[#0A1D37] border border-white/10 rounded-sm text-white placeholder-gray-500 transition-colors duration-200 resize-none focus:outline-none focus:ring-2 focus:ring-eha-red"
+                  className="w-full px-4 py-2.5 bg-page-bg border border-border-default rounded-sm text-text-primary placeholder-text-muted transition-colors duration-200 resize-none focus:outline-none focus:ring-2 focus:ring-eha-red"
                   placeholder="Describe the event..."
                 />
               </div>
             </div>
           </Card>
 
-          <Card className="rounded-sm border border-white/5">
+          <Card className="rounded-sm border border-border-subtle">
             <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Dates</h2>
             <div className="grid sm:grid-cols-3 gap-4">
               <Input
@@ -396,12 +396,12 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                 error={errors.registrationDeadline}
               />
             </div>
-            <p className="mt-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <p className="mt-2 text-[10px] font-bold text-text-muted uppercase tracking-widest">
               Registration will close automatically after the deadline
             </p>
           </Card>
 
-          <Card className="rounded-sm border border-white/5">
+          <Card className="rounded-sm border border-border-subtle">
             <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Location</h2>
             <div className="space-y-4">
               <Select
@@ -416,8 +416,8 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                 disabled={isLoadingVenues}
               />
               {formData.venueId && (
-                <div className="text-sm text-gray-400 bg-[#152e50]/50 border border-white/5 rounded-sm p-3">
-                  <p className="font-bold text-white uppercase tracking-wide">{formData.venue}</p>
+                <div className="text-sm text-text-muted bg-surface-raised/50 border border-border-subtle rounded-sm p-3">
+                  <p className="font-bold text-text-primary uppercase tracking-wide">{formData.venue}</p>
                   {formData.address && <p className="mt-1">{formData.address}</p>}
                   {(formData.city || formData.state) && (
                     <p>
@@ -434,7 +434,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <Card className="rounded-sm border border-white/5">
+          <Card className="rounded-sm border border-border-subtle">
             <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Divisions</h2>
             <div className="flex flex-wrap gap-2">
               {divisionOptions.map((division) => (
@@ -444,7 +444,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                   onClick={() => handleToggleDivision(division)}
                   className={`px-3 py-1.5 rounded-sm text-sm font-bold uppercase tracking-wide transition-colors ${formData.divisions.includes(division)
                       ? 'bg-eha-red text-white'
-                      : 'bg-[#152e50]/50 border border-white/5 text-gray-400 hover:text-white hover:bg-white/5'
+                      : 'bg-surface-raised/50 border border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-glass'
                     }`}
                 >
                   {division}
@@ -470,7 +470,7 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                 type="text"
                 placeholder="Custom division name..."
                 id="customDivisionInput"
-                className="flex-1 px-3 py-1.5 bg-[#0A1D37] border border-white/10 rounded-sm text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
+                className="flex-1 px-3 py-1.5 bg-page-bg border border-border-default rounded-sm text-text-primary placeholder-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-eha-red"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()
@@ -493,20 +493,20 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
                     input.value = ''
                   }
                 }}
-                className="px-3 py-1.5 rounded-sm text-sm font-bold uppercase tracking-wide bg-[#152e50]/50 border border-white/5 text-gray-400 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1"
+                className="px-3 py-1.5 rounded-sm text-sm font-bold uppercase tracking-wide bg-surface-raised/50 border border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-glass transition-colors flex items-center gap-1"
               >
                 <Plus className="w-3 h-3" />
                 Add
               </button>
             </div>
             {formData.divisions.length > 0 && (
-              <p className="mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+              <p className="mt-3 text-[10px] font-bold text-text-muted uppercase tracking-widest">
                 Selected: {formData.divisions.join(', ')}
               </p>
             )}
           </Card>
 
-          <Card className="rounded-sm border border-white/5">
+          <Card className="rounded-sm border border-border-subtle">
             <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">Banner Image</h2>
             <ImageUpload
               value={formData.bannerImage}

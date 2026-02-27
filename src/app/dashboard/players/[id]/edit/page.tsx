@@ -558,7 +558,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-6">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
@@ -566,7 +566,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       </div>
 
       {/* Hero Section — matches public profile */}
-      <div className="relative bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5 py-12 lg:py-16">
+      <div className="relative bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle py-12 lg:py-16">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Player Photo — clickable for upload */}
@@ -574,7 +574,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
               <button
                 type="button"
                 onClick={() => photoInputRef.current?.click()}
-                className="relative w-48 h-60 lg:w-56 lg:h-64 rounded-sm overflow-hidden bg-[#1a3a6e] border-4 border-white/10 mx-auto lg:mx-0 group cursor-pointer shadow-2xl"
+                className="relative w-48 h-60 lg:w-56 lg:h-64 rounded-sm overflow-hidden bg-surface-raised border-4 border-border-default mx-auto lg:mx-0 group cursor-pointer shadow-2xl"
                 disabled={isUploadingPhoto}
               >
                 {player.profilePhoto ? (
@@ -627,18 +627,18 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   </span>
                 )}
                 {player.primaryPosition && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest bg-white/10 text-white/60 border border-white/20">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest bg-surface-overlay text-white/60 border border-border-default">
                     {formatPosition(player.primaryPosition)}
                   </span>
                 )}
                 {player.jerseyNumber && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest bg-white/10 text-gray-300 border border-white/20">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-widest bg-surface-overlay text-text-secondary border border-border-default">
                     #{player.jerseyNumber}
                   </span>
                 )}
               </div>
 
-              <h1 className="text-5xl lg:text-7xl tracking-tighter font-bold text-white uppercase">
+              <h1 className="text-5xl lg:text-7xl tracking-tighter font-bold text-text-primary uppercase">
                 {player.firstName} <span className="text-white/90">{player.lastName}</span>
               </h1>
 
@@ -680,7 +680,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     href={`https://twitter.com/${player.twitterHandle}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 bg-white/10 rounded-sm text-gray-400 hover:text-white hover:bg-[#1DA1F2]/20 transition-colors"
+                    className="p-2 bg-surface-overlay rounded-sm text-text-muted hover:text-text-primary hover:bg-[#1DA1F2]/20 transition-colors"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
@@ -692,7 +692,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     href={`https://instagram.com/${player.instagramHandle}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 bg-white/10 rounded-sm text-gray-400 hover:text-white hover:bg-[#E4405F]/20 transition-colors"
+                    className="p-2 bg-surface-overlay rounded-sm text-text-muted hover:text-text-primary hover:bg-[#E4405F]/20 transition-colors"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd" />
@@ -704,7 +704,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     href={player.hudlUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 bg-white/10 rounded-sm text-gray-400 hover:text-white hover:bg-eha-red/20 transition-colors"
+                    className="p-2 bg-surface-overlay rounded-sm text-text-muted hover:text-text-primary hover:bg-eha-red/20 transition-colors"
                   >
                     <ExternalLink className="w-5 h-5" />
                   </a>
@@ -733,8 +733,8 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           <div className="grid lg:grid-cols-2 gap-6">
             {/* About Me */}
             <Card className="lg:col-span-2 rounded-sm p-0">
-              <div className="p-4 border-b border-white/5">
-                <h2 className="text-2xl text-white uppercase tracking-tight font-bold">About Me</h2>
+              <div className="p-4 border-b border-border-subtle">
+                <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold">About Me</h2>
               </div>
               <div className="p-4">
                 <textarea
@@ -742,19 +742,19 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Write a short bio about the player..."
                   rows={4}
-                  className="w-full bg-[#0a1628] border border-white/5 rounded-sm px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 resize-none"
+                  className="w-full bg-page-bg-alt border border-border-subtle rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 resize-none"
                 />
               </div>
             </Card>
 
             {/* Socials & Contact */}
             <Card className="rounded-sm p-0">
-              <div className="p-4 border-b border-white/5">
-                <h2 className="text-2xl text-white uppercase tracking-tight font-bold">Socials & Contact</h2>
+              <div className="p-4 border-b border-border-subtle">
+                <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold">Socials & Contact</h2>
               </div>
               <div className="p-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
                     Contact Email
                   </label>
                   <Input
@@ -765,7 +765,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-text-secondary mb-2">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
                     </svg>
@@ -779,7 +779,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-text-secondary mb-2">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
                     </svg>
@@ -797,12 +797,12 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
             {/* Recruiting Links */}
             <Card className="rounded-sm p-0">
-              <div className="p-4 border-b border-white/5">
-                <h2 className="text-2xl text-white uppercase tracking-tight font-bold">Recruiting Links</h2>
+              <div className="p-4 border-b border-border-subtle">
+                <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold">Recruiting Links</h2>
               </div>
               <div className="p-4 space-y-4">
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-text-secondary mb-2">
                     <Image src="/images/logos/hudl.png" alt="Hudl" width={20} height={20} className="w-5 h-5 object-contain" />
                     Hudl Profile
                   </label>
@@ -814,7 +814,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-text-secondary mb-2">
                     <Image src="/images/logos/maxpreps.png" alt="MaxPreps" width={20} height={20} className="w-5 h-5 object-contain" />
                     MaxPreps Profile
                   </label>
@@ -826,7 +826,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-text-secondary mb-2">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                     </svg>
@@ -840,7 +840,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   />
                 </div>
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-text-secondary mb-2">
                     <LinkIcon className="w-4 h-4" />
                     Highlight Link
                   </label>
@@ -850,7 +850,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     value={highlightUrl}
                     onChange={(e) => setHighlightUrl(e.target.value)}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-text-muted mt-1">
                     Link to any additional highlight reel or recruiting page
                   </p>
                 </div>
@@ -859,8 +859,8 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
             {/* Academic Information */}
             <Card className="lg:col-span-2 rounded-sm p-0">
-              <div className="p-4 border-b border-white/5">
-                <h2 className="text-2xl text-white uppercase tracking-tight font-bold flex items-center gap-2">
+              <div className="p-4 border-b border-border-subtle">
+                <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold flex items-center gap-2">
                   <GraduationCap className="w-5 h-5 text-eha-red" />
                   Academic Information
                 </h2>
@@ -868,7 +868,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
               <div className="p-4 grid md:grid-cols-2 gap-6">
                 {/* GPA Input */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
                     GPA (Grade Point Average)
                   </label>
                   <Input
@@ -880,21 +880,21 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     value={gpa}
                     onChange={(e) => setGpa(e.target.value)}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-text-muted mt-1">
                     Enter GPA on a 4.0 scale
                   </p>
                 </div>
 
                 {/* Transcript Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
                     Transcript (PDF)
                   </label>
                   {transcriptUrl ? (
-                    <div className="flex items-center gap-3 p-3 bg-[#152e50]/50 border border-white/5 rounded-sm">
+                    <div className="flex items-center gap-3 p-3 bg-surface-raised/50 border border-border-subtle rounded-sm">
                       <FileText className="w-8 h-8 text-eha-red flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">Transcript Uploaded</p>
+                        <p className="text-sm font-medium text-text-primary truncate">Transcript Uploaded</p>
                         <a
                           href={transcriptUrl}
                           target="_blank"
@@ -917,21 +917,21 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                       onClick={() => transcriptInputRef.current?.click()}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={handleTranscriptDrop}
-                      className={`relative border-2 border-dashed rounded-sm cursor-pointer transition-colors border-white/10 hover:border-eha-red/50 ${isUploadingTranscript ? 'pointer-events-none opacity-50' : ''}`}
+                      className={`relative border-2 border-dashed rounded-sm cursor-pointer transition-colors border-border-default hover:border-eha-red/50 ${isUploadingTranscript ? 'pointer-events-none opacity-50' : ''}`}
                     >
                       <div className="flex flex-col items-center justify-center p-6">
                         {isUploadingTranscript ? (
                           <>
                             <Loader2 className="w-8 h-8 text-eha-red animate-spin mb-2" />
-                            <p className="text-sm text-gray-400">Uploading...</p>
+                            <p className="text-sm text-text-muted">Uploading...</p>
                           </>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8 text-gray-500 mb-2" />
-                            <p className="text-sm text-gray-400 text-center">
+                            <Upload className="w-8 h-8 text-text-muted mb-2" />
+                            <p className="text-sm text-text-muted text-center">
                               Click or drag to upload transcript
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">PDF or PNG, max 10MB</p>
+                            <p className="text-xs text-text-muted mt-1">PDF or PNG, max 10MB</p>
                           </>
                         )}
                       </div>
@@ -953,8 +953,8 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
         {/* Film Room */}
         <Card className="mt-6 rounded-sm p-0">
-          <div className="p-4 border-b border-white/5 flex items-center justify-between">
-            <h2 className="text-2xl text-white uppercase tracking-tight font-bold flex items-center gap-2">
+          <div className="p-4 border-b border-border-subtle flex items-center justify-between">
+            <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold flex items-center gap-2">
               <Video className="w-5 h-5 text-eha-red" />
               Film Room
             </h2>
@@ -972,9 +972,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           <div className="p-4">
             {/* Add Video Form */}
             {showAddVideo && (
-              <div className="mb-6 p-4 bg-[#0a1628] border border-white/5 rounded-sm space-y-3">
+              <div className="mb-6 p-4 bg-page-bg-alt border border-border-subtle rounded-sm space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
                     Video URL
                   </label>
                   <Input
@@ -983,12 +983,12 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                     value={videoUrl}
                     onChange={(e) => setVideoUrl(e.target.value)}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-text-muted mt-1">
                     Paste a YouTube or Hudl video link
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
                     Title (optional)
                   </label>
                   <Input
@@ -1027,9 +1027,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             {/* Video Grid */}
             {videos.length === 0 ? (
               <div className="text-center py-8">
-                <Video className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-400">No videos yet</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <Video className="w-12 h-12 text-text-muted mx-auto mb-3" />
+                <p className="text-text-muted">No videos yet</p>
+                <p className="text-sm text-text-muted mt-1">
                   Add YouTube or Hudl highlight videos
                 </p>
               </div>
@@ -1040,7 +1040,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   const thumbUrl = item.thumbnail || (ytId ? getYouTubeThumbnail(ytId) : null)
 
                   return (
-                    <div key={item.id} className="relative group rounded-sm overflow-hidden bg-white/5 aspect-video border border-white/5">
+                    <div key={item.id} className="relative group rounded-sm overflow-hidden bg-surface-glass aspect-video border border-border-subtle">
                       {thumbUrl ? (
                         <Image
                           src={thumbUrl}
@@ -1049,8 +1049,8 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                           className="object-cover"
                         />
                       ) : (
-                        <div className="absolute inset-0 flex items-center justify-center bg-[#0a1628]">
-                          <Video className="w-10 h-10 text-gray-600" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-page-bg-alt">
+                          <Video className="w-10 h-10 text-text-muted" />
                         </div>
                       )}
                       {/* Play overlay */}
@@ -1083,8 +1083,8 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
         {/* Media Gallery — outside the form */}
         <Card className="mt-6 rounded-sm p-0">
-          <div className="p-4 border-b border-white/5 flex items-center justify-between">
-            <h2 className="text-2xl text-white uppercase tracking-tight font-bold">Photo Gallery</h2>
+          <div className="p-4 border-b border-border-subtle flex items-center justify-between">
+            <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold">Photo Gallery</h2>
             <Button
               type="button"
               variant="outline"
@@ -1111,16 +1111,16 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           <div className="p-4">
             {photos.length === 0 ? (
               <div className="text-center py-8">
-                <Camera className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-400">No photos yet</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <Camera className="w-12 h-12 text-text-muted mx-auto mb-3" />
+                <p className="text-text-muted">No photos yet</p>
+                <p className="text-sm text-text-muted mt-1">
                   Upload action shots, game photos, and more
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {photos.map((item) => (
-                  <div key={item.id} className="relative group rounded-sm overflow-hidden bg-white/5 aspect-square border border-white/5">
+                  <div key={item.id} className="relative group rounded-sm overflow-hidden bg-surface-glass aspect-square border border-border-subtle">
                     <Image
                       src={item.url}
                       alt={item.title || 'Player photo'}
@@ -1143,7 +1143,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       </div>
 
       {/* Sticky Save Bar */}
-      <div className="sticky bottom-0 z-50 bg-[#0A1D37] border-t border-white/10 p-4 flex justify-end gap-4">
+      <div className="sticky bottom-0 z-50 bg-page-bg border-t border-border-default p-4 flex justify-end gap-4">
         <Button
           type="button"
           variant="ghost"
@@ -1168,11 +1168,11 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       {/* Save Success Overlay */}
       {showSaveSuccess && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
-          <div className="bg-[#0A1D37]/95 backdrop-blur-xl border border-green-500/30 rounded-sm p-8 flex flex-col items-center gap-3 shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div className="bg-page-bg/95 backdrop-blur-xl border border-green-500/30 rounded-sm p-8 flex flex-col items-center gap-3 shadow-2xl animate-in fade-in zoom-in duration-200">
             <div className="w-14 h-14 bg-green-500/20 rounded-full flex items-center justify-center">
               <Check className="w-8 h-8 text-green-400" />
             </div>
-            <p className="text-white font-bold text-lg uppercase tracking-wider">Saved Successfully</p>
+            <p className="text-text-primary font-bold text-lg uppercase tracking-wider">Saved Successfully</p>
           </div>
         </div>
       )}
@@ -1180,10 +1180,10 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       {/* Crop Modal */}
       {cropImageSrc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-          <div className="bg-[#0a1628] border border-white/5 rounded-sm w-full max-w-lg overflow-hidden">
-            <div className="p-4 border-b border-white/5">
-              <h3 className="text-lg font-bold text-white uppercase tracking-tight">Frame Your Photo</h3>
-              <p className="text-sm text-gray-400 mt-1">Drag to reposition, scroll or use controls to zoom</p>
+          <div className="bg-page-bg-alt border border-border-subtle rounded-sm w-full max-w-lg overflow-hidden">
+            <div className="p-4 border-b border-border-subtle">
+              <h3 className="text-lg font-bold text-text-primary uppercase tracking-tight">Frame Your Photo</h3>
+              <p className="text-sm text-text-muted mt-1">Drag to reposition, scroll or use controls to zoom</p>
             </div>
 
             <div className="relative w-full" style={{ height: '400px' }}>
@@ -1203,10 +1203,10 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             </div>
 
             {/* Controls */}
-            <div className="p-4 space-y-3 border-t border-white/5">
+            <div className="p-4 space-y-3 border-t border-border-subtle">
               {/* Zoom */}
               <div className="flex items-center gap-3">
-                <ZoomOut className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <ZoomOut className="w-4 h-4 text-text-muted flex-shrink-0" />
                 <input
                   type="range"
                   min={1}
@@ -1216,12 +1216,12 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   onChange={(e) => setZoom(Number(e.target.value))}
                   className="flex-1 accent-red-500"
                 />
-                <ZoomIn className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <ZoomIn className="w-4 h-4 text-text-muted flex-shrink-0" />
               </div>
 
               {/* Rotate */}
               <div className="flex items-center gap-3">
-                <RotateCw className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <RotateCw className="w-4 h-4 text-text-muted flex-shrink-0" />
                 <input
                   type="range"
                   min={0}
@@ -1231,12 +1231,12 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                   onChange={(e) => setRotation(Number(e.target.value))}
                   className="flex-1 accent-red-500"
                 />
-                <span className="text-xs text-gray-400 w-8 text-right">{rotation}°</span>
+                <span className="text-xs text-text-muted w-8 text-right">{rotation}°</span>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="p-4 border-t border-white/5 flex gap-3">
+            <div className="p-4 border-t border-border-subtle flex gap-3">
               <Button
                 type="button"
                 variant="ghost"

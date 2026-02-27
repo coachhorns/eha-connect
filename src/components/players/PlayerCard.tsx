@@ -60,7 +60,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-24 h-24 rounded-full bg-[#1a3a6e] flex items-center justify-center text-3xl font-bold text-gray-500">
+              <div className="w-24 h-24 rounded-full bg-surface-raised flex items-center justify-center text-3xl font-bold text-text-muted">
                 {player.firstName[0]}{player.lastName[0]}
               </div>
             </div>
@@ -76,7 +76,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
           {/* Position Badge */}
           {player.primaryPosition && (
             <div className="absolute top-3 left-3">
-              <Badge variant="default" size="sm" className="bg-[#153361]/90 text-white border-white/20">
+              <Badge variant="default" size="sm" className="bg-eha-navy/90 text-white border-border-default">
                 {player.primaryPosition}
               </Badge>
             </div>
@@ -85,7 +85,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
 
         {/* Player Info */}
         <div className="p-4">
-          <h3 className="text-lg font-bold text-white group-hover:text-eha-red transition-colors flex items-center gap-1.5">
+          <h3 className="text-lg font-bold text-text-primary group-hover:text-eha-red transition-colors flex items-center gap-1.5">
             {player.firstName} {player.lastName}
             {isVerified && <VerifiedBadge size="sm" />}
           </h3>
@@ -93,8 +93,8 @@ export function PlayerCard({ player }: PlayerCardProps) {
           {/* Team & Age Group - Prominent Display */}
           <div className="mt-2 flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-1.5 text-sm">
-              <Users className="w-3.5 h-3.5 text-white" />
-              <span className={teamName ? 'text-white font-medium' : 'text-gray-500 italic'}>
+              <Users className="w-3.5 h-3.5 text-text-muted" />
+              <span className={teamName ? 'text-text-primary font-medium' : 'text-text-muted italic'}>
                 {teamName || 'Unassigned'}
               </span>
             </div>
@@ -103,7 +103,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
             )}
           </div>
 
-          <div className="mt-2 space-y-1.5 text-sm text-gray-400">
+          <div className="mt-2 space-y-1.5 text-sm text-text-muted">
             {player.heightFeet && (
               <p>
                 {formatHeight(player.heightFeet, player.heightInches)} | {formatPosition(player.primaryPosition)}
@@ -136,22 +136,22 @@ export function PlayerCard({ player }: PlayerCardProps) {
             <div className="mt-4 pt-4 border-t border-[#1a3a6e]">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
-                  <p className="text-lg font-bold text-white">
+                  <p className="text-lg font-bold text-text-primary">
                     {player.careerStats.ppg.toFixed(1)}
                   </p>
-                  <p className="text-xs text-gray-500">PPG</p>
+                  <p className="text-xs text-text-muted">PPG</p>
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-white">
+                  <p className="text-lg font-bold text-text-primary">
                     {player.careerStats.rpg.toFixed(1)}
                   </p>
-                  <p className="text-xs text-gray-500">RPG</p>
+                  <p className="text-xs text-text-muted">RPG</p>
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-white">
+                  <p className="text-lg font-bold text-text-primary">
                     {player.careerStats.apg.toFixed(1)}
                   </p>
-                  <p className="text-xs text-gray-500">APG</p>
+                  <p className="text-xs text-text-muted">APG</p>
                 </div>
               </div>
             </div>
@@ -170,7 +170,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
                 </div>
               ))}
               {player.achievements.length > 3 && (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-text-muted">
                   +{player.achievements.length - 3}
                 </span>
               )}

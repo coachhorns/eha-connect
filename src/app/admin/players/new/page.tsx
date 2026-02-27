@@ -151,13 +151,13 @@ function NewPlayerForm() {
       <div className="mb-8">
         <Link
           href={preselectedTeamId ? `/admin/teams/${preselectedTeamId}` : '/admin/players'}
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           {preselectedTeamId ? 'Back to Team' : 'Back to Players'}
         </Link>
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Add New Player</h1>
-        <p className="mt-2 text-gray-400">
+        <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">Add New Player</h1>
+        <p className="mt-2 text-text-muted">
           Create a new player profile{preselectedTeamId && teams.find(t => t.id === preselectedTeamId) ? ` for ${teams.find(t => t.id === preselectedTeamId)?.name}` : ''}
         </p>
       </div>
@@ -173,7 +173,7 @@ function NewPlayerForm() {
           {/* Name Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 First Name *
               </label>
               <Input
@@ -185,7 +185,7 @@ function NewPlayerForm() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Last Name *
               </label>
               <Input
@@ -200,7 +200,7 @@ function NewPlayerForm() {
 
           {/* Team Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               <User className="w-4 h-4 inline mr-2" />
               Team
             </label>
@@ -209,7 +209,7 @@ function NewPlayerForm() {
               value={formData.teamId}
               onChange={(e) => handleChange('teamId', e.target.value)}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-text-muted">
               Optionally add this player to a team roster
             </p>
           </div>
@@ -217,7 +217,7 @@ function NewPlayerForm() {
           {/* Jersey Number & Position */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Jersey Number
               </label>
               <Input
@@ -229,7 +229,7 @@ function NewPlayerForm() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Position
               </label>
               <Select

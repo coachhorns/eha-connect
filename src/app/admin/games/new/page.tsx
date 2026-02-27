@@ -201,13 +201,13 @@ export default function NewGamePage() {
       <div className="mb-8">
         <Link
           href="/admin/games"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Games
         </Link>
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">Schedule Game</h1>
-        <p className="mt-2 text-gray-400">
+        <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">Schedule Game</h1>
+        <p className="mt-2 text-text-muted">
           Create a new game between two teams
         </p>
       </div>
@@ -222,7 +222,7 @@ export default function NewGamePage() {
 
           {/* Event Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               <Calendar className="w-4 h-4 inline mr-2" />
               Event
             </label>
@@ -231,7 +231,7 @@ export default function NewGamePage() {
               value={formData.eventId}
               onChange={(e) => handleChange('eventId', e.target.value)}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-text-muted">
               Selecting an event will filter teams to those registered for that event
             </p>
           </div>
@@ -245,12 +245,12 @@ export default function NewGamePage() {
                   type="checkbox"
                   checked={showAllTeams}
                   onChange={(e) => setShowAllTeams(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-600 bg-[#1a3a6e] text-eha-red focus:ring-eha-red focus:ring-offset-0"
+                  className="w-4 h-4 rounded border-border-default bg-surface-raised text-eha-red focus:ring-eha-red focus:ring-offset-0"
                 />
-                <span className="text-sm text-gray-300">
+                <span className="text-sm text-text-secondary">
                   Show All Teams
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-text-muted">
                   (ignore event filter)
                 </span>
               </label>
@@ -258,7 +258,7 @@ export default function NewGamePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   <Users className="w-4 h-4 inline mr-2" />
                   Home Team *
                 </label>
@@ -269,7 +269,7 @@ export default function NewGamePage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   <Users className="w-4 h-4 inline mr-2" />
                   Away Team *
                 </label>
@@ -284,7 +284,7 @@ export default function NewGamePage() {
 
           {/* Date & Time */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               <Calendar className="w-4 h-4 inline mr-2" />
               Date & Time *
             </label>
@@ -297,7 +297,7 @@ export default function NewGamePage() {
 
           {/* Location */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               <MapPin className="w-4 h-4 inline mr-2" />
               Court / Location
             </label>
@@ -311,7 +311,7 @@ export default function NewGamePage() {
 
           {/* Game Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Game Type
             </label>
             <Select

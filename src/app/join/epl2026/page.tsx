@@ -199,13 +199,13 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
       />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-md sm:mx-4 bg-[#0A1D37] border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl animate-[slideUp_0.3s_ease-out] max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full sm:max-w-md sm:mx-4 bg-page-bg border border-border-default rounded-t-2xl sm:rounded-2xl shadow-2xl animate-[slideUp_0.3s_ease-out] max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors z-10"
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-surface-glass hover:bg-surface-overlay transition-colors z-10"
         >
-          <X className="w-4 h-4 text-gray-400" />
+          <X className="w-4 h-4 text-text-muted" />
         </button>
 
         <div className="p-6 sm:p-8">
@@ -218,10 +218,10 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
               height={60}
               className="w-auto h-16 mx-auto mb-4 object-contain"
             />
-            <h2 className="text-2xl font-heading font-bold text-white">
+            <h2 className="text-2xl font-heading font-bold text-text-primary">
               {mode === 'signup' ? 'Create Your Account' : 'Welcome Back'}
             </h2>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-text-muted text-sm mt-1">
               {mode === 'signup' ? 'Set up your director account' : 'Sign in to continue'}
             </p>
           </div>
@@ -252,10 +252,10 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10" />
+              <div className="w-full border-t border-border-default" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-4 bg-[#0A1D37] text-gray-500 uppercase tracking-widest">
+              <span className="px-4 bg-page-bg text-text-muted uppercase tracking-widest">
                 or
               </span>
             </div>
@@ -265,7 +265,7 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           <form onSubmit={mode === 'signup' ? handleSignUp : handleSignIn} className="space-y-4">
             {mode === 'signup' && (
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                 <input
                   type="text"
                   name="name"
@@ -273,13 +273,13 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
+                  className="w-full pl-10 pr-4 py-3 bg-surface-glass border border-border-default rounded-lg text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
                 />
               </div>
             )}
 
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
                 type="email"
                 name="email"
@@ -287,12 +287,12 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
+                className="w-full pl-10 pr-4 py-3 bg-surface-glass border border-border-default rounded-lg text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
               />
             </div>
 
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
                 type="password"
                 name="password"
@@ -300,13 +300,13 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
+                className="w-full pl-10 pr-4 py-3 bg-surface-glass border border-border-default rounded-lg text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
               />
             </div>
 
             {mode === 'signup' && (
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                 <input
                   type="password"
                   name="confirmPassword"
@@ -314,7 +314,7 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
+                  className="w-full pl-10 pr-4 py-3 bg-surface-glass border border-border-default rounded-lg text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-[#E31837]/50 focus:ring-1 focus:ring-[#E31837]/25 transition-colors"
                 />
               </div>
             )}
@@ -336,13 +336,13 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           </form>
 
           {/* Toggle Mode */}
-          <p className="text-center text-gray-400 text-sm mt-6">
+          <p className="text-center text-text-muted text-sm mt-6">
             {mode === 'signup' ? (
               <>
                 Already have an account?{' '}
                 <button
                   onClick={() => { setMode('signin'); resetForm() }}
-                  className="text-white hover:text-[#E31837] transition-colors font-semibold"
+                  className="text-text-primary hover:text-[#E31837] transition-colors font-semibold"
                 >
                   Sign in
                 </button>
@@ -352,7 +352,7 @@ function SignUpModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                 Don&apos;t have an account?{' '}
                 <button
                   onClick={() => { setMode('signup'); resetForm() }}
-                  className="text-white hover:text-[#E31837] transition-colors font-semibold"
+                  className="text-text-primary hover:text-[#E31837] transition-colors font-semibold"
                 >
                   Create one
                 </button>
@@ -380,7 +380,7 @@ export default function DirectorInvitePage() {
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-[#0A1D37]">
+    <div className="min-h-screen bg-page-bg">
       {/* ========== HERO ========== */}
       <section className="relative overflow-hidden pt-16 pb-12 sm:pt-24 sm:pb-16">
         {/* Background Pattern */}
@@ -411,7 +411,7 @@ export default function DirectorInvitePage() {
             {/* Connector */}
             <div className="flex flex-col items-center gap-1.5">
               <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
-              <span className="text-xs font-bold text-white/40 uppercase tracking-[0.2em]">x</span>
+              <span className="text-xs font-bold text-text-muted uppercase tracking-[0.2em]">x</span>
               <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
             </div>
 
@@ -426,22 +426,22 @@ export default function DirectorInvitePage() {
           </div>
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2.5 bg-white/5 border border-white/10 px-4 py-2 rounded-full mb-8">
-            <Shield className="w-4 h-4 text-white/60" />
-            <span className="text-xs font-bold text-white/60 uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2.5 bg-surface-glass border border-border-default px-4 py-2 rounded-full mb-8">
+            <Shield className="w-4 h-4 text-text-muted" />
+            <span className="text-xs font-bold text-text-muted uppercase tracking-widest">
               Exclusive Director Invite
             </span>
           </div>
 
           {/* Headline */}
-          <h1 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight mb-6">
+          <h1 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-text-primary leading-tight tracking-tight mb-6">
             RUN YOUR PROGRAM{' '}
             <br className="hidden sm:block" />
             ON <span className="text-[#E31837]">EHA CONNECT</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed mb-10">
+          <p className="text-lg sm:text-xl text-text-muted max-w-2xl mx-auto leading-relaxed mb-10">
             The official platform for the Elite Hoops Association.
             Manage your rosters, register for events, and give every player in your program
             a player profile with live stats and college recruiting tools.
@@ -456,7 +456,7 @@ export default function DirectorInvitePage() {
             <ArrowRight className="w-4 h-4" />
           </button>
 
-          <p className="text-xs text-gray-500 mt-4">
+          <p className="text-xs text-text-muted mt-4">
             Free to set up. Takes less than 5 minutes.
           </p>
         </div>
@@ -470,10 +470,10 @@ export default function DirectorInvitePage() {
             <span className="text-[#E31837] font-bold text-xs uppercase tracking-widest">
               Built for Directors
             </span>
-            <h2 className="font-heading font-black text-3xl sm:text-4xl text-white mt-3 mb-4">
+            <h2 className="font-heading font-black text-3xl sm:text-4xl text-text-primary mt-3 mb-4">
               EVERYTHING YOUR PROGRAM NEEDS
             </h2>
-            <p className="text-gray-400 max-w-xl mx-auto">
+            <p className="text-text-muted max-w-xl mx-auto">
               One platform to manage your teams, showcase your players, and connect with The EHA Circuit.
             </p>
           </div>
@@ -483,15 +483,15 @@ export default function DirectorInvitePage() {
             {benefits.map((benefit) => (
               <div
                 key={benefit.title}
-                className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/[0.07] hover:border-white/15 transition-all group"
+                className="bg-surface-glass border border-border-default rounded-2xl p-8 hover:bg-surface-overlay hover:border-white/15 transition-all group"
               >
-                <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-white/10 transition-colors">
-                  <benefit.icon className="w-6 h-6 text-white/60" />
+                <div className="w-12 h-12 bg-surface-glass border border-border-default rounded-xl flex items-center justify-center mb-5 group-hover:bg-surface-overlay transition-colors">
+                  <benefit.icon className="w-6 h-6 text-text-muted" />
                 </div>
-                <h3 className="font-heading font-bold text-xl text-white mb-2">
+                <h3 className="font-heading font-bold text-xl text-text-primary mb-2">
                   {benefit.title}
                 </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-text-muted text-sm leading-relaxed">
                   {benefit.description}
                 </p>
               </div>
@@ -501,14 +501,14 @@ export default function DirectorInvitePage() {
       </section>
 
       {/* ========== HOW IT WORKS ========== */}
-      <section className="relative py-12 sm:py-16 border-t border-white/5">
+      <section className="relative py-12 sm:py-16 border-t border-border-subtle">
         <div className="max-w-4xl mx-auto px-6">
           {/* Section Header */}
           <div className="text-center mb-16">
             <span className="text-[#E31837] font-bold text-xs uppercase tracking-widest">
               Get Started in Minutes
             </span>
-            <h2 className="font-heading font-black text-3xl sm:text-4xl text-white mt-3">
+            <h2 className="font-heading font-black text-3xl sm:text-4xl text-text-primary mt-3">
               HOW IT WORKS
             </h2>
           </div>
@@ -520,16 +520,16 @@ export default function DirectorInvitePage() {
                 key={step.number}
                 className="flex items-start gap-6"
               >
-                <div className="flex-shrink-0 w-14 h-14 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
-                  <span className="font-heading font-bold text-white text-lg">
+                <div className="flex-shrink-0 w-14 h-14 bg-surface-glass border border-border-default rounded-xl flex items-center justify-center">
+                  <span className="font-heading font-bold text-text-primary text-lg">
                     {step.number}
                   </span>
                 </div>
                 <div className="pt-1">
-                  <h3 className="font-heading font-bold text-lg text-white mb-1">
+                  <h3 className="font-heading font-bold text-lg text-text-primary mb-1">
                     {step.title}
                   </h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-text-muted text-sm">
                     {step.description}
                   </p>
                 </div>
@@ -540,34 +540,34 @@ export default function DirectorInvitePage() {
       </section>
 
       {/* ========== WHAT YOUR PLAYERS GET ========== */}
-      <section className="relative py-12 sm:py-16 border-t border-white/5">
+      <section className="relative py-12 sm:py-16 border-t border-border-subtle">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <span className="text-[#E31837] font-bold text-xs uppercase tracking-widest">
             For Your Players
           </span>
-          <h2 className="font-heading font-black text-3xl sm:text-4xl text-white mt-3 mb-12">
+          <h2 className="font-heading font-black text-3xl sm:text-4xl text-text-primary mt-3 mb-12">
             GIVE YOUR ATHLETES AN EDGE
           </h2>
 
           <div className="grid sm:grid-cols-3 gap-6">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <Trophy className="w-8 h-8 text-white/60 mx-auto mb-4" />
-              <h3 className="font-heading font-bold text-white mb-2">Verified Profiles</h3>
-              <p className="text-gray-400 text-sm">
+            <div className="bg-surface-glass border border-border-default rounded-xl p-6">
+              <Trophy className="w-8 h-8 text-text-muted mx-auto mb-4" />
+              <h3 className="font-heading font-bold text-text-primary mb-2">Verified Profiles</h3>
+              <p className="text-text-muted text-sm">
                 Official EHA player profiles with photos, bio, transcripts, and links to Hudl, YouTube, Instagram, and more — all in one place.
               </p>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <Zap className="w-8 h-8 text-white/60 mx-auto mb-4" />
-              <h3 className="font-heading font-bold text-white mb-2">Live Box Scores</h3>
-              <p className="text-gray-400 text-sm">
+            <div className="bg-surface-glass border border-border-default rounded-xl p-6">
+              <Zap className="w-8 h-8 text-text-muted mx-auto mb-4" />
+              <h3 className="font-heading font-bold text-text-primary mb-2">Live Box Scores</h3>
+              <p className="text-text-muted text-sm">
                 Real-time stats from every EHA game — points, rebounds, assists, and more. All stats feed directly into each player&apos;s profile.
               </p>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <GraduationCap className="w-8 h-8 text-white/60 mx-auto mb-4" />
-              <h3 className="font-heading font-bold text-white mb-2">Recruiting Reach</h3>
-              <p className="text-gray-400 text-sm">
+            <div className="bg-surface-glass border border-border-default rounded-xl p-6">
+              <GraduationCap className="w-8 h-8 text-text-muted mx-auto mb-4" />
+              <h3 className="font-heading font-bold text-text-primary mb-2">Recruiting Reach</h3>
+              <p className="text-text-muted text-sm">
                 Players can email 1,850+ college coaches directly with their profile attached. Coach replies go straight to the player&apos;s personal email for direct communication.
               </p>
             </div>
@@ -578,33 +578,33 @@ export default function DirectorInvitePage() {
       {/* ========== PRICING NOTE ========== */}
       <section className="relative pt-0 pb-8">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-            <h3 className="font-heading font-bold text-white text-sm uppercase tracking-widest mb-3">
+          <div className="bg-surface-glass border border-border-default rounded-xl p-6 text-center">
+            <h3 className="font-heading font-bold text-text-primary text-sm uppercase tracking-widest mb-3">
               Pricing Transparency
             </h3>
-            <p className="text-gray-400 text-sm leading-relaxed mb-3">
-              Creating your program, teams, and rosters is <span className="text-white font-semibold">completely free</span> for directors — no cost, ever.
+            <p className="text-text-muted text-sm leading-relaxed mb-3">
+              Creating your program, teams, and rosters is <span className="text-text-primary font-semibold">completely free</span> for directors — no cost, ever.
               When you build your rosters, you&apos;re automatically creating player profiles for every athlete in your program.
             </p>
-            <p className="text-gray-400 text-sm leading-relaxed mb-3">
-              <span className="text-white font-semibold">Stats are always tracked.</span> Whether a family subscribes or not, every player&apos;s box scores and career stats are recorded at EHA events and visible to college coaches during live periods.
+            <p className="text-text-muted text-sm leading-relaxed mb-3">
+              <span className="text-text-primary font-semibold">Stats are always tracked.</span> Whether a family subscribes or not, every player&apos;s box scores and career stats are recorded at EHA events and visible to college coaches during live periods.
             </p>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              A family subscription (<span className="text-white font-semibold">$10/month</span> or <span className="text-white font-semibold">$50 for the season</span>) unlocks the ability for players and parents to edit their profile, add personal links and media, view their own stats, and use the college recruiting email tool.
+            <p className="text-text-muted text-sm leading-relaxed">
+              A family subscription (<span className="text-text-primary font-semibold">$10/month</span> or <span className="text-text-primary font-semibold">$50 for the season</span>) unlocks the ability for players and parents to edit their profile, add personal links and media, view their own stats, and use the college recruiting email tool.
             </p>
           </div>
         </div>
       </section>
 
       {/* ========== FINAL CTA ========== */}
-      <section className="relative py-12 sm:py-16 border-t border-white/5">
+      <section className="relative py-12 sm:py-16 border-t border-border-subtle">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#E31837]/5 to-transparent" />
 
         <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
-          <h2 className="font-heading font-black text-3xl sm:text-4xl text-white mb-4">
+          <h2 className="font-heading font-black text-3xl sm:text-4xl text-text-primary mb-4">
             READY TO GET STARTED?
           </h2>
-          <p className="text-gray-400 text-lg mb-8">
+          <p className="text-text-muted text-lg mb-8">
             Set up your program, add your teams, and get your players on the platform.
             It&apos;s free and takes less than 5 minutes.
           </p>
@@ -617,11 +617,11 @@ export default function DirectorInvitePage() {
             <ArrowRight className="w-4 h-4" />
           </button>
 
-          <p className="text-xs text-gray-600 mt-6">
+          <p className="text-xs text-text-muted mt-6">
             Already have an account?{' '}
             <button
               onClick={() => setModalOpen(true)}
-              className="text-gray-400 hover:text-white transition-colors underline cursor-pointer"
+              className="text-text-muted hover:text-text-primary transition-colors underline cursor-pointer"
             >
               Sign in here
             </button>
@@ -630,7 +630,7 @@ export default function DirectorInvitePage() {
       </section>
 
       {/* ========== FOOTER ========== */}
-      <footer className="border-t border-white/5 py-8">
+      <footer className="border-t border-border-subtle py-8">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <Image
             src="/images/main.png"
@@ -639,7 +639,7 @@ export default function DirectorInvitePage() {
             height={100}
             className="w-auto h-10 mx-auto mb-4 object-contain opacity-40"
           />
-          <p className="text-xs text-gray-600">
+          <p className="text-xs text-text-muted">
             &copy; {new Date().getFullYear()} Elite Hoops Association. All rights reserved.
           </p>
         </div>

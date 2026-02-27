@@ -124,7 +124,7 @@ function DirectorNewTeamContent() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
@@ -135,7 +135,7 @@ function DirectorNewTeamContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -153,7 +153,7 @@ function DirectorNewTeamContent() {
         {/* Back Link */}
         <Link
           href="/director/dashboard"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
@@ -161,13 +161,13 @@ function DirectorNewTeamContent() {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-heading font-bold text-white tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-text-primary tracking-tight">
             New Team
           </h1>
           {program && (
             <div className="mt-3 flex items-center gap-2">
               <Building2 className="w-4 h-4 text-white" />
-              <span className="text-gray-400">Adding team to:</span>
+              <span className="text-text-muted">Adding team to:</span>
               <Badge variant="info">{program.name}</Badge>
             </div>
           )}
@@ -184,11 +184,11 @@ function DirectorNewTeamContent() {
         )}
 
         {/* Form Card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-6 md:p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Team Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Team Name *
               </label>
               <Input
@@ -202,28 +202,28 @@ function DirectorNewTeamContent() {
 
             {/* Division */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Division
               </label>
               <div className="relative">
                 <select
                   value={formData.division}
                   onChange={(e) => handleChange('division', e.target.value)}
-                  className="w-full appearance-none bg-white/5 border border-white/10 text-white px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
+                  className="w-full appearance-none bg-surface-glass border border-border-default text-text-primary px-4 py-2.5 pr-10 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
                 >
                   {divisionOptions.map((option) => (
-                    <option key={option.value} value={option.value} className="bg-[#0a1628]">
+                    <option key={option.value} value={option.value} className="bg-page-bg-alt">
                       {option.label}
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
               </div>
             </div>
 
             {/* Coach Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Coach Name
               </label>
               <Input
@@ -240,7 +240,7 @@ function DirectorNewTeamContent() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full border-white/20 text-gray-300 hover:bg-white/10"
+                  className="w-full border-border-default text-text-secondary hover:bg-surface-overlay"
                 >
                   Cancel
                 </Button>
@@ -262,7 +262,7 @@ function DirectorNewTeamContent() {
 
 function NewTeamLoading() {
   return (
-    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+    <div className="min-h-screen bg-page-bg flex items-center justify-center">
       <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
     </div>
   )

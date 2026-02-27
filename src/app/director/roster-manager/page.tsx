@@ -239,7 +239,7 @@ export default function RosterManagerPage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
@@ -251,7 +251,7 @@ export default function RosterManagerPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+      <div className="min-h-screen bg-page-bg relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -260,7 +260,7 @@ export default function RosterManagerPage() {
           }}
         />
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8 relative z-10">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+          <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-6">
             <p className="text-red-400">{error}</p>
           </div>
         </div>
@@ -274,7 +274,7 @@ export default function RosterManagerPage() {
 
   if (program.teams.length < 2) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+      <div className="min-h-screen bg-page-bg relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -285,19 +285,19 @@ export default function RosterManagerPage() {
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 pt-32 pb-8 relative z-10">
           <Link
             href="/director/dashboard"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
           </Link>
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
-            <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl p-12 text-center">
+            <div className="w-20 h-20 bg-surface-overlay rounded-2xl flex items-center justify-center mx-auto mb-6">
               <ArrowLeftRight className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-xl font-heading font-bold text-white mb-2">
+            <h3 className="text-xl font-heading font-bold text-text-primary mb-2">
               Need at Least 2 Teams
             </h3>
-            <p className="text-gray-400 mb-6 max-w-md mx-auto">
+            <p className="text-text-muted mb-6 max-w-md mx-auto">
               Roster Manager lets you move players between teams. Create another team to get started.
             </p>
             <Link href={`/director/teams/new?programId=${program.id}`}>
@@ -315,7 +315,7 @@ export default function RosterManagerPage() {
   const targetTeam = program.teams.find((t) => t.id === targetTeamId)
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -333,7 +333,7 @@ export default function RosterManagerPage() {
         {/* Back Link */}
         <Link
           href="/director/dashboard"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
@@ -341,11 +341,11 @@ export default function RosterManagerPage() {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-heading font-bold text-white tracking-tight flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-text-primary tracking-tight flex items-center gap-3">
             <ArrowLeftRight className="w-8 h-8 text-[#E31837]" />
             Roster Manager
           </h1>
-          <p className="text-gray-400 mt-2">
+          <p className="text-text-muted mt-2">
             Select players and move them between teams
           </p>
         </div>
@@ -362,7 +362,7 @@ export default function RosterManagerPage() {
             <span className="text-sm font-medium">{feedback.message}</span>
             <button
               onClick={() => setFeedback(null)}
-              className="p-1 hover:bg-white/10 rounded transition-colors"
+              className="p-1 hover:bg-surface-overlay rounded transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -384,10 +384,10 @@ export default function RosterManagerPage() {
             return (
               <div
                 key={team.id}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden"
+                className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl overflow-hidden"
               >
                 {/* Team Header */}
-                <div className="p-4 border-b border-white/10 flex items-center gap-3">
+                <div className="p-4 border-b border-border-default flex items-center gap-3">
                   {/* Select all checkbox */}
                   {team.roster.length > 0 && (
                     <button
@@ -397,7 +397,7 @@ export default function RosterManagerPage() {
                           ? 'bg-[#E31837] border-[#E31837]'
                           : someSelected
                             ? 'bg-[#E31837]/40 border-[#E31837]'
-                            : 'border-white/20 hover:border-white/40'
+                            : 'border-border-default hover:border-white/40'
                       }`}
                     >
                       {(allSelected || someSelected) && (
@@ -411,14 +411,14 @@ export default function RosterManagerPage() {
                     onClick={() => toggleCollapsed(team.id)}
                     className="flex-1 min-w-0 flex items-center gap-2 text-left md:cursor-default"
                   >
-                    <h3 className="font-semibold text-white text-sm truncate">
+                    <h3 className="font-semibold text-text-primary text-sm truncate">
                       {team.name}
                     </h3>
-                    <span className="text-xs text-gray-500 shrink-0">
+                    <span className="text-xs text-text-muted shrink-0">
                       ({team.roster.length})
                     </span>
                     <ChevronDown
-                      className={`w-4 h-4 text-gray-500 md:hidden shrink-0 transition-transform ${
+                      className={`w-4 h-4 text-text-muted md:hidden shrink-0 transition-transform ${
                         isCollapsed ? '-rotate-90' : ''
                       }`}
                     />
@@ -427,10 +427,10 @@ export default function RosterManagerPage() {
 
                 {/* Player List */}
                 {!isCollapsed && (
-                  <div className="max-h-[400px] overflow-y-auto divide-y divide-white/5">
+                  <div className="max-h-[400px] overflow-y-auto divide-y divide-border-subtle">
                     {team.roster.length === 0 ? (
                       <div className="px-4 py-6 text-center">
-                        <p className="text-xs text-gray-500">No players</p>
+                        <p className="text-xs text-text-muted">No players</p>
                       </div>
                     ) : (
                       team.roster.map((player) => {
@@ -453,7 +453,7 @@ export default function RosterManagerPage() {
                               className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
                                 isSelected
                                   ? 'bg-[#E31837] border-[#E31837]'
-                                  : 'border-white/20'
+                                  : 'border-border-default'
                               }`}
                             >
                               {isSelected && (
@@ -461,15 +461,15 @@ export default function RosterManagerPage() {
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-white truncate">
+                              <p className="text-sm font-medium text-text-primary truncate">
                                 {player.firstName} {player.lastName}
                                 {player.jerseyNumber && (
-                                  <span className="text-gray-500 font-mono text-xs ml-1.5">
+                                  <span className="text-text-muted font-mono text-xs ml-1.5">
                                     #{player.jerseyNumber}
                                   </span>
                                 )}
                               </p>
-                              <p className="text-[10px] text-gray-500 truncate">
+                              <p className="text-[10px] text-text-muted truncate">
                                 {[
                                   player.primaryPosition,
                                   player.graduationYear
@@ -494,7 +494,7 @@ export default function RosterManagerPage() {
 
       {/* Sticky Action Bar */}
       {selectedPlayerIds.size > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#0A1D37]/95 backdrop-blur-xl border-t border-white/10 z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-page-bg/95 backdrop-blur-xl border-t border-border-default z-50">
           <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-4">
             {!isConfirming ? (
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -503,12 +503,12 @@ export default function RosterManagerPage() {
                   <span className="bg-[#E31837] text-white text-xs font-bold px-2.5 py-1 rounded-full">
                     {selectedPlayerIds.size}
                   </span>
-                  <span className="text-sm text-gray-300">
+                  <span className="text-sm text-text-secondary">
                     player{selectedPlayerIds.size !== 1 ? 's' : ''} selected
                   </span>
                   <button
                     onClick={clearSelection}
-                    className="text-xs text-gray-500 hover:text-white transition-colors underline"
+                    className="text-xs text-text-muted hover:text-text-primary transition-colors underline"
                   >
                     Clear
                   </button>
@@ -523,22 +523,22 @@ export default function RosterManagerPage() {
                         setTargetTeamId(e.target.value)
                         setIsConfirming(false)
                       }}
-                      className="appearance-none w-full sm:w-auto bg-white/5 border border-white/10 text-white pl-4 pr-10 py-2.5 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
+                      className="appearance-none w-full sm:w-auto bg-surface-glass border border-border-default text-text-primary pl-4 pr-10 py-2.5 rounded-xl text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all cursor-pointer"
                     >
-                      <option value="" className="bg-[#0a1628]">
+                      <option value="" className="bg-page-bg-alt">
                         Move to...
                       </option>
                       {targetTeamOptions.map((team) => (
                         <option
                           key={team.id}
                           value={team.id}
-                          className="bg-[#0a1628]"
+                          className="bg-page-bg-alt"
                         >
                           {team.name}
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
                   </div>
                   <Button
                     onClick={handleMoveClick}
@@ -553,7 +553,7 @@ export default function RosterManagerPage() {
             ) : (
               /* Confirmation state */
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <p className="text-sm text-white flex-1">
+                <p className="text-sm text-text-primary flex-1">
                   Move{' '}
                   <span className="font-bold">
                     {selectedPlayerIds.size} player
@@ -568,7 +568,7 @@ export default function RosterManagerPage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setIsConfirming(false)}
-                    className="px-4 py-2.5 text-sm text-gray-400 hover:text-white transition-colors"
+                    className="px-4 py-2.5 text-sm text-text-muted hover:text-text-primary transition-colors"
                   >
                     Cancel
                   </button>

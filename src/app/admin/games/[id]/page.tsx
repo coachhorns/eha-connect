@@ -148,7 +148,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
           <p className="text-red-400">{error}</p>
           <button
             onClick={() => router.push('/admin/games')}
-            className="mt-4 text-white hover:underline"
+            className="mt-4 text-text-primary hover:underline"
           >
             Back to Games
           </button>
@@ -173,7 +173,7 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
       <div className="mb-8">
         <Link
           href="/admin/games"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Games
@@ -182,13 +182,13 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-2xl font-bold text-text-primary">
                 {game.awayTeam.name} @ {game.homeTeam.name}
               </h1>
               <Badge variant={statusBadge.variant as any}>{statusBadge.label}</Badge>
             </div>
             {game.event && (
-              <p className="text-gray-400">{game.event.name}</p>
+              <p className="text-text-muted">{game.event.name}</p>
             )}
           </div>
 
@@ -214,16 +214,16 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
         <div className="flex items-center justify-center gap-8">
           {/* Away Team */}
           <div className="text-center flex-1">
-            <p className="text-lg font-medium text-gray-400 mb-2">{game.awayTeam.name}</p>
-            <p className="text-6xl font-bold text-white">{game.awayScore}</p>
+            <p className="text-lg font-medium text-text-muted mb-2">{game.awayTeam.name}</p>
+            <p className="text-6xl font-bold text-text-primary">{game.awayScore}</p>
             {game.awayTeam.coachName && (
-              <p className="text-sm text-gray-500 mt-2">Coach: {game.awayTeam.coachName}</p>
+              <p className="text-sm text-text-muted mt-2">Coach: {game.awayTeam.coachName}</p>
             )}
           </div>
 
           {/* VS / Period */}
           <div className="flex flex-col items-center px-8">
-            <p className="text-3xl font-bold text-gray-600">VS</p>
+            <p className="text-3xl font-bold text-text-muted">VS</p>
             {game.status === 'IN_PROGRESS' && (
               <Badge variant="success" className="mt-2">
                 Q{game.currentPeriod}
@@ -236,10 +236,10 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
 
           {/* Home Team */}
           <div className="text-center flex-1">
-            <p className="text-lg font-medium text-gray-400 mb-2">{game.homeTeam.name}</p>
-            <p className="text-6xl font-bold text-white">{game.homeScore}</p>
+            <p className="text-lg font-medium text-text-muted mb-2">{game.homeTeam.name}</p>
+            <p className="text-6xl font-bold text-text-primary">{game.homeScore}</p>
             {game.homeTeam.coachName && (
-              <p className="text-sm text-gray-500 mt-2">Coach: {game.homeTeam.coachName}</p>
+              <p className="text-sm text-text-muted mt-2">Coach: {game.homeTeam.coachName}</p>
             )}
           </div>
         </div>
@@ -248,38 +248,38 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Game Info */}
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Gamepad2 className="w-5 h-5 text-white" />
+          <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <Gamepad2 className="w-5 h-5 text-text-primary" />
             Game Info
           </h2>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-gray-500" />
+              <Calendar className="w-5 h-5 text-text-muted" />
               <div>
-                <p className="text-white">{format(new Date(game.scheduledAt), 'EEEE, MMMM d, yyyy')}</p>
-                <p className="text-sm text-gray-500">{format(new Date(game.scheduledAt), 'h:mm a')}</p>
+                <p className="text-text-primary">{format(new Date(game.scheduledAt), 'EEEE, MMMM d, yyyy')}</p>
+                <p className="text-sm text-text-muted">{format(new Date(game.scheduledAt), 'h:mm a')}</p>
               </div>
             </div>
             {game.court && (
               <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-gray-500" />
-                <p className="text-white">{game.court}</p>
+                <MapPin className="w-5 h-5 text-text-muted" />
+                <p className="text-text-primary">{game.court}</p>
               </div>
             )}
             {game.event && (
               <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-gray-500" />
+                <Clock className="w-5 h-5 text-text-muted" />
                 <div>
-                  <p className="text-white">{game.event.name}</p>
+                  <p className="text-text-primary">{game.event.name}</p>
                   {game.event.venue && (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-text-muted">
                       {game.event.venue}, {game.event.city}
                     </p>
                   )}
                 </div>
               </div>
             )}
-            <div className="pt-2 border-t border-[#1a3a6e]">
+            <div className="pt-2 border-t border-border-default">
               {game.division && (
                 <Badge variant="default" size="sm" className="mr-2">{game.division}</Badge>
               )}
@@ -290,57 +290,57 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
 
         {/* Quick Stats */}
         <Card className="p-6 lg:col-span-2">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-white" />
+          <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5 text-text-primary" />
             Team Stats
           </h2>
           <div className="grid grid-cols-2 gap-4">
             {/* Away Team Stats */}
             <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">{game.awayTeam.name}</h3>
+              <h3 className="text-sm font-medium text-text-muted mb-2">{game.awayTeam.name}</h3>
               <div className="space-y-1">
                 {awayStats.length > 0 ? (
                   <>
-                    <p className="text-white">
+                    <p className="text-text-primary">
                       FG: {awayStats.reduce((a, s) => a + s.fgMade, 0)}/{awayStats.reduce((a, s) => a + s.fgAttempted, 0)}
                     </p>
-                    <p className="text-white">
+                    <p className="text-text-primary">
                       3PT: {awayStats.reduce((a, s) => a + s.fg3Made, 0)}/{awayStats.reduce((a, s) => a + s.fg3Attempted, 0)}
                     </p>
-                    <p className="text-white">
+                    <p className="text-text-primary">
                       FT: {awayStats.reduce((a, s) => a + s.ftMade, 0)}/{awayStats.reduce((a, s) => a + s.ftAttempted, 0)}
                     </p>
-                    <p className="text-white">
+                    <p className="text-text-primary">
                       REB: {awayStats.reduce((a, s) => a + s.rebounds, 0)}
                     </p>
                   </>
                 ) : (
-                  <p className="text-gray-500 text-sm">No stats recorded</p>
+                  <p className="text-text-muted text-sm">No stats recorded</p>
                 )}
               </div>
             </div>
 
             {/* Home Team Stats */}
             <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">{game.homeTeam.name}</h3>
+              <h3 className="text-sm font-medium text-text-muted mb-2">{game.homeTeam.name}</h3>
               <div className="space-y-1">
                 {homeStats.length > 0 ? (
                   <>
-                    <p className="text-white">
+                    <p className="text-text-primary">
                       FG: {homeStats.reduce((a, s) => a + s.fgMade, 0)}/{homeStats.reduce((a, s) => a + s.fgAttempted, 0)}
                     </p>
-                    <p className="text-white">
+                    <p className="text-text-primary">
                       3PT: {homeStats.reduce((a, s) => a + s.fg3Made, 0)}/{homeStats.reduce((a, s) => a + s.fg3Attempted, 0)}
                     </p>
-                    <p className="text-white">
+                    <p className="text-text-primary">
                       FT: {homeStats.reduce((a, s) => a + s.ftMade, 0)}/{homeStats.reduce((a, s) => a + s.ftAttempted, 0)}
                     </p>
-                    <p className="text-white">
+                    <p className="text-text-primary">
                       REB: {homeStats.reduce((a, s) => a + s.rebounds, 0)}
                     </p>
                   </>
                 ) : (
-                  <p className="text-gray-500 text-sm">No stats recorded</p>
+                  <p className="text-text-muted text-sm">No stats recorded</p>
                 )}
               </div>
             </div>
@@ -351,15 +351,15 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
       {/* Box Score */}
       {game.stats.length > 0 && (
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Box Score</h2>
+          <h2 className="text-lg font-semibold text-text-primary mb-4">Box Score</h2>
 
           {/* Away Team Box Score */}
           <div className="mb-6">
-            <h3 className="text-md font-medium text-gray-400 mb-3">{game.awayTeam.name}</h3>
+            <h3 className="text-md font-medium text-text-muted mb-3">{game.awayTeam.name}</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-gray-500 border-b border-[#1a3a6e]">
+                  <tr className="text-text-muted border-b border-border-default">
                     <th className="text-left py-2 px-2">Player</th>
                     <th className="text-center py-2 px-1">PTS</th>
                     <th className="text-center py-2 px-1">REB</th>
@@ -374,19 +374,19 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
                 </thead>
                 <tbody>
                   {awayStats.map(stat => (
-                    <tr key={stat.id} className="border-b border-[#1a3a6e]/50">
-                      <td className="py-2 px-2 text-white">
+                    <tr key={stat.id} className="border-b border-border-default/50">
+                      <td className="py-2 px-2 text-text-primary">
                         #{stat.player.jerseyNumber || '?'} {stat.player.firstName[0]}. {stat.player.lastName}
                       </td>
-                      <td className="text-center py-2 px-1 text-white font-medium">{stat.points}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.rebounds}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.assists}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.steals}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.blocks}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.turnovers}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.fgMade}-{stat.fgAttempted}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.fg3Made}-{stat.fg3Attempted}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.ftMade}-{stat.ftAttempted}</td>
+                      <td className="text-center py-2 px-1 text-text-primary font-medium">{stat.points}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.rebounds}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.assists}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.steals}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.blocks}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.turnovers}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.fgMade}-{stat.fgAttempted}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.fg3Made}-{stat.fg3Attempted}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.ftMade}-{stat.ftAttempted}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -396,11 +396,11 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
 
           {/* Home Team Box Score */}
           <div>
-            <h3 className="text-md font-medium text-gray-400 mb-3">{game.homeTeam.name}</h3>
+            <h3 className="text-md font-medium text-text-muted mb-3">{game.homeTeam.name}</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-gray-500 border-b border-[#1a3a6e]">
+                  <tr className="text-text-muted border-b border-border-default">
                     <th className="text-left py-2 px-2">Player</th>
                     <th className="text-center py-2 px-1">PTS</th>
                     <th className="text-center py-2 px-1">REB</th>
@@ -415,19 +415,19 @@ export default function GameDashboardPage({ params }: { params: Promise<{ id: st
                 </thead>
                 <tbody>
                   {homeStats.map(stat => (
-                    <tr key={stat.id} className="border-b border-[#1a3a6e]/50">
-                      <td className="py-2 px-2 text-white">
+                    <tr key={stat.id} className="border-b border-border-default/50">
+                      <td className="py-2 px-2 text-text-primary">
                         #{stat.player.jerseyNumber || '?'} {stat.player.firstName[0]}. {stat.player.lastName}
                       </td>
-                      <td className="text-center py-2 px-1 text-white font-medium">{stat.points}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.rebounds}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.assists}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.steals}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.blocks}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.turnovers}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.fgMade}-{stat.fgAttempted}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.fg3Made}-{stat.fg3Attempted}</td>
-                      <td className="text-center py-2 px-1 text-gray-400">{stat.ftMade}-{stat.ftAttempted}</td>
+                      <td className="text-center py-2 px-1 text-text-primary font-medium">{stat.points}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.rebounds}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.assists}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.steals}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.blocks}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.turnovers}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.fgMade}-{stat.fgAttempted}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.fg3Made}-{stat.fg3Attempted}</td>
+                      <td className="text-center py-2 px-1 text-text-muted">{stat.ftMade}-{stat.ftAttempted}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -134,13 +134,13 @@ export default function NewProgramPage() {
       <div className="mb-8">
         <Link
           href="/admin/programs"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Programs
         </Link>
-        <h1 className="text-3xl font-bold text-white uppercase tracking-wider">New Program</h1>
-        <p className="mt-2 text-gray-400">
+        <h1 className="text-3xl font-bold text-text-primary uppercase tracking-wider">New Program</h1>
+        <p className="mt-2 text-text-muted">
           Add a new program (club) to the system
         </p>
       </div>
@@ -155,7 +155,7 @@ export default function NewProgramPage() {
 
           {/* Program Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Program Name *
             </label>
             <Input
@@ -169,12 +169,12 @@ export default function NewProgramPage() {
 
           {/* Logo Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Logo
             </label>
             {formData.logo ? (
               <div className="flex items-start gap-4">
-                <div className="relative w-24 h-24 bg-[#1a3a6e] rounded-lg overflow-hidden">
+                <div className="relative w-24 h-24 bg-surface-raised rounded-lg overflow-hidden">
                   <img
                     src={formData.logo}
                     alt="Logo preview"
@@ -189,7 +189,7 @@ export default function NewProgramPage() {
                   </button>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-gray-400">Logo uploaded successfully</p>
+                  <p className="text-sm text-text-muted">Logo uploaded successfully</p>
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -202,24 +202,24 @@ export default function NewProgramPage() {
             ) : (
               <div
                 onClick={() => !isUploading && fileInputRef.current?.click()}
-                className={`border-2 border-dashed border-[#1a3a6e] rounded-lg p-8 text-center cursor-pointer hover:border-eha-red/50 transition-colors ${
+                className={`border-2 border-dashed border-border-default rounded-lg p-8 text-center cursor-pointer hover:border-eha-red/50 transition-colors ${
                   isUploading ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 {isUploading ? (
                   <div className="flex flex-col items-center gap-2">
                     <Loader2 className="w-8 h-8 text-eha-red animate-spin" />
-                    <p className="text-sm text-gray-400">Uploading...</p>
+                    <p className="text-sm text-text-muted">Uploading...</p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2">
-                    <div className="w-12 h-12 bg-[#1a3a6e] rounded-full flex items-center justify-center">
-                      <ImageIcon className="w-6 h-6 text-gray-400" />
+                    <div className="w-12 h-12 bg-surface-raised rounded-full flex items-center justify-center">
+                      <ImageIcon className="w-6 h-6 text-text-muted" />
                     </div>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-text-muted">
                       Click to upload logo
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-text-muted">
                       PNG, JPG, GIF, WebP or SVG (max 5MB)
                     </p>
                   </div>
@@ -238,7 +238,7 @@ export default function NewProgramPage() {
           {/* Location */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 City
               </label>
               <Input
@@ -249,7 +249,7 @@ export default function NewProgramPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 State
               </label>
               <Input
@@ -262,14 +262,14 @@ export default function NewProgramPage() {
             </div>
           </div>
 
-          <hr className="border-[#1a3a6e]" />
+          <hr className="border-border-default" />
 
           {/* Director Information */}
           <div>
-            <h3 className="text-lg font-medium text-white mb-4">Director Information</h3>
+            <h3 className="text-lg font-medium text-text-primary mb-4">Director Information</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Director Name
                 </label>
                 <Input
@@ -281,7 +281,7 @@ export default function NewProgramPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
                     Email
                   </label>
                   <Input
@@ -292,7 +292,7 @@ export default function NewProgramPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
                     Phone
                   </label>
                   <Input

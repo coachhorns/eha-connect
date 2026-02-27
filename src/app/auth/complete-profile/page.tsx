@@ -147,14 +147,14 @@ function CompleteProfileContent() {
     (status === 'authenticated' && (session?.user?.roleSelected || session?.user?.role !== 'PARENT'))
   ) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg flex items-center justify-center px-4 py-12 relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -180,10 +180,10 @@ function CompleteProfileContent() {
             className="w-auto h-40 mx-auto mb-3 object-contain"
             priority
           />
-          <h1 className="text-4xl md:text-5xl font-heading font-bold text-white tracking-tight mb-4">
+          <h1 className="text-4xl md:text-5xl font-heading font-bold text-text-primary tracking-tight mb-4">
             One More Step
           </h1>
-          <p className="text-gray-400 text-lg font-light max-w-xl mx-auto">
+          <p className="text-text-muted text-lg font-light max-w-xl mx-auto">
             Select your account type to complete your profile
           </p>
         </div>
@@ -207,7 +207,7 @@ function CompleteProfileContent() {
                 disabled={isSubmitting}
                 className="block group text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="h-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-6 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+                <div className="h-full bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl shadow-2xl p-6 transition-all duration-300 hover:bg-surface-overlay hover:border-white/20 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
                   {/* Icon */}
                   <div
                     className={`w-16 h-16 ${role.iconBg} rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}
@@ -216,15 +216,15 @@ function CompleteProfileContent() {
                   </div>
 
                   {/* Title & Description */}
-                  <h2 className="text-xl font-heading font-bold text-white mb-2 group-hover:text-[#E31837] transition-colors">
+                  <h2 className="text-xl font-heading font-bold text-text-primary mb-2 group-hover:text-[#E31837] transition-colors">
                     {role.title}
                   </h2>
-                  <p className="text-gray-400 text-sm mb-5 leading-relaxed">{role.description}</p>
+                  <p className="text-text-muted text-sm mb-5 leading-relaxed">{role.description}</p>
 
                   {/* Features */}
                   <ul className="space-y-3 mb-6">
                     {role.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3 text-sm text-gray-300">
+                      <li key={feature} className="flex items-start gap-3 text-sm text-text-secondary">
                         <div className="w-5 h-5 bg-[#E31837]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                           <Check className="w-3 h-3 text-[#E31837]" />
                         </div>
@@ -258,7 +258,7 @@ export default function CompleteProfilePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+        <div className="min-h-screen bg-page-bg flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
         </div>
       }

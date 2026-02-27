@@ -110,9 +110,9 @@ export default function LeaderboardsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37]">
+    <div className="min-h-screen bg-page-bg">
       {/* Header / Hero */}
-      <header className="pt-32 pb-12 bg-[#0a1628] border-b border-white/5 relative overflow-hidden">
+      <header className="pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle relative overflow-hidden">
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#E2E8F0 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -121,14 +121,14 @@ export default function LeaderboardsPage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-eha-red animate-pulse"></span>
                 <span className="text-[10px] font-extrabold uppercase tracking-widest text-eha-red">Live Updates: 2024 Circuit</span>
               </div>
-              <h1 className="text-5xl lg:text-6xl text-white font-heading font-bold tracking-tighter">Leaderboards</h1>
-              <p className="text-gray-400 max-w-xl font-light">Filter through the top performers across the association. Data verified by independent on-site statisticians.</p>
+              <h1 className="text-5xl lg:text-6xl text-text-primary font-heading font-bold tracking-tighter">Leaderboards</h1>
+              <p className="text-text-muted max-w-xl font-light">Filter through the top performers across the association. Data verified by independent on-site statisticians.</p>
             </div>
             <div className="flex gap-3">
-              <button className="flex items-center gap-2 px-5 py-3 bg-[#0a1628] border border-white/10 rounded-sm font-bold text-xs uppercase tracking-widest text-white hover:bg-[#153361] transition-colors">
+              <button className="flex items-center gap-2 px-5 py-3 bg-page-bg-alt border border-border-default rounded-sm font-bold text-xs uppercase tracking-widest text-text-primary hover:bg-surface-raised transition-colors">
                 <Download className="w-4 h-4" /> Export CSV
               </button>
-              <button className="flex items-center gap-2 px-5 py-3 bg-eha-navy text-white border border-white/10 rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-eha-red hover:border-eha-red transition-all shadow-lg">
+              <button className="flex items-center gap-2 px-5 py-3 bg-eha-navy text-white border border-border-default rounded-sm font-bold text-xs uppercase tracking-widest hover:bg-eha-red hover:border-eha-red transition-all shadow-lg">
                 <Filter className="w-4 h-4" /> Advanced Filter
               </button>
             </div>
@@ -137,7 +137,7 @@ export default function LeaderboardsPage() {
       </header>
 
       {/* Sticky Filters */}
-      <section className="py-10 bg-[#0A1D37] sticky top-20 z-40 border-b border-white/5 backdrop-blur-md bg-opacity-90 shadow-xl">
+      <section className="py-10 bg-page-bg sticky top-20 z-40 border-b border-border-subtle backdrop-blur-md bg-opacity-90 shadow-xl">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
           <div className="flex flex-wrap items-center gap-8">
             <FilterSelect
@@ -180,13 +180,13 @@ export default function LeaderboardsPage() {
           {isLoading ? (
             <div className="text-center py-20">
               <div className="w-16 h-16 border-4 border-eha-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-400">Loading stats...</p>
+              <p className="text-text-muted">Loading stats...</p>
             </div>
           ) : sortedPlayers.length === 0 ? (
-            <div className="text-center py-32 bg-[#0a1628] border border-white/5 rounded-sm">
-              <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4 opacity-50" />
-              <h3 className="text-xl font-bold text-white mb-2">No Stats Recorded Yet</h3>
-              <p className="text-gray-400 max-w-md mx-auto">There are no players matching your criteria, or no games have been played yet for this season.</p>
+            <div className="text-center py-32 bg-page-bg-alt border border-border-subtle rounded-sm">
+              <Trophy className="w-16 h-16 text-text-muted mx-auto mb-4 opacity-50" />
+              <h3 className="text-xl font-bold text-text-primary mb-2">No Stats Recorded Yet</h3>
+              <p className="text-text-muted max-w-md mx-auto">There are no players matching your criteria, or no games have been played yet for this season.</p>
             </div>
           ) : (
             <>
@@ -254,22 +254,22 @@ export default function LeaderboardsPage() {
               </div>
 
               {/* Leaderboard Table */}
-              <div className="bg-[#0a1628] border border-white/10 rounded-sm overflow-hidden shadow-2xl">
+              <div className="bg-page-bg-alt border border-border-default rounded-sm overflow-hidden shadow-2xl">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#153361] border-b border-white/5">
-                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Rank</th>
-                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Player</th>
-                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Team</th>
-                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-center">Pos</th>
-                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-center">GP</th>
-                        <th className="px-8 py-5 text-[10px] font-extrabold text-white uppercase tracking-widest text-right bg-white/5">
+                      <tr className="bg-surface-raised border-b border-border-subtle">
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-text-muted uppercase tracking-widest">Rank</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-text-muted uppercase tracking-widest">Player</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-text-muted uppercase tracking-widest">Team</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-text-muted uppercase tracking-widest text-center">Pos</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-text-muted uppercase tracking-widest text-center">GP</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-text-primary uppercase tracking-widest text-right bg-surface-glass">
                           {getCategoryLabel(category)}
                         </th>
-                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">RPG</th>
-                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">APG</th>
-                        <th className="px-8 py-5 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">PER</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-text-muted uppercase tracking-widest text-right">RPG</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-text-muted uppercase tracking-widest text-right">APG</th>
+                        <th className="px-8 py-5 text-[10px] font-extrabold text-text-muted uppercase tracking-widest text-right">PER</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -287,8 +287,8 @@ export default function LeaderboardsPage() {
                 </div>
 
                 {/* Pagination */}
-                <div className="px-8 py-6 bg-[#0a1628] border-t border-white/5 flex items-center justify-between">
-                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                <div className="px-8 py-6 bg-page-bg-alt border-t border-border-subtle flex items-center justify-between">
+                  <span className="text-xs font-bold text-text-muted uppercase tracking-widest">
                     Showing {sortedPlayers.length} Players
                   </span>
                 </div>
@@ -305,18 +305,18 @@ export default function LeaderboardsPage() {
 function FilterSelect({ label, options, value, onChange }: any) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">{label}</label>
+      <label className="text-[10px] font-extrabold text-text-muted uppercase tracking-widest">{label}</label>
       <div className="relative">
         <select
           value={value}
           onChange={onChange}
-          className="appearance-none bg-[#0a1628] border border-white/10 rounded-sm text-sm font-bold text-white px-4 py-2.5 pr-10 min-w-[180px] focus:outline-none focus:border-eha-red focus:ring-1 focus:ring-eha-red transition-all"
+          className="appearance-none bg-page-bg-alt border border-border-default rounded-sm text-sm font-bold text-text-primary px-4 py-2.5 pr-10 min-w-[180px] focus:outline-none focus:border-eha-red focus:ring-1 focus:ring-eha-red transition-all"
         >
           {options.map((opt: string) => (
             <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
-        <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <ChevronDown className="w-4 h-4 text-text-muted absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
       </div>
     </div>
   )
@@ -326,8 +326,8 @@ function PositionFilter({ activePosition, onPositionChange }: any) {
   const positions = ['All', 'PG', 'SG', 'SF', 'PF', 'C']
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest">Position</label>
-      <div className="flex bg-[#0a1628] border border-white/10 rounded-sm p-1">
+      <label className="text-[10px] font-extrabold text-text-muted uppercase tracking-widest">Position</label>
+      <div className="flex bg-page-bg-alt border border-border-default rounded-sm p-1">
         {positions.map(pos => (
           <button
             key={pos}
@@ -336,7 +336,7 @@ function PositionFilter({ activePosition, onPositionChange }: any) {
               "px-3 py-1.5 text-xs font-bold rounded-sm transition-all",
               activePosition === pos
                 ? "bg-eha-red text-white shadow-lg"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
+                : "text-text-muted hover:text-text-primary hover:bg-surface-glass"
             )}
           >
             {pos}
@@ -351,15 +351,15 @@ function LeaderCard({ title, playerName, teamName, stat, statLabel, icon: Icon, 
   return (
     <div
       onClick={onClick}
-      className="relative overflow-hidden rounded-sm transition-transform hover:-translate-y-1 duration-300 group cursor-pointer bg-[#0a1628] border border-white/10 hover:border-eha-red/50"
+      className="relative overflow-hidden rounded-sm transition-transform hover:-translate-y-1 duration-300 group cursor-pointer bg-page-bg-alt border border-border-default hover:border-eha-red/50"
     >
       <div className="p-8 relative z-10">
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-white/5">
+            <div className="p-2 rounded-lg bg-surface-glass">
               <Icon className="w-5 h-5 text-eha-red" />
             </div>
-            <span className="text-xs font-extrabold uppercase tracking-widest text-gray-400">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-text-muted">
               {title}
             </span>
           </div>
@@ -369,15 +369,15 @@ function LeaderCard({ title, playerName, teamName, stat, statLabel, icon: Icon, 
         </div>
 
         <div className="mb-6">
-          <h3 className="text-2xl font-bold font-heading mb-1 text-white group-hover:text-eha-red transition-colors">
+          <h3 className="text-2xl font-bold font-heading mb-1 text-text-primary group-hover:text-eha-red transition-colors">
             {playerName}
           </h3>
-          <p className="text-sm font-medium text-gray-400">{teamName}</p>
+          <p className="text-sm font-medium text-text-muted">{teamName}</p>
         </div>
 
         <div className="flex items-end gap-2">
-          <span className="text-5xl font-black font-stats tracking-tighter text-white">{stat}</span>
-          <span className="text-sm font-bold uppercase tracking-widest mb-2 text-gray-500">
+          <span className="text-5xl font-black font-stats tracking-tighter text-text-primary">{stat}</span>
+          <span className="text-sm font-bold uppercase tracking-widest mb-2 text-text-muted">
             {statLabel}
           </span>
         </div>
@@ -389,34 +389,34 @@ function LeaderCard({ title, playerName, teamName, stat, statLabel, icon: Icon, 
 const LeaderboardRow = ({ rank, player, onClick, categoryValue }: any) => {
   return (
     <tr
-      className="border-b border-white/5 transition-colors cursor-pointer hover:bg-white/5 group"
+      className="border-b border-border-subtle transition-colors cursor-pointer hover:bg-surface-glass group"
       onClick={onClick}
     >
-      <td className="px-8 py-6 font-black text-white text-lg font-heading">{rank}</td>
+      <td className="px-8 py-6 font-black text-text-primary text-lg font-heading">{rank}</td>
       <td className="px-8 py-6">
         <div className="flex items-center gap-4">
           <Avatar
             src={player.headshot}
             fallback={player.name}
-            className="w-10 h-10 border border-white/10 group-hover:border-eha-red/50 transition-colors"
+            className="w-10 h-10 border border-border-default group-hover:border-eha-red/50 transition-colors"
           />
           <div>
             <div className="flex items-center gap-1.5">
-              <div className="font-bold text-white font-heading">{player.name}</div>
+              <div className="font-bold text-text-primary font-heading">{player.name}</div>
               {player.isVerified && <VerifiedBadge size="sm" />}
             </div>
             <div className="text-[10px] font-bold text-eha-red uppercase tracking-widest">{player.class}</div>
           </div>
         </div>
       </td>
-      <td className="px-8 py-6 text-sm font-semibold text-gray-400">{player.team}</td>
-      <td className="px-8 py-6 text-sm font-bold text-white text-center font-heading">{player.position}</td>
-      <td className="px-8 py-6 text-sm font-semibold text-gray-400 text-center">{player.gamesPlayed}</td>
-      <td className="px-8 py-6 font-bold text-white text-right bg-white/5">
+      <td className="px-8 py-6 text-sm font-semibold text-text-muted">{player.team}</td>
+      <td className="px-8 py-6 text-sm font-bold text-text-primary text-center font-heading">{player.position}</td>
+      <td className="px-8 py-6 text-sm font-semibold text-text-muted text-center">{player.gamesPlayed}</td>
+      <td className="px-8 py-6 font-bold text-text-primary text-right bg-surface-glass">
         {categoryValue}
       </td>
-      <td className="px-8 py-6 text-sm font-semibold text-gray-400 text-right">{player.rpg}</td>
-      <td className="px-8 py-6 text-sm font-semibold text-gray-400 text-right">{player.apg}</td>
+      <td className="px-8 py-6 text-sm font-semibold text-text-muted text-right">{player.rpg}</td>
+      <td className="px-8 py-6 text-sm font-semibold text-text-muted text-right">{player.apg}</td>
       <td className="px-8 py-6 text-sm font-bold text-green-400 text-right font-stats">{player.per}</td>
     </tr>
   )

@@ -116,12 +116,12 @@ export default function AdminTeamsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
               <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">Admin Panel</span>
-              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Manage Teams</h1>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-text-primary uppercase tracking-tighter">Manage Teams</h1>
               <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">View and manage all registered teams</p>
             </div>
             <Link href="/admin/teams/new">
@@ -136,12 +136,12 @@ export default function AdminTeamsPage() {
       <form onSubmit={handleSearch} className="flex gap-4 mb-8">
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
             <input
               placeholder="Search teams..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500 rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
+              className="w-full bg-surface-glass border border-border-default text-text-primary placeholder-text-muted rounded-sm px-4 py-3 pl-11 text-sm focus:outline-none focus:border-eha-red focus:ring-2 focus:ring-eha-red/20 transition-all"
             />
           </div>
         </div>
@@ -151,50 +151,50 @@ export default function AdminTeamsPage() {
       </form>
 
       {/* Teams Table */}
-      <div className="bg-[#152e50]/30 border border-white/5 rounded-sm overflow-hidden">
+      <div className="bg-surface-raised/30 border border-border-subtle rounded-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
           </div>
         ) : teams.length === 0 ? (
           <div className="text-center py-12">
-            <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No teams found</h3>
-            <p className="text-gray-500">No teams match your search criteria</p>
+            <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-text-primary mb-2">No teams found</h3>
+            <p className="text-text-muted">No teams match your search criteria</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-white/5 border-b border-white/5">
+              <thead className="bg-surface-glass border-b border-border-subtle">
                 <tr>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Name
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Coach
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Division
                   </th>
-                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-left text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-4 text-right text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-border-subtle">
                 {teams.map((team) => (
                   <tr
                     key={team.id}
-                    className={`hover:bg-white/5 transition-colors cursor-pointer ${!team.isActive ? 'opacity-60' : ''}`}
+                    className={`hover:bg-surface-glass transition-colors cursor-pointer ${!team.isActive ? 'opacity-60' : ''}`}
                     onClick={() => router.push(`/admin/teams/${team.id}`)}
                   >
                     <td className="px-6 py-4">
-                      <div className={`font-medium ${team.isActive ? 'text-white' : 'text-gray-400'}`}>{team.name}</div>
+                      <div className={`font-medium ${team.isActive ? 'text-text-primary' : 'text-text-muted'}`}>{team.name}</div>
                     </td>
-                    <td className="px-6 py-4 text-gray-400">
+                    <td className="px-6 py-4 text-text-muted">
                       {team.coachName || '-'}
                     </td>
                     <td className="px-6 py-4">
@@ -203,7 +203,7 @@ export default function AdminTeamsPage() {
                           {team.division}
                         </Badge>
                       ) : (
-                        <span className="text-gray-600">-</span>
+                        <span className="text-text-muted">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -242,8 +242,8 @@ export default function AdminTeamsPage() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border-subtle">
+            <p className="text-sm text-text-muted">
               Showing {((page - 1) * pagination.limit) + 1} to{' '}
               {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} teams
             </p>
@@ -256,7 +256,7 @@ export default function AdminTeamsPage() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-text-muted">
                 Page {page} of {pagination.totalPages}
               </span>
               <Button
@@ -279,8 +279,8 @@ export default function AdminTeamsPage() {
         title="Delete Team"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
-            Are you sure you want to delete <strong className="text-white">{deleteModal.team?.name}</strong>?
+          <p className="text-text-secondary">
+            Are you sure you want to delete <strong className="text-text-primary">{deleteModal.team?.name}</strong>?
             This action cannot be undone.
           </p>
           <div className="flex gap-3 justify-end">

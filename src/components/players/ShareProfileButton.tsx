@@ -57,10 +57,10 @@ export default function ShareProfileButton({ playerName }: ShareProfileButtonPro
       </Button>
 
       {isOpen && (
-        <div className="absolute bottom-full mb-2 right-0 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50 min-w-[180px]">
+        <div className="absolute bottom-full mb-2 right-0 bg-white rounded-lg shadow-xl border border-border-subtle overflow-hidden z-50 min-w-[180px]">
           <button
             onClick={handleCopyLink}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-[#0A1D37] hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-[#0A1D37] hover:bg-surface-glass transition-colors"
           >
             {copied ? (
               <>
@@ -76,7 +76,7 @@ export default function ShareProfileButton({ playerName }: ShareProfileButtonPro
           </button>
           <button
             onClick={handleShareTwitter}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-[#0A1D37] hover:bg-gray-50 transition-colors border-t border-gray-100"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-[#0A1D37] hover:bg-surface-glass transition-colors border-t border-border-subtle"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />

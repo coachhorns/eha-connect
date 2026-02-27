@@ -92,7 +92,7 @@ function SignInForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg flex items-center justify-center px-4 pt-32 pb-12 relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -108,7 +108,7 @@ function SignInForm() {
 
       {/* Card */}
       <div className="relative z-10 w-full max-w-md">
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-8">
+        <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl shadow-2xl p-8">
           {/* Logo */}
           <div className="text-center mb-8">
             <Image
@@ -119,10 +119,10 @@ function SignInForm() {
               className="w-auto h-36 mx-auto mb-2 object-contain"
               priority
             />
-            <h1 className="text-3xl font-heading font-bold text-white tracking-tight">
+            <h1 className="text-3xl font-heading font-bold text-text-primary tracking-tight">
               Welcome Back
             </h1>
-            <p className="text-gray-400 mt-2 font-light">
+            <p className="text-text-muted mt-2 font-light">
               Sign in to your EHA Connect account
             </p>
           </div>
@@ -140,10 +140,10 @@ function SignInForm() {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isGoogleLoading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-white hover:bg-gray-100 text-gray-800 font-semibold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-white hover:bg-surface-glass text-text-primary font-semibold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:-translate-y-0.5"
           >
             {isGoogleLoading ? (
-              <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-border-default border-t-transparent rounded-full animate-spin" />
             ) : (
               <GoogleIcon />
             )}
@@ -153,10 +153,10 @@ function SignInForm() {
           {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10" />
+              <div className="w-full border-t border-border-default" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-4 bg-[#0A1D37] text-gray-500 uppercase tracking-widest font-medium">
+              <span className="px-4 bg-page-bg text-text-muted uppercase tracking-widest font-medium">
                 or continue with email
               </span>
             </div>
@@ -166,11 +166,11 @@ function SignInForm() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   id="email"
                   name="email"
@@ -180,18 +180,18 @@ function SignInForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 bg-page-bg-alt border border-border-default rounded-lg text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
                 />
               </div>
             </div>
 
             {/* Password Input */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   id="password"
                   name="password"
@@ -208,23 +208,23 @@ function SignInForm() {
                     }
                   }}
                   required
-                  className="w-full pl-12 pr-4 py-3.5 bg-[#0a1628] border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 bg-page-bg-alt border border-border-default rounded-lg text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-[#E31837] focus:ring-1 focus:ring-[#E31837]/50 transition-all"
                 />
               </div>
             </div>
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 text-gray-400 cursor-pointer group">
+              <label className="flex items-center gap-2 text-text-muted cursor-pointer group">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-white/20 bg-[#0a1628] text-[#E31837] focus:ring-[#E31837]/50 focus:ring-offset-0"
+                  className="w-4 h-4 rounded border-border-default bg-page-bg-alt text-[#E31837] focus:ring-[#E31837]/50 focus:ring-offset-0"
                 />
-                <span className="group-hover:text-gray-300 transition-colors">Remember me</span>
+                <span className="group-hover:text-text-secondary transition-colors">Remember me</span>
               </label>
               <Link
                 href="/auth/forgot-password"
-                className="text-[#E31837] hover:text-white transition-colors font-medium"
+                className="text-[#E31837] hover:text-text-primary transition-colors font-medium"
               >
                 Forgot password?
               </Link>
@@ -249,14 +249,14 @@ function SignInForm() {
 
           {/* Sign Up Link */}
           <div className="mt-8 text-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-text-muted text-sm">
               Don&apos;t have an account?{' '}
               <Link
                 href={`/auth/signup?${new URLSearchParams({
                   ...(searchParams.get('role') && { role: searchParams.get('role')! }),
                   ...(callbackUrl && { callbackUrl }),
                 }).toString()}`}
-                className="text-[#E31837] hover:text-white transition-colors font-semibold"
+                className="text-[#E31837] hover:text-text-primary transition-colors font-semibold"
               >
                 Sign up
               </Link>
@@ -272,7 +272,7 @@ export default function SignInPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+        <div className="min-h-screen bg-page-bg flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
         </div>
       }

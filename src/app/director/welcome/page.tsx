@@ -85,7 +85,7 @@ export default function DirectorWelcomePage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
@@ -93,8 +93,8 @@ export default function DirectorWelcomePage() {
 
   if (!program) {
     return (
-      <div className="min-h-screen bg-[#0A1D37] flex items-center justify-center">
-        <p className="text-gray-400">No program found.</p>
+      <div className="min-h-screen bg-page-bg flex items-center justify-center">
+        <p className="text-text-muted">No program found.</p>
       </div>
     )
   }
@@ -102,7 +102,7 @@ export default function DirectorWelcomePage() {
   const totalPlayers = program.teams.reduce((sum, t) => sum + t.rosterCount, 0)
 
   return (
-    <div className="min-h-screen bg-[#0A1D37] relative overflow-hidden">
+    <div className="min-h-screen bg-page-bg relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -131,19 +131,19 @@ export default function DirectorWelcomePage() {
 
         {/* Success Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-white/60" />
+          <div className="w-16 h-16 bg-surface-glass border border-border-default rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-text-primary/60" />
           </div>
-          <h1 className="font-heading font-bold text-2xl sm:text-3xl text-white mb-2">
+          <h1 className="font-heading font-bold text-2xl sm:text-3xl text-text-primary mb-2">
             You&apos;re All Set, {session?.user.name?.split(' ')[0] || 'Director'}!
           </h1>
-          <p className="text-gray-400">
+          <p className="text-text-muted">
             Your program has been created. Here&apos;s a summary of what you&apos;ve set up.
           </p>
         </div>
 
         {/* Program Card */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+        <div className="bg-surface-glass border border-border-default rounded-xl p-6 mb-6">
           <div className="flex items-center gap-4 mb-4">
             {program.logo ? (
               <img
@@ -152,14 +152,14 @@ export default function DirectorWelcomePage() {
                 className="w-14 h-14 rounded-lg object-cover"
               />
             ) : (
-              <div className="w-14 h-14 bg-white/10 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-gray-400" />
+              <div className="w-14 h-14 bg-surface-overlay rounded-lg flex items-center justify-center">
+                <Users className="w-6 h-6 text-text-muted" />
               </div>
             )}
             <div>
-              <h2 className="font-heading font-bold text-xl text-white">{program.name}</h2>
+              <h2 className="font-heading font-bold text-xl text-text-primary">{program.name}</h2>
               {(program.city || program.state) && (
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-text-muted">
                   {[program.city, program.state].filter(Boolean).join(', ')}
                 </p>
               )}
@@ -167,14 +167,14 @@ export default function DirectorWelcomePage() {
           </div>
 
           {/* Stats Row */}
-          <div className="flex gap-6 pt-4 border-t border-white/10">
+          <div className="flex gap-6 pt-4 border-t border-border-default">
             <div>
-              <span className="block text-2xl font-bold text-white">{program.teams.length}</span>
-              <span className="text-xs text-gray-500 uppercase tracking-wider">Teams</span>
+              <span className="block text-2xl font-bold text-text-primary">{program.teams.length}</span>
+              <span className="text-xs text-text-muted uppercase tracking-wider">Teams</span>
             </div>
             <div>
-              <span className="block text-2xl font-bold text-white">{totalPlayers}</span>
-              <span className="text-xs text-gray-500 uppercase tracking-wider">Players</span>
+              <span className="block text-2xl font-bold text-text-primary">{totalPlayers}</span>
+              <span className="text-xs text-text-muted uppercase tracking-wider">Players</span>
             </div>
           </div>
         </div>
@@ -182,43 +182,43 @@ export default function DirectorWelcomePage() {
         {/* Teams & Rosters */}
         <div className="space-y-3 mb-8">
           {program.teams.map((team) => (
-            <div key={team.id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+            <div key={team.id} className="bg-surface-glass border border-border-default rounded-xl overflow-hidden">
               {/* Team Header */}
               <button
                 onClick={() => toggleTeam(team.id)}
-                className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between p-4 hover:bg-surface-glass transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center">
-                    <Users className="w-4 h-4 text-gray-400" />
+                  <div className="w-9 h-9 bg-surface-overlay rounded-lg flex items-center justify-center">
+                    <Users className="w-4 h-4 text-text-muted" />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-sm font-semibold text-white">{team.name}</h3>
-                    <p className="text-xs text-gray-500">
+                    <h3 className="text-sm font-semibold text-text-primary">{team.name}</h3>
+                    <p className="text-xs text-text-muted">
                       {team.division && `${team.division} · `}{team.rosterCount} players
                     </p>
                   </div>
                 </div>
                 {expandedTeams[team.id] ? (
-                  <ChevronUp className="w-4 h-4 text-gray-400" />
+                  <ChevronUp className="w-4 h-4 text-text-muted" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                  <ChevronDown className="w-4 h-4 text-text-muted" />
                 )}
               </button>
 
               {/* Roster List */}
               {expandedTeams[team.id] && team.roster.length > 0 && (
-                <div className="border-t border-white/5 px-4 pb-3">
+                <div className="border-t border-border-subtle px-4 pb-3">
                   {team.roster.map((entry) => (
-                    <div key={entry.playerId} className="flex items-center gap-3 py-2 border-b border-white/5 last:border-0">
+                    <div key={entry.playerId} className="flex items-center gap-3 py-2 border-b border-border-subtle last:border-0">
                       {entry.jerseyNumber && (
-                        <span className="text-xs font-mono text-gray-500 w-7">#{entry.jerseyNumber}</span>
+                        <span className="text-xs font-mono text-text-muted w-7">#{entry.jerseyNumber}</span>
                       )}
-                      <span className="text-sm text-white">
+                      <span className="text-sm text-text-primary">
                         {entry.firstName} {entry.lastName}
                       </span>
                       {entry.primaryPosition && (
-                        <span className="text-xs text-gray-500">{entry.primaryPosition}</span>
+                        <span className="text-xs text-text-muted">{entry.primaryPosition}</span>
                       )}
                     </div>
                   ))}
@@ -229,12 +229,12 @@ export default function DirectorWelcomePage() {
         </div>
 
         {/* Coming Soon Banner */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-          <Rocket className="w-8 h-8 text-white/60 mx-auto mb-3" />
-          <h3 className="font-heading font-bold text-lg text-white mb-2">
+        <div className="bg-surface-glass border border-border-default rounded-xl p-6 text-center">
+          <Rocket className="w-8 h-8 text-text-primary/60 mx-auto mb-3" />
+          <h3 className="font-heading font-bold text-lg text-text-primary mb-2">
             Full Director Dashboard Coming at Launch
           </h3>
-          <p className="text-sm text-gray-400 max-w-md mx-auto">
+          <p className="text-sm text-text-muted max-w-md mx-auto">
             Event registration, schedule management, roster editing, player profile management, and more — all available when EHA Connect goes live. You&apos;ll receive an email once we launch.
           </p>
         </div>

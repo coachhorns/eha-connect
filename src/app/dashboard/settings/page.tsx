@@ -92,12 +92,12 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-white/5">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
               <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">User Dashboard</span>
-              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-white uppercase tracking-tighter">Account Settings</h1>
+              <h1 className="font-heading font-bold text-4xl lg:text-5xl text-text-primary uppercase tracking-tighter">Account Settings</h1>
               <p className="mt-3 text-white/60 font-bold text-sm uppercase tracking-widest">Manage your profile and account preferences</p>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function SettingsPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
         {/* Profile Card */}
         <Card className="rounded-sm p-0">
-          <div className="flex items-center gap-6 p-8 border-b border-white/5">
+          <div className="flex items-center gap-6 p-8 border-b border-border-subtle">
             <Avatar
               src={avatarSrc}
               fallback={session.user.name?.[0] || 'U'}
@@ -115,8 +115,8 @@ export default function SettingsPage() {
               className="w-24 h-24 text-3xl"
             />
             <div>
-              <h2 className="text-2xl font-bold text-white uppercase tracking-tight">{session.user.name}</h2>
-              <p className="text-gray-400">{session.user.email}</p>
+              <h2 className="text-2xl font-bold text-text-primary uppercase tracking-tight">{session.user.name}</h2>
+              <p className="text-text-muted">{session.user.email}</p>
               <div className="mt-2">
                 <Badge variant={session.user.role === 'ADMIN' ? 'error' : 'default'}>
                   {session.user.role}
@@ -130,31 +130,31 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
                   <User className="w-4 h-4" />
                   Full Name
                 </label>
-                <div className="p-3 rounded-sm bg-[#152e50]/50 border border-white/5 text-white text-sm font-medium">
+                <div className="p-3 rounded-sm bg-surface-raised/50 border border-border-subtle text-text-primary text-sm font-medium">
                   {session.user.name}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
                   <Mail className="w-4 h-4" />
                   Email Address
                 </label>
-                <div className="p-3 rounded-sm bg-[#152e50]/50 border border-white/5 text-white text-sm font-medium">
+                <div className="p-3 rounded-sm bg-surface-raised/50 border border-border-subtle text-text-primary text-sm font-medium">
                   {session.user.email}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
                   <Shield className="w-4 h-4" />
                   Account Role
                 </label>
-                <div className="p-3 rounded-sm bg-[#152e50]/50 border border-white/5 text-white text-sm font-medium">
+                <div className="p-3 rounded-sm bg-surface-raised/50 border border-border-subtle text-text-primary text-sm font-medium">
                   {session.user.role}
                 </div>
               </div>
@@ -164,13 +164,13 @@ export default function SettingsPage() {
 
         {/* My Players Section */}
         <Card className="rounded-sm p-0">
-          <div className="p-6 border-b border-white/5 flex items-center justify-between">
+          <div className="p-6 border-b border-border-subtle flex items-center justify-between">
             <div>
               <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red flex items-center gap-2">
                 <Users className="w-4 h-4 text-eha-red" />
                 My Players
               </h3>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">
+              <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-1">
                 Players you are linked to as a guardian
               </p>
             </div>
@@ -200,9 +200,9 @@ export default function SettingsPage() {
             </div>
           ) : players.length === 0 ? (
             <div className="text-center p-8">
-              <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h4 className="text-white font-bold uppercase tracking-wide mb-2">No Players Linked</h4>
-              <p className="text-gray-500 uppercase tracking-widest text-xs font-bold mb-4">
+              <Users className="w-12 h-12 text-text-muted mx-auto mb-4" />
+              <h4 className="text-text-primary font-bold uppercase tracking-wide mb-2">No Players Linked</h4>
+              <p className="text-text-muted uppercase tracking-widest text-xs font-bold mb-4">
                 Link your account to a player profile to track their stats and achievements
               </p>
               <Link href="/claim-player">
@@ -218,10 +218,10 @@ export default function SettingsPage() {
                 <Link
                   key={player.id}
                   href={`/players/${player.slug}`}
-                  className="flex items-center justify-between p-5 bg-[#152e50]/50 border border-white/5 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all"
+                  className="flex items-center justify-between p-5 bg-surface-raised/50 border border-border-subtle rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-sm overflow-hidden bg-white/10 flex-shrink-0">
+                    <div className="w-12 h-12 rounded-sm overflow-hidden bg-surface-overlay flex-shrink-0">
                       {player.profilePhoto ? (
                         <Image
                           src={player.profilePhoto}
@@ -231,14 +231,14 @@ export default function SettingsPage() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-lg font-bold text-gray-500">
+                        <div className="w-full h-full flex items-center justify-center text-lg font-bold text-text-muted">
                           {player.firstName[0]}{player.lastName[0]}
                         </div>
                       )}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-bold text-white uppercase tracking-wide">
+                        <p className="font-bold text-text-primary uppercase tracking-wide">
                           {player.firstName} {player.lastName}
                         </p>
                         {player.guardianRole === 'SELF' ? (
@@ -258,7 +258,7 @@ export default function SettingsPage() {
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                      <div className="flex items-center gap-2 text-[10px] font-bold text-text-muted uppercase tracking-widest">
                         {player.graduationYear && (
                           <span>Class of {player.graduationYear}</span>
                         )}
@@ -271,7 +271,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-500" />
+                  <ChevronRight className="w-5 h-5 text-text-muted" />
                 </Link>
               ))}
             </div>
@@ -284,12 +284,12 @@ export default function SettingsPage() {
             <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red mb-6">
               Admin Settings
             </h3>
-            <p className="text-sm text-gray-400 mb-4">
+            <p className="text-sm text-text-muted mb-4">
               Configure API keys and pricing for subscriptions.
             </p>
             <Button
               variant="outline"
-              className="border-eha-red text-eha-red hover:bg-eha-red hover:text-white"
+              className="border-eha-red text-eha-red hover:bg-eha-red hover:text-text-primary"
               onClick={() => router.push('/admin/settings/payments')}
             >
               <SettingsIcon className="w-4 h-4 mr-2" />
