@@ -12,13 +12,15 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { recruitingApi } from '@/api/recruiting';
 import type { College, CollegeCoach } from '@/types';
 
 type Step = 'search' | 'coaches' | 'compose';
 
 export default function RecruitingScreen() {
+  const colors = useColors();
   const router = useRouter();
   const params = useLocalSearchParams<{ playerSlugs: string; playerName: string }>();
   const playerSlugs = params.playerSlugs?.split(',') ?? [];
@@ -172,15 +174,15 @@ export default function RecruitingScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-          <Text style={styles.backText}>‹ Back</Text>
+          <Text style={[styles.backText, { color: colors.textSecondary }]}>{'\u2039'} Back</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
           {step === 'search' ? 'Find College' : step === 'coaches' ? selectedCollege?.name ?? 'Coaches' : 'Compose Email'}
         </Text>
         <View style={{ width: 50 }} />
@@ -191,9 +193,9 @@ export default function RecruitingScreen() {
         <ScrollView style={styles.body} keyboardShouldPersistTaps="handled">
           {/* Search input */}
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             placeholder="Search by school name..."
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
             autoCapitalize="none"
@@ -207,14 +209,22 @@ export default function RecruitingScreen() {
                 {divisions.map((d) => (
                   <TouchableOpacity
                     key={d}
-                    style={[styles.filterPill, selectedDivision === d && styles.filterPillActive]}
+                    style={[
+                      styles.filterPill,
+                      { backgroundColor: colors.surface, borderColor: colors.border },
+                      selectedDivision === d && { backgroundColor: colors.red, borderColor: colors.red },
+                    ]}
                     onPress={() => {
                       setSearchQuery('');
                       setSelectedDivision(selectedDivision === d ? '' : d);
                     }}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.filterPillText, selectedDivision === d && styles.filterPillTextActive]}>
+                    <Text style={[
+                      styles.filterPillText,
+                      { color: colors.textSecondary },
+                      selectedDivision === d && { color: '#fff' },
+                    ]}>
                       {d}
                     </Text>
                   </TouchableOpacity>
@@ -225,37 +235,37 @@ export default function RecruitingScreen() {
 
           {/* Results */}
           {isLoading ? (
-            <ActivityIndicator color={Colors.red} style={{ marginTop: Spacing.xxl }} />
+            <ActivityIndicator color={colors.red} style={{ marginTop: Spacing.xxl }} />
           ) : (
             <View style={styles.results}>
               {colleges.map((college) => (
                 <TouchableOpacity
                   key={college.id}
-                  style={styles.collegeRow}
+                  style={[styles.collegeRow, { backgroundColor: colors.surface, borderColor: colors.border }]}
                   onPress={() => handleSelectCollege(college)}
                   activeOpacity={0.7}
                 >
-                  <View style={styles.collegeIcon}>
-                    <Text style={styles.collegeIconText}>
+                  <View style={[styles.collegeIcon, { backgroundColor: colors.surfaceLight }]}>
+                    <Text style={[styles.collegeIconText, { color: colors.textSecondary }]}>
                       {college.name.charAt(0)}
                     </Text>
                   </View>
                   <View style={styles.collegeInfo}>
-                    <Text style={styles.collegeName}>{college.name}</Text>
-                    <Text style={styles.collegeMeta}>
+                    <Text style={[styles.collegeName, { color: colors.textPrimary }]}>{college.name}</Text>
+                    <Text style={[styles.collegeMeta, { color: colors.textMuted }]}>
                       {[college.city, college.state, college.conference, college.division]
                         .filter(Boolean)
-                        .join(' · ')}
+                        .join(' \u00B7 ')}
                     </Text>
                   </View>
-                  <Text style={styles.chevron}>›</Text>
+                  <Text style={[styles.chevron, { color: colors.textMuted }]}>{'\u203A'}</Text>
                 </TouchableOpacity>
               ))}
               {colleges.length === 0 && !isLoading && (searchQuery.length >= 2 || selectedDivision || selectedState) && (
-                <Text style={styles.emptyText}>No colleges found</Text>
+                <Text style={[styles.emptyText, { color: colors.textMuted }]}>No colleges found</Text>
               )}
               {colleges.length === 0 && !isLoading && searchQuery.length < 2 && !selectedDivision && !selectedState && (
-                <Text style={styles.emptyText}>Search or filter to find colleges</Text>
+                <Text style={[styles.emptyText, { color: colors.textMuted }]}>Search or filter to find colleges</Text>
               )}
             </View>
           )}
@@ -266,49 +276,49 @@ export default function RecruitingScreen() {
       {step === 'coaches' && (
         <ScrollView style={styles.body}>
           {/* College header */}
-          <View style={styles.collegeHeader}>
-            <Text style={styles.collegeHeaderName}>{selectedCollege?.name}</Text>
-            <Text style={styles.collegeHeaderMeta}>
+          <View style={[styles.collegeHeader, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.collegeHeaderName, { color: colors.textPrimary }]}>{selectedCollege?.name}</Text>
+            <Text style={[styles.collegeHeaderMeta, { color: colors.textMuted }]}>
               {[selectedCollege?.division, selectedCollege?.conference, selectedCollege?.state]
                 .filter(Boolean)
-                .join(' · ')}
+                .join(' \u00B7 ')}
             </Text>
           </View>
 
           {isLoadingCoaches ? (
-            <ActivityIndicator color={Colors.red} style={{ marginTop: Spacing.xxl }} />
+            <ActivityIndicator color={colors.red} style={{ marginTop: Spacing.xxl }} />
           ) : (
             <View style={styles.coachList}>
               {(selectedCollege?.coaches ?? []).map((coach) => (
-                <View key={coach.id} style={styles.coachRow}>
-                  <View style={styles.coachAvatar}>
-                    <Text style={styles.coachAvatarText}>
+                <View key={coach.id} style={[styles.coachRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                  <View style={[styles.coachAvatar, { backgroundColor: colors.red + '25' }]}>
+                    <Text style={[styles.coachAvatarText, { color: colors.red }]}>
                       {coach.firstName[0]}{coach.lastName[0]}
                     </Text>
                   </View>
                   <View style={styles.coachInfo}>
-                    <Text style={styles.coachName}>
+                    <Text style={[styles.coachName, { color: colors.textPrimary }]}>
                       {coach.firstName} {coach.lastName}
                     </Text>
                     {coach.title && (
-                      <Text style={styles.coachTitle}>{coach.title}</Text>
+                      <Text style={[styles.coachTitle, { color: colors.textMuted }]}>{coach.title}</Text>
                     )}
                   </View>
                   {coach.email ? (
                     <TouchableOpacity
-                      style={styles.emailCoachBtn}
+                      style={[styles.emailCoachBtn, { backgroundColor: colors.red }]}
                       onPress={() => handleSelectCoach(coach)}
                       activeOpacity={0.7}
                     >
                       <Text style={styles.emailCoachBtnText}>Email</Text>
                     </TouchableOpacity>
                   ) : (
-                    <Text style={styles.noEmailText}>No email</Text>
+                    <Text style={[styles.noEmailText, { color: colors.textMuted }]}>No email</Text>
                   )}
                 </View>
               ))}
               {(selectedCollege?.coaches ?? []).length === 0 && !isLoadingCoaches && (
-                <Text style={styles.emptyText}>No coaches found for this college</Text>
+                <Text style={[styles.emptyText, { color: colors.textMuted }]}>No coaches found for this college</Text>
               )}
             </View>
           )}
@@ -319,39 +329,39 @@ export default function RecruitingScreen() {
       {step === 'compose' && (
         <ScrollView style={styles.body} keyboardShouldPersistTaps="handled">
           {/* To field */}
-          <Text style={styles.fieldLabel}>To</Text>
-          <View style={styles.readOnlyField}>
-            <Text style={styles.readOnlyText}>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>To</Text>
+          <View style={[styles.readOnlyField, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.readOnlyText, { color: colors.textMuted }]}>
               {selectedCoach?.firstName} {selectedCoach?.lastName} ({selectedCoach?.email})
             </Text>
           </View>
 
           {/* Subject */}
-          <Text style={styles.fieldLabel}>Subject</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Subject</Text>
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={emailSubject}
             onChangeText={setEmailSubject}
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
 
           {/* Message */}
-          <Text style={styles.fieldLabel}>Message</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Message</Text>
           <TextInput
-            style={[styles.textInput, styles.textArea]}
+            style={[styles.textInput, styles.textArea, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={emailBody}
             onChangeText={setEmailBody}
             multiline
             textAlignVertical="top"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
-          <Text style={styles.helperText}>
+          <Text style={[styles.helperText, { color: colors.textMuted }]}>
             A link to the player profile will be included automatically.
           </Text>
 
           {/* Send button */}
           <TouchableOpacity
-            style={[styles.sendBtn, (isSending || !emailSubject.trim() || !emailBody.trim()) && styles.sendBtnDisabled]}
+            style={[styles.sendBtn, { backgroundColor: colors.red }, (isSending || !emailSubject.trim() || !emailBody.trim()) && styles.sendBtnDisabled]}
             onPress={handleSend}
             disabled={isSending || !emailSubject.trim() || !emailBody.trim()}
             activeOpacity={0.7}
@@ -371,7 +381,6 @@ export default function RecruitingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -380,19 +389,15 @@ const styles = StyleSheet.create({
     paddingTop: 56,
     paddingHorizontal: Spacing.xl,
     paddingBottom: Spacing.lg,
-    backgroundColor: Colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   backText: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
   },
   headerTitle: {
     fontSize: FontSize.md,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
     textAlign: 'center',
     flex: 1,
   },
@@ -404,15 +409,12 @@ const styles = StyleSheet.create({
 
   // Search
   searchInput: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     fontSize: FontSize.md,
     fontFamily: Fonts.body,
-    color: Colors.textPrimary,
     marginBottom: Spacing.md,
   },
 
@@ -424,24 +426,14 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   filterPill: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.full,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  filterPillActive: {
-    backgroundColor: Colors.red,
-    borderColor: Colors.red,
   },
   filterPillText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textSecondary,
-  },
-  filterPillTextActive: {
-    color: '#fff',
   },
 
   // Results
@@ -451,18 +443,15 @@ const styles = StyleSheet.create({
   collegeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
     marginBottom: Spacing.sm,
   },
   collegeIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.surfaceLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
@@ -470,7 +459,6 @@ const styles = StyleSheet.create({
   collegeIconText: {
     fontSize: FontSize.md,
     fontFamily: Fonts.heading,
-    color: Colors.textSecondary,
   },
   collegeInfo: {
     flex: 1,
@@ -478,38 +466,31 @@ const styles = StyleSheet.create({
   collegeName: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   collegeMeta: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   chevron: {
     fontSize: FontSize.xxl,
-    color: Colors.textMuted,
     fontWeight: '300',
   },
 
   // College header (coaches step)
   collegeHeader: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
     marginBottom: Spacing.lg,
   },
   collegeHeaderName: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
   },
   collegeHeaderMeta: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 4,
   },
 
@@ -520,17 +501,14 @@ const styles = StyleSheet.create({
   coachRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   coachAvatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.red + '25',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
@@ -538,7 +516,6 @@ const styles = StyleSheet.create({
   coachAvatarText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.heading,
-    color: Colors.red,
   },
   coachInfo: {
     flex: 1,
@@ -546,16 +523,13 @@ const styles = StyleSheet.create({
   coachName: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   coachTitle: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   emailCoachBtn: {
-    backgroundColor: Colors.red,
     borderRadius: BorderRadius.sm,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
@@ -568,40 +542,32 @@ const styles = StyleSheet.create({
   noEmailText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
 
   // Compose
   fieldLabel: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textSecondary,
     marginBottom: Spacing.sm,
     marginTop: Spacing.lg,
   },
   readOnlyField: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
   },
   readOnlyText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   textInput: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     fontSize: FontSize.md,
     fontFamily: Fonts.body,
-    color: Colors.textPrimary,
   },
   textArea: {
     minHeight: 180,
@@ -610,11 +576,9 @@ const styles = StyleSheet.create({
   helperText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: Spacing.sm,
   },
   sendBtn: {
-    backgroundColor: Colors.red,
     borderRadius: BorderRadius.md,
     paddingVertical: Spacing.lg,
     alignItems: 'center',
@@ -634,7 +598,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     textAlign: 'center',
     marginTop: Spacing.xxl,
   },

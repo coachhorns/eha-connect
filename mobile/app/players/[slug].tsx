@@ -9,13 +9,15 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
-import { Colors, Spacing, FontSize, BorderRadius } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { playersApi } from '@/api/players';
 import { StatBox } from '@/components/ui/StatBox';
 import { Card } from '@/components/ui/Card';
 import { Loading } from '@/components/ui/Loading';
 
 export default function PlayerProfileScreen() {
+  const colors = useColors();
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
   const { data: player, isLoading, refetch } = useQuery({
@@ -40,36 +42,36 @@ export default function PlayerProfileScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.red} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.red} />
       }
     >
       {/* Header */}
       <View style={styles.header}>
         <Image
           source={{ uri: player.profileImageUrl ?? undefined }}
-          style={styles.avatar}
+          style={[styles.avatar, { backgroundColor: colors.surfaceLight, borderColor: colors.red }]}
           contentFit="cover"
           transition={200}
         />
-        <Text style={styles.name}>{player.firstName} {player.lastName}</Text>
+        <Text style={[styles.name, { color: colors.textPrimary }]}>{player.firstName} {player.lastName}</Text>
         <View style={styles.metaRow}>
           {player.position && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{player.position}</Text>
+            <View style={[styles.badge, { backgroundColor: colors.navy }]}>
+              <Text style={[styles.badgeText, { color: colors.gold }]}>{player.position}</Text>
             </View>
           )}
           {player.graduationYear && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>'{String(player.graduationYear).slice(2)}</Text>
+            <View style={[styles.badge, { backgroundColor: colors.navy }]}>
+              <Text style={[styles.badgeText, { color: colors.gold }]}>'{String(player.graduationYear).slice(2)}</Text>
             </View>
           )}
         </View>
-        {player.school && <Text style={styles.school}>{player.school}</Text>}
+        {player.school && <Text style={[styles.school, { color: colors.textSecondary }]}>{player.school}</Text>}
         {player.city && player.state && (
-          <Text style={styles.location}>{player.city}, {player.state}</Text>
+          <Text style={[styles.location, { color: colors.textMuted }]}>{player.city}, {player.state}</Text>
         )}
       </View>
 
@@ -83,8 +85,8 @@ export default function PlayerProfileScreen() {
       {/* Bio */}
       {player.bio && (
         <Card style={styles.section}>
-          <Text style={styles.sectionLabel}>ABOUT</Text>
-          <Text style={styles.bioText}>{player.bio}</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>ABOUT</Text>
+          <Text style={[styles.bioText, { color: colors.textSecondary }]}>{player.bio}</Text>
         </Card>
       )}
 
@@ -92,7 +94,7 @@ export default function PlayerProfileScreen() {
       {/* Stats */}
       {player.careerStats && player.careerStats.gamesPlayed > 0 ? (
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>SEASON STATS</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>SEASON STATS</Text>
 
           <View style={styles.statsGrid}>
             <StatBox label="PPG" value={player.careerStats.averages.ppg.toFixed(1)} highlight />
@@ -102,33 +104,33 @@ export default function PlayerProfileScreen() {
             <StatBox label="BPG" value={player.careerStats.averages.bpg.toFixed(1)} />
           </View>
 
-          <View style={styles.shootingRow}>
+          <View style={[styles.shootingRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.shootingItem}>
-              <Text style={styles.shootingValue}>
+              <Text style={[styles.shootingValue, { color: colors.textPrimary }]}>
                 {player.careerStats.shooting.fgPct.toFixed(1)}%
               </Text>
-              <Text style={styles.shootingLabel}>FG</Text>
+              <Text style={[styles.shootingLabel, { color: colors.textMuted }]}>FG</Text>
             </View>
-            <View style={styles.shootingDivider} />
+            <View style={[styles.shootingDivider, { backgroundColor: colors.border }]} />
             <View style={styles.shootingItem}>
-              <Text style={styles.shootingValue}>
+              <Text style={[styles.shootingValue, { color: colors.textPrimary }]}>
                 {player.careerStats.shooting.fg3Pct.toFixed(1)}%
               </Text>
-              <Text style={styles.shootingLabel}>3PT</Text>
+              <Text style={[styles.shootingLabel, { color: colors.textMuted }]}>3PT</Text>
             </View>
-            <View style={styles.shootingDivider} />
+            <View style={[styles.shootingDivider, { backgroundColor: colors.border }]} />
             <View style={styles.shootingItem}>
-              <Text style={styles.shootingValue}>
+              <Text style={[styles.shootingValue, { color: colors.textPrimary }]}>
                 {player.careerStats.shooting.ftPct.toFixed(1)}%
               </Text>
-              <Text style={styles.shootingLabel}>FT</Text>
+              <Text style={[styles.shootingLabel, { color: colors.textMuted }]}>FT</Text>
             </View>
           </View>
         </View>
       ) : (
         <Card variant="navy" style={styles.section}>
-          <Text style={styles.sectionLabel}>SEASON STATS</Text>
-          <Text style={styles.comingSoon}>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>SEASON STATS</Text>
+          <Text style={[styles.comingSoon, { color: colors.textSecondary }]}>
             No stats available for this player yet.
           </Text>
         </Card>
@@ -140,7 +142,6 @@ export default function PlayerProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     paddingBottom: 40,
@@ -155,15 +156,12 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 55,
-    backgroundColor: Colors.surfaceLight,
     marginBottom: Spacing.lg,
     borderWidth: 3,
-    borderColor: Colors.red,
   },
   name: {
     fontSize: FontSize.xxl,
     fontWeight: '800',
-    color: Colors.textPrimary,
   },
   metaRow: {
     flexDirection: 'row',
@@ -171,7 +169,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   badge: {
-    backgroundColor: Colors.navy,
     paddingHorizontal: Spacing.md,
     paddingVertical: 4,
     borderRadius: BorderRadius.full,
@@ -179,17 +176,14 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: FontSize.xs,
     fontWeight: '700',
-    color: Colors.gold,
     letterSpacing: 0.5,
   },
   school: {
     fontSize: FontSize.md,
-    color: Colors.textSecondary,
     marginTop: Spacing.sm,
   },
   location: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   statsRow: {
@@ -206,18 +200,15 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: FontSize.xs,
     fontWeight: '700',
-    color: Colors.gold,
     letterSpacing: 2,
     marginBottom: Spacing.md,
   },
   bioText: {
     fontSize: FontSize.md,
-    color: Colors.textSecondary,
     lineHeight: 22,
   },
   comingSoon: {
     fontSize: FontSize.sm,
-    color: Colors.textSecondary,
     fontStyle: 'italic',
   },
   statsGrid: {
@@ -228,11 +219,9 @@ const styles = StyleSheet.create({
   },
   shootingRow: {
     flexDirection: 'row',
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
     justifyContent: 'space-around',
     alignItems: 'center',
   },
@@ -242,17 +231,14 @@ const styles = StyleSheet.create({
   shootingValue: {
     fontSize: FontSize.lg,
     fontWeight: '700',
-    color: Colors.textPrimary,
   },
   shootingLabel: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
     marginTop: 2,
     fontWeight: '600',
   },
   shootingDivider: {
     width: 1,
     height: 24,
-    backgroundColor: Colors.border,
   },
 });

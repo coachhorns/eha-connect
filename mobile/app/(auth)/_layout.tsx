@@ -6,6 +6,7 @@ export default function AuthLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
+        // Auth screens always use dark background (photo overlay)
         contentStyle: { backgroundColor: Colors.background },
         animation: 'fade',
       }}

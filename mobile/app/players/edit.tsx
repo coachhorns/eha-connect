@@ -18,7 +18,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
-import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { playersApi } from '@/api/players';
 import type { PlayerMedia } from '@/types';
 
@@ -29,6 +30,7 @@ const PHOTO_COLS = 3;
 const PHOTO_SIZE = (SCREEN_WIDTH - Spacing.lg * 2 - PHOTO_GRID_GAP * (PHOTO_COLS - 1)) / PHOTO_COLS;
 
 export default function EditProfileScreen() {
+  const colors = useColors();
   const { id, slug } = useLocalSearchParams<{ id: string; slug: string }>();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -304,30 +306,30 @@ export default function EditProfileScreen() {
 
   if (isLoading || !player) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.red} />
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.red} />
       </View>
     );
   }
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {/* Header */}
       <View style={[styles.header, { height: HEADER_HEIGHT }]}>
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
-          <View style={[styles.headerInner, { paddingTop: Platform.OS === 'ios' ? 50 : 30 }]}>
+        <BlurView intensity={80} tint={colors.glassTint} style={StyleSheet.absoluteFill}>
+          <View style={[styles.headerInner, { paddingTop: Platform.OS === 'ios' ? 50 : 30, backgroundColor: colors.headerOverlay }]}>
             <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7} style={styles.backBtn}>
-              <Text style={styles.backText}>← Back</Text>
+              <Text style={[styles.backText, { color: colors.textPrimary }]}>{'\u2190'} Back</Text>
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Edit Profile</Text>
+            <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Edit Profile</Text>
             <TouchableOpacity
               onPress={handleSave}
               disabled={saving}
               activeOpacity={0.7}
-              style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
+              style={[styles.saveBtn, { backgroundColor: colors.red }, saving && styles.saveBtnDisabled]}
             >
               {saving ? (
                 <ActivityIndicator size="small" color="#FFF" />
@@ -347,29 +349,29 @@ export default function EditProfileScreen() {
       >
         {/* ── Profile Photo ─────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>PROFILE PHOTO</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>PROFILE PHOTO</Text>
           <View style={styles.profilePhotoRow}>
-            <View style={styles.profilePhotoWrap}>
+            <View style={[styles.profilePhotoWrap, { borderColor: colors.border }]}>
               {profilePhoto ? (
                 <Image source={{ uri: profilePhoto }} style={styles.profilePhotoImg} contentFit="cover" />
               ) : (
-                <View style={[styles.profilePhotoImg, styles.profilePhotoPlaceholder]}>
-                  <Text style={styles.profilePhotoInitial}>
+                <View style={[styles.profilePhotoImg, styles.profilePhotoPlaceholder, { backgroundColor: colors.surface }]}>
+                  <Text style={[styles.profilePhotoInitial, { color: colors.textMuted }]}>
                     {(player as any).firstName?.[0] || '?'}
                   </Text>
                 </View>
               )}
             </View>
             <TouchableOpacity
-              style={styles.changePhotoBtn}
+              style={[styles.changePhotoBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
               onPress={handleChangeProfilePhoto}
               disabled={uploading === 'profilePhoto'}
               activeOpacity={0.7}
             >
               {uploading === 'profilePhoto' ? (
-                <ActivityIndicator size="small" color={Colors.gold} />
+                <ActivityIndicator size="small" color={colors.gold} />
               ) : (
-                <Text style={styles.changePhotoBtnText}>
+                <Text style={[styles.changePhotoBtnText, { color: colors.gold }]}>
                   {profilePhoto ? 'Change Photo' : 'Add Photo'}
                 </Text>
               )}
@@ -379,23 +381,23 @@ export default function EditProfileScreen() {
 
         {/* ── Videos ────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>VIDEOS</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>VIDEOS</Text>
           {videos.map((video) => (
-            <View key={video.id} style={styles.videoRow}>
+            <View key={video.id} style={[styles.videoRow, { backgroundColor: colors.surface }]}>
               <View style={styles.videoThumbWrap}>
                 {video.thumbnail ? (
                   <Image source={{ uri: video.thumbnail }} style={styles.videoThumb} contentFit="cover" />
                 ) : (
-                  <View style={[styles.videoThumb, styles.videoThumbPlaceholder]}>
-                    <Text style={styles.videoThumbIcon}>▶</Text>
+                  <View style={[styles.videoThumb, styles.videoThumbPlaceholder, { backgroundColor: colors.border }]}>
+                    <Text style={[styles.videoThumbIcon, { color: colors.textMuted }]}>{'\u25B6'}</Text>
                   </View>
                 )}
               </View>
               <View style={styles.videoInfo}>
-                <Text style={styles.videoTitle} numberOfLines={1}>
+                <Text style={[styles.videoTitle, { color: colors.textPrimary }]} numberOfLines={1}>
                   {video.title || 'Video'}
                 </Text>
-                <Text style={styles.videoDate}>
+                <Text style={[styles.videoDate, { color: colors.textMuted }]}>
                   {new Date(video.uploadedAt).toLocaleDateString()}
                 </Text>
               </View>
@@ -404,48 +406,48 @@ export default function EditProfileScreen() {
                 onPress={() => handleDeleteMedia(video.id, 'VIDEO')}
                 activeOpacity={0.7}
               >
-                <Text style={styles.videoDeleteText}>Delete</Text>
+                <Text style={[styles.videoDeleteText, { color: colors.red }]}>Delete</Text>
               </TouchableOpacity>
             </View>
           ))}
           <TouchableOpacity
-            style={styles.addBtn}
+            style={[styles.addBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
             onPress={handleAddVideo}
             disabled={uploading === 'video'}
             activeOpacity={0.7}
           >
             {uploading === 'video' ? (
-              <ActivityIndicator size="small" color={Colors.gold} />
+              <ActivityIndicator size="small" color={colors.gold} />
             ) : (
-              <Text style={styles.addBtnText}>+ Add Video from Camera Roll</Text>
+              <Text style={[styles.addBtnText, { color: colors.gold }]}>+ Add Video from Camera Roll</Text>
             )}
           </TouchableOpacity>
         </View>
 
         {/* ── Transcript ────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>TRANSCRIPT</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>TRANSCRIPT</Text>
           {transcriptUrl ? (
-            <View style={styles.transcriptRow}>
+            <View style={[styles.transcriptRow, { backgroundColor: colors.surface }]}>
               <View style={styles.transcriptInfo}>
-                <Text style={styles.transcriptIcon}>📄</Text>
-                <Text style={styles.transcriptLabel}>Transcript Uploaded</Text>
+                <Text style={styles.transcriptIcon}>{'\uD83D\uDCC4'}</Text>
+                <Text style={[styles.transcriptLabel, { color: colors.textPrimary }]}>Transcript Uploaded</Text>
               </View>
               <TouchableOpacity onPress={handleRemoveTranscript} activeOpacity={0.7}>
-                <Text style={styles.transcriptRemoveText}>Remove</Text>
+                <Text style={[styles.transcriptRemoveText, { color: colors.red }]}>Remove</Text>
               </TouchableOpacity>
             </View>
           ) : (
             <TouchableOpacity
-              style={styles.addBtn}
+              style={[styles.addBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
               onPress={handleUploadTranscript}
               disabled={uploading === 'transcript'}
               activeOpacity={0.7}
             >
               {uploading === 'transcript' ? (
-                <ActivityIndicator size="small" color={Colors.gold} />
+                <ActivityIndicator size="small" color={colors.gold} />
               ) : (
-                <Text style={styles.addBtnText}>+ Upload Transcript (PDF or Image)</Text>
+                <Text style={[styles.addBtnText, { color: colors.gold }]}>+ Upload Transcript (PDF or Image)</Text>
               )}
             </TouchableOpacity>
           )}
@@ -453,13 +455,13 @@ export default function EditProfileScreen() {
 
         {/* ── About Me ──────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>ABOUT ME</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>ABOUT ME</Text>
           <TextInput
-            style={[styles.input, styles.inputMultiline]}
+            style={[styles.input, styles.inputMultiline, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={bio}
             onChangeText={setBio}
             placeholder="Write a short bio..."
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             multiline
             numberOfLines={4}
             textAlignVertical="top"
@@ -468,84 +470,84 @@ export default function EditProfileScreen() {
 
         {/* ── Socials & Contact ─────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>SOCIALS & CONTACT</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>SOCIALS & CONTACT</Text>
 
-          <Text style={styles.fieldLabel}>Contact Email</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Contact Email</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={email}
             onChangeText={setEmail}
             placeholder="player@email.com"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             keyboardType="email-address"
             autoCapitalize="none"
           />
 
-          <Text style={styles.fieldLabel}>Instagram</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Instagram</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={instagramHandle}
             onChangeText={setInstagramHandle}
             placeholder="username (without @)"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             autoCapitalize="none"
           />
 
-          <Text style={styles.fieldLabel}>Twitter / X</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Twitter / X</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={twitterHandle}
             onChangeText={setTwitterHandle}
             placeholder="username (without @)"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             autoCapitalize="none"
           />
         </View>
 
         {/* ── Recruiting Links ──────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>RECRUITING LINKS</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>RECRUITING LINKS</Text>
 
-          <Text style={styles.fieldLabel}>Hudl Profile</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Hudl Profile</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={hudlUrl}
             onChangeText={setHudlUrl}
             placeholder="https://www.hudl.com/profile/..."
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             keyboardType="url"
             autoCapitalize="none"
           />
 
-          <Text style={styles.fieldLabel}>MaxPreps Profile</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>MaxPreps Profile</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={maxPrepsUrl}
             onChangeText={setMaxPrepsUrl}
             placeholder="https://www.maxpreps.com/athlete/..."
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             keyboardType="url"
             autoCapitalize="none"
           />
 
-          <Text style={styles.fieldLabel}>YouTube</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>YouTube</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={youtubeUrl}
             onChangeText={setYoutubeUrl}
             placeholder="https://youtube.com/..."
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             keyboardType="url"
             autoCapitalize="none"
           />
 
-          <Text style={styles.fieldLabel}>Highlight Link</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Highlight Link</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={highlightUrl}
             onChangeText={setHighlightUrl}
             placeholder="https://..."
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             keyboardType="url"
             autoCapitalize="none"
           />
@@ -553,22 +555,22 @@ export default function EditProfileScreen() {
 
         {/* ── Academic ──────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>ACADEMIC</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>ACADEMIC</Text>
 
-          <Text style={styles.fieldLabel}>GPA</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>GPA</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={gpa}
             onChangeText={setGpa}
             placeholder="3.5"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={colors.textMuted}
             keyboardType="decimal-pad"
           />
         </View>
 
         {/* ── Photos Gallery ─────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>PHOTOS</Text>
+          <Text style={[styles.sectionLabel, { color: colors.gold }]}>PHOTOS</Text>
           <View style={styles.mediaGrid}>
             {photos.map((photo) => (
               <View key={photo.id} style={styles.photoItem}>
@@ -578,22 +580,22 @@ export default function EditProfileScreen() {
                   onPress={() => handleDeleteMedia(photo.id, 'PHOTO')}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.mediaDeleteText}>×</Text>
+                  <Text style={styles.mediaDeleteText}>{'\u00D7'}</Text>
                 </TouchableOpacity>
               </View>
             ))}
             <TouchableOpacity
-              style={styles.addMediaTile}
+              style={[styles.addMediaTile, { borderColor: colors.border }]}
               onPress={handleAddPhoto}
               disabled={uploading === 'photo'}
               activeOpacity={0.7}
             >
               {uploading === 'photo' ? (
-                <ActivityIndicator size="small" color={Colors.gold} />
+                <ActivityIndicator size="small" color={colors.gold} />
               ) : (
                 <>
-                  <Text style={styles.addMediaIcon}>+</Text>
-                  <Text style={styles.addMediaLabel}>Add Photo</Text>
+                  <Text style={[styles.addMediaIcon, { color: colors.textMuted }]}>+</Text>
+                  <Text style={[styles.addMediaLabel, { color: colors.textMuted }]}>Add Photo</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -607,11 +609,9 @@ export default function EditProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: Colors.background,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -628,7 +628,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   backBtn: {
     paddingVertical: Spacing.xs,
@@ -637,15 +636,12 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   headerTitle: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textPrimary,
   },
   saveBtn: {
-    backgroundColor: Colors.red,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.full,
@@ -672,27 +668,22 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.heading,
-    color: Colors.gold,
     letterSpacing: 2,
     marginBottom: Spacing.md,
   },
   fieldLabel: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textSecondary,
     marginBottom: Spacing.xs,
     marginTop: Spacing.md,
   },
   input: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     fontSize: FontSize.md,
     fontFamily: Fonts.body,
-    color: Colors.textPrimary,
   },
   inputMultiline: {
     minHeight: 100,
@@ -710,35 +701,29 @@ const styles = StyleSheet.create({
     borderRadius: 48,
     overflow: 'hidden',
     borderWidth: 2,
-    borderColor: Colors.border,
   },
   profilePhotoImg: {
     width: '100%',
     height: '100%',
   },
   profilePhotoPlaceholder: {
-    backgroundColor: Colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   profilePhotoInitial: {
     fontSize: 36,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textMuted,
   },
   changePhotoBtn: {
     marginLeft: Spacing.lg,
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.full,
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
   },
   changePhotoBtnText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.gold,
   },
 
   // ── Photos grid ──────────────────────────────────
@@ -779,20 +764,17 @@ const styles = StyleSheet.create({
     height: PHOTO_SIZE,
     borderRadius: BorderRadius.lg,
     borderWidth: 2,
-    borderColor: Colors.border,
     borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
   },
   addMediaIcon: {
     fontSize: 28,
-    color: Colors.textMuted,
     fontWeight: '300',
   },
   addMediaLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
 
@@ -800,7 +782,6 @@ const styles = StyleSheet.create({
   videoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     padding: Spacing.sm,
     marginBottom: Spacing.sm,
@@ -816,13 +797,11 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   videoThumbPlaceholder: {
-    backgroundColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   videoThumbIcon: {
     fontSize: 20,
-    color: Colors.textMuted,
   },
   videoInfo: {
     flex: 1,
@@ -831,12 +810,10 @@ const styles = StyleSheet.create({
   videoTitle: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   videoDate: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   videoDeleteBtn: {
@@ -846,15 +823,12 @@ const styles = StyleSheet.create({
   videoDeleteText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.red,
   },
 
   // ── Add button (shared) ──────────────────────────
   addBtn: {
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderStyle: 'dashed',
     paddingVertical: Spacing.lg,
     alignItems: 'center',
@@ -863,7 +837,6 @@ const styles = StyleSheet.create({
   addBtnText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.gold,
   },
 
   // ── Transcript row ───────────────────────────────
@@ -871,7 +844,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
@@ -887,11 +859,9 @@ const styles = StyleSheet.create({
   transcriptLabel: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   transcriptRemoveText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.red,
   },
 });

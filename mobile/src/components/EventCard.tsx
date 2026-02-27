@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { format } from 'date-fns';
 import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import type { Event } from '@/types';
 
 interface EventCardProps {
@@ -12,14 +13,15 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, onPress }: EventCardProps) {
+  const colors = useColors();
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
   const now = new Date();
   const isLive = event.isActive && startDate <= now && endDate >= now;
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.85}>
-      <View style={styles.imageContainer}>
+    <TouchableOpacity style={[styles.card, { borderColor: colors.border }]} onPress={onPress} activeOpacity={0.85}>
+      <View style={[styles.imageContainer, { backgroundColor: colors.surface }]}>
         {event.bannerImage ? (
           <Image
             source={{ uri: event.bannerImage }}
@@ -28,8 +30,9 @@ export function EventCard({ event, onPress }: EventCardProps) {
             transition={200}
           />
         ) : (
-          <View style={styles.imagePlaceholder} />
+          <View style={[styles.imagePlaceholder, { backgroundColor: colors.surfaceLight }]} />
         )}
+        {/* Gradient overlay stays dark for text readability on images */}
         <LinearGradient
           colors={['transparent', 'rgba(15, 23, 42, 0.7)', 'rgba(15, 23, 42, 0.97)']}
           locations={[0.25, 0.65, 1]}
@@ -51,7 +54,7 @@ export function EventCard({ event, onPress }: EventCardProps) {
           )}
         </View>
 
-        {/* Title + meta overlaid on image */}
+        {/* Title + meta overlaid on image — always white text */}
         <View style={styles.overlay}>
           <Text style={styles.name} numberOfLines={2}>{event.name}</Text>
           <View style={styles.metaRow}>
@@ -78,15 +81,12 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   imageContainer: {
     height: 185,
-    backgroundColor: Colors.surface,
   },
   imagePlaceholder: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.surfaceLight,
   },
   badges: {
     position: 'absolute',
@@ -108,10 +108,10 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: Colors.textPrimary,
+    backgroundColor: '#FFFFFF',
   },
   liveText: {
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyBold,
     letterSpacing: 1,
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
+    color: '#FFFFFF',
     marginBottom: 4,
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 0, height: 1 },

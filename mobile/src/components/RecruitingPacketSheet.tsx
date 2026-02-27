@@ -10,7 +10,8 @@ import {
   Platform,
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { api } from '@/api/client';
 import { DynamicSheet, SHEET_BODY_MAX } from './DynamicSheet';
 
@@ -51,6 +52,7 @@ interface Props {
 type Step = 'form' | 'summary';
 
 export function RecruitingPacketSheet({ visible, onClose, eventId, eventName }: Props) {
+  const colors = useColors();
   const [step, setStep] = useState<Step>('form');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -150,15 +152,15 @@ export function RecruitingPacketSheet({ visible, onClose, eventId, eventName }: 
   return (
     <DynamicSheet visible={visible} onClose={onClose}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.headerText}>
-          <Text style={styles.headerTitle}>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
             {step === 'form' ? 'College Recruiting Packet' : 'Packet Summary'}
           </Text>
-          <Text style={styles.headerSub}>{eventName}</Text>
+          <Text style={[styles.headerSub, { color: colors.textMuted }]}>{eventName}</Text>
         </View>
-        <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-          <Text style={styles.closeBtnText}>✕</Text>
+        <TouchableOpacity onPress={onClose} style={[styles.closeBtn, { backgroundColor: colors.surfaceLight }]}>
+          <Text style={[styles.closeBtnText, { color: colors.textMuted }]}>✕</Text>
         </TouchableOpacity>
       </View>
 
@@ -173,99 +175,99 @@ export function RecruitingPacketSheet({ visible, onClose, eventId, eventName }: 
         {step === 'form' && (
           <>
             {confirmedCoach ? (
-              <View style={styles.confirmedBanner}>
-                <View style={styles.checkCircle}>
-                  <Text style={styles.checkMark}>✓</Text>
+              <View style={[styles.confirmedBanner, { backgroundColor: colors.successTint, borderColor: colors.successBorder }]}>
+                <View style={[styles.checkCircle, { backgroundColor: colors.successBorder }]}>
+                  <Text style={[styles.checkMark, { color: colors.success }]}>✓</Text>
                 </View>
                 <View style={styles.confirmedInfo}>
-                  <Text style={styles.confirmedName}>
+                  <Text style={[styles.confirmedName, { color: colors.textPrimary }]}>
                     {confirmedCoach.firstName} {confirmedCoach.lastName}
                   </Text>
-                  <Text style={styles.confirmedSub}>
+                  <Text style={[styles.confirmedSub, { color: colors.textMuted }]}>
                     {confirmedCoach.title ? `${confirmedCoach.title} · ` : ''}
                     {confirmedCoach.college.name}
                   </Text>
-                  <Text style={styles.confirmedDiv}>
+                  <Text style={[styles.confirmedDiv, { color: colors.textMuted }]}>
                     {confirmedCoach.college.division}
                     {confirmedCoach.college.conference ? ` · ${confirmedCoach.college.conference}` : ''}
                   </Text>
                 </View>
                 <TouchableOpacity onPress={clearCoach}>
-                  <Text style={styles.changeText}>Change</Text>
+                  <Text style={[styles.changeText, { color: colors.textMuted }]}>Change</Text>
                 </TouchableOpacity>
               </View>
             ) : null}
 
             <View style={styles.nameRow}>
               <View style={[styles.field, { flex: 1 }]}>
-                <Text style={styles.fieldLabel}>First Name</Text>
+                <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>First Name</Text>
                 <TextInput
-                  style={[styles.input, confirmedCoach && styles.inputDisabled]}
+                  style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.textPrimary }, confirmedCoach && styles.inputDisabled]}
                   value={firstName}
                   onChangeText={v => { setFirstName(v); if (confirmedCoach) clearCoach(); }}
                   placeholder="John"
-                  placeholderTextColor={Colors.textMuted}
+                  placeholderTextColor={colors.textMuted}
                   editable={!confirmedCoach}
                 />
               </View>
               <View style={{ width: Spacing.sm }} />
               <View style={[styles.field, { flex: 1 }]}>
-                <Text style={styles.fieldLabel}>Last Name</Text>
+                <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Last Name</Text>
                 <TextInput
-                  style={[styles.input, confirmedCoach && styles.inputDisabled]}
+                  style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.textPrimary }, confirmedCoach && styles.inputDisabled]}
                   value={lastName}
                   onChangeText={v => { setLastName(v); if (confirmedCoach) clearCoach(); }}
                   placeholder="Smith"
-                  placeholderTextColor={Colors.textMuted}
+                  placeholderTextColor={colors.textMuted}
                   editable={!confirmedCoach}
                 />
               </View>
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>School</Text>
+              <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>School</Text>
               <TextInput
-                style={[styles.input, confirmedCoach && styles.inputDisabled]}
+                style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.textPrimary }, confirmedCoach && styles.inputDisabled]}
                 value={school}
                 onChangeText={v => { setSchool(v); if (confirmedCoach) clearCoach(); }}
                 placeholder="University of..."
-                placeholderTextColor={Colors.textMuted}
+                placeholderTextColor={colors.textMuted}
                 editable={!confirmedCoach}
               />
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>School Email</Text>
+              <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>School Email</Text>
               <TextInput
-                style={[styles.input, confirmedCoach && styles.inputDisabled]}
+                style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.textPrimary }, confirmedCoach && styles.inputDisabled]}
                 value={email}
                 onChangeText={setEmail}
                 placeholder="coach@university.edu"
-                placeholderTextColor={Colors.textMuted}
+                placeholderTextColor={colors.textMuted}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 editable={!confirmedCoach}
               />
-              <Text style={styles.helperText}>Must be a .edu email address</Text>
+              <Text style={[styles.helperText, { color: colors.textMuted }]}>Must be a .edu email address</Text>
             </View>
 
             {showSuggestions && (
-              <View style={styles.suggestions}>
-                <Text style={styles.suggestionsLabel}>IS THIS YOU?</Text>
+              <View style={[styles.suggestions, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                <Text style={[styles.suggestionsLabel, { color: colors.gold, borderBottomColor: colors.border }]}>IS THIS YOU?</Text>
                 {suggestions.map(coach => (
                   <TouchableOpacity
                     key={coach.id}
-                    style={styles.suggestionRow}
+                    style={[styles.suggestionRow, { borderBottomColor: colors.border }]}
                     onPress={() => selectCoach(coach)}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.suggestionName}>
+                    <Text style={[styles.suggestionName, { color: colors.textPrimary }]}>
                       {coach.firstName} {coach.lastName}
                     </Text>
-                    <Text style={styles.suggestionSub}>
+                    <Text style={[styles.suggestionSub, { color: colors.textMuted }]}>
                       {coach.title ? `${coach.title} · ` : ''}{coach.college.name}
                     </Text>
-                    <Text style={styles.suggestionDiv}>
+                    <Text style={[styles.suggestionDiv, { color: colors.textMuted }]}>
                       {coach.college.division}
                       {coach.college.state ? ` · ${coach.college.state}` : ''}
                     </Text>
@@ -276,19 +278,19 @@ export function RecruitingPacketSheet({ visible, onClose, eventId, eventName }: 
 
             {isSearching && (
               <View style={styles.searchingRow}>
-                <ActivityIndicator size="small" color={Colors.textMuted} />
-                <Text style={styles.searchingText}>Searching coaches...</Text>
+                <ActivityIndicator size="small" color={colors.textMuted} />
+                <Text style={[styles.searchingText, { color: colors.textMuted }]}>Searching coaches...</Text>
               </View>
             )}
 
-            {!!error && <Text style={styles.errorText}>{error}</Text>}
+            {!!error && <Text style={[styles.errorText, { color: colors.redLight, backgroundColor: colors.redTint, borderColor: colors.redTint }]}>{error}</Text>}
           </>
         )}
 
         {/* ── STEP 2: Summary ── */}
         {step === 'summary' && (
           <>
-            <Text style={styles.sectionLabel}>WHAT'S INCLUDED</Text>
+            <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>WHAT'S INCLUDED</Text>
             {[
               'Up-to-date rosters for all participating teams',
               'Player information and email contacts',
@@ -296,66 +298,66 @@ export function RecruitingPacketSheet({ visible, onClose, eventId, eventName }: 
               'Live stats throughout the event',
             ].map((item, i) => (
               <View key={i} style={styles.includeRow}>
-                <Text style={styles.includeDot}>·</Text>
-                <Text style={styles.includeText}>{item}</Text>
+                <Text style={[styles.includeDot, { color: colors.textMuted }]}>·</Text>
+                <Text style={[styles.includeText, { color: colors.textSecondary }]}>{item}</Text>
               </View>
             ))}
 
-            <View style={styles.priceCard}>
+            <View style={[styles.priceCard, { backgroundColor: colors.background, borderColor: colors.border }]}>
               <View style={styles.priceRow}>
-                <Text style={styles.priceMeta}>Division</Text>
-                <View style={styles.divBadge}>
-                  <Text style={styles.divBadgeText}>{division}</Text>
+                <Text style={[styles.priceMeta, { color: colors.textMuted }]}>Division</Text>
+                <View style={[styles.divBadge, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}>
+                  <Text style={[styles.divBadgeText, { color: colors.textSecondary }]}>{division}</Text>
                 </View>
               </View>
               <View style={[styles.priceRow, { marginTop: Spacing.sm }]}>
-                <Text style={styles.priceMeta}>Total</Text>
-                <Text style={styles.priceAmount}>${price.toFixed(2)}</Text>
+                <Text style={[styles.priceMeta, { color: colors.textMuted }]}>Total</Text>
+                <Text style={[styles.priceAmount, { color: colors.textPrimary }]}>${price.toFixed(2)}</Text>
               </View>
             </View>
 
             <TouchableOpacity
-              style={styles.physicalRow}
+              style={[styles.physicalRow, { backgroundColor: colors.background, borderColor: colors.border }]}
               onPress={() => setWantsPhysicalCopy(v => !v)}
               activeOpacity={0.7}
             >
-              <View style={[styles.checkbox, wantsPhysicalCopy && styles.checkboxChecked]}>
-                {wantsPhysicalCopy && <Text style={styles.checkboxTick}>✓</Text>}
+              <View style={[styles.checkbox, { borderColor: colors.border }, wantsPhysicalCopy && { backgroundColor: colors.surfaceLight, borderColor: colors.textSecondary }]}>
+                {wantsPhysicalCopy && <Text style={[styles.checkboxTick, { color: colors.textPrimary }]}>✓</Text>}
               </View>
               <View style={styles.physicalInfo}>
-                <Text style={styles.physicalTitle}>Request a physical printed copy</Text>
-                <Text style={styles.physicalDesc}>
+                <Text style={[styles.physicalTitle, { color: colors.textPrimary }]}>Request a physical printed copy</Text>
+                <Text style={[styles.physicalDesc, { color: colors.textMuted }]}>
                   A printed packet will be available at check-in when you arrive to the event.
                 </Text>
               </View>
             </TouchableOpacity>
 
-            {!!error && <Text style={styles.errorText}>{error}</Text>}
+            {!!error && <Text style={[styles.errorText, { color: colors.redLight, backgroundColor: colors.redTint, borderColor: colors.redTint }]}>{error}</Text>}
           </>
         )}
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, { borderTopColor: colors.border }]}>
         {step === 'summary' ? (
           <TouchableOpacity
             onPress={() => { setStep('form'); setError(''); }}
             style={styles.backBtn}
           >
-            <Text style={styles.backBtnText}>Back</Text>
+            <Text style={[styles.backBtnText, { color: colors.textMuted }]}>Back</Text>
           </TouchableOpacity>
         ) : (
           <View />
         )}
         <TouchableOpacity
-          style={[styles.primaryBtn, isSubmitting && styles.primaryBtnDisabled]}
+          style={[styles.primaryBtn, { backgroundColor: colors.surfaceLight, borderColor: colors.border }, isSubmitting && styles.primaryBtnDisabled]}
           onPress={step === 'form' ? validateAndNext : handleCheckout}
           disabled={isSubmitting}
           activeOpacity={0.85}
         >
           {isSubmitting
             ? <ActivityIndicator size="small" color="#fff" />
-            : <Text style={styles.primaryBtnText}>
+            : <Text style={[styles.primaryBtnText, { color: colors.textPrimary }]}>
                 {step === 'form' ? 'Continue ›' : 'Proceed to Payment ›'}
               </Text>
           }
@@ -373,31 +375,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   headerText: { flex: 1, marginRight: Spacing.md },
   headerTitle: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
   },
   headerSub: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   closeBtn: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: Colors.surfaceLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeBtnText: {
     fontSize: 12,
-    color: Colors.textMuted,
     fontFamily: Fonts.bodyMedium,
   },
   body: {},
@@ -405,9 +402,7 @@ const styles = StyleSheet.create({
   confirmedBanner: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: 'rgba(34,197,94,0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(34,197,94,0.25)',
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: Spacing.sm,
@@ -416,80 +411,66 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: 'rgba(34,197,94,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 1,
   },
-  checkMark: { fontSize: 12, color: 'rgb(34,197,94)', fontFamily: Fonts.bodyBold },
+  checkMark: { fontSize: 12, fontFamily: Fonts.bodyBold },
   confirmedInfo: { flex: 1 },
-  confirmedName: { fontSize: FontSize.sm, fontFamily: Fonts.bodySemiBold, color: Colors.textPrimary },
-  confirmedSub: { fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textMuted, marginTop: 1 },
-  confirmedDiv: { fontSize: FontSize.xs, fontFamily: Fonts.body, color: Colors.textMuted },
-  changeText: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium, color: Colors.textMuted },
+  confirmedName: { fontSize: FontSize.sm, fontFamily: Fonts.bodySemiBold },
+  confirmedSub: { fontSize: FontSize.xs, fontFamily: Fonts.body, marginTop: 1 },
+  confirmedDiv: { fontSize: FontSize.xs, fontFamily: Fonts.body },
+  changeText: { fontSize: FontSize.xs, fontFamily: Fonts.bodyMedium },
   nameRow: { flexDirection: 'row' },
   field: { gap: 4 },
   fieldLabel: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
   },
   input: {
-    backgroundColor: Colors.background,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm + 2,
     fontSize: FontSize.md,
     fontFamily: Fonts.body,
-    color: Colors.textPrimary,
   },
   inputDisabled: { opacity: 0.5 },
   helperText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
   },
   suggestions: {
-    backgroundColor: Colors.background,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
   },
   suggestionsLabel: {
     fontSize: 10,
     fontFamily: Fonts.bodyBold,
-    color: Colors.gold,
     letterSpacing: 1.2,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   suggestionRow: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm + 2,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   suggestionName: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   suggestionSub: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 1,
   },
   suggestionDiv: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   searchingRow: {
     flexDirection: 'row',
@@ -499,15 +480,11 @@ const styles = StyleSheet.create({
   searchingText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   errorText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: '#f87171',
-    backgroundColor: 'rgba(239,68,68,0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(239,68,68,0.2)',
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
@@ -515,7 +492,6 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 10,
     fontFamily: Fonts.bodyBold,
-    color: Colors.textMuted,
     letterSpacing: 1.5,
     marginBottom: Spacing.xs,
   },
@@ -527,20 +503,16 @@ const styles = StyleSheet.create({
   },
   includeDot: {
     fontSize: FontSize.md,
-    color: Colors.textMuted,
     lineHeight: 20,
   },
   includeText: {
     flex: 1,
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textSecondary,
     lineHeight: 20,
   },
   priceCard: {
-    backgroundColor: Colors.background,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginTop: Spacing.sm,
@@ -553,12 +525,9 @@ const styles = StyleSheet.create({
   priceMeta: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
   },
   divBadge: {
-    backgroundColor: Colors.surfaceLight,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: BorderRadius.full,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
@@ -566,19 +535,15 @@ const styles = StyleSheet.create({
   divBadgeText: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
   },
   priceAmount: {
     fontSize: 24,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textPrimary,
   },
   physicalRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: Colors.background,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: Spacing.md,
@@ -589,31 +554,23 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 1,
     flexShrink: 0,
   },
-  checkboxChecked: {
-    backgroundColor: Colors.surfaceLight,
-    borderColor: Colors.textSecondary,
-  },
   checkboxTick: {
     fontSize: 11,
-    color: Colors.textPrimary,
     fontFamily: Fonts.bodyBold,
   },
   physicalInfo: { flex: 1 },
   physicalTitle: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
   physicalDesc: {
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     marginTop: 2,
     lineHeight: 16,
   },
@@ -624,19 +581,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
     paddingBottom: Platform.OS === 'ios' ? Spacing.xl : Spacing.md,
   },
   backBtn: { paddingVertical: Spacing.sm },
   backBtnText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textMuted,
   },
   primaryBtn: {
-    backgroundColor: Colors.surfaceLight,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
@@ -648,6 +601,5 @@ const styles = StyleSheet.create({
   primaryBtnText: {
     fontSize: FontSize.md,
     fontFamily: Fonts.bodySemiBold,
-    color: Colors.textPrimary,
   },
 });

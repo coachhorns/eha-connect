@@ -14,7 +14,8 @@ import { Image } from 'expo-image';
 import { BlurView } from 'expo-blur';
 import { useRouter, useNavigation } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { Colors, Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { eventsApi } from '@/api/events';
 import { EventCard } from '@/components/EventCard';
 import { Loading } from '@/components/ui/Loading';
@@ -35,6 +36,7 @@ const CONTROLS_HEIGHT = 110;
 export default function EventsScreen() {
   const router     = useRouter();
   const navigation = useNavigation();
+  const colors     = useColors();
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -120,22 +122,22 @@ export default function EventsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* ── FROSTED GLASS HEADER (always visible) ── */}
       <View style={[styles.stickyHeader, { height: HEADER_HEIGHT }]}>
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
-          <View style={[styles.headerInner, { paddingTop: Platform.OS === 'ios' ? 50 : 30 }]}>
+        <BlurView intensity={80} tint={colors.glassTint} style={StyleSheet.absoluteFill}>
+          <View style={[styles.headerInner, { paddingTop: Platform.OS === 'ios' ? 50 : 30, backgroundColor: colors.headerOverlay }]}>
             <View style={styles.headerLeft}>
               <Image
                 source={require('../../../assets/eha-connect-logo.png')}
                 style={styles.headerLogo}
                 contentFit="contain"
               />
-              <Text style={styles.headerName}>Events</Text>
+              <Text style={[styles.headerName, { color: colors.textPrimary }]}>Events</Text>
             </View>
           </View>
         </BlurView>
-        <View style={styles.headerBorder} />
+        <View style={[styles.headerBorder, { backgroundColor: colors.headerBorder }]} />
       </View>
 
       {/* ── COLLAPSIBLE SEARCH + FILTERS ── */}
@@ -145,16 +147,16 @@ export default function EventsScreen() {
           { top: HEADER_HEIGHT, transform: [{ translateY: controlsAnim }] },
         ]}
       >
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
-        <View style={styles.controlsOverlay} />
+        <BlurView intensity={80} tint={colors.glassTint} style={StyleSheet.absoluteFill} />
+        <View style={[styles.controlsOverlay, { backgroundColor: colors.headerOverlay }]} />
 
         <View style={styles.searchRow}>
-          <View style={styles.searchBar}>
-            <Text style={styles.searchIcon}>⌕</Text>
+          <View style={[styles.searchBar, { backgroundColor: colors.inputOverlay, borderColor: colors.inputBorder }]}>
+            <Text style={[styles.searchIcon, { color: colors.textMuted }]}>⌕</Text>
             <TextInput
-              style={styles.searchInput}
+              style={[styles.searchInput, { color: colors.textPrimary }]}
               placeholder="Search events, cities..."
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               value={search}
               onChangeText={setSearch}
               returnKeyType="search"
@@ -163,7 +165,7 @@ export default function EventsScreen() {
             />
             {search.length > 0 && (
               <TouchableOpacity onPress={() => setSearch('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                <Text style={styles.clearIcon}>✕</Text>
+                <Text style={[styles.clearIcon, { color: colors.textMuted }]}>✕</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -173,18 +175,28 @@ export default function EventsScreen() {
           {FILTERS.map(f => (
             <TouchableOpacity
               key={f.key}
-              style={[styles.filterChip, filter === f.key && styles.filterChipActive]}
+              style={[
+                styles.filterChip,
+                { backgroundColor: colors.inputOverlay, borderColor: colors.inputBorder },
+                filter === f.key && { backgroundColor: colors.red, borderColor: colors.red },
+              ]}
               onPress={() => setFilter(f.key)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.filterText, filter === f.key && styles.filterTextActive]}>
+              <Text
+                style={[
+                  styles.filterText,
+                  { color: colors.textSecondary },
+                  filter === f.key && { color: colors.textPrimary },
+                ]}
+              >
                 {f.label}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <View style={styles.controlsBorder} />
+        <View style={[styles.controlsBorder, { backgroundColor: colors.headerBorder }]} />
       </Animated.View>
 
       {/* ── EVENT LIST ── */}
@@ -205,8 +217,8 @@ export default function EventsScreen() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={styles.emptyIcon}>🏀</Text>
-            <Text style={styles.emptyTitle}>No events found</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No events found</Text>
+            <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>
               {search.trim()
                 ? 'Try a different search term'
                 : 'Check back soon for upcoming events'}
@@ -214,7 +226,7 @@ export default function EventsScreen() {
           </View>
         }
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.red} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.red} />
         }
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -227,7 +239,6 @@ export default function EventsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
 
   // Sticky frosted header
@@ -244,7 +255,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   headerBorder: {
     position: 'absolute',
@@ -252,7 +262,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -266,7 +275,6 @@ const styles = StyleSheet.create({
   headerName: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.headingBlack,
-    color: Colors.textPrimary,
     marginTop: -1,
   },
 
@@ -281,7 +289,6 @@ const styles = StyleSheet.create({
   },
   controlsOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(15, 23, 42, 0.5)',
   },
   controlsBorder: {
     position: 'absolute',
@@ -289,7 +296,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
   searchRow: {
     paddingHorizontal: Spacing.lg,
@@ -299,27 +305,22 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.07)',
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm + 2,
     gap: Spacing.sm,
   },
   searchIcon: {
     fontSize: 16,
-    color: Colors.textMuted,
   },
   searchInput: {
     flex: 1,
     fontSize: FontSize.md,
     fontFamily: Fonts.body,
-    color: Colors.textPrimary,
   },
   clearIcon: {
     fontSize: 13,
-    color: Colors.textMuted,
   },
   filterRow: {
     flexDirection: 'row',
@@ -331,21 +332,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs + 2,
     borderRadius: BorderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.07)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  filterChipActive: {
-    backgroundColor: Colors.red,
-    borderColor: Colors.red,
   },
   filterText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodyMedium,
-    color: Colors.textSecondary,
-  },
-  filterTextActive: {
-    color: Colors.textPrimary,
   },
 
   // List
@@ -365,13 +356,11 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.heading,
-    color: Colors.textPrimary,
     marginBottom: Spacing.sm,
   },
   emptySubtitle: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
-    color: Colors.textMuted,
     textAlign: 'center',
   },
 });

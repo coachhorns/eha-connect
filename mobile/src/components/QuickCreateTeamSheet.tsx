@@ -3,7 +3,8 @@ import {
   Modal, View, Text, TouchableOpacity, TextInput,
   StyleSheet, ActivityIndicator, Alert, Platform, ScrollView,
 } from 'react-native';
-import { Colors, Fonts, Spacing, FontSize, BorderRadius } from '@/constants/colors';
+import { Fonts, Spacing, FontSize, BorderRadius } from '@/constants/colors';
+import { useColors } from '@/context/ThemeContext';
 import { api } from '@/api/client';
 
 const DIVISIONS = ['EPL 17', 'EPL 16', 'EPL 15', 'EPL 14', 'EPL 13', 'EPL 12', 'Open'];
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function QuickCreateTeamSheet({ visible, onClose }: Props) {
+  const colors = useColors();
   const [name, setName] = useState('');
   const [division, setDivision] = useState('');
   const [gender, setGender] = useState<'Boys' | 'Girls'>('Boys');
@@ -47,71 +49,79 @@ export function QuickCreateTeamSheet({ visible, onClose }: Props) {
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={handleClose}>
       <View style={s.overlay}>
-        <TouchableOpacity style={s.backdrop} onPress={handleClose} activeOpacity={1} />
-        <View style={s.sheet}>
-          <View style={s.handle} />
+        <TouchableOpacity style={[s.backdrop, { backgroundColor: colors.modalBackdrop }]} onPress={handleClose} activeOpacity={1} />
+        <View style={[s.sheet, { backgroundColor: colors.surface }]}>
+          <View style={[s.handle, { backgroundColor: colors.border }]} />
 
           {/* Header */}
           <View style={s.header}>
             <View>
-              <Text style={s.title}>Create Team</Text>
-              <Text style={s.subtitle}>Add a new team to your program</Text>
+              <Text style={[s.title, { color: colors.textPrimary }]}>Create Team</Text>
+              <Text style={[s.subtitle, { color: colors.textSecondary }]}>Add a new team to your program</Text>
             </View>
             <TouchableOpacity onPress={handleClose} style={s.closeBtn}>
-              <Text style={s.closeBtnText}>✕</Text>
+              <Text style={[s.closeBtnText, { color: colors.textSecondary }]}>&#10005;</Text>
             </TouchableOpacity>
           </View>
 
           <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
             {/* Team name */}
-            <Text style={s.label}>TEAM NAME</Text>
+            <Text style={[s.label, { color: colors.textMuted }]}>TEAM NAME</Text>
             <TextInput
-              style={s.input}
+              style={[s.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.textPrimary }]}
               placeholder="e.g. EHA Elite 17U"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.textMuted}
               value={name}
               onChangeText={setName}
             />
 
             {/* Gender */}
-            <Text style={s.label}>GENDER</Text>
+            <Text style={[s.label, { color: colors.textMuted }]}>GENDER</Text>
             <View style={s.genderRow}>
               {(['Boys', 'Girls'] as const).map(g => (
                 <TouchableOpacity
                   key={g}
-                  style={[s.genderBtn, gender === g && s.genderBtnActive]}
+                  style={[
+                    s.genderBtn,
+                    { borderColor: colors.border, backgroundColor: colors.background },
+                    gender === g && { backgroundColor: colors.red, borderColor: colors.red },
+                  ]}
                   onPress={() => setGender(g)}
                   activeOpacity={0.7}
                 >
-                  <Text style={[s.genderBtnText, gender === g && s.genderBtnTextActive]}>{g}</Text>
+                  <Text style={[s.genderBtnText, { color: colors.textSecondary }, gender === g && { color: '#fff' }]}>{g}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
             {/* Division */}
-            <Text style={s.label}>DIVISION <Text style={s.optional}>(optional)</Text></Text>
+            <Text style={[s.label, { color: colors.textMuted }]}>DIVISION <Text style={[s.optional, { color: colors.textMuted }]}>(optional)</Text></Text>
             <View style={s.pillRow}>
               {DIVISIONS.map(d => (
                 <TouchableOpacity
                   key={d}
-                  style={[s.pill, division === d && s.pillActive]}
+                  style={[
+                    s.pill,
+                    { borderColor: colors.border },
+                    division === d && { backgroundColor: colors.red, borderColor: colors.red },
+                  ]}
                   onPress={() => setDivision(division === d ? '' : d)}
                   activeOpacity={0.7}
                 >
-                  <Text style={[s.pillText, division === d && s.pillTextActive]}>{d}</Text>
+                  <Text style={[s.pillText, { color: colors.textSecondary }, division === d && { color: '#fff' }]}>{d}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
             <TouchableOpacity
-              style={[s.confirmBtn, (!name.trim() || loading) && s.confirmBtnOff]}
+              style={[s.confirmBtn, { backgroundColor: colors.red }, (!name.trim() || loading) && { backgroundColor: colors.navyLight }]}
               onPress={handleCreate}
               disabled={!name.trim() || loading}
               activeOpacity={0.8}
             >
               {loading
                 ? <ActivityIndicator color="#fff" />
-                : <Text style={s.confirmBtnText}>Create Team</Text>}
+                : <Text style={[s.confirmBtnText, { color: '#fff' }]}>Create Team</Text>}
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -122,9 +132,8 @@ export function QuickCreateTeamSheet({ visible, onClose }: Props) {
 
 const s = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end' },
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.65)' },
+  backdrop: { ...StyleSheet.absoluteFillObject },
   sheet: {
-    backgroundColor: Colors.surface,
     borderTopLeftRadius: 20, borderTopRightRadius: 20,
     paddingHorizontal: Spacing.lg,
     paddingBottom: Platform.OS === 'ios' ? 40 : 24,
@@ -132,43 +141,36 @@ const s = StyleSheet.create({
   },
   handle: {
     width: 36, height: 4, borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)',
     alignSelf: 'center', marginTop: 12, marginBottom: 16,
   },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.lg },
-  title: { fontFamily: Fonts.heading, fontSize: FontSize.xl, color: Colors.textPrimary },
-  subtitle: { fontFamily: Fonts.body, fontSize: FontSize.sm, color: Colors.textSecondary, marginTop: 2 },
+  title: { fontFamily: Fonts.heading, fontSize: FontSize.xl },
+  subtitle: { fontFamily: Fonts.body, fontSize: FontSize.sm, marginTop: 2 },
   closeBtn: { padding: 4 },
-  closeBtnText: { fontFamily: Fonts.bodySemiBold, color: Colors.textSecondary, fontSize: FontSize.md },
-  label: { fontFamily: Fonts.bodyBold, fontSize: 10, color: Colors.textMuted, letterSpacing: 1.2, marginBottom: Spacing.sm },
-  optional: { fontFamily: Fonts.body, fontSize: 10, color: Colors.textMuted, letterSpacing: 0 },
+  closeBtnText: { fontFamily: Fonts.bodySemiBold, fontSize: FontSize.md },
+  label: { fontFamily: Fonts.bodyBold, fontSize: 10, letterSpacing: 1.2, marginBottom: Spacing.sm },
+  optional: { fontFamily: Fonts.body, fontSize: 10, letterSpacing: 0 },
   input: {
-    backgroundColor: Colors.background, borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    fontFamily: Fonts.body, fontSize: FontSize.md, color: Colors.textPrimary,
-    marginBottom: Spacing.lg, borderWidth: 1, borderColor: Colors.border,
+    fontFamily: Fonts.body, fontSize: FontSize.md,
+    marginBottom: Spacing.lg, borderWidth: 1,
   },
   genderRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.lg },
   genderBtn: {
     flex: 1, paddingVertical: Spacing.md, alignItems: 'center',
-    borderRadius: BorderRadius.md, borderWidth: 1, borderColor: Colors.border,
-    backgroundColor: Colors.background,
+    borderRadius: BorderRadius.md, borderWidth: 1,
   },
-  genderBtnActive: { backgroundColor: Colors.red, borderColor: Colors.red },
-  genderBtnText: { fontFamily: Fonts.bodySemiBold, fontSize: FontSize.md, color: Colors.textSecondary },
-  genderBtnTextActive: { color: '#fff' },
+  genderBtnText: { fontFamily: Fonts.bodySemiBold, fontSize: FontSize.md },
   pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, marginBottom: Spacing.xl },
   pill: {
     paddingHorizontal: Spacing.md, paddingVertical: 6,
-    borderRadius: BorderRadius.full, borderWidth: 1, borderColor: Colors.border,
+    borderRadius: BorderRadius.full, borderWidth: 1,
   },
-  pillActive: { backgroundColor: Colors.red, borderColor: Colors.red },
-  pillText: { fontFamily: Fonts.bodySemiBold, fontSize: FontSize.sm, color: Colors.textSecondary },
-  pillTextActive: { color: '#fff' },
+  pillText: { fontFamily: Fonts.bodySemiBold, fontSize: FontSize.sm },
   confirmBtn: {
-    backgroundColor: Colors.red, borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.md,
     paddingVertical: Spacing.lg, alignItems: 'center', marginBottom: Spacing.md,
   },
-  confirmBtnOff: { backgroundColor: Colors.navyLight },
-  confirmBtnText: { fontFamily: Fonts.heading, fontSize: FontSize.md, color: '#fff' },
+  confirmBtnText: { fontFamily: Fonts.heading, fontSize: FontSize.md },
 });
