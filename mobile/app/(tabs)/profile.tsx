@@ -382,7 +382,7 @@ export default function ProfileScreen() {
 
         {/* ── Athlete Info ──────────────────────────────────── */}
         <Card style={styles.card}>
-          <Text style={[styles.cardLabel, { color: colors.gold }]}>ATHLETE INFO</Text>
+          <Text style={[styles.cardLabel, { color: colors.textSecondary }]}>ATHLETE INFO</Text>
           <View style={styles.infoGrid}>
             {heightDisplay && <InfoRow label="Height" value={heightDisplay} />}
             {p.weight && <InfoRow label="Weight" value={`${p.weight} lbs`} />}
@@ -448,7 +448,7 @@ export default function ProfileScreen() {
 
         {/* ── Season Stats ──────────────────────────────────── */}
         <Card style={styles.card}>
-          <Text style={[styles.cardLabel, { color: colors.gold }]}>SEASON AVERAGES</Text>
+          <Text style={[styles.cardLabel, { color: colors.textSecondary }]}>SEASON AVERAGES</Text>
           {player.careerStats && player.careerStats.gamesPlayed > 0 ? (
             <>
               <View style={styles.mainStatsRow}>
@@ -478,7 +478,7 @@ export default function ProfileScreen() {
         {/* ── Bio ───────────────────────────────────────────── */}
         {p.bio ? (
           <Card style={styles.card}>
-            <Text style={[styles.cardLabel, { color: colors.gold }]}>ABOUT</Text>
+            <Text style={[styles.cardLabel, { color: colors.textSecondary }]}>ABOUT</Text>
             <Text style={[styles.bioText, { color: colors.textSecondary }]}>{p.bio}</Text>
           </Card>
         ) : null}
@@ -486,7 +486,7 @@ export default function ProfileScreen() {
         {/* ── Recent Game Log ───────────────────────────────── */}
         {p.gameStats && p.gameStats.length > 0 && (
           <Card style={styles.card}>
-            <Text style={[styles.cardLabel, { color: colors.gold }]}>RECENT GAMES</Text>
+            <Text style={[styles.cardLabel, { color: colors.textSecondary }]}>RECENT GAMES</Text>
             {(p.gameStats as any[]).slice(0, 5).map((stat: any) => {
               const dateStr = stat.game?.scheduledAt
                 ? format(new Date(stat.game.scheduledAt), 'MMM d')
@@ -534,7 +534,7 @@ export default function ProfileScreen() {
         {/* ── Achievements ──────────────────────────────────── */}
         {p.achievements && (p.achievements as any[]).length > 0 && (
           <Card style={styles.card}>
-            <Text style={[styles.cardLabel, { color: colors.gold }]}>ACHIEVEMENTS</Text>
+            <Text style={[styles.cardLabel, { color: colors.textSecondary }]}>ACHIEVEMENTS</Text>
             <View style={styles.achievementsGrid}>
               {(p.achievements as any[]).slice(0, 6).map((a: any) => (
                 <View key={a.id} style={[styles.achievementChip, { width: ACHIEVEMENT_SIZE, backgroundColor: colors.background, borderColor: colors.border }]}>
@@ -552,7 +552,7 @@ export default function ProfileScreen() {
         {/* ── Film Room ─────────────────────────────────────── */}
         {(filmItems.length > 0 || hudlProfileUrl || youtubeChannelUrl) && (
           <Card style={styles.card}>
-            <Text style={[styles.cardLabel, { color: colors.gold }]}>FILM ROOM</Text>
+            <Text style={[styles.cardLabel, { color: colors.textSecondary }]}>FILM ROOM</Text>
             {/* Direct-link buttons for Hudl profile & YouTube channel */}
             {(hudlProfileUrl || youtubeChannelUrl) && (
               <View style={styles.filmSegmentRow}>
@@ -583,7 +583,7 @@ export default function ProfileScreen() {
                   >
                     <Image
                       source={require('../../assets/logos/youtube.png')}
-                      style={styles.filmSegmentLogo}
+                      style={[styles.filmSegmentLogo, { tintColor: '#FFFFFF' }]}
                       contentFit="contain"
                     />
                   </TouchableOpacity>
@@ -646,7 +646,7 @@ export default function ProfileScreen() {
         {/* ── Photos ────────────────────────────────────────── */}
         {photos.length > 0 && (
           <View style={styles.photosSection}>
-            <Text style={[styles.photosSectionLabel, { color: colors.gold }]}>PHOTOS</Text>
+            <Text style={[styles.photosSectionLabel, { color: colors.textSecondary }]}>PHOTOS</Text>
             <View style={styles.photosGrid}>
               {photos.slice(0, 6).map((photo: any, idx: number) => (
                 <TouchableOpacity
@@ -686,20 +686,15 @@ export default function ProfileScreen() {
           <View style={styles.videoPlayer}>
             {videoModal?.ytId ? (
               <WebView
-                source={{ uri: `https://www.youtube.com/watch?v=${videoModal.ytId}` }}
+                source={{
+                  html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><style>*{margin:0;padding:0;background:#000}iframe{position:absolute;top:0;left:0;width:100%;height:100%}</style></head><body><iframe src="https://www.youtube.com/embed/${videoModal.ytId}?autoplay=1&playsinline=1&rel=0&origin=https://ehaconnect.com" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></body></html>`,
+                  baseUrl: 'https://ehaconnect.com',
+                }}
                 style={{ flex: 1, backgroundColor: '#000' }}
                 allowsFullscreenVideo
                 allowsInlineMediaPlayback
                 mediaPlaybackRequiresUserAction={false}
-                userAgent="Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
-                injectedJavaScript={`
-                  (function() {
-                    var style = document.createElement('style');
-                    style.textContent = 'ytm-related-video-list-renderer, .related-chips-slot-wrapper, ytm-comments-entry-point-header-renderer, ytm-item-section-renderer, .watch-below-the-player { display: none !important; } #player { position: fixed !important; top: 0; left: 0; width: 100vw !important; height: 100vh !important; z-index: 9999; background: #000; }';
-                    document.head.appendChild(style);
-                  })();
-                  true;
-                `}
+                originWhitelist={['*']}
               />
             ) : videoModal?.videoUrl ? (
               <WebView

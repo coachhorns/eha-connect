@@ -1,5 +1,4 @@
 import { getToken, setToken, clearToken } from '@/lib/storage';
-import * as FileSystem from 'expo-file-system';
 import ENV from '@/constants/config';
 
 class ApiClient {
@@ -138,24 +137,28 @@ class ApiClient {
     }
     const { clientToken } = await tokenRes.json();
 
-    // Step 2: Upload directly to Vercel Blob using expo-file-system (binary PUT)
+    // Step 2: Read local file as blob and PUT directly to Vercel Blob
     const uploadUrl = `https://blob.vercel-storage.com/${pathname}`;
-    const uploadResult = await FileSystem.uploadAsync(uploadUrl, uri, {
-      httpMethod: 'PUT',
-      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+    const fileResponse = await fetch(uri);
+    const blob = await fileResponse.blob();
+
+    const uploadRes = await fetch(uploadUrl, {
+      method: 'PUT',
       headers: {
         'x-api-version': '7',
         'authorization': `Bearer ${clientToken}`,
         'x-content-type': mimeType,
         'x-cache-control-max-age': '31536000',
       },
+      body: blob,
     });
 
-    if (uploadResult.status < 200 || uploadResult.status >= 300) {
-      throw new ApiError(uploadResult.status, uploadResult.body);
+    if (!uploadRes.ok) {
+      const text = await uploadRes.text();
+      throw new ApiError(uploadRes.status, text);
     }
 
-    const result = JSON.parse(uploadResult.body);
+    const result = await uploadRes.json();
     return result.url;
   }
 }

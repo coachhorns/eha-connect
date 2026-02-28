@@ -749,6 +749,7 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   // Race: pan (>8px drag) or tap (quick lift). More tab handled by Pressable overlay.
   const composedGesture = Gesture.Race(panGesture, tapGesture);
 
+
   // Morphing container: animates size, border radius, and rises upward
   const morphContainerStyle = useAnimatedStyle(() => {
     const width = interpolate(expandProgress.value, [0, 1], [TAB_BAR_WIDTH, EXPANDED_WIDTH]);

@@ -33,10 +33,17 @@ import type { Player, Event, Game, RecruitingEmailLog } from '@/types';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function HomeScreen() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const colors = useColors();
   const router = useRouter();
   const firstName = user?.name?.split(' ')[0] ?? 'Player';
+
+  const handleSignOut = () => {
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Sign Out', style: 'destructive', onPress: signOut },
+    ]);
+  };
 
   // ── Notification Preferences ─────────────────────────────
   const [showNotifPanel, setShowNotifPanel] = React.useState(false);
@@ -201,7 +208,7 @@ export default function HomeScreen() {
         return (
           <TouchableOpacity
             style={styles.heroContainer}
-            onPress={() => router.push(`/players/${player.slug}`)}
+            onPress={() => router.push('/(tabs)/profile')}
             activeOpacity={0.9}
           >
             {photoUri ? (
@@ -519,6 +526,15 @@ export default function HomeScreen() {
           </View>
         </View>
       )}
+
+      {/* ── SIGN OUT ─────────────────────────────────────── */}
+      <TouchableOpacity
+        style={styles.signOutButton}
+        onPress={handleSignOut}
+        activeOpacity={0.6}
+      >
+        <Text style={[styles.signOutText, { color: colors.textMuted }]}>Sign Out</Text>
+      </TouchableOpacity>
 
       {/* Bottom spacer for tab bar */}
       <View style={{ height: 100 }} />
@@ -1082,6 +1098,18 @@ const styles = StyleSheet.create({
   },
   recruitingLogDate: {
     fontSize: 10,
+    fontFamily: Fonts.body,
+  },
+
+  // Sign Out
+  signOutButton: {
+    alignSelf: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    marginTop: Spacing.md,
+  },
+  signOutText: {
+    fontSize: FontSize.xs,
     fontFamily: Fonts.body,
   },
 

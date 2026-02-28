@@ -244,13 +244,8 @@ export default function EditProfileScreen() {
             // Thumbnail generation failed — upload video without it
           }
 
-          // Try direct upload first (bypasses 4.5MB serverless limit), fall back to regular upload
-          let url: string;
-          try {
-            url = await playersApi.directUpload(pickedAsset.uri, mimeType, fileName, 'players/videos');
-          } catch {
-            url = await uploadFileToBlob(pickedAsset.uri, mimeType, fileName, 'players/videos');
-          }
+          // Direct upload to Vercel Blob (bypasses 4.5MB serverless limit)
+          const url = await playersApi.directUpload(pickedAsset.uri, mimeType, fileName, 'players/videos');
           await playersApi.createMedia(id, { url, type: 'VIDEO', title: videoTitle, thumbnail: thumbnailUrl });
           refetchMedia();
         } catch (e: any) {
@@ -380,7 +375,7 @@ export default function EditProfileScreen() {
       >
         {/* ── Profile Photo ─────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.gold }]}>PROFILE PHOTO</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>PROFILE PHOTO</Text>
           <View style={styles.profilePhotoRow}>
             <View style={[styles.profilePhotoWrap, { borderColor: colors.border }]}>
               {profilePhoto ? (
@@ -412,7 +407,7 @@ export default function EditProfileScreen() {
 
         {/* ── Videos ────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.gold }]}>VIDEOS</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>VIDEOS</Text>
           {videos.map((video) => (
             <View key={video.id} style={[styles.videoRow, { backgroundColor: colors.surface }]}>
               <View style={styles.videoThumbWrap}>
@@ -457,7 +452,7 @@ export default function EditProfileScreen() {
 
         {/* ── Transcript ────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.gold }]}>TRANSCRIPT</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>TRANSCRIPT</Text>
           {transcriptUrl ? (
             <View style={[styles.transcriptRow, { backgroundColor: colors.surface }]}>
               <View style={styles.transcriptInfo}>
@@ -486,7 +481,7 @@ export default function EditProfileScreen() {
 
         {/* ── About Me ──────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.gold }]}>ABOUT ME</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>ABOUT ME</Text>
           <TextInput
             style={[styles.input, styles.inputMultiline, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary }]}
             value={bio}
@@ -501,7 +496,7 @@ export default function EditProfileScreen() {
 
         {/* ── Socials & Contact ─────────────────────────── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.gold }]}>SOCIALS & CONTACT</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>SOCIALS & CONTACT</Text>
 
           <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Contact Email</Text>
           <TextInput
@@ -537,7 +532,7 @@ export default function EditProfileScreen() {
 
         {/* ── Recruiting Links ──────────────────────────── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.gold }]}>RECRUITING LINKS</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>RECRUITING LINKS</Text>
 
           <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Hudl Profile</Text>
           <TextInput
@@ -586,7 +581,7 @@ export default function EditProfileScreen() {
 
         {/* ── Academic ──────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.gold }]}>ACADEMIC</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>ACADEMIC</Text>
 
           <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>GPA</Text>
           <TextInput
@@ -601,7 +596,7 @@ export default function EditProfileScreen() {
 
         {/* ── Photos Gallery ─────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.gold }]}>PHOTOS</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>PHOTOS</Text>
           <View style={styles.mediaGrid}>
             {photos.map((photo) => (
               <View key={photo.id} style={styles.photoItem}>
