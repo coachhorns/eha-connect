@@ -1,4 +1,5 @@
 import { getToken, setToken, clearToken } from '@/lib/storage';
+import * as FileSystem from 'expo-file-system';
 import ENV from '@/constants/config';
 
 class ApiClient {
@@ -107,11 +108,15 @@ class ApiClient {
   /**
    * Upload a file directly to Vercel Blob via client token.
    * Bypasses the serverless function body limit (4.5MB).
+   * Uses expo-file-system for proper binary upload from React Native.
    */
   async directUpload(uri: string, mimeType: string, fileName: string, folder: string): Promise<string> {
     const token = await this.getToken();
     const authHeader: Record<string, string> = {};
     if (token) authHeader['Authorization'] = `Bearer ${token}`;
+
+    const ext = fileName.split('.').pop() || 'mp4';
+    const pathname = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
     // Step 1: Get a client upload token from the server (tiny JSON request)
     const tokenRes = await fetch(`${this.baseUrl}/api/upload/client-token`, {
@@ -120,7 +125,7 @@ class ApiClient {
       body: JSON.stringify({
         type: 'blob.generate-client-token',
         payload: {
-          pathname: `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileName.split('.').pop()}`,
+          pathname,
           callbackUrl: `${this.baseUrl}/api/upload/client-token`,
           clientPayload: '',
           multipart: false,
@@ -133,28 +138,24 @@ class ApiClient {
     }
     const { clientToken } = await tokenRes.json();
 
-    // Step 2: Upload directly to Vercel Blob (no serverless function size limit)
-    const fileRes = await fetch(uri);
-    const fileBlob = await fileRes.blob();
+    // Step 2: Upload directly to Vercel Blob using expo-file-system (binary PUT)
+    const uploadUrl = `https://blob.vercel-storage.com/${pathname}`;
+    const uploadResult = await FileSystem.uploadAsync(uploadUrl, uri, {
+      httpMethod: 'PUT',
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+      headers: {
+        'x-api-version': '7',
+        'authorization': `Bearer ${clientToken}`,
+        'x-content-type': mimeType,
+        'x-cache-control-max-age': '31536000',
+      },
+    });
 
-    const uploadRes = await fetch(
-      `https://blob.vercel-storage.com/${folder}/${Date.now()}-${fileName}`,
-      {
-        method: 'PUT',
-        headers: {
-          'x-api-version': '7',
-          authorization: `Bearer ${clientToken}`,
-          'x-content-type': mimeType,
-          'x-cache-control-max-age': '31536000',
-        },
-        body: fileBlob,
-      }
-    );
-    if (!uploadRes.ok) {
-      const text = await uploadRes.text();
-      throw new ApiError(uploadRes.status, text);
+    if (uploadResult.status < 200 || uploadResult.status >= 300) {
+      throw new ApiError(uploadResult.status, uploadResult.body);
     }
-    const result = await uploadRes.json();
+
+    const result = JSON.parse(uploadResult.body);
     return result.url;
   }
 }
