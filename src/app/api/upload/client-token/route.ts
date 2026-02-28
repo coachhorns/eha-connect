@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
             'video/mp4', 'video/quicktime',
             'application/pdf',
           ],
-          maximumSizeInBytes: 50 * 1024 * 1024, // 50MB
+          maximumSizeInBytes: 500 * 1024 * 1024, // 500MB
         }
       },
       onUploadCompleted: async () => {
