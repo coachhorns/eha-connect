@@ -215,7 +215,7 @@ export default function EditProfileScreen() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['videos'],
       quality: 0.8,
-      videoExportPreset: ImagePicker.VideoExportPreset.MediumQuality,
+      videoExportPreset: ImagePicker.VideoExportPreset.H264_1920x1080,
     });
 
     if (result.canceled || result.assets.length === 0) return;
