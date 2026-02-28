@@ -7,12 +7,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Check,
   Star,
   SlidersHorizontal,
   X,
   Users,
+  BarChart3,
 } from 'lucide-react'
 import { Button, Badge, Avatar, VerifiedBadge } from '@/components/ui'
+import { CompareModal } from '@/components/players/CompareModal'
 import { cn } from '@/lib/utils'
 import { positions, states, divisions } from '@/lib/constants'
 
@@ -37,6 +40,9 @@ interface Player {
     ppg: number
     rpg: number
     apg: number
+    spg?: number
+    bpg?: number
+    threePM?: number
   } | null
 }
 
@@ -48,7 +54,13 @@ interface Filters {
 }
 
 // Player Card Component
-const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
+const PlayerCard = ({ player, rank, onCompare, isComparing, compareCount }: {
+  player: Player
+  rank: number
+  onCompare: (player: Player) => void
+  isComparing: boolean
+  compareCount: number
+}) => {
   const height = player.heightFeet && player.heightInches !== null
     ? `${player.heightFeet}'${player.heightInches}"`
     : '-'
@@ -62,7 +74,7 @@ const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
         {player.profilePhoto ? (
           <img
             src={player.profilePhoto}
-            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+            className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-500"
             alt={`${player.firstName} ${player.lastName}`}
           />
         ) : (
@@ -131,9 +143,29 @@ const PlayerCard = ({ player, rank }: { player: Player; rank: number }) => {
           <span className="flex-1 bg-surface-raised text-text-primary text-[10px] font-black uppercase tracking-widest py-3 group-hover:bg-eha-red group-hover:text-white transition-colors rounded-sm text-center">
             View Profile
           </span>
-          <span className="w-11 border border-border-default flex items-center justify-center group-hover:bg-surface-glass rounded-sm transition-colors">
-            <Plus className="w-4 h-4 text-text-muted" />
-          </span>
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onCompare(player)
+            }}
+            disabled={compareCount >= 3 && !isComparing}
+            className={cn(
+              "w-11 border flex items-center justify-center rounded-sm transition-all",
+              isComparing
+                ? "bg-eha-red border-eha-red"
+                : compareCount >= 3
+                  ? "border-border-default opacity-30 cursor-not-allowed"
+                  : "border-border-default hover:bg-surface-glass"
+            )}
+            title={isComparing ? 'Remove from compare' : compareCount >= 3 ? 'Max 3 players' : 'Add to compare'}
+          >
+            {isComparing ? (
+              <Check className="w-4 h-4 text-white" />
+            ) : (
+              <Plus className="w-4 h-4 text-text-muted" />
+            )}
+          </button>
         </div>
       </div>
     </Link>
@@ -286,6 +318,8 @@ export default function PlayersPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [compareList, setCompareList] = useState<Player[]>([])
+  const [showCompare, setShowCompare] = useState(false)
   const [filters, setFilters] = useState<Filters>({
     position: '',
     year: '',
@@ -345,6 +379,15 @@ export default function PlayersPage() {
 
   const hasActiveFilters = filters.position || filters.year || filters.state || filters.division || searchQuery
 
+  const toggleCompare = (player: Player) => {
+    setCompareList(prev => {
+      const exists = prev.find(p => p.id === player.id)
+      if (exists) return prev.filter(p => p.id !== player.id)
+      if (prev.length >= 3) return prev
+      return [...prev, player]
+    })
+  }
+
   // Generate pagination array
   const getPaginationArray = () => {
     const pages: (number | string)[] = []
@@ -365,7 +408,7 @@ export default function PlayersPage() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Hero Section */}
-      <section className="pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle relative overflow-hidden">
+      <section className="pt-32 pb-12 border-b border-border-subtle relative overflow-hidden">
         {/* Background Pattern */}
         <div
           className="absolute inset-0 opacity-5"
@@ -505,6 +548,9 @@ export default function PlayersPage() {
                         key={player.id}
                         player={player}
                         rank={(page - 1) * 20 + index + 1}
+                        onCompare={toggleCompare}
+                        isComparing={!!compareList.find(p => p.id === player.id)}
+                        compareCount={compareList.length}
                       />
                     ))}
                   </div>
@@ -575,6 +621,80 @@ export default function PlayersPage() {
           </div>
         </div>
       )}
+
+      {/* Floating Compare Bar */}
+      <div
+        className={cn(
+          "fixed bottom-0 left-0 right-0 z-30 transition-transform duration-300 ease-out",
+          compareList.length > 0 ? "translate-y-0" : "translate-y-full"
+        )}
+      >
+        <div className="bg-surface-raised/95 backdrop-blur-xl border-t border-border-default shadow-2xl shadow-black/50">
+          <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-4">
+            <div className="flex items-center justify-between gap-4">
+              {/* Selected Players */}
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <BarChart3 className="w-5 h-5 text-eha-red shrink-0" />
+                <span className="text-[10px] font-black text-text-muted uppercase tracking-widest shrink-0 hidden sm:block">
+                  Compare
+                </span>
+                <div className="flex items-center gap-2 overflow-x-auto">
+                  {compareList.map(p => (
+                    <div
+                      key={p.id}
+                      className="flex items-center gap-2 bg-surface-glass border border-border-default rounded-sm px-3 py-1.5 shrink-0"
+                    >
+                      <Avatar
+                        src={p.profilePhoto}
+                        fallback={`${p.firstName} ${p.lastName}`}
+                        size="xs"
+                      />
+                      <span className="text-xs font-bold text-text-primary whitespace-nowrap">
+                        {p.firstName} {p.lastName?.charAt(0)}.
+                      </span>
+                      <button
+                        onClick={() => toggleCompare(p)}
+                        className="text-text-muted hover:text-text-primary transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                  {compareList.length < 3 && (
+                    <span className="text-[10px] text-text-muted shrink-0">
+                      {compareList.length === 1 ? 'Select 1 more' : `${3 - compareList.length} slots open`}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  onClick={() => setCompareList([])}
+                  className="text-[10px] font-bold text-text-muted uppercase tracking-widest hover:text-text-primary transition-colors"
+                >
+                  Clear
+                </button>
+                <Button
+                  onClick={() => setShowCompare(true)}
+                  disabled={compareList.length < 2}
+                  className="text-[10px] font-black uppercase tracking-widest"
+                >
+                  Compare ({compareList.length})
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Compare Modal */}
+      <CompareModal
+        isOpen={showCompare}
+        onClose={() => setShowCompare(false)}
+        players={compareList}
+      />
     </div>
   )
 }

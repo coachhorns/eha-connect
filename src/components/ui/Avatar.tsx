@@ -7,13 +7,14 @@ import { cn } from '@/lib/utils'
 export interface AvatarProps extends HTMLAttributes<HTMLDivElement> {
   src?: string | null
   alt?: string
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   fallback?: string
 }
 
 const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
   ({ className, src, alt = 'Avatar', size = 'md', fallback, ...props }, ref) => {
     const sizes = {
+      xs: 'w-6 h-6 text-[10px]',
       sm: 'w-8 h-8 text-xs',
       md: 'w-10 h-10 text-sm',
       lg: 'w-12 h-12 text-base',

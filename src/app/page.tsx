@@ -1,14 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import Image from 'next/image'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui'
 import {
   Trophy,
-  BarChart3,
-  Video,
+  ClipboardCheck,
+  UserCircle,
   GraduationCap,
-  CalendarCheck,
+  BarChart3,
   Handshake,
   TrendingUp,
   ArrowRight,
@@ -19,40 +20,34 @@ import {
 // DATA
 // ============================================================================
 
-const scoringLeaders = [
-  { name: 'D. Reed', initials: 'DR', team: 'West Coast Elite', value: '31.2' },
-  { name: 'M. King', initials: 'MK', team: 'Team Final', value: '29.8' },
-  { name: 'J. Collins', initials: 'JC', team: 'NY Rens', value: '29.4' },
-  { name: 'T. Woods', initials: 'TW', team: 'Oakland Soldiers', value: '28.1' },
-]
-
-const assistLeaders = [
-  { name: 'M. Chen', initials: 'MC', team: 'Bay City', value: '10.5' },
-  { name: 'S. Miller', initials: 'SM', team: 'Mac Irvin Fire', value: '9.1' },
-  { name: 'L. Ball', initials: 'LB', team: 'Compton Magic', value: '8.8' },
-  { name: 'R. Jones', initials: 'RJ', team: 'Team Takeover', value: '8.4' },
-]
+interface LeaderEntry {
+  name: string
+  initials: string
+  team: string
+  value: string
+  slug?: string
+}
 
 const features = [
   {
-    icon: BarChart3,
-    title: 'Advanced Analytics',
-    description: 'Efficiency ratings and +/- impact metrics calculated automatically.',
+    icon: ClipboardCheck,
+    title: 'Verified Game Stats',
+    description: 'Points, rebounds, assists, steals, blocks, and shooting splits — all tracked live by official scorekeepers.',
   },
   {
-    icon: Video,
-    title: 'Video Integration',
-    description: 'Link game film directly to your stat lines. Create highlight reels in minutes.',
+    icon: UserCircle,
+    title: 'Player Profiles',
+    description: 'Build your verified athlete profile with stats, bio, and a shareable link designed for college coaches.',
   },
   {
     icon: GraduationCap,
     title: 'Recruiting Portal',
-    description: 'Direct messaging with verified college coaches. Track who views your profile.',
+    description: 'Direct access to 10,000+ college coaches across all divisions. Email coaches right from your profile.',
   },
   {
-    icon: CalendarCheck,
-    title: 'Event Scheduler',
-    description: 'Register for tournaments, view brackets, and get live game updates instantly.',
+    icon: BarChart3,
+    title: 'Leaderboards & Rankings',
+    description: 'See where you stack up. Division leaderboards rank athletes across every major statistical category.',
   },
 ]
 
@@ -71,11 +66,12 @@ const newsItems = [
 interface LeaderboardCardProps {
   title: string
   icon: React.ElementType
-  leaders: typeof scoringLeaders
+  leaders: LeaderEntry[]
   stat: string
+  isLoading?: boolean
 }
 
-function LeaderboardCard({ title, icon: Icon, leaders, stat }: LeaderboardCardProps) {
+function LeaderboardCard({ title, icon: Icon, leaders, stat, isLoading }: LeaderboardCardProps) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <div className="bg-[#0A1D37] p-4 flex justify-between items-center">
@@ -89,39 +85,69 @@ function LeaderboardCard({ title, icon: Icon, leaders, stat }: LeaderboardCardPr
           <span className="col-span-2 text-right">{stat}</span>
         </div>
         <div className="divide-y divide-slate-100">
-          {leaders.map((leader, idx) => (
-            <div
-              key={idx}
-              className="grid grid-cols-6 px-4 py-4 items-center hover:bg-slate-50 transition-colors cursor-pointer group"
-            >
-              <span
-                className={`col-span-1 font-heading font-bold text-lg ${idx === 0 ? 'text-[#E31837]' : 'text-[#0A1D37]/50'}`}
-              >
-                {String(idx + 1).padStart(2, '0')}
-              </span>
-              <div className="col-span-3 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-[#0A1D37]">
-                  {leader.initials}
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="grid grid-cols-6 px-4 py-4 items-center">
+                <span className="col-span-1">
+                  <div className="w-6 h-5 bg-slate-200 rounded animate-pulse" />
+                </span>
+                <div className="col-span-3 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-slate-200 animate-pulse" />
+                  <div className="space-y-1.5">
+                    <div className="w-24 h-3.5 bg-slate-200 rounded animate-pulse" />
+                    <div className="w-16 h-2.5 bg-slate-100 rounded animate-pulse" />
+                  </div>
                 </div>
-                <div>
-                  <span className="block text-sm font-bold text-[#0A1D37] group-hover:text-[#E31837] transition-colors">
-                    {leader.name}
-                  </span>
-                  <span className="block text-[10px] text-gray-400">{leader.team}</span>
+                <div className="col-span-2 flex justify-end">
+                  <div className="w-10 h-5 bg-slate-200 rounded animate-pulse" />
                 </div>
               </div>
-              <span className="col-span-2 text-right font-heading font-bold text-[#0A1D37] text-xl">
-                {leader.value}
-              </span>
+            ))
+          ) : leaders.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-gray-400">
+              No stats recorded yet for this division.
             </div>
-          ))}
+          ) : (
+            leaders.map((leader, idx) => {
+              const content = (
+                <div
+                  className="grid grid-cols-6 px-4 py-4 items-center hover:bg-slate-50 transition-colors cursor-pointer group"
+                >
+                  <span
+                    className={`col-span-1 font-heading font-bold text-lg ${idx === 0 ? 'text-[#E31837]' : 'text-[#0A1D37]/50'}`}
+                  >
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <div className="col-span-3 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-[#0A1D37]">
+                      {leader.initials}
+                    </div>
+                    <div>
+                      <span className="block text-sm font-bold text-[#0A1D37] group-hover:text-[#E31837] transition-colors">
+                        {leader.name}
+                      </span>
+                      <span className="block text-[10px] text-gray-400">{leader.team}</span>
+                    </div>
+                  </div>
+                  <span className="col-span-2 text-right font-heading font-bold text-[#0A1D37] text-xl">
+                    {leader.value}
+                  </span>
+                </div>
+              )
+              return leader.slug ? (
+                <Link key={idx} href={`/players/${leader.slug}`}>{content}</Link>
+              ) : (
+                <div key={idx}>{content}</div>
+              )
+            })
+          )}
         </div>
         <div className="p-3 border-t border-slate-100 bg-slate-50 text-center">
           <Link
             href="/leaderboards"
             className="text-[10px] font-bold text-[#E31837] uppercase tracking-widest hover:text-[#0A1D37] transition-colors"
           >
-            View Top 100
+            View Full Leaderboard
           </Link>
         </div>
       </div>
@@ -152,7 +178,50 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
 // ============================================================================
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState<'EPL' | 'GOLD' | 'SILVER'>('EPL')
+  const [activeTab, setActiveTab] = useState<'EPL 17' | 'EPL 16' | 'EPL 15'>('EPL 17')
+  const [scoringLeaders, setScoringLeaders] = useState<LeaderEntry[]>([])
+  const [assistLeaders, setAssistLeaders] = useState<LeaderEntry[]>([])
+  const [reboundLeaders, setReboundLeaders] = useState<LeaderEntry[]>([])
+  const [isLoadingLeaders, setIsLoadingLeaders] = useState(true)
+
+  const fetchLeaders = useCallback(async (division: string) => {
+    setIsLoadingLeaders(true)
+    try {
+      const res = await fetch(`/api/leaderboard?division=${encodeURIComponent(division)}`)
+      const data = await res.json()
+      const players = data.players || []
+
+      const toEntry = (p: any, statValue: number): LeaderEntry => ({
+        name: p.name,
+        initials: p.initials,
+        team: p.team || '-',
+        value: statValue.toFixed(1),
+        slug: p.slug,
+      })
+
+      // PPG — already sorted by default
+      setScoringLeaders(players.slice(0, 4).map((p: any) => toEntry(p, p.ppg)))
+
+      // APG — sort by assists
+      const byApg = [...players].sort((a: any, b: any) => b.apg - a.apg)
+      setAssistLeaders(byApg.slice(0, 4).map((p: any) => toEntry(p, p.apg)))
+
+      // RPG — sort by rebounds
+      const byRpg = [...players].sort((a: any, b: any) => b.rpg - a.rpg)
+      setReboundLeaders(byRpg.slice(0, 4).map((p: any) => toEntry(p, p.rpg)))
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error)
+      setScoringLeaders([])
+      setAssistLeaders([])
+      setReboundLeaders([])
+    } finally {
+      setIsLoadingLeaders(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchLeaders(activeTab)
+  }, [activeTab, fetchLeaders])
 
   return (
     <div className="min-h-screen">
@@ -195,7 +264,7 @@ export default function HomePage() {
 
               {/* CTA Button */}
               <div className="flex flex-wrap gap-4 pt-4">
-                <Link href="/pricing">
+                <Link href="/claim-player">
                   <Button
                     size="lg"
                     className="px-8 py-4 text-sm font-bold uppercase tracking-widest shadow-lg shadow-eha-red/20 hover:bg-white hover:text-[#0A1D37] transition-all"
@@ -359,7 +428,7 @@ export default function HomePage() {
             </div>
             {/* Tab Switcher */}
             <div className="flex bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
-              {(['EPL', 'GOLD', 'SILVER'] as const).map((tab) => (
+              {(['EPL 17', 'EPL 16', 'EPL 15'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -381,73 +450,22 @@ export default function HomePage() {
               icon={Trophy}
               leaders={scoringLeaders}
               stat="PPG"
+              isLoading={isLoadingLeaders}
             />
             <LeaderboardCard
               title="ASSISTS LEADERS"
               icon={Handshake}
               leaders={assistLeaders}
               stat="APG"
+              isLoading={isLoadingLeaders}
             />
-
-            {/* Featured Player of the Week Card */}
-            <div className="relative bg-[#0A1D37] rounded-xl overflow-hidden shadow-lg group">
-              <div className="absolute inset-0 bg-[#E31837]/10 mix-blend-overlay" />
-              <div className="absolute inset-0 opacity-10 court-pattern" />
-
-              <div className="relative z-10 p-8 h-full flex flex-col justify-between">
-                <div>
-                  <div className="inline-block bg-[#E31837] text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 mb-4 rounded-sm">
-                    Featured Profile
-                  </div>
-                  <h3 className="font-heading font-black text-3xl text-white mb-2 leading-none">
-                    PLAYER OF
-                    <br />
-                    THE WEEK
-                  </h3>
-                  <p className="text-white/60 text-sm">
-                    Marcus Thompson dominates with 3 straight triple-doubles.
-                  </p>
-                </div>
-
-                {/* Player Stats Card */}
-                <div className="mt-8 bg-white/5 border border-white/10 rounded-lg p-4 backdrop-blur-sm">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-gray-300 rounded-full" />
-                    <div>
-                      <span className="block font-bold text-white">M. Thompson</span>
-                      <span className="text-xs text-white/50">Point Guard • Class of &apos;24</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-center divide-x divide-white/10">
-                    <div className="px-2 flex-1">
-                      <span className="block text-[10px] text-white/40 uppercase tracking-widest">
-                        PTS
-                      </span>
-                      <span className="font-heading font-bold text-xl text-white">32</span>
-                    </div>
-                    <div className="px-2 flex-1">
-                      <span className="block text-[10px] text-white/40 uppercase tracking-widest">
-                        REB
-                      </span>
-                      <span className="font-heading font-bold text-xl text-white">12</span>
-                    </div>
-                    <div className="px-2 flex-1">
-                      <span className="block text-[10px] text-white/40 uppercase tracking-widest">
-                        AST
-                      </span>
-                      <span className="font-heading font-bold text-xl text-white">10</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Link
-                  href="/players"
-                  className="mt-8 w-full py-3 bg-white text-[#0A1D37] font-bold uppercase tracking-widest text-xs rounded hover:bg-[#E31837] hover:text-white transition-colors text-center block"
-                >
-                  Read Full Report
-                </Link>
-              </div>
-            </div>
+            <LeaderboardCard
+              title="REBOUND LEADERS"
+              icon={TrendingUp}
+              leaders={reboundLeaders}
+              stat="RPG"
+              isLoading={isLoadingLeaders}
+            />
           </div>
         </div>
       </section>
@@ -479,25 +497,34 @@ export default function HomePage() {
 
       {/* ========== CTA SECTION ========== */}
       <section className="relative bg-[#0A1D37] overflow-hidden">
-        {/* Red diagonal overlay */}
-        <div
-          className="absolute inset-0 bg-[#E31837] opacity-90 translate-x-1/2"
-          style={{ clipPath: 'polygon(0 15%, 100% 0, 100% 100%, 0 100%)' }}
-        />
+        {/* Action photo — right half background */}
+        <div className="absolute inset-0 hidden lg:block">
+          <div className="absolute top-0 bottom-0 right-0 w-1/2">
+            <Image
+              src="/images/cta-shooter.jpg"
+              alt="EHA basketball action"
+              fill
+              className="object-cover object-[center_35%]"
+              sizes="50vw"
+            />
+          </div>
+        </div>
 
         <div className="max-w-[1440px] mx-auto px-6 relative z-10 py-32">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="font-heading font-black text-5xl lg:text-7xl text-white mb-6">
-                READY TO <br />
-                GET <span className="text-stroke">RANKED?</span>
+                <span className="text-[#E31837]">SO GOOD,</span> <br />
+                WE&apos;LL NEVER <br />
+                FORCE YOU <br />
+                TO <span className="text-stroke">BUY IT.</span>
               </h2>
               <p className="text-white/80 text-lg mb-8 max-w-md">
                 Join the fastest growing verified basketball network in the country. Your journey
                 to the next level starts with a profile.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/pricing">
+                <Link href="/claim-player">
                   <Button
                     size="lg"
                     className="px-8 py-4 bg-white text-[#0A1D37] font-bold uppercase tracking-widest rounded hover:bg-[#E31837] hover:text-white transition-all"
@@ -513,11 +540,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Decorative Circles */}
-            <div className="hidden lg:block relative h-full min-h-[300px]">
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 border-[20px] border-white/10 w-64 h-64 rounded-full" />
-              <div className="absolute right-32 top-1/2 -translate-y-1/2 border-[20px] border-white/10 w-96 h-96 rounded-full" />
-            </div>
+            {/* Spacer for right column */}
+            <div className="hidden lg:block" />
           </div>
         </div>
       </section>

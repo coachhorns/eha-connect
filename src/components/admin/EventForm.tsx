@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import { safeParseDate } from '@/lib/timezone'
 import Link from 'next/link'
-import { X, Plus, Save, ArrowLeft, Users } from 'lucide-react'
+import { X, Plus, Save, ArrowLeft, Users, Sparkles, Loader2 } from 'lucide-react'
 import { Card, Button, Input, Select, Badge, ImageUpload } from '@/components/ui'
 import { states, divisions as divisionOptions } from '@/lib/constants'
 
@@ -75,6 +75,9 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [venues, setVenues] = useState<Venue[]>([])
   const [isLoadingVenues, setIsLoadingVenues] = useState(true)
+  const [aiPrompt, setAiPrompt] = useState('')
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [showAiInput, setShowAiInput] = useState(false)
   const [formData, setFormData] = useState<EventFormData>({
     name: '',
     type: 'TOURNAMENT',
@@ -226,6 +229,35 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
     return Object.keys(newErrors).length === 0
   }
 
+  const generateDescription = async () => {
+    if (!aiPrompt.trim()) return
+    setIsGenerating(true)
+    try {
+      const res = await fetch('/api/admin/events/generate-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: aiPrompt,
+          eventName: formData.name,
+          eventType: formData.type,
+          divisions: formData.divisions,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && data.description) {
+        setFormData(prev => ({ ...prev, description: data.description }))
+        setAiPrompt('')
+        setShowAiInput(false)
+      } else {
+        alert(data.error || 'Failed to generate description')
+      }
+    } catch {
+      alert('Failed to generate description')
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -353,9 +385,48 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">
-                  Description
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest">
+                    Description
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowAiInput(!showAiInput)}
+                    className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-eha-red hover:text-eha-red/80 transition-colors"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    {showAiInput ? 'Cancel' : 'AI Generate'}
+                  </button>
+                </div>
+
+                {showAiInput && (
+                  <div className="mb-3 p-3 bg-eha-red/5 border border-eha-red/20 rounded-sm">
+                    <p className="text-xs text-text-muted mb-2">
+                      Briefly describe the event and AI will write a professional description.
+                    </p>
+                    <textarea
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      rows={2}
+                      className="w-full px-3 py-2 bg-page-bg border border-border-default rounded-sm text-sm text-text-primary placeholder-text-muted resize-none focus:outline-none focus:ring-2 focus:ring-eha-red mb-2"
+                      placeholder="e.g., 3-day elite tournament for top 17U teams, college coaches will be scouting..."
+                      disabled={isGenerating}
+                    />
+                    <button
+                      type="button"
+                      onClick={generateDescription}
+                      disabled={isGenerating || !aiPrompt.trim()}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-eha-red hover:bg-eha-red/90 text-white text-xs font-bold rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isGenerating ? (
+                        <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating...</>
+                      ) : (
+                        <><Sparkles className="w-3.5 h-3.5" /> Generate Description</>
+                      )}
+                    </button>
+                  </div>
+                )}
+
                 <textarea
                   name="description"
                   value={formData.description}

@@ -358,6 +358,9 @@ export default function RecruitingScreen() {
           <Text style={[styles.helperText, { color: colors.textMuted }]}>
             A link to the player profile will be included automatically.
           </Text>
+          <Text style={[styles.privacyNotice, { color: colors.textMuted }]}>
+            By sending this message, you consent to sharing player profile information with the selected coach in accordance with our Privacy Policy.
+          </Text>
 
           {/* Send button */}
           <TouchableOpacity
@@ -577,6 +580,12 @@ const styles = StyleSheet.create({
     fontSize: FontSize.xs,
     fontFamily: Fonts.body,
     marginTop: Spacing.sm,
+  },
+  privacyNotice: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.body,
+    marginTop: Spacing.md,
+    lineHeight: 18,
   },
   sendBtn: {
     borderRadius: BorderRadius.md,

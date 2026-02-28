@@ -30,6 +30,7 @@ import {
   AlertTriangle,
   X,
   ShieldAlert,
+  Check,
 } from 'lucide-react'
 import { Card, Button, Badge } from '@/components/ui'
 import RecruitingPacketModal from '@/components/recruiting/RecruitingPacketModal'
@@ -121,6 +122,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   const [showBlockingModal, setShowBlockingModal] = useState(false)
   const [showPacketModal, setShowPacketModal] = useState(false)
   const [isCheckingDirector, setIsCheckingDirector] = useState(false)
+  const [notifyConfirmed, setNotifyConfirmed] = useState(false)
   const searchParams = useSearchParams()
 
   // Auto-open packet modal if ?packet=open
@@ -213,15 +215,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
 
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-page-bg relative overflow-hidden">
-        {/* Background Pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-          }}
-        />
+      <div className="min-h-screen relative overflow-hidden">
         <div className="max-w-2xl mx-auto px-4 py-32 text-center relative z-10">
           <div className="w-20 h-20 bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Trophy className="w-10 h-10 text-text-muted" />
@@ -386,16 +380,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   )
 
   return (
-    <div className="min-h-screen bg-page-bg relative overflow-hidden">
-      {/* Background Pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
-        }}
-      />
-
+    <div className="min-h-screen relative overflow-hidden">
       {/* Blur Circles */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#E31837] blur-[180px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500 blur-[150px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />
@@ -472,11 +457,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-text-primary tracking-tight">
                   {event.name}
                 </h1>
-                {event.description && (
-                  <p className="text-text-secondary mt-3 max-w-3xl text-sm md:text-base leading-relaxed">
-                    {event.description}
-                  </p>
-                )}
+                {/* Description moved to Event Details sidebar */}
               </div>
             </div>
           </div>
@@ -486,8 +467,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             {/* Dates Card */}
             <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5 hover:bg-surface-overlay transition-colors">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#E31837]/20 rounded-xl flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-[#E31837]" />
+                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-text-muted" />
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Dates</div>
@@ -501,8 +482,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             {/* Location Card */}
             <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5 hover:bg-surface-overlay transition-colors">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                  <MapPin className="w-6 h-6 text-blue-400" />
+                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-text-muted" />
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Location</div>
@@ -516,8 +497,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             {/* Teams Card */}
             <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5 hover:bg-surface-overlay transition-colors">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center">
-                  <Users className="w-6 h-6 text-amber-400" />
+                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center">
+                  <Users className="w-6 h-6 text-text-muted" />
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Teams</div>
@@ -532,8 +513,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
             {/* Games Card */}
             <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-xl p-5 hover:bg-surface-overlay transition-colors">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
-                  <Trophy className="w-6 h-6 text-green-400" />
+                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center">
+                  <Trophy className="w-6 h-6 text-text-muted" />
                 </div>
                 <div>
                   <div className="text-xs text-text-muted uppercase tracking-wider mb-1">Games</div>
@@ -743,9 +724,20 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                               )}
                               Register Team
                             </Button>
-                            <Button variant="outline" className="border-border-default text-text-secondary hover:bg-surface-glass">
-                              <Bell className="w-4 h-4 mr-2" />
-                              Notify Me
+                            <Button
+                              variant="outline"
+                              className={notifyConfirmed
+                                ? 'border-green-500/30 text-green-400 hover:bg-green-500/10'
+                                : 'border-border-default text-text-secondary hover:bg-surface-glass'
+                              }
+                              onClick={() => setNotifyConfirmed(true)}
+                              disabled={notifyConfirmed}
+                            >
+                              {notifyConfirmed ? (
+                                <><Check className="w-4 h-4 mr-2" />You&apos;ll be notified</>
+                              ) : (
+                                <><Bell className="w-4 h-4 mr-2" />Notify Me</>
+                              )}
                             </Button>
                           </>
                         )}
@@ -1100,7 +1092,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
               <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
                 <div className="px-5 py-4 border-b border-white/10">
                   <h3 className="font-heading font-bold text-white flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-[#E31837]" />
+                    <Trophy className="w-5 h-5 text-text-muted" />
                     Event Details
                   </h3>
                 </div>
@@ -1121,6 +1113,12 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                       <div className="text-white font-semibold text-lg">${event.entryFee}</div>
                     </div>
                   )}
+                  {event.description && (
+                    <div>
+                      <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">About</div>
+                      <p className="text-text-secondary text-sm leading-relaxed">{event.description}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1129,7 +1127,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                 <div className="bg-surface-glass backdrop-blur-xl border border-border-default rounded-2xl overflow-hidden">
                   <div className="px-5 py-4 border-b border-border-default">
                     <h3 className="font-heading font-bold text-text-primary flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-[#E31837]" />
+                      <MapPin className="w-5 h-5 text-text-muted" />
                       Venue Information
                     </h3>
                   </div>

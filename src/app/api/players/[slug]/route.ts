@@ -8,8 +8,8 @@ export async function GET(
   try {
     const { slug } = await params
 
-    const player = await prisma.player.findUnique({
-      where: { slug },
+    const player = await prisma.player.findFirst({
+      where: { slug, isActive: true },
       include: {
         achievements: {
           orderBy: { earnedAt: 'desc' },

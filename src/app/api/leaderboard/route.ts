@@ -14,6 +14,17 @@ export async function GET(request: Request) {
             isActive: true,
         }
 
+        // Filter by division via team roster
+        if (division) {
+            where.teamRosters = {
+                some: {
+                    team: {
+                        division: division,
+                    },
+                },
+            }
+        }
+
         const players = await prisma.player.findMany({
             where,
             select: {

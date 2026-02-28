@@ -204,7 +204,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen">
       {/* Header Section */}
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden border-b border-border-subtle">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
           <span className="inline-block px-3 py-1 bg-eha-red text-white text-[10px] font-extrabold tracking-widest uppercase rounded-sm shadow-lg shadow-eha-red/20 mb-4">
             Admin Panel

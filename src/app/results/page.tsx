@@ -416,7 +416,7 @@ export default function ResultsPage() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle">
+      <section className="relative overflow-hidden pt-32 pb-12 border-b border-border-subtle">
         <div
           className="absolute inset-0 opacity-5"
           style={{
@@ -460,7 +460,7 @@ export default function ResultsPage() {
       </section>
 
       {/* Sticky Filter Bar */}
-      <section className="sticky top-20 z-40 bg-page-bg-alt/95 backdrop-blur-md border-b border-border-subtle shadow-xl">
+      <section className="sticky top-20 z-40 backdrop-blur-md border-b border-border-subtle shadow-xl">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-4">
           <div className="flex flex-col lg:flex-row gap-4 justify-between items-center">
             <div className="flex flex-wrap gap-3 w-full lg:w-auto">

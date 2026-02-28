@@ -33,8 +33,8 @@ interface PageProps {
 }
 
 async function getPlayer(slug: string) {
-  const player = await prisma.player.findUnique({
-    where: { slug },
+  const player = await prisma.player.findFirst({
+    where: { slug, isActive: true },
     include: {
       guardians: {
         select: { id: true, userId: true },
@@ -167,7 +167,7 @@ export default async function PlayerProfilePage(props: PageProps) {
 
     <div className="min-h-screen">
       {/* Header Section */}
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden border-b border-border-subtle">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-12 lg:py-16 relative z-10">
           <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-end">
             {/* Profile Photo */}

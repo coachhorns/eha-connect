@@ -109,7 +109,7 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-dark-base">
       {/* Header Section */}
-      <div className="bg-gradient-to-br from-[#0A1D37] to-[#152e50] pt-40 pb-20 px-4 sm:px-6 lg:px-8 border-b border-border-subtle">
+      <div className="pt-40 pb-20 px-4 sm:px-6 lg:px-8 border-b border-border-subtle">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="font-heading font-bold text-5xl lg:text-7xl uppercase tracking-tighter text-text-primary mb-6">
             Get Connected

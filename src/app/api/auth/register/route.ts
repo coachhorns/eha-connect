@@ -4,11 +4,18 @@ import prisma from '@/lib/prisma'
 
 export async function POST(request: Request) {
   try {
-    const { email, password, name, role } = await request.json()
+    const { email, password, name, role, agreedToTerms } = await request.json()
 
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
+        { status: 400 }
+      )
+    }
+
+    if (!agreedToTerms) {
+      return NextResponse.json(
+        { error: 'You must agree to the Terms of Service' },
         { status: 400 }
       )
     }
@@ -30,7 +37,7 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Create user
+    // Create user and log ToS acceptance in a transaction
     const user = await prisma.user.create({
       data: {
         email: normalizedEmail,
@@ -38,6 +45,13 @@ export async function POST(request: Request) {
         name,
         role: role || 'PARENT',
         roleSelected: true,
+      },
+    })
+
+    await prisma.tosAcceptance.create({
+      data: {
+        userId: user.id,
+        touchpoint: 'account_creation',
       },
     })
 

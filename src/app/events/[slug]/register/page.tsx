@@ -185,7 +185,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-page-bg-alt flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-eha-red border-t-transparent rounded-full" />
       </div>
     )
@@ -193,7 +193,7 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
 
   if (error && !event) {
     return (
-      <div className="min-h-screen bg-page-bg-alt">
+      <div className="min-h-screen">
         <div className="max-w-2xl mx-auto px-4 py-16 text-center">
           <div className="bg-page-bg border border-border-default rounded-sm p-8">
             <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
@@ -211,9 +211,9 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
   // Show blocking message for parents/players
   if (isBlocked) {
     return (
-      <div className="min-h-screen bg-page-bg-alt">
+      <div className="min-h-screen">
         {/* Hero Section */}
-        <div className="relative bg-page-bg border-b border-border-default pt-32">
+        <div className="relative border-b border-border-default pt-32">
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -273,9 +273,9 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
 
   if (success) {
     return (
-      <div className="min-h-screen bg-page-bg-alt">
+      <div className="min-h-screen">
         {/* Hero Section */}
-        <div className="relative bg-page-bg border-b border-border-default pt-32">
+        <div className="relative border-b border-border-default pt-32">
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -328,9 +328,9 @@ export default function EventRegistrationPage({ params }: { params: Promise<{ sl
     : [{ value: '', label: 'Select Division' }, ...divisionOptions.map(d => ({ value: d, label: d }))]
 
   return (
-    <div className="min-h-screen bg-page-bg-alt">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative bg-page-bg border-b border-border-default pt-32">
+      <div className="relative border-b border-border-default pt-32">
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{

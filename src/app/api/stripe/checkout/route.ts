@@ -122,6 +122,14 @@ export async function POST(request: Request) {
       }
     }
 
+    // Log ToS acceptance for checkout
+    await prisma.tosAcceptance.create({
+      data: {
+        userId: session.user.id,
+        touchpoint: 'checkout',
+      },
+    })
+
     let checkoutSession
     try {
       checkoutSession = await stripe.checkout.sessions.create(sessionConfig)

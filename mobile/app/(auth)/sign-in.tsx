@@ -114,6 +114,21 @@ export default function SignInScreen() {
               </TouchableOpacity>
             </Link>
           </View>
+
+          {/* Legal Links */}
+          <View style={styles.legalRow}>
+            <Link href="https://ehaconnect.com/terms" asChild>
+              <TouchableOpacity>
+                <Text style={styles.legalLink}>Terms of Service</Text>
+              </TouchableOpacity>
+            </Link>
+            <Text style={styles.legalSeparator}>|</Text>
+            <Link href="https://ehaconnect.com/privacy" asChild>
+              <TouchableOpacity>
+                <Text style={styles.legalLink}>Privacy Policy</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -199,5 +214,20 @@ const styles = StyleSheet.create({
     fontSize: FontSize.md,
     color: 'rgba(255,255,255,0.85)',
     fontWeight: '600',
+  },
+  legalRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: Spacing.lg,
+  },
+  legalLink: {
+    fontSize: FontSize.xs,
+    color: 'rgba(255,255,255,0.4)',
+  },
+  legalSeparator: {
+    fontSize: FontSize.xs,
+    color: 'rgba(255,255,255,0.25)',
+    marginHorizontal: Spacing.sm,
   },
 });

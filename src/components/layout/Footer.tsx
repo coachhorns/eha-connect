@@ -8,7 +8,7 @@ const footerLinks = {
   players: [
     { href: '/players', label: 'Player Directory' },
     { href: '/leaderboards', label: 'Stat Leaders' },
-    { href: '/pricing', label: 'Get EHA Connect' },
+    { href: '/claim-player', label: 'Claim Your Profile' },
   ],
   events: [
     { href: '/events', label: 'Upcoming Events' },

@@ -183,16 +183,7 @@ export default function EditProgramPage() {
   }
 
   return (
-    <div className="min-h-screen bg-page-bg relative overflow-hidden">
-      {/* Background Pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
-        }}
-      />
-
+    <div className="min-h-screen relative overflow-hidden">
       {/* Blur Circles */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E31837] blur-[150px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500 blur-[120px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />

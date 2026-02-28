@@ -44,6 +44,7 @@ model User {
   guardians     Guardian[]       // Players this user is guardian of
   sentInvites   GuardianInvite[] // Co-parent invites sent by this user
   recruitingEmails RecruitingEmail[]
+  tosAcceptances   TosAcceptance[]
 
   @@map("users")
 }
@@ -104,6 +105,18 @@ enum UserRole {
   SCOREKEEPER
   PROGRAM_DIRECTOR
   ADMIN
+}
+
+model TosAcceptance {
+  id         String   @id @default(cuid())
+  userId     String
+  agreedAt   DateTime @default(now())
+  version    String   @default("1.0")
+  touchpoint String   // "account_creation" or "checkout"
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("tos_acceptances")
 }
 
 // ============================================

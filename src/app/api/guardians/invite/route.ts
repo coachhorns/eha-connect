@@ -107,9 +107,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get player info for the invite
-    const player = await prisma.player.findUnique({
-      where: { id: playerId },
+    // Get player info for the invite (must be active)
+    const player = await prisma.player.findFirst({
+      where: { id: playerId, isActive: true },
       select: {
         firstName: true,
         lastName: true,
