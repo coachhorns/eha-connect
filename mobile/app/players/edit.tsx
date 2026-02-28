@@ -18,6 +18,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 import { Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
 import { useColors } from '@/context/ThemeContext';
 import { playersApi } from '@/api/players';
@@ -214,25 +215,54 @@ export default function EditProfileScreen() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['videos'],
       quality: 0.8,
+      videoExportPreset: ImagePicker.VideoExportPreset.MediumQuality,
     });
 
     if (result.canceled || result.assets.length === 0) return;
 
-    setUploading('video');
-    try {
-      const asset = result.assets[0];
-      const ext = asset.uri.split('.').pop() || 'mp4';
-      const fileName = `video_${Date.now()}.${ext}`;
-      const mimeType = asset.mimeType || 'video/mp4';
+    const pickedAsset = result.assets[0];
 
-      const url = await uploadFileToBlob(asset.uri, mimeType, fileName, 'players/videos');
-      await playersApi.createMedia(id, { url, type: 'VIDEO', title: 'Video' });
-      refetchMedia();
-    } catch (e: any) {
-      Alert.alert('Upload Failed', e?.message || 'Could not upload video. Please try again.');
-    } finally {
-      setUploading(null);
-    }
+    // Prompt user for a video title before uploading
+    Alert.prompt(
+      'Name Your Video',
+      'Enter a title for this video',
+      async (inputTitle) => {
+        const videoTitle = inputTitle?.trim() || 'Video';
+        setUploading('video');
+        try {
+          const ext = pickedAsset.uri.split('.').pop() || 'mp4';
+          const ts = Date.now();
+          const fileName = `video_${ts}.${ext}`;
+          const mimeType = pickedAsset.mimeType || 'video/mp4';
+
+          // Generate thumbnail from the video
+          let thumbnailUrl: string | undefined;
+          try {
+            const thumb = await VideoThumbnails.getThumbnailAsync(pickedAsset.uri, { time: 1000 });
+            thumbnailUrl = await uploadFileToBlob(thumb.uri, 'image/jpeg', `thumb_${ts}.jpg`, 'players/videos');
+          } catch {
+            // Thumbnail generation failed — upload video without it
+          }
+
+          // Try direct upload first (bypasses 4.5MB serverless limit), fall back to regular upload
+          let url: string;
+          try {
+            url = await playersApi.directUpload(pickedAsset.uri, mimeType, fileName, 'players/videos');
+          } catch {
+            url = await uploadFileToBlob(pickedAsset.uri, mimeType, fileName, 'players/videos');
+          }
+          await playersApi.createMedia(id, { url, type: 'VIDEO', title: videoTitle, thumbnail: thumbnailUrl });
+          refetchMedia();
+        } catch (e: any) {
+          Alert.alert('Upload Failed', e?.message || 'Could not upload video. Please try again.');
+        } finally {
+          setUploading(null);
+        }
+      },
+      'plain-text',
+      '',
+      'e.g. Highlights vs Team Create'
+    );
   }, [id, refetchMedia]);
 
   const handleUploadTranscript = useCallback(async () => {
@@ -313,6 +343,7 @@ export default function EditProfileScreen() {
   }
 
   return (
+    <>
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -603,6 +634,25 @@ export default function EditProfileScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+
+      {/* Full-screen upload overlay */}
+      {uploading && (
+        <View style={styles.uploadOverlay}>
+          <View style={[styles.uploadOverlayBox, { backgroundColor: colors.surface }]}>
+            <ActivityIndicator size="large" color="#FFFFFF" />
+            <Text style={[styles.uploadOverlayText, { color: colors.textPrimary }]}>
+              {uploading === 'profilePhoto' ? 'Uploading profile photo…' :
+               uploading === 'photo' ? 'Uploading photo…' :
+               uploading === 'video' ? 'Uploading video…' :
+               'Uploading transcript…'}
+            </Text>
+            <Text style={[styles.uploadOverlaySubtext, { color: colors.textMuted }]}>
+              Please wait, do not close this page
+            </Text>
+          </View>
+        </View>
+      )}
+    </>
   );
 }
 
@@ -863,5 +913,30 @@ const styles = StyleSheet.create({
   transcriptRemoveText: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.bodySemiBold,
+  },
+
+  // ── Upload overlay ─────────────────────────────
+  uploadOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 999,
+  },
+  uploadOverlayBox: {
+    borderRadius: BorderRadius.xl,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.xl,
+    alignItems: 'center',
+    gap: Spacing.md,
+    minWidth: 220,
+  },
+  uploadOverlayText: {
+    fontSize: FontSize.md,
+    fontFamily: Fonts.bodySemiBold,
+  },
+  uploadOverlaySubtext: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.body,
   },
 });

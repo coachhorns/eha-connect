@@ -80,8 +80,7 @@ export default function ProfileScreen() {
 
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const [filmSegment, setFilmSegment] = useState<'youtube' | 'hudl' | 'other'>('youtube');
-  const [videoModal, setVideoModal] = useState<{ title: string; ytId?: string; embedUrl?: string } | null>(null);
+  const [videoModal, setVideoModal] = useState<{ title: string; ytId?: string; embedUrl?: string; videoUrl?: string } | null>(null);
   const [photoModal, setPhotoModal] = useState<{ photos: any[]; idx: number } | null>(null);
   const [photoViewIdx, setPhotoViewIdx] = useState(0);
 
@@ -203,31 +202,11 @@ export default function ProfileScreen() {
     ? `https://instagram.com/${p.instagramHandle.replace('@', '')}`
     : null;
 
-  // ── Build film items (deduplicated by URL) ─────────────────
+  // ── Build film items — only individual videos, NOT profile links ──
   const filmItemsMap = new Map<string, FilmItem>();
 
-  if (p.youtubeUrl) {
-    const ytId = extractYouTubeId(p.youtubeUrl);
-    if (ytId) {
-      filmItemsMap.set(p.youtubeUrl, {
-        id: 'yt-direct',
-        url: p.youtubeUrl,
-        title: 'YouTube Highlights',
-        thumbnail: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`,
-        type: 'youtube',
-      });
-    }
-  }
-  if (p.hudlUrl) {
-    filmItemsMap.set(p.hudlUrl, {
-      id: 'hudl-direct',
-      url: p.hudlUrl,
-      title: 'Hudl Highlights',
-      thumbnail: null,
-      type: 'hudl',
-    });
-  }
-  if (p.highlightUrl && !filmItemsMap.has(p.highlightUrl)) {
+  // highlightUrl is an individual video link (not a profile), so include it
+  if (p.highlightUrl) {
     const ytId = extractYouTubeId(p.highlightUrl);
     filmItemsMap.set(p.highlightUrl, {
       id: 'highlight-direct',
@@ -237,6 +216,7 @@ export default function ProfileScreen() {
       type: ytId ? 'youtube' : p.highlightUrl.includes('hudl.com') ? 'hudl' : 'other',
     });
   }
+  // Media items (uploaded videos + highlights from DB)
   if (p.media) {
     (p.media as any[])
       .filter((m: any) => m.type === 'VIDEO' || m.type === 'HIGHLIGHT')
@@ -254,6 +234,9 @@ export default function ProfileScreen() {
       });
   }
   const filmItems = Array.from(filmItemsMap.values());
+  // Profile links for direct-link buttons (Hudl profile, YouTube channel)
+  const hudlProfileUrl: string | null = p.hudlUrl || null;
+  const youtubeChannelUrl: string | null = p.youtubeUrl || null;
 
   const handleFilmPress = (item: FilmItem) => {
     if (item.type === 'youtube') {
@@ -270,7 +253,8 @@ export default function ProfileScreen() {
         return;
       }
     }
-    Linking.openURL(item.url);
+    // All other videos (uploaded from camera roll, blob URLs, etc.) play in-app via WebView
+    setVideoModal({ title: item.title, videoUrl: item.url });
   };
 
   const openPhoto = (idx: number) => {
@@ -566,68 +550,58 @@ export default function ProfileScreen() {
         )}
 
         {/* ── Film Room ─────────────────────────────────────── */}
-        {filmItems.length > 0 && (() => {
-          const types = [...new Set(filmItems.map(i => i.type))] as ('youtube' | 'hudl' | 'other')[];
-          const activeSegment = types.includes(filmSegment) ? filmSegment : types[0];
-          const activeItems = filmItems.filter(i => i.type === activeSegment);
-          return (
-            <Card style={styles.card}>
-              <Text style={[styles.cardLabel, { color: colors.gold }]}>FILM ROOM</Text>
-              {/* Logo toggle buttons */}
-              {types.length > 1 && (
-                <View style={styles.filmSegmentRow}>
-                  {types.map(t => {
-                    const isActive = t === activeSegment;
-                    return (
-                      <TouchableOpacity
-                        key={t}
-                        style={[
-                          styles.filmSegmentBtn,
-                          { backgroundColor: colors.surface, borderColor: colors.border },
-                          isActive && { backgroundColor: colors.surface, borderColor: colors.border },
-                        ]}
-                        onPress={() => setFilmSegment(t)}
-                        activeOpacity={0.7}
-                      >
-                        {t === 'youtube' && (
-                          <Image
-                            source={require('../../assets/logos/youtube.png')}
-                            style={styles.filmSegmentLogo}
-                            contentFit="contain"
-                          />
-                        )}
-                        {t === 'hudl' && (
-                          <Image
-                            source={require('../../assets/logos/hudl.png')}
-                            style={styles.filmSegmentLogo}
-                            contentFit="contain"
-                          />
-                        )}
-                        {t === 'other' && (
-                          <Text style={[
-                            styles.filmSegmentText,
-                            { color: colors.textSecondary },
-                            isActive && { color: '#FFFFFF' },
-                          ]}>
-                            Video
-                          </Text>
-                        )}
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              )}
-              {/* Swipeable thumbnail cards */}
+        {(filmItems.length > 0 || hudlProfileUrl || youtubeChannelUrl) && (
+          <Card style={styles.card}>
+            <Text style={[styles.cardLabel, { color: colors.gold }]}>FILM ROOM</Text>
+            {/* Direct-link buttons for Hudl profile & YouTube channel */}
+            {(hudlProfileUrl || youtubeChannelUrl) && (
+              <View style={styles.filmSegmentRow}>
+                {hudlProfileUrl && (
+                  <TouchableOpacity
+                    style={[
+                      styles.filmSegmentBtn,
+                      { backgroundColor: colors.surface, borderColor: colors.border },
+                    ]}
+                    onPress={() => setVideoModal({ title: 'Hudl', embedUrl: hudlProfileUrl })}
+                    activeOpacity={0.7}
+                  >
+                    <Image
+                      source={require('../../assets/logos/hudl.png')}
+                      style={styles.filmSegmentLogo}
+                      contentFit="contain"
+                    />
+                  </TouchableOpacity>
+                )}
+                {youtubeChannelUrl && (
+                  <TouchableOpacity
+                    style={[
+                      styles.filmSegmentBtn,
+                      { backgroundColor: colors.surface, borderColor: colors.border },
+                    ]}
+                    onPress={() => setVideoModal({ title: 'YouTube', embedUrl: youtubeChannelUrl })}
+                    activeOpacity={0.7}
+                  >
+                    <Image
+                      source={require('../../assets/logos/youtube.png')}
+                      style={styles.filmSegmentLogo}
+                      contentFit="contain"
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+            {/* All videos in one carousel */}
+            {filmItems.length > 0 && (
               <FlatList
                 horizontal
-                data={activeItems}
+                data={filmItems}
                 keyExtractor={item => item.id}
                 showsHorizontalScrollIndicator={false}
                 snapToInterval={FILM_EMBED_WIDTH + FILM_EMBED_GAP}
                 decelerationRate="fast"
                 style={styles.filmList}
                 contentContainerStyle={styles.filmListContent}
-                scrollEnabled={activeItems.length > 1}
+                scrollEnabled={filmItems.length > 1}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={[styles.filmVideoCard, { backgroundColor: colors.surfaceLight }]}
@@ -642,13 +616,9 @@ export default function ProfileScreen() {
                       />
                     ) : (
                       <View style={[StyleSheet.absoluteFill, styles.filmFallbackBg]}>
-                        {item.type === 'hudl' && (
-                          <Image
-                            source={require('../../assets/logos/hudl.png')}
-                            style={styles.filmFallbackLogo}
-                            contentFit="contain"
-                          />
-                        )}
+                        <View style={styles.filmPlayCircle}>
+                          <View style={styles.filmPlayTriangle} />
+                        </View>
                       </View>
                     )}
                     {/* Gradient overlay on film card — stays dark for text readability on images */}
@@ -657,9 +627,11 @@ export default function ProfileScreen() {
                       style={StyleSheet.absoluteFill}
                     />
                     {/* Play button */}
-                    <View style={styles.filmPlayCircle}>
-                      <View style={styles.filmPlayTriangle} />
-                    </View>
+                    {item.thumbnail && (
+                      <View style={styles.filmPlayCircle}>
+                        <View style={styles.filmPlayTriangle} />
+                      </View>
+                    )}
                     {/* Title — hardcoded white for readability on image overlay */}
                     <View style={styles.filmCardInfo}>
                       <Text style={styles.filmCardTitle} numberOfLines={1}>{item.title}</Text>
@@ -667,9 +639,9 @@ export default function ProfileScreen() {
                   </TouchableOpacity>
                 )}
               />
-            </Card>
-          );
-        })()}
+            )}
+          </Card>
+        )}
 
         {/* ── Photos ────────────────────────────────────────── */}
         {photos.length > 0 && (
@@ -728,6 +700,18 @@ export default function ProfileScreen() {
                   })();
                   true;
                 `}
+              />
+            ) : videoModal?.videoUrl ? (
+              <WebView
+                source={{ html: `
+                  <html><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;height:100vh;">
+                    <video src="${videoModal.videoUrl}" controls autoplay playsinline style="width:100%;max-height:100vh;background:#000;" />
+                  </body></html>
+                ` }}
+                style={{ flex: 1, backgroundColor: '#000' }}
+                allowsFullscreenVideo
+                allowsInlineMediaPlayback
+                mediaPlaybackRequiresUserAction={false}
               />
             ) : videoModal?.embedUrl ? (
               <WebView

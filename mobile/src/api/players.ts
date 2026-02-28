@@ -49,6 +49,9 @@ export const playersApi = {
   uploadFile: (formData: FormData) =>
     api.uploadFile<{ url: string }>('/api/upload', formData),
 
+  directUpload: (uri: string, mimeType: string, fileName: string, folder: string) =>
+    api.directUpload(uri, mimeType, fileName, folder),
+
   getUpcomingGames: async (id: string) => {
     const res = await api.get<{ games: any[] }>(`/api/user/players/${id}/upcoming-games`);
     return res.games ?? [];
