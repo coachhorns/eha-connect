@@ -196,19 +196,21 @@ function TeamCard({ team }: TeamCardProps) {
 
         {/* Card Body */}
         <div className="px-6 pb-6 pt-0 relative">
-          {/* Circular Logo */}
+          {/* Program Logo */}
           <div className="flex justify-end -mt-8 mb-2">
-            <div className="w-16 h-16 bg-white rounded-full p-1 border-2 border-border-default shadow-lg flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform overflow-hidden">
+            <div className="w-16 h-16 flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform">
               {logoUrl ? (
                 <Image
                   src={logoUrl}
                   alt={team.name}
-                  width={56}
-                  height={56}
-                  className="w-full h-full object-cover rounded-full"
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-contain drop-shadow-lg"
                 />
               ) : (
-                <Users className="w-8 h-8 text-[#0A1D37]" />
+                <div className="w-16 h-16 bg-surface-raised rounded-full flex items-center justify-center border border-border-default">
+                  <Users className="w-8 h-8 text-text-muted" />
+                </div>
               )}
             </div>
           </div>
@@ -389,7 +391,7 @@ export default function TeamsPage() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* ========== HERO HEADER ========== */}
-      <section className="pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle relative overflow-hidden">
+      <section className="pt-32 pb-12 border-b border-border-subtle relative overflow-hidden">
         {/* Radial Dot Pattern Overlay */}
         <div
           className="absolute inset-0 opacity-5"

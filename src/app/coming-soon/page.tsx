@@ -40,16 +40,7 @@ export default function ComingSoonPage() {
   }
 
   return (
-    <div className="min-h-screen bg-page-bg relative overflow-hidden flex items-center justify-center px-4">
-      {/* Background Pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
-        }}
-      />
-
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center px-4">
       {/* Blur Circles */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#E31837] blur-[180px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500 blur-[150px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />

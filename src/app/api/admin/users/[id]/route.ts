@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { cascadeSoftDeleteTeamPlayers } from '@/lib/cascade-delete'
 
 // GET single user
 export async function GET(
@@ -213,6 +214,11 @@ export async function DELETE(
       const teamIds = user.ownedPrograms.flatMap(program =>
         program.teams.map(team => team.id)
       )
+
+      // Cascade: soft-delete unclaimed players on each team
+      for (const teamId of teamIds) {
+        await cascadeSoftDeleteTeamPlayers(teamId)
+      }
 
       // Soft-delete all teams (set isActive: false)
       if (teamIds.length > 0) {

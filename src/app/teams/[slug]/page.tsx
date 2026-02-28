@@ -137,7 +137,7 @@ export default async function TeamPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-page-bg-alt pt-32 pb-16 border-b border-border-subtle">
+      <section className="relative overflow-hidden pt-32 pb-16 border-b border-border-subtle">
         {/* Radial Dot Pattern */}
         <div
           className="absolute inset-0 opacity-5"

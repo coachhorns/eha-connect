@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     // Fetch all player data
     const players = slugs.length > 0
       ? await prisma.player.findMany({
-          where: { slug: { in: slugs } },
+          where: { slug: { in: slugs }, isActive: true },
           select: {
             id: true,
             firstName: true,

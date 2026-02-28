@@ -52,6 +52,8 @@ function SignUpContent() {
     confirmPassword: '',
     role: initialRole,
   })
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [termsError, setTermsError] = useState(false)
 
   useEffect(() => {
     if (roleParam && validRoles.includes(roleParam)) {
@@ -81,6 +83,12 @@ function SignUpContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setTermsError(false)
+
+    if (!agreedToTerms) {
+      setTermsError(true)
+      return
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match')
@@ -105,6 +113,7 @@ function SignUpContent() {
           email: normalizedEmail,
           password: formData.password,
           role: formData.role,
+          agreedToTerms: true,
         }),
       })
 
@@ -143,16 +152,7 @@ function SignUpContent() {
   }
 
   return (
-    <div className="min-h-screen bg-page-bg flex items-center justify-center px-4 pt-32 pb-12 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
-        }}
-      />
-
+    <div className="min-h-screen flex items-center justify-center px-4 pt-32 pb-12 relative overflow-hidden">
       {/* Blur Circles */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E31837] blur-[150px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500 blur-[120px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />
@@ -312,23 +312,52 @@ function SignUpContent() {
               </div>
             </div>
 
-            {/* Terms */}
-            <div className="text-sm text-text-muted">
-              By creating an account, you agree to our{' '}
-              <Link href="/terms" className="text-[#E31837] hover:text-text-primary transition-colors">
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link href="/privacy" className="text-[#E31837] hover:text-text-primary transition-colors">
-                Privacy Policy
-              </Link>
-              .
+            {/* Terms Checkbox */}
+            <div>
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => {
+                    setAgreedToTerms(e.target.checked)
+                    if (e.target.checked) setTermsError(false)
+                  }}
+                  className="mt-0.5 w-4 h-4 rounded border-border-default bg-page-bg-alt text-[#E31837] focus:ring-[#E31837]/50 focus:ring-offset-0 cursor-pointer shrink-0"
+                />
+                <span className="text-sm text-text-muted">
+                  I have read and agree to the{' '}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#E31837] hover:text-text-primary transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Terms of Service
+                  </a>{' '}
+                  and{' '}
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#E31837] hover:text-text-primary transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Privacy Policy
+                  </a>
+                </span>
+              </label>
+              {termsError && (
+                <p className="mt-1.5 text-xs text-red-400 ml-7">
+                  You must agree to the Terms of Service to create an account.
+                </p>
+              )}
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !agreedToTerms}
               className="w-full py-4 bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] text-white font-bold uppercase tracking-widest text-sm rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#E31837]/25 hover:shadow-xl hover:shadow-[#E31837]/40 hover:-translate-y-0.5 flex items-center justify-center gap-2"
             >
               {isLoading ? (

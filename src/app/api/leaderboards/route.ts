@@ -53,8 +53,8 @@ export async function GET(request: Request) {
     // Get player details and calculate averages
     const leaderboard = await Promise.all(
       playerStats.map(async (ps: any) => {
-        const player = await prisma.player.findUnique({
-          where: { id: ps.playerId },
+        const player = await prisma.player.findFirst({
+          where: { id: ps.playerId, isActive: true },
           select: {
             id: true,
             slug: true,

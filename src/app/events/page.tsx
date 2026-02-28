@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
   Search,
@@ -172,13 +173,26 @@ const UpcomingEventRow = ({ event }: { event: Event }) => {
             {startDate.getFullYear()}
           </span>
         </div>
-        <div className="md:col-span-4">
-          <h5 className="text-sm font-bold text-text-primary group-hover:text-eha-red transition-colors font-heading text-lg md:text-sm">
-            {event.name}
-          </h5>
-          <p className="text-xs text-text-muted">
-            {[event.venue, event.city, event.state].filter(Boolean).join(' • ')}
-          </p>
+        <div className="md:col-span-4 flex items-center gap-3">
+          {event.bannerImage && (
+            <div className="w-24 h-24 flex-shrink-0 flex items-center justify-center">
+              <Image
+                src={event.bannerImage}
+                alt={event.name}
+                width={96}
+                height={96}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <h5 className="text-sm font-bold text-text-primary group-hover:text-eha-red transition-colors font-heading text-lg md:text-sm">
+              {event.name}
+            </h5>
+            <p className="text-xs text-text-muted">
+              {[event.venue, event.city, event.state].filter(Boolean).join(' • ')}
+            </p>
+          </div>
         </div>
         <div className="md:col-span-2 hidden md:block">
           <span className="text-[10px] font-extrabold text-text-muted uppercase tracking-widest block mb-1">Status</span>
@@ -250,7 +264,7 @@ export default function EventsPage() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-page-bg-alt border-b border-border-subtle relative overflow-hidden">
+      <section className="pt-32 pb-20 border-b border-border-subtle relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#E2E8F0 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 

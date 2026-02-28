@@ -206,14 +206,15 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .dark .bg-navy-gradient {
-  background: linear-gradient(180deg, #0D2B5B 0%, #071832 40%, #0A2245 70%, #0D2B5B 100%);
+  background: var(--page-bg);
 }
 
 .dark .bg-navy-gradient::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-image: radial-gradient(circle, #ffffff 1px, transparent 1px);
+  background-size: 24px 24px;
   opacity: 0.03;
   pointer-events: none;
   z-index: 0;

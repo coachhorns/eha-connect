@@ -180,7 +180,7 @@ function ClaimPlayerContent() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle">
+      <section className="relative overflow-hidden pt-32 pb-12 border-b border-border-subtle">
         <div
           className="absolute inset-0 opacity-5"
           style={{
@@ -670,7 +670,7 @@ function ClaimPlayerContent() {
 export default function ClaimPlayerPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-page-bg-alt flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-[#E31837]" />
       </div>
     }>

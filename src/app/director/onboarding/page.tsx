@@ -80,6 +80,7 @@ function OnboardingContent() {
     lastName: '',
     jerseyNumber: '',
   })
+  const [showIncompleteModal, setShowIncompleteModal] = useState(false)
 
   // Auto-upgrade PARENT/PLAYER users to PROGRAM_DIRECTOR (Google OAuth from join page)
   const [isUpgrading, setIsUpgrading] = useState(false)
@@ -119,7 +120,7 @@ function OnboardingContent() {
             const hasEmptyRosters = data.program.teams.some((t: any) => t.rosterCount === 0)
 
             if (hasEmptyRosters) {
-              // Skip to rosters step
+              // Skip to rosters step and load existing rosters
               const existingTeams = data.program.teams.map((t: any, i: number) => ({
                 id: t.id,
                 name: t.name,
@@ -128,6 +129,21 @@ function OnboardingContent() {
               }))
               setTeams(existingTeams)
               setCreatedTeamIds(existingTeams.map((t: any) => t.id))
+
+              // Populate rosters state with any previously saved players
+              const existingRosters: Record<string, PlayerData[]> = {}
+              for (const t of data.program.teams) {
+                if (t.roster && t.roster.length > 0) {
+                  existingRosters[t.id] = t.roster.map((r: any, i: number) => ({
+                    id: r.playerId || String(Date.now() + i),
+                    firstName: r.firstName || '',
+                    lastName: r.lastName || '',
+                    jerseyNumber: r.jerseyNumber != null ? String(r.jerseyNumber) : '',
+                  }))
+                }
+              }
+              setRosters(existingRosters)
+
               setCurrentStep('rosters')
             } else if (callbackUrl) {
               // Complete - redirect to callback
@@ -240,6 +256,31 @@ function OnboardingContent() {
     setTeams(newTeams)
   }
 
+  // Auto-save a team's roster to the backend (batch API skips duplicates)
+  const saveRosterToBackend = async (teamId: string, players: PlayerData[]) => {
+    if (!teamId || players.length === 0) return
+    try {
+      await fetch(`/api/director/teams/${teamId}/roster/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          players: players.map(p => ({
+            firstName: p.firstName,
+            lastName: p.lastName,
+            jerseyNumber: p.jerseyNumber || null,
+            primaryPosition: null,
+            graduationYear: null,
+            heightFeet: null,
+            heightInches: null,
+            school: null,
+          })),
+        }),
+      })
+    } catch (err) {
+      console.error('Auto-save roster failed:', err)
+    }
+  }
+
   // Handlers for rosters step
   const addPlayer = () => {
     if (!newPlayer.firstName.trim() || !newPlayer.lastName.trim()) {
@@ -249,14 +290,15 @@ function OnboardingContent() {
 
     const teamId = createdTeamIds[activeTeamIndex] || teams[activeTeamIndex].id
     const currentRoster = rosters[teamId] || []
+    const playerToAdd = { ...newPlayer, id: String(Date.now()) }
 
     setRosters({
       ...rosters,
-      [teamId]: [
-        ...currentRoster,
-        { ...newPlayer, id: String(Date.now()) },
-      ],
+      [teamId]: [...currentRoster, playerToAdd],
     })
+
+    // Auto-save to backend immediately
+    saveRosterToBackend(teamId, [playerToAdd])
 
     setNewPlayer({ id: '', firstName: '', lastName: '', jerseyNumber: '' })
     setError('')
@@ -306,10 +348,28 @@ function OnboardingContent() {
           jerseyNumber: p.jerseyNumber || '',
         })).filter((p: PlayerData) => p.firstName && p.lastName)
 
-        setRosters({
+        const updatedRosters = {
           ...rosters,
           [teamId]: [...currentRoster, ...newPlayers],
-        })
+        }
+        setRosters(updatedRosters)
+
+        // Auto-save to backend immediately
+        if (newPlayers.length > 0) {
+          saveRosterToBackend(teamId, newPlayers)
+        }
+
+        // Auto-advance to next empty team
+        if (newPlayers.length > 0) {
+          const nextEmpty = teams.findIndex((_, i) => {
+            if (i === activeTeamIndex) return false
+            const tid = createdTeamIds[i]
+            return !tid || (updatedRosters[tid] || []).length === 0
+          })
+          if (nextEmpty !== -1) {
+            setTimeout(() => setActiveTeamIndex(nextEmpty), 600)
+          }
+        }
       } else {
         setError(data.error || 'Failed to parse roster image')
       }
@@ -412,24 +472,13 @@ function OnboardingContent() {
     }
   }
 
-  const handleRostersSubmit = async () => {
-    // Validate at least one player per team
-    const teamsWithoutPlayers = teams.filter((t, i) => {
-      const teamId = createdTeamIds[i]
-      const teamRoster = rosters[teamId] || []
-      return teamRoster.length === 0
-    })
-
-    if (teamsWithoutPlayers.length > 0) {
-      setError(`Please add at least one player to: ${teamsWithoutPlayers.map(t => t.name).join(', ')}`)
-      return
-    }
-
+  const submitRosters = async () => {
     setIsSubmitting(true)
     setError('')
+    setShowIncompleteModal(false)
 
     try {
-      // Submit rosters for each team
+      // Submit rosters for each team that has players
       for (let i = 0; i < createdTeamIds.length; i++) {
         const teamId = createdTeamIds[i]
         const teamRoster = rosters[teamId] || []
@@ -468,6 +517,16 @@ function OnboardingContent() {
     }
   }
 
+  const handleRostersSubmit = async () => {
+    // If some teams are empty, show the warning modal first
+    if (emptyTeams.length > 0) {
+      setShowIncompleteModal(true)
+      return
+    }
+    // All teams have players — submit directly
+    await submitRosters()
+  }
+
   const handleComplete = () => {
     if (callbackUrl) {
       router.push(callbackUrl)
@@ -480,17 +539,33 @@ function OnboardingContent() {
   const currentTeamId = createdTeamIds[activeTeamIndex] || teams[activeTeamIndex]?.id
   const currentRoster = rosters[currentTeamId] || []
 
-  return (
-    <div className="min-h-screen bg-page-bg relative overflow-hidden [&_input]:!bg-white/5 [&_select]:!bg-white/5">
-      {/* Background Pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
-        }}
-      />
+  // Roster progress tracking
+  const teamsWithPlayers = teams.filter((_, i) => {
+    const teamId = createdTeamIds[i]
+    return teamId && (rosters[teamId] || []).length > 0
+  })
+  const readyCount = teamsWithPlayers.length
+  const totalTeams = teams.length
+  const allTeamsReady = readyCount === totalTeams
 
+  const emptyTeams = teams
+    .map((t, i) => ({ ...t, index: i }))
+    .filter((t) => {
+      const teamId = createdTeamIds[t.index]
+      return !teamId || (rosters[teamId] || []).length === 0
+    })
+
+  const advanceToNextEmpty = () => {
+    const nextEmpty = teams.findIndex((_, i) => {
+      if (i === activeTeamIndex) return false
+      const teamId = createdTeamIds[i]
+      return !teamId || (rosters[teamId] || []).length === 0
+    })
+    if (nextEmpty !== -1) setActiveTeamIndex(nextEmpty)
+  }
+
+  return (
+    <div className="min-h-screen relative overflow-hidden [&_input]:!bg-white/5 [&_select]:!bg-white/5">
       {/* Blur Circles */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E31837] blur-[150px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500 blur-[120px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />
@@ -737,9 +812,37 @@ function OnboardingContent() {
         {currentStep === 'rosters' && (
           <Card className="p-6">
             <h1 className="text-2xl font-bold text-text-primary mb-2">Add Players</h1>
-            <p className="text-text-muted mb-6">
-              Add at least one player to each team. You can add more later.
+            <p className="text-text-muted mb-4">
+              Add at least one player to <span className="text-white font-semibold">each</span> of your {totalTeams} teams. You can add more later.
             </p>
+
+            {/* Progress Bar */}
+            <div className="mb-5">
+              <div className="flex items-center justify-between mb-2">
+                <span className={`text-xs font-bold uppercase tracking-wider ${allTeamsReady ? 'text-green-400' : 'text-text-muted'}`}>
+                  {allTeamsReady ? 'All teams ready!' : `${readyCount} of ${totalTeams} teams ready`}
+                </span>
+                {!allTeamsReady && (
+                  <span className="text-xs text-amber-400 font-medium">
+                    {totalTeams - readyCount} remaining
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-1">
+                {teams.map((_, i) => {
+                  const teamId = createdTeamIds[i]
+                  const filled = teamId && (rosters[teamId] || []).length > 0
+                  return (
+                    <div
+                      key={i}
+                      className={`h-2 flex-1 rounded-full transition-colors ${
+                        filled ? 'bg-green-500' : 'bg-white/10'
+                      }`}
+                    />
+                  )
+                })}
+              </div>
+            </div>
 
             {/* Team Tabs */}
             <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
@@ -747,22 +850,35 @@ function OnboardingContent() {
                 const teamId = createdTeamIds[index]
                 const teamRoster = rosters[teamId] || []
                 const hasPlayers = teamRoster.length > 0
+                const playerCount = teamRoster.length
 
                 return (
                   <button
                     key={team.id}
                     onClick={() => setActiveTeamIndex(index)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2 border ${
                       activeTeamIndex === index
-                        ? 'bg-[#E31837] text-white'
-                        : 'bg-surface-overlay text-text-muted hover:bg-surface-overlay'
+                        ? 'bg-[#E31837] text-white border-[#E31837]'
+                        : hasPlayers
+                          ? 'bg-surface-overlay text-text-primary border-green-500/30 hover:border-green-500/50'
+                          : 'bg-surface-overlay text-text-muted border-amber-500/30 hover:border-amber-500/50'
                     }`}
                   >
                     {team.name || `Team ${index + 1}`}
                     {hasPlayers ? (
-                      <Check className="w-4 h-4 text-green-400" />
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                        activeTeamIndex === index ? 'bg-white/20 text-white' : 'bg-green-500/20 text-green-400'
+                      }`}>
+                        <Check className="w-3 h-3" />
+                        {playerCount}
+                      </span>
                     ) : (
-                      <AlertCircle className="w-4 h-4 text-amber-400" />
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${
+                        activeTeamIndex === index ? 'text-white/80' : 'text-amber-400'
+                      }`}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        Empty
+                      </span>
                     )}
                   </button>
                 )
@@ -778,8 +894,8 @@ function OnboardingContent() {
                   <p className="text-sm text-text-muted mb-2">
                     Upload a photo of your roster, a screenshot from Google Sheets or Excel, or even a handwritten document — our AI will automatically extract player info.
                   </p>
-                  <p className="text-xs text-[#E31837]/80 mb-3">
-                    Include (in no particular order): <span className="text-text-primary font-medium">first name, last name, jersey number, position, graduating class, height, and high school</span> for best results.
+                  <p className="text-xs text-white font-bold mb-3">
+                    Include (in no particular order): <span className="text-text-primary font-medium">first name, last name, jersey number, and graduating class</span> for best results.
                   </p>
                   <div className="flex gap-2">
                     <button
@@ -867,10 +983,70 @@ function OnboardingContent() {
               isLoading={isSubmitting}
               className="w-full"
             >
-              Complete Setup
-              <Check className="w-4 h-4 ml-2" />
+              {allTeamsReady ? (
+                <>Complete Setup <Check className="w-4 h-4 ml-2" /></>
+              ) : (
+                <>Complete Setup ({readyCount} of {totalTeams} teams ready)</>
+              )}
             </Button>
           </Card>
+        )}
+
+        {/* Incomplete Teams Warning Modal */}
+        {showIncompleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowIncompleteModal(false)} />
+            <div className="relative bg-[#0D2B5B] border border-border-default rounded-2xl p-6 max-w-md w-full shadow-2xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                  <AlertCircle className="w-5 h-5 text-amber-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-text-primary">Some teams still need players</h3>
+                  <p className="text-sm text-text-muted">{emptyTeams.length} of {totalTeams} teams have no roster</p>
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-6">
+                {emptyTeams.map((team) => (
+                  <button
+                    key={team.id}
+                    onClick={() => {
+                      setActiveTeamIndex(team.index)
+                      setShowIncompleteModal(false)
+                    }}
+                    className="w-full flex items-center justify-between p-3 bg-white/5 border border-amber-500/20 rounded-lg hover:bg-white/10 transition-colors text-left"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                      <span className="text-sm font-medium text-text-primary">
+                        {team.name || `Team ${team.index + 1}`}
+                      </span>
+                    </div>
+                    <span className="text-xs text-amber-400 font-medium">Add players →</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Button
+                  onClick={() => {
+                    setActiveTeamIndex(emptyTeams[0].index)
+                    setShowIncompleteModal(false)
+                  }}
+                  className="w-full"
+                >
+                  Add Rosters Now
+                </Button>
+                <button
+                  onClick={() => submitRosters()}
+                  className="w-full px-4 py-2.5 text-sm text-text-muted hover:text-text-primary border border-border-default rounded-lg hover:bg-white/5 transition-colors"
+                >
+                  Skip for now — I&apos;ll add rosters later
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Step 4: Complete */}

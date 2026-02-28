@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { cascadeSoftDeleteTeamPlayers } from '@/lib/cascade-delete'
 
 export async function GET(
   request: NextRequest,
@@ -146,13 +147,22 @@ export async function DELETE(
       return NextResponse.json({ error: 'Team not found' }, { status: 404 })
     }
 
-    // Always soft delete - mark as inactive to hide from public directory
+    // Cascade: soft-delete unclaimed players with no other active rosters
+    const cascade = await cascadeSoftDeleteTeamPlayers(id)
+
+    // Soft delete the team itself
     await prisma.team.update({
       where: { id },
       data: { isActive: false },
     })
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({
+      success: true,
+      cascade: {
+        rosterEntriesMarked: cascade?.rosterEntriesMarked || 0,
+        playersDeactivated: cascade?.playersDeactivated || 0,
+      },
+    })
   } catch (error) {
     console.error('Error deleting team:', error)
     return NextResponse.json(

@@ -567,6 +567,18 @@ export default function RecruitingModal({ allPlayers, isOpen, onClose, onEmailSe
                       </div>
                     )}
 
+                    <p className="text-xs text-text-muted leading-relaxed">
+                      By sending this message, you consent to sharing player profile information with the selected coach in accordance with our{' '}
+                      <a
+                        href="/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#E31837] hover:text-text-primary transition-colors"
+                      >
+                        Privacy Policy
+                      </a>.
+                    </p>
+
                     <div className="flex gap-3 pt-2">
                       <button
                         onClick={handleBackFromCompose}

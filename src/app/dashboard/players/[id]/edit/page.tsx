@@ -616,7 +616,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
       </div>
 
       {/* Hero Section — matches public profile */}
-      <div className="relative bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle py-12 lg:py-16">
+      <div className="relative border-b border-border-subtle py-12 lg:py-16">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Player Photo — clickable for upload */}

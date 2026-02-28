@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { cascadeSoftDeleteProgramTeams } from '@/lib/cascade-delete'
 
 export async function GET(
   request: NextRequest,
@@ -127,8 +128,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Program not found' }, { status: 404 })
     }
 
+    // Cascade: soft-delete teams and their unclaimed players
+    const cascade = await cascadeSoftDeleteProgramTeams(id)
+
     if (program._count.teams > 0) {
-      // Soft delete - just mark as inactive
+      // Soft delete the program
       await prisma.program.update({
         where: { id },
         data: { isActive: false },
@@ -140,7 +144,13 @@ export async function DELETE(
       })
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({
+      success: true,
+      cascade: {
+        teamsDeactivated: cascade.teamsDeactivated,
+        playersDeactivated: cascade.totalPlayersDeactivated,
+      },
+    })
   } catch (error) {
     console.error('Error deleting program:', error)
     return NextResponse.json(

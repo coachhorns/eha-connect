@@ -11,7 +11,7 @@ import {
   Trash2,
   Shield,
   ShieldOff,
-  MoreVertical,
+  RotateCcw,
 } from 'lucide-react'
 import { Button, Badge, Avatar, Modal } from '@/components/ui'
 import { formatHeight, formatPosition } from '@/lib/utils'
@@ -45,6 +45,7 @@ export default function AdminPlayersPage() {
   const [search, setSearch] = useState('')
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [viewMode, setViewMode] = useState<'active' | 'inactive'>('active')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -56,7 +57,7 @@ export default function AdminPlayersPage() {
 
   useEffect(() => {
     fetchPlayers()
-  }, [search])
+  }, [search, viewMode])
 
   const fetchPlayers = async () => {
     setIsLoading(true)
@@ -64,6 +65,7 @@ export default function AdminPlayersPage() {
       const params = new URLSearchParams()
       if (search) params.set('search', search)
       params.set('limit', '50')
+      if (viewMode === 'inactive') params.set('status', 'inactive')
 
       const res = await fetch(`/api/players?${params}`)
       const data = await res.json()
@@ -103,6 +105,19 @@ export default function AdminPlayersPage() {
     }
   }
 
+  const restorePlayer = async (player: Player) => {
+    try {
+      await fetch(`/api/admin/players/${player.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: true }),
+      })
+      fetchPlayers()
+    } catch (error) {
+      console.error('Error restoring player:', error)
+    }
+  }
+
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -117,7 +132,7 @@ export default function AdminPlayersPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="pt-32 lg:pt-36 relative overflow-hidden bg-gradient-to-br from-[#0A1D37] to-[#152e50] border-b border-border-subtle">
+      <header className="pt-32 lg:pt-36 relative overflow-hidden border-b border-border-subtle">
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10 lg:py-14 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
@@ -136,9 +151,31 @@ export default function AdminPlayersPage() {
       </header>
       <main className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-10">
 
-      {/* Search */}
-      <div className="mb-6">
-        <div className="relative">
+      {/* Tabs + Search */}
+      <div className="mb-6 flex flex-col sm:flex-row gap-4">
+        <div className="flex rounded-sm overflow-hidden border border-border-default">
+          <button
+            onClick={() => setViewMode('active')}
+            className={`px-5 py-2.5 text-xs font-extrabold uppercase tracking-widest transition-colors ${
+              viewMode === 'active'
+                ? 'bg-eha-red text-white'
+                : 'bg-surface-glass text-text-muted hover:text-text-primary'
+            }`}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setViewMode('inactive')}
+            className={`px-5 py-2.5 text-xs font-extrabold uppercase tracking-widest transition-colors ${
+              viewMode === 'inactive'
+                ? 'bg-eha-red text-white'
+                : 'bg-surface-glass text-text-muted hover:text-text-primary'
+            }`}
+          >
+            Inactive
+          </button>
+        </div>
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
           <input
             type="text"
@@ -239,33 +276,47 @@ export default function AdminPlayersPage() {
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleVerification(player)}
-                          title={isPlayerVerified(player) ? 'Remove verification' : 'Verify player'}
-                        >
-                          {isPlayerVerified(player) ? (
-                            <ShieldOff className="w-4 h-4 text-text-primary" />
-                          ) : (
-                            <Shield className="w-4 h-4 text-text-primary" />
-                          )}
-                        </Button>
-                        <Link href={`/admin/players/${player.id}/edit`}>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="w-4 h-4" />
+                        {viewMode === 'inactive' ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => restorePlayer(player)}
+                            title="Restore player"
+                            className="text-green-500 hover:text-green-400"
+                          >
+                            <RotateCcw className="w-4 h-4" />
                           </Button>
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedPlayer(player)
-                            setShowDeleteModal(true)
-                          }}
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
+                        ) : (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleVerification(player)}
+                              title={isPlayerVerified(player) ? 'Remove verification' : 'Verify player'}
+                            >
+                              {isPlayerVerified(player) ? (
+                                <ShieldOff className="w-4 h-4 text-text-primary" />
+                              ) : (
+                                <Shield className="w-4 h-4 text-text-primary" />
+                              )}
+                            </Button>
+                            <Link href={`/admin/players/${player.id}/edit`}>
+                              <Button variant="ghost" size="sm">
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedPlayer(player)
+                                setShowDeleteModal(true)
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4 text-red-500" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

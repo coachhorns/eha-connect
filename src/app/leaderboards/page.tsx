@@ -113,7 +113,7 @@ export default function LeaderboardsPage() {
   return (
     <div className="min-h-screen bg-page-bg">
       {/* Header / Hero */}
-      <header className="pt-32 pb-12 bg-page-bg-alt border-b border-border-subtle relative overflow-hidden">
+      <header className="pt-32 pb-12 border-b border-border-subtle relative overflow-hidden">
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#E2E8F0 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">

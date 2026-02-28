@@ -380,18 +380,9 @@ export default function DirectorInvitePage() {
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-page-bg">
+    <div className="min-h-screen">
       {/* ========== HERO ========== */}
       <section className="relative overflow-hidden pt-16 pb-12 sm:pt-24 sm:pb-16">
-        {/* Background Pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-          }}
-        />
-
         {/* Blur Circles */}
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#E31837] blur-[180px] opacity-10 rounded-full translate-x-1/3 -translate-y-1/3" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500 blur-[120px] opacity-5 rounded-full -translate-x-1/3 translate-y-1/3" />

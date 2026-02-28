@@ -344,7 +344,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-page-bg-alt flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#E31837] border-t-transparent rounded-full" />
       </div>
     )
@@ -352,7 +352,7 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
 
   if (error && (!event || !program)) {
     return (
-      <div className="min-h-screen bg-page-bg-alt">
+      <div className="min-h-screen">
         <div className="max-w-2xl mx-auto px-4 pt-32 pb-16 text-center">
           <div className="bg-page-bg border border-border-default rounded-xl p-8">
             <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
@@ -372,8 +372,8 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
   // Success state
   if (step === 'complete' && registrationSuccess) {
     return (
-      <div className="min-h-screen bg-page-bg-alt">
-        <div className="relative bg-page-bg border-b border-border-default pt-32">
+      <div className="min-h-screen">
+        <div className="relative border-b border-border-default pt-32">
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -428,9 +428,9 @@ export default function DirectorRegistrationPage({ params }: { params: Promise<{
   }
 
   return (
-    <div className="min-h-screen bg-page-bg-alt">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative bg-page-bg border-b border-border-default pt-32">
+      <div className="relative border-b border-border-default pt-32">
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{

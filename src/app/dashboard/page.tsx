@@ -204,7 +204,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-8 space-y-8">
           {/* Welcome Card for Parents/Players with no linked players */}
           {profiles.length === 0 && (session?.user.role === 'PARENT' || session?.user.role === 'PLAYER') && (
-            <Card className="rounded-sm p-0 border border-border-subtle bg-gradient-to-br from-[#0A1D37] to-[#152e50]">
+            <Card className="rounded-sm p-0 border border-border-subtle">
               <div className="p-8 text-center">
                 <div className="w-16 h-16 bg-eha-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <UserPlus className="w-8 h-8 text-eha-gold" />
