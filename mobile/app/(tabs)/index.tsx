@@ -28,11 +28,23 @@ import { eventsApi } from '@/api/events';
 import { playersApi } from '@/api/players';
 import { recruitingApi } from '@/api/recruiting';
 import { Loading } from '@/components/ui/Loading';
+import { ParentDashboard } from '@/components/ParentDashboard';
 import type { Player, Event, Game, RecruitingEmailLog } from '@/types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function HomeScreen() {
+  const { user } = useAuth();
+
+  // Parents get a dedicated dashboard
+  if (user?.role === 'PARENT') {
+    return <ParentDashboard />;
+  }
+
+  return <PlayerDashboard />;
+}
+
+function PlayerDashboard() {
   const { user, signOut } = useAuth();
   const colors = useColors();
   const router = useRouter();

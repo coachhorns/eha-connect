@@ -11,6 +11,13 @@ export async function GET(
     const player = await prisma.player.findFirst({
       where: { slug, isActive: true },
       include: {
+        guardians: {
+          include: {
+            user: {
+              select: { id: true, name: true, email: true, image: true, role: true },
+            },
+          },
+        },
         achievements: {
           orderBy: { earnedAt: 'desc' },
         },

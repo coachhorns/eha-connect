@@ -65,6 +65,14 @@ export interface Player {
   gameStats?: PlayerGameStats[];
 }
 
+export interface GuardedPlayer extends Player {
+  guardianRole: 'PRIMARY' | 'SECONDARY' | 'SELF';
+  isPayer: boolean;
+  teamRosters: Array<{
+    team: { id: string; name: string; slug: string };
+  }>;
+}
+
 export interface PlayerGameStats {
   id: string;
   gameId: string;

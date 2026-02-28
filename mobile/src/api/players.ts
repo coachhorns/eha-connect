@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { Player, PlayerMedia } from '@/types';
+import type { Player, GuardedPlayer, PlayerMedia } from '@/types';
 
 export const playersApi = {
   list: async (params?: Record<string, string>): Promise<Player[]> => {
@@ -27,8 +27,8 @@ export const playersApi = {
     return res.players ?? [];
   },
 
-  getGuardedPlayers: async (): Promise<Player[]> => {
-    const res = await api.get<{ players: Player[] }>('/api/user/guarded-players');
+  getGuardedPlayers: async (): Promise<GuardedPlayer[]> => {
+    const res = await api.get<{ players: GuardedPlayer[] }>('/api/user/guarded-players');
     return res.players ?? [];
   },
 

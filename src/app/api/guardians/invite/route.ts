@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionUser } from '@/lib/get-session'
 import prisma from '@/lib/prisma'
 import { sendEmail, buildInviteEmail } from '@/lib/email'
 import { GuardianRole } from '@prisma/client'
@@ -8,15 +7,15 @@ import { GuardianRole } from '@prisma/client'
 // GET - Get pending invites sent by user
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const invites = await prisma.guardianInvite.findMany({
       where: {
-        invitedBy: session.user.id,
+        invitedBy: user.id,
         acceptedAt: null,
         expiresAt: { gt: new Date() },
       },
@@ -46,9 +45,9 @@ export async function GET(request: NextRequest) {
 // POST - Send a co-parent invite
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -77,7 +76,7 @@ export async function POST(request: NextRequest) {
     const guardian = await prisma.guardian.findUnique({
       where: {
         userId_playerId: {
-          userId: session.user.id,
+          userId: user.id,
           playerId,
         },
       },
@@ -143,7 +142,7 @@ export async function POST(request: NextRequest) {
         data: {
           expiresAt,
           role, // Allow role update if needed
-          invitedBy: session.user.id, // Update inviter to current user
+          invitedBy: user.id, // Update inviter to current user
         },
       })
       console.log(`[Invite] Updated existing invite ${invite.id} for ${email}`)
@@ -153,7 +152,7 @@ export async function POST(request: NextRequest) {
         data: {
           email,
           playerId,
-          invitedBy: session.user.id,
+          invitedBy: user.id,
           role,
           expiresAt,
         },
@@ -205,9 +204,9 @@ export async function POST(request: NextRequest) {
 // DELETE - Cancel an invite
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -230,7 +229,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Invite not found' }, { status: 404 })
     }
 
-    if (invite.invitedBy !== session.user.id) {
+    if (invite.invitedBy !== user.id) {
       return NextResponse.json(
         { error: 'You can only cancel your own invites' },
         { status: 403 }

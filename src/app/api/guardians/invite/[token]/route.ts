@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionUser } from '@/lib/get-session'
 import prisma from '@/lib/prisma'
 import { sendEmail, buildInviteAcceptedEmail } from '@/lib/email'
 
@@ -78,9 +77,9 @@ export async function POST(
   { params }: { params: Promise<{ token: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: 'Please sign in to accept this invite', requiresAuth: true },
         { status: 401 }
@@ -133,7 +132,7 @@ export async function POST(
     const existingGuardian = await prisma.guardian.findUnique({
       where: {
         userId_playerId: {
-          userId: session.user.id,
+          userId: user.id,
           playerId: invite.playerId,
         },
       },
@@ -158,7 +157,7 @@ export async function POST(
     const [guardian] = await prisma.$transaction([
       prisma.guardian.create({
         data: {
-          userId: session.user.id,
+          userId: user.id,
           playerId: invite.playerId,
           role: invite.role,
           isPayer: false,
@@ -175,7 +174,7 @@ export async function POST(
       console.log(`[InviteDebug] Inviter has email: ${invite.inviter.email}`)
       try {
         const inviterName = invite.inviter.name || 'Parent'
-        const accepterName = session.user.name || 'A user'
+        const accepterName = user.name || 'A user'
         const playerName = `${invite.player.firstName} ${invite.player.lastName}`
 
         const { subject, html } = buildInviteAcceptedEmail({
