@@ -123,6 +123,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
   const [showPacketModal, setShowPacketModal] = useState(false)
   const [isCheckingDirector, setIsCheckingDirector] = useState(false)
   const [notifyConfirmed, setNotifyConfirmed] = useState(false)
+  const userRole = session?.user?.role
+  const canRegister = userRole === 'PROGRAM_DIRECTOR' || userRole === 'ADMIN'
   const searchParams = useSearchParams()
 
   // Auto-open packet modal if ?packet=open
@@ -528,9 +530,9 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
           </div>
 
           {/* Registration + Recruiting Packet Banner */}
-          {(isUpcoming || isOngoing) && (
+          {(isUpcoming || isOngoing) && (canRegister || event.isNcaaCertified) && (
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              {isUpcoming && (
+              {isUpcoming && canRegister && (
                 <div className="flex-1 bg-gradient-to-r from-[#E31837]/20 to-transparent border border-[#E31837]/30 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-10 h-10 bg-[#E31837]/20 rounded-lg flex items-center justify-center shrink-0">
@@ -712,18 +714,20 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                       <div className="flex flex-wrap items-center justify-center gap-3">
                         {isUpcoming && (
                           <>
-                            <Button
-                              onClick={handleRegisterClick}
-                              disabled={isCheckingDirector}
-                              className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25"
-                            >
-                              {isCheckingDirector ? (
-                                <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              ) : (
-                                <Users className="w-4 h-4 mr-2" />
-                              )}
-                              Register Team
-                            </Button>
+                            {canRegister && (
+                              <Button
+                                onClick={handleRegisterClick}
+                                disabled={isCheckingDirector}
+                                className="bg-gradient-to-r from-[#E31837] to-[#a01128] hover:from-[#ff1f3d] hover:to-[#c01530] shadow-lg shadow-[#E31837]/25"
+                              >
+                                {isCheckingDirector ? (
+                                  <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <Users className="w-4 h-4 mr-2" />
+                                )}
+                                Register Team
+                              </Button>
+                            )}
                             <Button
                               variant="outline"
                               className={notifyConfirmed
@@ -780,7 +784,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                           ? 'No teams match the selected filters.'
                           : 'Be the first to register your team for this event!'}
                       </p>
-                      {isUpcoming && !hasActiveFilters && (
+                      {isUpcoming && !hasActiveFilters && canRegister && (
                         <Button
                           onClick={handleRegisterClick}
                           disabled={isCheckingDirector}
@@ -1107,7 +1111,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ slug: st
                       </div>
                     </div>
                   )}
-                  {event.entryFee && (
+                  {event.entryFee && canRegister && (
                     <div>
                       <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Entry Fee</div>
                       <div className="text-white font-semibold text-lg">${event.entryFee}</div>

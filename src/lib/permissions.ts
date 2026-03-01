@@ -2,86 +2,70 @@ import prisma from '@/lib/prisma'
 
 interface CanViewStatsResult {
   canView: boolean
-  reason: 'guardian' | 'subscriber' | 'admin' | 'director' | 'claimed' | 'none'
+  reason: 'subscribed' | 'admin' | 'none'
 }
 
 /**
- * Determines if a user can view detailed stats for a player
- * - Returns true if player is claimed (has a guardian) and viewer is logged in
- * - Returns true if user is a Guardian of the player
- * - Returns true if user is a Program Director with the player on their roster
- * - Returns true if user has an ACTIVE Subscription (any tier)
- * - Returns true if user is ADMIN
- * - Returns false otherwise (unclaimed profiles require special access)
+ * Determines if a player's stats are visible.
+ * Stats visibility is tied to the PLAYER's profile, not the viewer:
+ * - Admin viewers always have access
+ * - If any guardian of the player has an ACTIVE subscription → stats visible to everyone
+ * - Otherwise → stats hidden for everyone
  */
 export async function canViewStats(
   userId: string | undefined,
   playerId: string
 ): Promise<CanViewStatsResult> {
-  // Not logged in - no access
-  if (!userId) {
-    return { canView: false, reason: 'none' }
-  }
-
-  // Check user role, guardian record, subscription, and if player is claimed in parallel
-  const [user, guardian, subscription, playerGuardianCount] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: { role: true }
-    }),
-    prisma.guardian.findUnique({
+  // Check admin status and player subscription in parallel
+  const [user, subscribedGuardian] = await Promise.all([
+    userId
+      ? prisma.user.findUnique({
+          where: { id: userId },
+          select: { role: true },
+        })
+      : null,
+    prisma.guardian.findFirst({
       where: {
-        userId_playerId: { userId, playerId }
-      }
+        playerId,
+        user: {
+          subscription: {
+            status: 'ACTIVE',
+          },
+        },
+      },
     }),
-    prisma.subscription.findUnique({
-      where: { userId },
-      select: { status: true }
-    }),
-    prisma.guardian.count({
-      where: { playerId }
-    })
   ])
 
-  // If player is claimed (has any guardian), any logged-in user can view
-  if (playerGuardianCount > 0) {
-    return { canView: true, reason: 'claimed' }
-  }
-
-  // Admin users have full access
+  // Admin viewers always have access
   if (user?.role === 'ADMIN') {
     return { canView: true, reason: 'admin' }
   }
 
-  // Guardian of this player has access
-  if (guardian) {
-    return { canView: true, reason: 'guardian' }
-  }
-
-  // Program Director can view players on their rosters
-  if (user?.role === 'PROGRAM_DIRECTOR') {
-    const playerOnDirectorRoster = await prisma.teamRoster.findFirst({
-      where: {
-        playerId,
-        leftAt: null,
-        team: {
-          program: {
-            ownerId: userId
-          }
-        }
-      }
-    })
-    if (playerOnDirectorRoster) {
-      return { canView: true, reason: 'director' }
-    }
-  }
-
-  // Active subscriber has access
-  if (subscription?.status === 'ACTIVE') {
-    return { canView: true, reason: 'subscriber' }
+  // If any guardian on this player's profile has an active subscription, stats are public
+  if (subscribedGuardian) {
+    return { canView: true, reason: 'subscribed' }
   }
 
   return { canView: false, reason: 'none' }
+}
+
+/**
+ * Check if a player's profile has an active subscription (any guardian has paid).
+ * Used by API routes to add isSubscribed flag to responses.
+ */
+export async function isPlayerSubscribed(playerId: string): Promise<boolean> {
+  const subscribedGuardian = await prisma.guardian.findFirst({
+    where: {
+      playerId,
+      user: {
+        subscription: {
+          status: 'ACTIVE',
+        },
+      },
+    },
+    select: { id: true },
+  })
+  return !!subscribedGuardian
 }
 
 /**

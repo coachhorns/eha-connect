@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import {
   Search,
   MapPin,
@@ -48,12 +49,14 @@ const EventCard = ({
   event,
   viewDetails,
   register,
-  isFeatured = false
+  isFeatured = false,
+  canRegister = false,
 }: {
   event: Event;
   viewDetails: () => void;
   register: (e: React.MouseEvent) => void;
   isFeatured?: boolean;
+  canRegister?: boolean;
 }) => {
   const startDate = new Date(event.startDate)
 
@@ -151,7 +154,9 @@ const EventCard = ({
                 Purchase Recruiting Packet
               </Button>
             )}
-            <Button variant="primary" onClick={(e) => register(e)} className="flex-1 sm:flex-none">Register Team</Button>
+            {canRegister && (
+              <Button variant="primary" onClick={(e) => register(e)} className="flex-1 sm:flex-none">Register Team</Button>
+            )}
           </div>
         </div>
       </div>
@@ -215,11 +220,15 @@ const UpcomingEventRow = ({ event }: { event: Event }) => {
 
 export default function EventsPage() {
   const router = useRouter()
+  const { data: session } = useSession()
   const [events, setEvents] = useState<Event[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentDate, setCurrentDate] = useState(new Date())
+
+  const userRole = session?.user?.role
+  const canRegister = userRole === 'PROGRAM_DIRECTOR' || userRole === 'ADMIN'
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()
@@ -349,6 +358,7 @@ export default function EventsPage() {
                         viewDetails={() => { }}
                         register={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/events/${event.slug}/register`); }}
                         isFeatured={true}
+                        canRegister={canRegister}
                       />
                     </Link>
                   ))

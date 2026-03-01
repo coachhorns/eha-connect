@@ -27,6 +27,8 @@ import {
   FileText,
   Upload,
   X,
+  Lock,
+  Star,
 } from 'lucide-react'
 import { Card, Button, Input, Select } from '@/components/ui'
 import { formatHeight, formatPosition } from '@/lib/utils'
@@ -144,6 +146,32 @@ const heightInchesOptions = [
   })),
 ]
 
+function PremiumGate({ locked, children, className }: { locked: boolean; children: React.ReactNode; className?: string }) {
+  if (!locked) return <>{children}</>
+  return (
+    <div className={`relative ${className || ''}`}>
+      <div className="blur-[3px] opacity-40 pointer-events-none select-none">
+        {children}
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center z-10">
+        <div className="text-center p-6">
+          <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Lock className="w-5 h-5 text-amber-400" />
+          </div>
+          <p className="text-sm font-bold text-text-primary uppercase tracking-wider mb-1">Connect Pass Required</p>
+          <p className="text-xs text-text-muted mb-4">Subscribe to unlock all premium features</p>
+          <Link href="/pricing">
+            <Button size="sm" className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-0">
+              <Star className="w-3.5 h-3.5 mr-1.5" />
+              View Plans
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function EditPlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const { data: session, status } = useSession()
@@ -151,6 +179,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
   const [player, setPlayer] = useState<PlayerData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [hasFullAccess, setHasFullAccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
   const [isUploadingMedia, setIsUploadingMedia] = useState(false)
@@ -245,6 +274,20 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
     if (session?.user?.id) {
       fetchPlayer()
+
+      // Check subscription status (admin always has full access)
+      if (session.user.role === 'ADMIN') {
+        setHasFullAccess(true)
+      } else {
+        fetch('/api/user/subscription')
+          .then(res => res.json())
+          .then(data => {
+            if (data.subscription?.status === 'ACTIVE') {
+              setHasFullAccess(true)
+            }
+          })
+          .catch(() => {})
+      }
     }
   }, [session, resolvedParams.id])
 
@@ -533,28 +576,35 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
     try {
       setIsSubmitting(true)
+      // Free tier: only basic player info fields
+      const payload: Record<string, any> = {
+        graduationYear: graduationYear ? parseInt(graduationYear, 10) : null,
+        heightFeet: heightFt ? parseInt(heightFt, 10) : null,
+        heightInches: heightIn !== '' ? parseInt(heightIn, 10) : null,
+        primaryPosition: primaryPosition || null,
+        secondaryPosition: secondaryPosition || null,
+        school: school.trim() || null,
+        jerseyNumber: jerseyNumber.trim() || null,
+        weight: weight ? parseInt(weight, 10) : null,
+      }
+
+      // Premium fields only sent if user has full access
+      if (hasFullAccess) {
+        payload.bio = bio.trim() || null
+        payload.email = email.trim() || null
+        payload.twitterHandle = twitterHandle.trim() || null
+        payload.instagramHandle = instagramHandle.trim() || null
+        payload.hudlUrl = hudlUrl.trim() || null
+        payload.youtubeUrl = youtubeUrl.trim() || null
+        payload.highlightUrl = highlightUrl.trim() || null
+        payload.maxPrepsUrl = maxPrepsUrl.trim() || null
+        payload.gpa = gpa ? parseFloat(gpa) : null
+      }
+
       const res = await fetch(`/api/user/players/${resolvedParams.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bio: bio.trim() || null,
-          email: email.trim() || null,
-          twitterHandle: twitterHandle.trim() || null,
-          instagramHandle: instagramHandle.trim() || null,
-          hudlUrl: hudlUrl.trim() || null,
-          youtubeUrl: youtubeUrl.trim() || null,
-          highlightUrl: highlightUrl.trim() || null,
-          maxPrepsUrl: maxPrepsUrl.trim() || null,
-          gpa: gpa ? parseFloat(gpa) : null,
-          graduationYear: graduationYear ? parseInt(graduationYear, 10) : null,
-          heightFeet: heightFt ? parseInt(heightFt, 10) : null,
-          heightInches: heightIn !== '' ? parseInt(heightIn, 10) : null,
-          primaryPosition: primaryPosition || null,
-          secondaryPosition: secondaryPosition || null,
-          school: school.trim() || null,
-          jerseyNumber: jerseyNumber.trim() || null,
-          weight: weight ? parseInt(weight, 10) : null,
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (res.ok) {
@@ -887,22 +937,25 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
                 </div>
               </div>
             </Card>
+          </div>
 
+          <PremiumGate locked={!hasFullAccess}>
+          <div className="grid lg:grid-cols-2 gap-6 mt-6">
             {/* About Me */}
-            <Card className="lg:col-span-2 rounded-sm p-0">
-              <div className="p-4 border-b border-border-subtle">
-                <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold">About Me</h2>
-              </div>
-              <div className="p-4">
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Write a short bio about the player..."
-                  rows={4}
-                  className="w-full bg-page-bg-alt border border-border-subtle rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 resize-none"
-                />
-              </div>
-            </Card>
+              <Card className="lg:col-span-2 rounded-sm p-0">
+                <div className="p-4 border-b border-border-subtle">
+                  <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold">About Me</h2>
+                </div>
+                <div className="p-4">
+                  <textarea
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Write a short bio about the player..."
+                    rows={4}
+                    className="w-full bg-page-bg-alt border border-border-subtle rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-eha-red/50 focus:border-eha-red/50 resize-none"
+                  />
+                </div>
+              </Card>
 
             {/* Socials & Contact */}
             <Card className="rounded-sm p-0">
@@ -1106,8 +1159,6 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             </Card>
           </div>
 
-        </form>
-
         {/* Film Room */}
         <Card className="mt-6 rounded-sm p-0">
           <div className="p-4 border-b border-border-subtle flex items-center justify-between">
@@ -1238,7 +1289,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
           </div>
         </Card>
 
-        {/* Media Gallery — outside the form */}
+        {/* Photo Gallery */}
         <Card className="mt-6 rounded-sm p-0">
           <div className="p-4 border-b border-border-subtle flex items-center justify-between">
             <h2 className="text-2xl text-text-primary uppercase tracking-tight font-bold">Photo Gallery</h2>
@@ -1297,6 +1348,9 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
             )}
           </div>
         </Card>
+        </PremiumGate>
+
+        </form>
       </div>
 
       {/* Sticky Save Bar */}
@@ -1336,7 +1390,7 @@ export default function EditPlayerPage({ params }: { params: Promise<{ id: strin
 
       {/* Crop Modal */}
       {cropImageSrc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4">
           <div className="bg-page-bg-alt border border-border-subtle rounded-sm w-full max-w-lg overflow-hidden">
             <div className="p-4 border-b border-border-subtle">
               <h3 className="text-lg font-bold text-text-primary uppercase tracking-tight">Frame Your Photo</h3>

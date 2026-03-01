@@ -24,6 +24,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Subscription check — only admins and active subscribers can send recruiting emails
+    if (user.role !== 'ADMIN') {
+      const subscription = await prisma.subscription.findUnique({
+        where: { userId: user.id },
+        select: { status: true },
+      })
+      if (subscription?.status !== 'ACTIVE') {
+        return NextResponse.json(
+          { error: 'Active subscription required to send recruiting emails' },
+          { status: 403 }
+        )
+      }
+    }
+
     const {
       coachEmail,
       coachName,

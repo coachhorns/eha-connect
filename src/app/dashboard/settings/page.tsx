@@ -16,8 +16,10 @@ import {
   Crown,
   UserCheck,
   Star,
+  UserMinus,
+  AlertTriangle,
 } from 'lucide-react'
-import { Card, Button, Avatar, Badge } from '@/components/ui'
+import { Card, Button, Avatar, Badge, Modal } from '@/components/ui'
 import InviteCoParentModal from '@/components/dashboard/InviteCoParentModal'
 
 interface Team {
@@ -47,6 +49,8 @@ export default function SettingsPage() {
   const [players, setPlayers] = useState<GuardedPlayer[]>([])
   const [isLoadingPlayers, setIsLoadingPlayers] = useState(true)
   const [showInviteModal, setShowInviteModal] = useState(false)
+  const [unclaimPlayer, setUnclaimPlayer] = useState<GuardedPlayer | null>(null)
+  const [isUnclaiming, setIsUnclaiming] = useState(false)
 
   const fetchPlayers = useCallback(async () => {
     try {
@@ -61,6 +65,30 @@ export default function SettingsPage() {
       setIsLoadingPlayers(false)
     }
   }, [])
+
+  const handleUnclaim = async (player: GuardedPlayer) => {
+    setIsUnclaiming(true)
+    try {
+      const res = await fetch('/api/claim-player', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ playerId: player.id }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        console.error('Failed to unclaim:', data.error)
+        return
+      }
+
+      setUnclaimPlayer(null)
+      fetchPlayers()
+    } catch (error) {
+      console.error('Error unclaiming player:', error)
+    } finally {
+      setIsUnclaiming(false)
+    }
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -215,12 +243,14 @@ export default function SettingsPage() {
           ) : (
             <div className="p-6 space-y-3">
               {players.map((player) => (
-                <Link
+                <div
                   key={player.id}
-                  href={`/players/${player.slug}`}
-                  className="flex items-center justify-between p-5 bg-surface-raised/50 border border-border-subtle rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all"
+                  className="flex items-center justify-between p-5 bg-surface-raised/50 border border-border-subtle rounded-sm"
                 >
-                  <div className="flex items-center gap-4">
+                  <Link
+                    href={`/players/${player.slug}`}
+                    className="flex items-center gap-4 flex-1 min-w-0 hover:opacity-80 transition-opacity"
+                  >
                     <div className="w-12 h-12 rounded-sm overflow-hidden bg-surface-overlay flex-shrink-0">
                       {player.profilePhoto ? (
                         <Image
@@ -270,9 +300,21 @@ export default function SettingsPage() {
                         )}
                       </div>
                     </div>
+                  </Link>
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setUnclaimPlayer(player)}
+                      className="text-text-muted hover:text-red-400 hover:bg-red-500/10"
+                    >
+                      <UserMinus className="w-4 h-4" />
+                    </Button>
+                    <Link href={`/players/${player.slug}`}>
+                      <ChevronRight className="w-5 h-5 text-text-muted" />
+                    </Link>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-text-muted" />
-                </Link>
+                </div>
               ))}
             </div>
           )}
@@ -306,6 +348,45 @@ export default function SettingsPage() {
         players={players}
         onInviteSent={fetchPlayers}
       />
+
+      {/* Unclaim Player Confirmation Modal */}
+      <Modal
+        isOpen={!!unclaimPlayer}
+        onClose={() => setUnclaimPlayer(null)}
+        title="Unclaim Player"
+        size="sm"
+      >
+        {unclaimPlayer && (
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-sm">
+              <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm text-text-primary font-medium">
+                  Are you sure you want to unclaim{' '}
+                  <span className="font-bold">{unclaimPlayer.firstName} {unclaimPlayer.lastName}</span>?
+                </p>
+                <p className="text-xs text-text-muted mt-1">
+                  This will remove your guardian access to this player profile. You can reclaim this player later.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="ghost" size="sm" onClick={() => setUnclaimPlayer(null)}>
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => handleUnclaim(unclaimPlayer)}
+                disabled={isUnclaiming}
+                className="bg-red-600 hover:bg-red-700 text-white border-0"
+              >
+                {isUnclaiming ? 'Removing...' : 'Unclaim Player'}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

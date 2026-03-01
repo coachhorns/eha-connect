@@ -12,12 +12,16 @@ import {
   CheckCircle,
   AlertCircle,
   ArrowLeft,
+  ArrowRight,
   Loader2,
   Info,
   Mail,
   Shield,
   GraduationCap,
   UserPlus,
+  Smartphone,
+  Share2,
+  Check,
 } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 import { formatPosition } from '@/lib/utils'
@@ -43,7 +47,28 @@ interface PlayerResult {
   hasPrimaryGuardian: boolean
 }
 
-type Step = 'info' | 'search' | 'results' | 'success' | 'approval'
+type Step = 'info' | 'search' | 'results' | 'invite-parent' | 'invite-player' | 'success' | 'approval'
+
+const PROGRESS_LABELS = ['Find', 'Claim', 'Invite', 'Done']
+
+function getStepIndex(step: Step): number {
+  switch (step) {
+    case 'info':
+    case 'search':
+      return 0
+    case 'results':
+      return 1
+    case 'invite-parent':
+    case 'invite-player':
+      return 2
+    case 'success':
+      return 3
+    case 'approval':
+      return 3
+    default:
+      return 0
+  }
+}
 
 function ClaimPlayerContent() {
   const { data: session, status } = useSession()
@@ -65,6 +90,31 @@ function ClaimPlayerContent() {
   const [needsApprovalPlayer, setNeedsApprovalPlayer] = useState<PlayerResult | null>(null)
   const [directPlayer, setDirectPlayer] = useState<PlayerResult | null>(null)
   const [isLoadingDirect, setIsLoadingDirect] = useState(false)
+
+  // Step 3 - Co-Parent invite
+  const [coParentEmail, setCoParentEmail] = useState('')
+  const [coParentStatus, setCoParentStatus] = useState<{ success?: string; error?: string } | null>(null)
+  const [isSendingCoParent, setIsSendingCoParent] = useState(false)
+  const [showCoParentEmail, setShowCoParentEmail] = useState(false)
+
+  // Step 4 - Player invite
+  const [playerEmail, setPlayerEmail] = useState('')
+  const [playerInviteStatus, setPlayerInviteStatus] = useState<{ success?: string; error?: string } | null>(null)
+  const [isSendingPlayerInvite, setIsSendingPlayerInvite] = useState(false)
+  const [showPlayerEmail, setShowPlayerEmail] = useState(false)
+
+  // Detect mobile (touch device with small screen = real mobile share sheet)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const checkMobile = () => {
+      const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      const isSmallScreen = window.innerWidth <= 768
+      setIsMobile(hasTouchScreen && isSmallScreen)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -150,12 +200,131 @@ function ClaimPlayerContent() {
         setStep('approval')
       } else {
         setClaimedPlayer(player)
-        setStep('success')
+        setStep('invite-parent')
       }
     } catch (err: any) {
       setError(err.message || 'Failed to claim player')
     } finally {
       setIsClaiming(false)
+    }
+  }
+
+  const handleSendInvite = async (type: 'PARENT' | 'PLAYER', email: string) => {
+    if (!claimedPlayer || !email.trim()) return
+
+    const isParent = type === 'PARENT'
+    if (isParent) {
+      setIsSendingCoParent(true)
+      setCoParentStatus(null)
+    } else {
+      setIsSendingPlayerInvite(true)
+      setPlayerInviteStatus(null)
+    }
+
+    try {
+      const res = await fetch('/api/guardians/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          playerId: claimedPlayer.id,
+          email: email.trim(),
+          type,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to send invite')
+      }
+
+      if (isParent) {
+        setCoParentStatus({ success: data.message || `Invite sent to ${email}` })
+      } else {
+        setPlayerInviteStatus({ success: data.message || `Invite sent to ${email}` })
+      }
+    } catch (err: any) {
+      const errorMsg = err.message || 'Failed to send invite'
+      if (isParent) {
+        setCoParentStatus({ error: errorMsg })
+      } else {
+        setPlayerInviteStatus({ error: errorMsg })
+      }
+    } finally {
+      if (isParent) {
+        setIsSendingCoParent(false)
+      } else {
+        setIsSendingPlayerInvite(false)
+      }
+    }
+  }
+
+  const handleShareInvite = async (type: 'PARENT' | 'PLAYER') => {
+    if (!claimedPlayer) return
+
+    const isParent = type === 'PARENT'
+    if (isParent) {
+      setIsSendingCoParent(true)
+      setCoParentStatus(null)
+    } else {
+      setIsSendingPlayerInvite(true)
+      setPlayerInviteStatus(null)
+    }
+
+    try {
+      const res = await fetch('/api/guardians/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          playerId: claimedPlayer.id,
+          type,
+          shareOnly: true,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to create invite link')
+      }
+
+      const inviteUrl = data.inviteUrl
+      const playerName = `${claimedPlayer.firstName} ${claimedPlayer.lastName}`
+      const shareText = isParent
+        ? `You've been invited to manage ${playerName}'s profile on EHA Connect. Accept your invite here:`
+        : `You've been invited to claim your athlete profile for ${playerName} on EHA Connect. Accept your invite here:`
+
+      // Only called on mobile where navigator.share is available
+      await navigator.share({
+        title: 'EHA Connect Invite',
+        text: shareText,
+        url: inviteUrl,
+      })
+
+      const successMsg = 'Invite link shared!'
+      if (isParent) {
+        setCoParentStatus({ success: successMsg })
+      } else {
+        setPlayerInviteStatus({ success: successMsg })
+      }
+    } catch (err: any) {
+      // User cancelled native share — not an error, just reset loading
+      if (err?.name === 'AbortError') {
+        // Don't set any status — user just dismissed the share sheet
+      } else {
+        const errorMsg = err.message || 'Failed to share invite'
+        if (isParent) {
+          setCoParentStatus({ error: errorMsg })
+        } else {
+          setPlayerInviteStatus({ error: errorMsg })
+        }
+      }
+    } finally {
+      if (isParent) {
+        setIsSendingCoParent(false)
+      } else {
+        setIsSendingPlayerInvite(false)
+      }
     }
   }
 
@@ -167,6 +336,12 @@ function ClaimPlayerContent() {
     setError('')
     setClaimedPlayer(null)
     setNeedsApprovalPlayer(null)
+    setCoParentEmail('')
+    setCoParentStatus(null)
+    setShowCoParentEmail(false)
+    setPlayerEmail('')
+    setPlayerInviteStatus(null)
+    setShowPlayerEmail(false)
   }
 
   if (status === 'loading') {
@@ -176,6 +351,8 @@ function ClaimPlayerContent() {
       </div>
     )
   }
+
+  const currentStepIndex = getStepIndex(step)
 
   return (
     <div className="min-h-screen bg-page-bg">
@@ -208,32 +385,35 @@ function ClaimPlayerContent() {
       <section className="py-12">
         <div className="max-w-2xl mx-auto px-6">
           {/* Progress Steps */}
-          <div className="flex items-center justify-center gap-3 mb-10">
-            {['Player Info', 'Confirm'].map((label, index) => {
-              const currentStepIndex = step === 'info' ? 0 : 1
-              const isActive = index <= currentStepIndex || step === 'success' || step === 'approval'
-              const isCurrent = index === currentStepIndex && step !== 'success' && step !== 'approval'
+          <div className="flex items-center justify-center gap-1 sm:gap-3 mb-10">
+            {PROGRESS_LABELS.map((label, index) => {
+              const isActive = index <= currentStepIndex
+              const isCurrent = index === currentStepIndex && step !== 'approval'
 
               return (
                 <div key={label} className="flex items-center">
                   <div className="flex flex-col items-center">
                     <div
-                      className={`w-10 h-10 rounded-sm flex items-center justify-center text-sm font-black transition-all ${
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-sm flex items-center justify-center text-sm font-black transition-all ${
                         isActive
                           ? 'bg-eha-red text-white shadow-lg shadow-eha-red/20'
                           : 'bg-surface-raised text-text-muted border border-border-default'
                       } ${isCurrent ? 'ring-2 ring-eha-red ring-offset-2 ring-offset-[#0A1D37]' : ''}`}
                     >
-                      {index + 1}
+                      {index === 3 && step === 'success' ? (
+                        <Check className="w-5 h-5" />
+                      ) : (
+                        index + 1
+                      )}
                     </div>
-                    <span className={`text-[10px] font-bold uppercase tracking-widest mt-2 ${isActive ? 'text-white' : 'text-text-muted'}`}>
+                    <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mt-2 ${isActive ? 'text-text-primary' : 'text-text-muted'}`}>
                       {label}
                     </span>
                   </div>
-                  {index < 1 && (
+                  {index < PROGRESS_LABELS.length - 1 && (
                     <div
-                      className={`w-16 h-0.5 mx-4 mb-6 ${
-                        currentStepIndex > 0 || step === 'success' || step === 'approval' ? 'bg-eha-red' : 'bg-surface-overlay'
+                      className={`w-8 sm:w-16 h-0.5 mx-2 sm:mx-4 mb-6 ${
+                        index < currentStepIndex ? 'bg-eha-red' : 'bg-surface-overlay'
                       }`}
                     />
                   )}
@@ -245,7 +425,7 @@ function ClaimPlayerContent() {
           {/* Step Content Card */}
           <div className="bg-page-bg-alt border border-border-default rounded-sm p-8 shadow-xl">
             {/* Direct Claim Flow (when coming from player profile) */}
-            {directPlayerId && step !== 'success' && step !== 'approval' && (
+            {directPlayerId && step !== 'success' && step !== 'approval' && step !== 'invite-parent' && step !== 'invite-player' && (
               <div className="space-y-6">
                 {isLoadingDirect ? (
                   <div className="py-12 text-center">
@@ -603,25 +783,302 @@ function ClaimPlayerContent() {
               </div>
             )}
 
-            {/* Success State */}
+            {/* Step 3: Invite Co-Parent */}
+            {step === 'invite-parent' && claimedPlayer && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-blue-500/20 rounded-sm flex items-center justify-center mx-auto mb-4">
+                    <UserPlus className="w-8 h-8 text-blue-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-text-primary font-heading uppercase tracking-tight">
+                    Invite a Co-Parent
+                  </h2>
+                  <p className="text-text-muted text-sm mt-2">
+                    Share access to {claimedPlayer.firstName}&apos;s profile with another parent or guardian
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                {!showCoParentEmail && !coParentStatus?.success && (
+                  <div className={`grid gap-3 ${isMobile ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                    <button
+                      onClick={() => setShowCoParentEmail(true)}
+                      className="flex flex-col items-center gap-3 p-6 bg-surface-raised/50 border border-border-default rounded-sm hover:border-blue-500/50 hover:bg-surface-glass transition-all"
+                    >
+                      <Mail className="w-8 h-8 text-blue-400" />
+                      <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Send Email</span>
+                      <span className="text-[10px] text-text-muted">Send a branded invite email</span>
+                    </button>
+                    {isMobile && (
+                      <button
+                        onClick={() => handleShareInvite('PARENT')}
+                        disabled={isSendingCoParent}
+                        className="flex flex-col items-center gap-3 p-6 bg-surface-raised/50 border border-border-default rounded-sm hover:border-blue-500/50 hover:bg-surface-glass transition-all disabled:opacity-50"
+                      >
+                        {isSendingCoParent ? (
+                          <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                        ) : (
+                          <Share2 className="w-8 h-8 text-blue-400" />
+                        )}
+                        <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Share Link</span>
+                        <span className="text-[10px] text-text-muted">Text, iMessage, WhatsApp, etc.</span>
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Email Input (shown when "Send Email" clicked) */}
+                {showCoParentEmail && !coParentStatus?.success && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">
+                        Co-Parent&apos;s Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={coParentEmail}
+                        onChange={(e) => setCoParentEmail(e.target.value)}
+                        placeholder="parent@example.com"
+                        className="w-full bg-surface-raised border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && coParentEmail.trim()) {
+                            handleSendInvite('PARENT', coParentEmail)
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setShowCoParentEmail(false)
+                          setCoParentEmail('')
+                          setCoParentStatus(null)
+                        }}
+                        className="flex-shrink-0"
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-1" />
+                        Back
+                      </Button>
+                      <Button
+                        onClick={() => handleSendInvite('PARENT', coParentEmail)}
+                        disabled={isSendingCoParent || !coParentEmail.trim()}
+                        className="flex-1"
+                      >
+                        {isSendingCoParent ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="w-4 h-4 mr-2" />
+                            Send Invite
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Status Messages */}
+                {coParentStatus?.error && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-sm p-4">
+                    <p className="text-red-400 text-sm">{coParentStatus.error}</p>
+                  </div>
+                )}
+                {coParentStatus?.success && (
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-sm p-4 flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <p className="text-green-400 text-sm font-medium">{coParentStatus.success}</p>
+                  </div>
+                )}
+
+                {/* Navigation */}
+                <div className="pt-4 border-t border-border-subtle flex items-center justify-between">
+                  <button
+                    onClick={() => setStep('invite-player')}
+                    className="text-sm text-text-muted hover:text-text-primary transition-colors font-bold uppercase tracking-widest"
+                  >
+                    Skip
+                  </button>
+                  {coParentStatus?.success && (
+                    <Button onClick={() => setStep('invite-player')}>
+                      Continue
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Invite Athlete */}
+            {step === 'invite-player' && claimedPlayer && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-amber-500/20 rounded-sm flex items-center justify-center mx-auto mb-4">
+                    <Smartphone className="w-8 h-8 text-amber-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-text-primary font-heading uppercase tracking-tight">
+                    Give Your Athlete Access
+                  </h2>
+                  <p className="text-text-muted text-sm mt-2">
+                    Let {claimedPlayer.firstName} manage their own bio, socials, and highlights
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                {!showPlayerEmail && !playerInviteStatus?.success && (
+                  <div className={`grid gap-3 ${isMobile ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                    <button
+                      onClick={() => setShowPlayerEmail(true)}
+                      className="flex flex-col items-center gap-3 p-6 bg-surface-raised/50 border border-border-default rounded-sm hover:border-amber-500/50 hover:bg-surface-glass transition-all"
+                    >
+                      <Mail className="w-8 h-8 text-amber-400" />
+                      <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Send Email</span>
+                      <span className="text-[10px] text-text-muted">Send a branded invite email</span>
+                    </button>
+                    {isMobile && (
+                      <button
+                        onClick={() => handleShareInvite('PLAYER')}
+                        disabled={isSendingPlayerInvite}
+                        className="flex flex-col items-center gap-3 p-6 bg-surface-raised/50 border border-border-default rounded-sm hover:border-amber-500/50 hover:bg-surface-glass transition-all disabled:opacity-50"
+                      >
+                        {isSendingPlayerInvite ? (
+                          <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+                        ) : (
+                          <Share2 className="w-8 h-8 text-amber-400" />
+                        )}
+                        <span className="text-sm font-bold text-text-primary uppercase tracking-wider">Share Link</span>
+                        <span className="text-[10px] text-text-muted">Text, iMessage, WhatsApp, etc.</span>
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Email Input */}
+                {showPlayerEmail && !playerInviteStatus?.success && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">
+                        Athlete&apos;s Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={playerEmail}
+                        onChange={(e) => setPlayerEmail(e.target.value)}
+                        placeholder="athlete@example.com"
+                        className="w-full bg-surface-raised border border-border-default rounded-sm px-4 py-3 text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && playerEmail.trim()) {
+                            handleSendInvite('PLAYER', playerEmail)
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setShowPlayerEmail(false)
+                          setPlayerEmail('')
+                          setPlayerInviteStatus(null)
+                        }}
+                        className="flex-shrink-0"
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-1" />
+                        Back
+                      </Button>
+                      <Button
+                        onClick={() => handleSendInvite('PLAYER', playerEmail)}
+                        disabled={isSendingPlayerInvite || !playerEmail.trim()}
+                        className="flex-1"
+                      >
+                        {isSendingPlayerInvite ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="w-4 h-4 mr-2" />
+                            Send Invite
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Status Messages */}
+                {playerInviteStatus?.error && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-sm p-4">
+                    <p className="text-red-400 text-sm">{playerInviteStatus.error}</p>
+                  </div>
+                )}
+                {playerInviteStatus?.success && (
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-sm p-4 flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <p className="text-green-400 text-sm font-medium">{playerInviteStatus.success}</p>
+                  </div>
+                )}
+
+                {/* Navigation */}
+                <div className="pt-4 border-t border-border-subtle flex items-center justify-between">
+                  <button
+                    onClick={() => setStep('success')}
+                    className="text-sm text-text-muted hover:text-text-primary transition-colors font-bold uppercase tracking-widest"
+                  >
+                    Skip
+                  </button>
+                  {playerInviteStatus?.success && (
+                    <Button onClick={() => setStep('success')}>
+                      Continue
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Success */}
             {step === 'success' && claimedPlayer && (
               <div className="text-center py-8">
                 <div className="w-20 h-20 bg-green-500/20 rounded-sm flex items-center justify-center mx-auto mb-6">
                   <CheckCircle className="w-10 h-10 text-green-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-text-primary mb-2 font-heading uppercase tracking-tight">Success!</h2>
+                <h2 className="text-2xl font-bold text-text-primary mb-2 font-heading uppercase tracking-tight">You&apos;re All Set!</h2>
                 <p className="text-text-muted mb-8">
                   You are now the primary guardian of{' '}
                   <span className="text-text-primary font-medium">
                     {claimedPlayer.firstName} {claimedPlayer.lastName}
                   </span>
                 </p>
+
+                {/* Summary of what was done */}
+                {(coParentStatus?.success || playerInviteStatus?.success) && (
+                  <div className="mb-8 space-y-2">
+                    {coParentStatus?.success && (
+                      <div className="flex items-center gap-2 justify-center text-sm text-text-muted">
+                        <Check className="w-4 h-4 text-green-400" />
+                        <span>Co-parent invite sent</span>
+                      </div>
+                    )}
+                    {playerInviteStatus?.success && (
+                      <div className="flex items-center gap-2 justify-center text-sm text-text-muted">
+                        <Check className="w-4 h-4 text-green-400" />
+                        <span>Athlete invite sent</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="flex gap-3 justify-center">
-                  <Link href={`/players/${claimedPlayer.slug}`}>
-                    <Button variant="outline">View Profile</Button>
+                  <Link href={`/dashboard/players/${claimedPlayer.id}/edit`}>
+                    <Button>Edit Profile</Button>
                   </Link>
                   <Link href="/dashboard">
-                    <Button>Go to Dashboard</Button>
+                    <Button variant="outline">Go to Dashboard</Button>
                   </Link>
                 </div>
               </div>

@@ -202,6 +202,7 @@ export default function LeaderboardsPage() {
                     stat={topScorer.ppg}
                     statLabel="PPG"
                     icon={Target}
+                    isSubscribed={topScorer.isSubscribed}
                     onClick={() => router.push(`/players/${topScorer.slug}`)}
                   />
                 )}
@@ -214,6 +215,7 @@ export default function LeaderboardsPage() {
                     stat={topAssister.apg}
                     statLabel="APG"
                     icon={Activity}
+                    isSubscribed={topAssister.isSubscribed}
                     onClick={() => router.push(`/players/${topAssister.slug}`)}
                   />
                 ) : (
@@ -224,6 +226,7 @@ export default function LeaderboardsPage() {
                     stat={topScorer?.per}
                     statLabel="PER"
                     icon={Activity}
+                    isSubscribed={topScorer?.isSubscribed}
                     onClick={() => topScorer && router.push(`/players/${topScorer.slug}`)}
                   />
                 ))}
@@ -236,6 +239,7 @@ export default function LeaderboardsPage() {
                     stat={topBlocker.totalBlocks}
                     statLabel="Blocks"
                     icon={TrendingUp}
+                    isSubscribed={topBlocker.isSubscribed}
                     onClick={() => router.push(`/players/${topBlocker.slug}`)}
                   />
                 ) : (
@@ -246,6 +250,7 @@ export default function LeaderboardsPage() {
                     stat={players.sort((a, b) => b.rpg - a.rpg)[0]?.rpg}
                     statLabel="RPG"
                     icon={TrendingUp}
+                    isSubscribed={players.sort((a, b) => b.rpg - a.rpg)[0]?.isSubscribed}
                     onClick={() => {
                       const rebounder = players.sort((a, b) => b.rpg - a.rpg)[0]
                       if (rebounder) router.push(`/players/${rebounder.slug}`)
@@ -348,7 +353,8 @@ function PositionFilter({ activePosition, onPositionChange }: any) {
   )
 }
 
-function LeaderCard({ title, playerName, teamName, stat, statLabel, icon: Icon, onClick }: any) {
+function LeaderCard({ title, playerName, teamName, stat, statLabel, icon: Icon, onClick, isSubscribed = true }: any) {
+  const blurStats = !isSubscribed
   return (
     <div
       onClick={onClick}
@@ -376,7 +382,7 @@ function LeaderCard({ title, playerName, teamName, stat, statLabel, icon: Icon, 
           <p className="text-sm font-medium text-text-muted">{teamName}</p>
         </div>
 
-        <div className="flex items-end gap-2">
+        <div className={`flex items-end gap-2 ${blurStats ? 'blur-sm select-none' : ''}`}>
           <span className="text-5xl font-black font-stats tracking-tighter text-text-primary">{stat}</span>
           <span className="text-sm font-bold uppercase tracking-widest mb-2 text-text-muted">
             {statLabel}
@@ -388,6 +394,7 @@ function LeaderCard({ title, playerName, teamName, stat, statLabel, icon: Icon, 
 }
 
 const LeaderboardRow = ({ rank, player, onClick, categoryValue }: any) => {
+  const blurStats = !player.isSubscribed
   return (
     <tr
       className="border-b border-border-subtle transition-colors cursor-pointer hover:bg-surface-glass group"
@@ -412,13 +419,13 @@ const LeaderboardRow = ({ rank, player, onClick, categoryValue }: any) => {
       </td>
       <td className="px-8 py-6 text-sm font-semibold text-text-muted">{player.team}</td>
       <td className="px-8 py-6 text-sm font-bold text-text-primary text-center font-heading">{player.position}</td>
-      <td className="px-8 py-6 text-sm font-semibold text-text-muted text-center">{player.gamesPlayed}</td>
-      <td className="px-8 py-6 font-bold text-text-primary text-right bg-surface-glass">
+      <td className={`px-8 py-6 text-sm font-semibold text-text-muted text-center ${blurStats ? 'blur-sm select-none' : ''}`}>{player.gamesPlayed}</td>
+      <td className={`px-8 py-6 font-bold text-text-primary text-right bg-surface-glass ${blurStats ? 'blur-sm select-none' : ''}`}>
         {categoryValue}
       </td>
-      <td className="px-8 py-6 text-sm font-semibold text-text-muted text-right">{player.rpg}</td>
-      <td className="px-8 py-6 text-sm font-semibold text-text-muted text-right">{player.apg}</td>
-      <td className="px-8 py-6 text-sm font-bold text-green-400 text-right font-stats">{player.per}</td>
+      <td className={`px-8 py-6 text-sm font-semibold text-text-muted text-right ${blurStats ? 'blur-sm select-none' : ''}`}>{player.rpg}</td>
+      <td className={`px-8 py-6 text-sm font-semibold text-text-muted text-right ${blurStats ? 'blur-sm select-none' : ''}`}>{player.apg}</td>
+      <td className={`px-8 py-6 text-sm font-bold text-green-400 text-right font-stats ${blurStats ? 'blur-sm select-none' : ''}`}>{player.per}</td>
     </tr>
   )
 }

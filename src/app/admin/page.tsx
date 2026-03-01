@@ -244,7 +244,7 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        {/* Quick Links */}
+        {/* Quick Actions */}
         <section className="mb-10">
           <h2 className="text-[10px] font-extrabold text-text-muted uppercase tracking-widest mb-6">Quick Actions</h2>
           <div className="grid md:grid-cols-2 gap-4">

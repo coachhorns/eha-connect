@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { isPlayerSubscribed } from '@/lib/permissions'
 
 export async function GET(
   request: Request,
@@ -121,9 +122,13 @@ export async function GET(
       },
     } : null
 
+    // Check if any guardian has an active subscription
+    const subscribed = await isPlayerSubscribed(player.id)
+
     return NextResponse.json({
       player,
       careerStats: stats,
+      isSubscribed: subscribed,
     })
   } catch (error) {
     console.error('Error fetching player:', error)

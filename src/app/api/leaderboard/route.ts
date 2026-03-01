@@ -36,7 +36,16 @@ export async function GET(request: Request) {
                 isVerified: true,
                 userId: true, // Check for legacy claimed status
                 guardians: {
-                    take: 1
+                    select: {
+                        id: true,
+                        user: {
+                            select: {
+                                subscription: {
+                                    select: { status: true }
+                                }
+                            }
+                        }
+                    }
                 },
                 graduationYear: true,
                 heightFeet: true,
@@ -74,6 +83,10 @@ export async function GET(request: Request) {
 
             const teamName = player.teamRosters?.[0]?.team?.name || 'Unattached'
 
+            const isSubscribed = player.guardians?.some(
+                (g: any) => g.user?.subscription?.status === 'ACTIVE'
+            ) || false
+
             if (gamesPlayed === 0) {
                 return {
                     id: player.id,
@@ -81,6 +94,7 @@ export async function GET(request: Request) {
                     rank: 0, // Will assign later
                     headshot: player.profilePhoto, // Add headshot
                     isVerified: player.isVerified || !!player.userId || (player.guardians && player.guardians.length > 0),
+                    isSubscribed,
                     name: `${player.firstName} ${player.lastName}`,
                     initials: `${player.firstName[0]}${player.lastName[0]}`,
                     class: player.graduationYear ? `Class of ${player.graduationYear}` : '',
@@ -134,6 +148,7 @@ export async function GET(request: Request) {
                 rank: 0, // Placeholder
                 headshot: player.profilePhoto, // Add headshot
                 isVerified: player.isVerified || !!player.userId || (player.guardians && player.guardians.length > 0),
+                isSubscribed,
                 name: `${player.firstName} ${player.lastName}`,
                 initials: `${player.firstName[0]}${player.lastName[0]}`,
                 class: player.graduationYear ? `Class of ${player.graduationYear}` : '',

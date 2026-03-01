@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionUser } from '@/lib/get-session'
 import prisma from '@/lib/prisma'
 
 // GET - Search for players to claim or fetch single player by ID
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -159,9 +158,9 @@ export async function GET(request: NextRequest) {
 // POST - Claim a player
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getSessionUser(request)
 
-    if (!session) {
+    if (!user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -179,7 +178,7 @@ export async function POST(request: NextRequest) {
     const existingGuardian = await prisma.guardian.findUnique({
       where: {
         userId_playerId: {
-          userId: session.user.id,
+          userId: user.id,
           playerId,
         },
       },
@@ -228,7 +227,7 @@ export async function POST(request: NextRequest) {
     // No primary guardian - create as PRIMARY
     const guardian = await prisma.guardian.create({
       data: {
-        userId: session.user.id,
+        userId: user.id,
         playerId,
         role: 'PRIMARY',
         isPayer: true, // First guardian is the payer by default
@@ -244,6 +243,60 @@ export async function POST(request: NextRequest) {
     console.error('Error claiming player:', error)
     return NextResponse.json(
       { error: 'Failed to claim player' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE - Unclaim a player (remove guardian relationship)
+export async function DELETE(request: NextRequest) {
+  try {
+    const user = await getSessionUser(request)
+
+    if (!user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { playerId } = body
+
+    if (!playerId) {
+      return NextResponse.json(
+        { error: 'Player ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Find the guardian relationship
+    const guardian = await prisma.guardian.findUnique({
+      where: {
+        userId_playerId: {
+          userId: user.id,
+          playerId,
+        },
+      },
+    })
+
+    if (!guardian) {
+      return NextResponse.json(
+        { error: 'You are not a guardian of this player' },
+        { status: 404 }
+      )
+    }
+
+    // Delete the guardian relationship
+    await prisma.guardian.delete({
+      where: { id: guardian.id },
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Player unclaimed successfully',
+    })
+  } catch (error) {
+    console.error('Error unclaiming player:', error)
+    return NextResponse.json(
+      { error: 'Failed to unclaim player' },
       { status: 500 }
     )
   }

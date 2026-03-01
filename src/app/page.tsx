@@ -520,8 +520,7 @@ export default function HomePage() {
                 TO <span className="text-stroke">BUY IT.</span>
               </h2>
               <p className="text-white/80 text-lg mb-8 max-w-md">
-                Join the fastest growing verified basketball network in the country. Your journey
-                to the next level starts with a profile.
+                No trials. No gimmicks. Claim your profile and see what EHA Connect can do &mdash; upgrade only when you&apos;re ready to unlock everything.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/claim-player">
@@ -531,11 +530,6 @@ export default function HomePage() {
                   >
                     Claim Your Profile
                   </Button>
-                </Link>
-                <Link href="/auth/role-selection">
-                  <button className="px-8 py-4 bg-[#0A1D37]/20 border border-white/20 text-white font-bold uppercase tracking-widest rounded hover:bg-white/10 transition-all">
-                    For Coaches
-                  </button>
                 </Link>
               </div>
             </div>

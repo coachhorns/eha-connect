@@ -19,7 +19,6 @@ import {
   Mail,
   Crown,
   Clock,
-  ArrowLeftRight,
 } from 'lucide-react'
 import { Button } from '@/components/ui'
 import RecruitingModal from '@/components/recruiting/RecruitingModal'
@@ -389,40 +388,6 @@ export default function DirectorDashboardPage() {
           )}
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {program.teams.length >= 2 && (
-            <Link href="/director/roster-manager">
-              <div className="bg-surface-glass border border-border-default rounded-xl p-6 hover:bg-surface-overlay hover:border-border-default transition-all duration-300 group h-full">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                    <ArrowLeftRight className="w-6 h-6 text-text-muted" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-text-primary mb-1">Roster Manager</h3>
-                    <p className="text-sm text-text-muted">Move players between teams</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-text-muted group-hover:text-text-primary group-hover:translate-x-1 transition-all" />
-                </div>
-              </div>
-            </Link>
-          )}
-
-          <Link href="/events">
-            <div className="bg-gradient-to-br from-[#E31837]/20 to-transparent border border-[#E31837]/30 rounded-xl p-6 hover:border-[#E31837]/50 transition-all duration-300 group h-full">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-surface-overlay rounded-xl flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-text-muted" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-text-primary mb-1">Browse Events</h3>
-                  <p className="text-sm text-text-muted">Find tournaments and register your teams</p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-text-muted group-hover:text-text-primary group-hover:translate-x-1 transition-all" />
-              </div>
-            </div>
-          </Link>
-        </div>
 
         {/* College Recruiting - Premium Card */}
         {allPlayers.length > 0 && (

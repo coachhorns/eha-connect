@@ -8,7 +8,6 @@ import {
   User,
   Trophy,
   BarChart3,
-  Settings,
   Plus,
   ExternalLink,
   Calendar,
@@ -22,6 +21,7 @@ import {
   Clock,
   Check,
   Star,
+  Lock,
 } from 'lucide-react'
 import { Card, Button, Badge, Avatar, Modal } from '@/components/ui'
 import RecruitingModal from '@/components/recruiting/RecruitingModal'
@@ -433,63 +433,107 @@ export default function DashboardPage() {
                   </p>
                 </div>
 
-                {/* Player List */}
-                <div className="divide-y divide-white/5">
-                  {profiles.map((profile) => (
-                    <div key={profile.id} className="p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Avatar
-                          src={profile.profilePhoto}
-                          fallback={`${profile.firstName} ${profile.lastName}`}
-                          size="sm"
-                        />
-                        <div>
-                          <p className="text-sm font-bold text-text-primary">{profile.firstName} {profile.lastName}</p>
-                          <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">
-                            {profile.graduationYear ? `Class of ${profile.graduationYear}` : 'No grad year'}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={() => setRecruitingPlayer(profile)}
-                        className="flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-0 shadow-lg shadow-amber-900/20"
-                      >
-                        <Mail className="w-3.5 h-3.5" />
-                        Email Coaches
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Sent Emails Log */}
-                <div className="border-t border-amber-500/10">
-                  <div className="p-4 pb-2">
-                    <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-text-muted flex items-center gap-1.5">
-                      <Clock className="w-3 h-3" />
-                      Sent Emails
-                    </h3>
-                  </div>
-                  {emailLog.length === 0 ? (
-                    <div className="px-4 pb-5">
-                      <p className="text-[11px] text-text-muted">No emails sent yet. Start by emailing a college coach above.</p>
-                    </div>
-                  ) : (
-                    <div className="px-4 pb-4 space-y-2">
-                      {emailLog.slice(0, 10).map((log) => (
-                        <div key={log.id} className="flex items-center justify-between py-2 px-3 bg-white/[0.02] rounded border border-border-subtle">
-                          <div className="min-w-0">
-                            <p className="text-xs text-text-primary font-medium truncate">{log.coachName}</p>
-                            <p className="text-[10px] text-text-muted truncate">{log.collegeName}</p>
+                {/* Recruiting content — blurred if no subscription */}
+                {subscription?.status !== 'ACTIVE' && session?.user.role !== 'ADMIN' ? (
+                  <div className="relative">
+                    <div className="blur-[3px] opacity-40 pointer-events-none select-none">
+                      <div className="divide-y divide-white/5">
+                        {profiles.map((profile) => (
+                          <div key={profile.id} className="p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Avatar
+                                src={profile.profilePhoto}
+                                fallback={`${profile.firstName} ${profile.lastName}`}
+                                size="sm"
+                              />
+                              <div>
+                                <p className="text-sm font-bold text-text-primary">{profile.firstName} {profile.lastName}</p>
+                                <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">
+                                  {profile.graduationYear ? `Class of ${profile.graduationYear}` : 'No grad year'}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                          <span className="text-[10px] text-text-muted font-mono shrink-0 ml-3">
-                            {new Date(log.sentAt).toLocaleDateString()}
-                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <div className="text-center p-6">
+                        <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Lock className="w-5 h-5 text-amber-400" />
+                        </div>
+                        <p className="text-sm font-bold text-text-primary uppercase tracking-wider mb-1">Connect Pass Required</p>
+                        <p className="text-xs text-text-muted mb-4">Subscribe to email college coaches</p>
+                        <Link href="/pricing">
+                          <Button size="sm" className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-0">
+                            <Star className="w-3.5 h-3.5 mr-1.5" />
+                            View Plans
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Player List */}
+                    <div className="divide-y divide-white/5">
+                      {profiles.map((profile) => (
+                        <div key={profile.id} className="p-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+                          <div className="flex items-center gap-3">
+                            <Avatar
+                              src={profile.profilePhoto}
+                              fallback={`${profile.firstName} ${profile.lastName}`}
+                              size="sm"
+                            />
+                            <div>
+                              <p className="text-sm font-bold text-text-primary">{profile.firstName} {profile.lastName}</p>
+                              <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">
+                                {profile.graduationYear ? `Class of ${profile.graduationYear}` : 'No grad year'}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => setRecruitingPlayer(profile)}
+                            className="flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-0 shadow-lg shadow-amber-900/20"
+                          >
+                            <Mail className="w-3.5 h-3.5" />
+                            Email Coaches
+                          </Button>
                         </div>
                       ))}
                     </div>
-                  )}
-                </div>
+
+                    {/* Sent Emails Log */}
+                    <div className="border-t border-amber-500/10">
+                      <div className="p-4 pb-2">
+                        <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-text-muted flex items-center gap-1.5">
+                          <Clock className="w-3 h-3" />
+                          Sent Emails
+                        </h3>
+                      </div>
+                      {emailLog.length === 0 ? (
+                        <div className="px-4 pb-5">
+                          <p className="text-[11px] text-text-muted">No emails sent yet. Start by emailing a college coach above.</p>
+                        </div>
+                      ) : (
+                        <div className="px-4 pb-4 space-y-2">
+                          {emailLog.slice(0, 10).map((log) => (
+                            <div key={log.id} className="flex items-center justify-between py-2 px-3 bg-white/[0.02] rounded border border-border-subtle">
+                              <div className="min-w-0">
+                                <p className="text-xs text-text-primary font-medium truncate">{log.coachName}</p>
+                                <p className="text-[10px] text-text-muted truncate">{log.collegeName}</p>
+                              </div>
+                              <span className="text-[10px] text-text-muted font-mono shrink-0 ml-3">
+                                {new Date(log.sentAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -510,8 +554,8 @@ export default function DashboardPage() {
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-8">
-          {/* Subscribe CTA - only shown for non-admin users WITHOUT an active subscription */}
-          {session?.user.role !== 'ADMIN' && !subscription && (
+          {/* Subscribe CTA - only shown for non-admin users WITHOUT an active subscription who have claimed at least one player */}
+          {session?.user.role !== 'ADMIN' && !subscription && profiles.length > 0 && (
             <div className="relative rounded-sm overflow-hidden">
               {/* Gradient border effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-eha-red/30 via-amber-500/20 to-eha-red/30 rounded-sm" />
@@ -572,35 +616,6 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Quick Links */}
-          <Card className="rounded-sm p-0">
-            <div className="p-6 border-b border-border-subtle">
-              <h4 className="text-xs font-extrabold uppercase tracking-[0.2em] text-eha-red">Quick Links</h4>
-            </div>
-            <div>
-              <Link
-                href="/dashboard/settings"
-                className="flex items-center gap-3 p-4 text-text-muted hover:bg-surface-glass hover:text-text-primary transition-colors border-b border-border-subtle"
-              >
-                <Settings className="w-5 h-5" />
-                <span className="text-sm font-bold uppercase tracking-wider">Account Settings</span>
-              </Link>
-              <Link
-                href="/leaderboards"
-                className="flex items-center gap-3 p-4 text-text-muted hover:bg-surface-glass hover:text-text-primary transition-colors border-b border-border-subtle"
-              >
-                <BarChart3 className="w-5 h-5" />
-                <span className="text-sm font-bold uppercase tracking-wider">Stat Leaderboards</span>
-              </Link>
-              <Link
-                href="/events"
-                className="flex items-center gap-3 p-4 text-text-muted hover:bg-surface-glass hover:text-text-primary transition-colors"
-              >
-                <Calendar className="w-5 h-5" />
-                <span className="text-sm font-bold uppercase tracking-wider">Upcoming Events</span>
-              </Link>
-            </div>
-          </Card>
         </div>
       </div>
 

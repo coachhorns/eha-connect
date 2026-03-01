@@ -14,6 +14,8 @@ import {
   FileText,
   Globe,
   PlayCircle,
+  Lock,
+  CreditCard,
 } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
@@ -22,7 +24,6 @@ import { Badge, Button, Card, VerifiedBadge } from '@/components/ui'
 import { formatHeight, formatPosition, formatDate } from '@/lib/utils'
 import { achievementBadges } from '@/lib/constants'
 import { canViewStats } from '@/lib/permissions'
-import StatsPaywall from '@/components/players/StatsPaywall'
 import ShareProfileButton from '@/components/players/ShareProfileButton'
 import FilmRoomSection from '@/components/players/FilmRoomSection'
 import PhotoGallery from '@/components/players/PhotoGallery'
@@ -302,6 +303,31 @@ export default async function PlayerProfilePage(props: PageProps) {
 
       {/* Main Content Grid */}
       <main className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-16 py-12">
+        <div className="relative">
+          {!canView && (
+            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none" style={{ top: '20%' }}>
+              <div className="text-center p-8 pointer-events-auto">
+                <div className="w-14 h-14 bg-eha-red/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Lock className="w-7 h-7 text-eha-red" />
+                </div>
+                <p className="text-lg font-bold text-text-primary uppercase tracking-wider mb-2">Connect Pass Required</p>
+                {isOwner ? (
+                  <>
+                    <p className="text-sm text-text-muted mb-5">Subscribe to unlock stats, film, and full profile features</p>
+                    <Link href="/pricing">
+                      <Button className="bg-gradient-to-r from-eha-red to-red-700 hover:from-red-600 hover:to-red-800 text-white border-0">
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        View Plans
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <p className="text-sm text-text-muted">Stats are available when the player&apos;s profile is upgraded</p>
+                )}
+              </div>
+            </div>
+          )}
+          <div className={!canView ? 'blur-[3px] opacity-40 pointer-events-none select-none' : ''}>
         <div className="grid lg:grid-cols-12 gap-10">
 
           {/* Main Column (Stats & Graphics) */}
@@ -317,31 +343,33 @@ export default async function PlayerProfilePage(props: PageProps) {
               </div>
 
               {careerStats ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {/* Points */}
-                  <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all group relative overflow-hidden">
-                    <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Points</span>
-                    <span className="text-4xl font-extrabold text-text-primary">{careerStats.averages.ppg.toFixed(1)}</span>
-                    <div className="mt-2 text-[10px] font-bold text-eha-red/80 uppercase">Per Game</div>
-                  </div>
-                  {/* Assists */}
-                  <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
-                    <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Assists</span>
-                    <span className="text-4xl font-extrabold text-text-primary">{careerStats.averages.apg.toFixed(1)}</span>
-                    <div className="mt-2 text-[10px] font-bold text-text-muted uppercase">Per Game</div>
-                  </div>
-                  {/* Rebounds */}
-                  <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
-                    <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Rebounds</span>
-                    <span className="text-4xl font-extrabold text-text-primary">{careerStats.averages.rpg.toFixed(1)}</span>
-                    <div className="mt-2 text-[10px] font-bold text-text-muted uppercase">Per Game</div>
-                  </div>
-                  {/* Efficiency (Mock for now, using FG%) */}
-                  <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
-                    <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Efficiency</span>
-                    <span className="text-4xl font-extrabold text-eha-red">{careerStats.shooting.fgPct.toFixed(1)}</span>
-                    <div className="mt-2 text-[10px] font-bold text-eha-red uppercase">Elite Tier</div>
-                  </div>
+                <div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {/* Points */}
+                      <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all group relative overflow-hidden">
+                        <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Points</span>
+                        <span className="text-4xl font-extrabold text-text-primary">{careerStats.averages.ppg.toFixed(1)}</span>
+                        <div className="mt-2 text-[10px] font-bold text-eha-red/80 uppercase">Per Game</div>
+                      </div>
+                      {/* Assists */}
+                      <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
+                        <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Assists</span>
+                        <span className="text-4xl font-extrabold text-text-primary">{careerStats.averages.apg.toFixed(1)}</span>
+                        <div className="mt-2 text-[10px] font-bold text-text-muted uppercase">Per Game</div>
+                      </div>
+                      {/* Rebounds */}
+                      <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
+                        <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Rebounds</span>
+                        <span className="text-4xl font-extrabold text-text-primary">{careerStats.averages.rpg.toFixed(1)}</span>
+                        <div className="mt-2 text-[10px] font-bold text-text-muted uppercase">Per Game</div>
+                      </div>
+                      {/* Efficiency (Mock for now, using FG%) */}
+                      <div className="bg-surface-raised/50 border border-border-subtle p-6 rounded-sm hover:border-eha-red hover:-translate-y-0.5 transition-all">
+                        <span className="block text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2">Efficiency</span>
+                        <span className="text-4xl font-extrabold text-eha-red">{careerStats.shooting.fgPct.toFixed(1)}</span>
+                        <div className="mt-2 text-[10px] font-bold text-eha-red uppercase">Elite Tier</div>
+                      </div>
+                    </div>
                 </div>
               ) : (
                 <div className="p-8 border border-dashed border-border-default rounded-sm text-center">
@@ -354,7 +382,6 @@ export default async function PlayerProfilePage(props: PageProps) {
             <section>
               <h3 className="text-2xl text-text-primary mb-8 font-bold uppercase tracking-tight">Recent Game Log</h3>
               <div className="bg-surface-raised/30 border border-border-subtle rounded-sm overflow-hidden">
-                <div className={!canView ? 'blur-md pointer-events-none select-none relative' : ''}>
                   <table className="w-full text-left">
                     <thead className="bg-surface-glass border-b border-border-subtle">
                       <tr>
@@ -385,8 +412,6 @@ export default async function PlayerProfilePage(props: PageProps) {
                       )}
                     </tbody>
                   </table>
-                </div>
-                {!canView && <StatsPaywall playerId={player.id} />}
               </div>
             </section>
 
@@ -492,6 +517,8 @@ export default async function PlayerProfilePage(props: PageProps) {
               </section>
             )}
 
+          </div>
+        </div>
           </div>
         </div>
       </main>

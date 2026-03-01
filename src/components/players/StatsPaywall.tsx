@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Lock, UserPlus, CreditCard } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { Lock, UserPlus, CreditCard, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui'
 
 interface StatsPaywallProps {
@@ -15,6 +16,8 @@ export default function StatsPaywall({
   variant = 'overlay',
   showClaimOption = true,
 }: StatsPaywallProps) {
+  const { data: session } = useSession()
+  const isLoggedIn = !!session?.user
   if (variant === 'inline') {
     return (
       <div className="text-center py-8 px-4">
@@ -26,10 +29,13 @@ export default function StatsPaywall({
           Subscribe to view detailed player statistics, game logs, and performance data
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/pricing">
+          <Link href={isLoggedIn ? '/pricing' : '/auth/signin'}>
             <Button>
-              <CreditCard className="w-4 h-4 mr-2" />
-              Subscribe Now
+              {isLoggedIn ? (
+                <><CreditCard className="w-4 h-4 mr-2" />Subscribe Now</>
+              ) : (
+                <><ArrowRight className="w-4 h-4 mr-2" />Get Started</>
+              )}
             </Button>
           </Link>
           {showClaimOption && (
@@ -58,10 +64,13 @@ export default function StatsPaywall({
           Get access to detailed statistics, game logs, and performance analytics
         </p>
         <div className="flex flex-col gap-2">
-          <Link href="/pricing">
+          <Link href={isLoggedIn ? '/pricing' : '/auth/signin'}>
             <Button className="w-full">
-              <CreditCard className="w-4 h-4 mr-2" />
-              View Plans
+              {isLoggedIn ? (
+                <><CreditCard className="w-4 h-4 mr-2" />View Plans</>
+              ) : (
+                <><ArrowRight className="w-4 h-4 mr-2" />Get Started</>
+              )}
             </Button>
           </Link>
           {showClaimOption && (

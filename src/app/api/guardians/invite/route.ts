@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Send a co-parent invite
+// POST - Send a co-parent invite (via email or share link)
 export async function POST(request: NextRequest) {
   try {
     const user = await getSessionUser(request)
@@ -52,24 +52,34 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { playerId, email, type } = body
+    const { playerId, email, type, shareOnly } = body
 
-    if (!playerId || !email) {
+    if (!playerId) {
       return NextResponse.json(
-        { error: 'Player ID and email are required' },
+        { error: 'Player ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Email is required unless shareOnly mode
+    if (!shareOnly && !email) {
+      return NextResponse.json(
+        { error: 'Email is required' },
         { status: 400 }
       )
     }
 
     const inviteType: 'PARENT' | 'PLAYER' = type === 'PLAYER' ? 'PLAYER' : 'PARENT'
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email address' },
-        { status: 400 }
-      )
+    // Validate email format (only when sending email)
+    if (!shareOnly && email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(email)) {
+        return NextResponse.json(
+          { error: 'Invalid email address' },
+          { status: 400 }
+        )
+      }
     }
 
     // Check if user is PRIMARY guardian of this player
@@ -89,21 +99,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if invitee is already a guardian
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-      include: {
-        guardians: {
-          where: { playerId },
+    // Check if invitee is already a guardian (only when email provided)
+    if (email) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+        include: {
+          guardians: {
+            where: { playerId },
+          },
         },
-      },
-    })
+      })
 
-    if (existingUser && existingUser.guardians.length > 0) {
-      return NextResponse.json(
-        { error: 'This user is already a guardian of this player' },
-        { status: 400 }
-      )
+      if (existingUser && existingUser.guardians.length > 0) {
+        return NextResponse.json(
+          { error: 'This user is already a guardian of this player' },
+          { status: 400 }
+        )
+      }
     }
 
     // Get player info for the invite (must be active)
@@ -119,49 +131,65 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Player not found' }, { status: 404 })
     }
 
-    // Check for existing pending invite
-    const existingInvite = await prisma.guardianInvite.findFirst({
-      where: {
-        email,
-        playerId,
-        acceptedAt: null,
-      },
-    })
-
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 7)
-    // Use string literal to avoid potential stale Enum object issues
     const role = inviteType === 'PLAYER' ? 'PLAYER' as GuardianRole : 'SECONDARY' as GuardianRole
+    const inviteEmail = email || ''
 
     let invite
 
-    if (existingInvite) {
-      // Update existing invite
-      invite = await prisma.guardianInvite.update({
-        where: { id: existingInvite.id },
-        data: {
-          expiresAt,
-          role, // Allow role update if needed
-          invitedBy: user.id, // Update inviter to current user
+    // Check for existing pending invite (only when email provided)
+    if (email) {
+      const existingInvite = await prisma.guardianInvite.findFirst({
+        where: {
+          email,
+          playerId,
+          acceptedAt: null,
         },
       })
-      console.log(`[Invite] Updated existing invite ${invite.id} for ${email}`)
-    } else {
-      // Create new invite
+
+      if (existingInvite) {
+        invite = await prisma.guardianInvite.update({
+          where: { id: existingInvite.id },
+          data: {
+            expiresAt,
+            role,
+            invitedBy: user.id,
+          },
+        })
+        console.log(`[Invite] Updated existing invite ${invite.id} for ${email}`)
+      }
+    }
+
+    if (!invite) {
       invite = await prisma.guardianInvite.create({
         data: {
-          email,
+          email: inviteEmail,
           playerId,
           invitedBy: user.id,
           role,
           expiresAt,
         },
       })
-      console.log(`[Invite] Created new invite ${invite.id} for ${email}`)
+      console.log(`[Invite] Created new invite ${invite.id}${email ? ` for ${email}` : ' (share link)'}`)
     }
 
     const inviteUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/invite/${invite.token}`
     const playerFullName = `${player.firstName} ${player.lastName}`
+
+    // Skip email when shareOnly — just return the invite URL
+    if (shareOnly) {
+      return NextResponse.json({
+        success: true,
+        invite: {
+          id: invite.id,
+          expiresAt: invite.expiresAt,
+          type: inviteType,
+        },
+        inviteUrl,
+        message: 'Invite link created',
+      })
+    }
 
     // Build and send the email
     const { subject, html } = buildInviteEmail({
@@ -188,6 +216,7 @@ export async function POST(request: NextRequest) {
         type: inviteType,
         emailSent: emailResult.success,
       },
+      inviteUrl,
       message: emailResult.success
         ? `Invite sent to ${email}`
         : `Invite created but email failed: ${emailResult.error}`,
