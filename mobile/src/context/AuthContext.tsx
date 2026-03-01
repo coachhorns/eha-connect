@@ -15,6 +15,7 @@ interface AuthContextValue extends AuthState {
   signInWithGoogle: (idToken: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -72,8 +73,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState({ user: null, isLoading: false, isAuthenticated: false });
   }, []);
 
+  const updateUser = useCallback((updates: Partial<User>) => {
+    setState(prev => ({
+      ...prev,
+      user: prev.user ? { ...prev.user, ...updates } : null,
+    }));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signInWithGoogle, register, signOut }}>
+    <AuthContext.Provider value={{ ...state, signIn, signInWithGoogle, register, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -25,4 +25,9 @@ export const guardiansApi = {
 
   cancelInvite: (inviteId: string) =>
     api.delete<{ success: boolean }>(`/api/guardians/invite?id=${inviteId}`),
+
+  unlinkGuardian: (playerId: string) =>
+    api.delete<{ success: boolean; wasLastGuardian: boolean; message: string }>(
+      `/api/guardians/unlink?playerId=${playerId}`
+    ),
 };

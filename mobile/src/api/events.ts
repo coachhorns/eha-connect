@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { Event, Game, EventStandingEntry } from '@/types';
+import type { Event, Game, EventStandingEntry, ResultGame, GameDetail } from '@/types';
 
 export const eventsApi = {
   list: async (): Promise<Event[]> => {
@@ -25,4 +25,12 @@ export const eventsApi = {
 
   getTeams: (eventId: string) =>
     api.get<{ teams: unknown[] }>(`/api/events/${eventId}/teams`),
+
+  getRecentResults: async (limit = 10): Promise<{ games: ResultGame[]; total: number }> =>
+    api.get<{ games: ResultGame[]; total: number }>('/api/public/results', { limit: String(limit) }),
+
+  getGameDetail: async (gameId: string): Promise<GameDetail> => {
+    const res = await api.get<{ game: GameDetail }>(`/api/public/games/${gameId}`);
+    return res.game;
+  },
 };

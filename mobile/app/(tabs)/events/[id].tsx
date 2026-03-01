@@ -395,7 +395,7 @@ export default function EventDetailScreen() {
                   <Text style={[styles.dayLabel, { color: colors.textMuted }]}>{day.label}</Text>
                   <View style={styles.dayGames}>
                     {day.games.map(game => (
-                      <GameCard key={game.id} game={game} />
+                      <GameCard key={game.id} game={game} onPress={() => router.push(`/games/${game.id}`)} />
                     ))}
                   </View>
                 </View>
