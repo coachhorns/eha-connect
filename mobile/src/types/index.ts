@@ -263,6 +263,93 @@ export interface CollegeFilters {
   states: string[];
 }
 
+// ── Results & Game Detail ───────────────────────────────────
+
+export interface ResultGame {
+  id: string;
+  homeTeamId: string;
+  awayTeamId: string;
+  homeTeam: { id: string; slug: string; name: string; logo: string | null };
+  awayTeam: { id: string; slug: string; name: string; logo: string | null };
+  homeScore: number;
+  awayScore: number;
+  status: string;
+  scheduledAt: string;
+  currentPeriod: number;
+  division: string | null;
+  court: string | null;
+  event: { id: string; slug: string; name: string } | null;
+}
+
+export interface BoxScorePlayer {
+  id: string;
+  playerId: string;
+  teamId: string;
+  player: {
+    id: string;
+    slug: string;
+    firstName: string;
+    lastName: string;
+    jerseyNumber: string | null;
+    profilePhoto: string | null;
+  };
+  points: number;
+  rebounds: number;
+  assists: number;
+  steals: number;
+  blocks: number;
+  turnovers: number;
+  fouls: number;
+  fgMade: number;
+  fgAttempted: number;
+  fg3Made: number;
+  fg3Attempted: number;
+  ftMade: number;
+  ftAttempted: number;
+  minutes: number;
+  offRebounds: number;
+  defRebounds: number;
+}
+
+export interface TeamTotals {
+  points: number;
+  rebounds: number;
+  assists: number;
+  steals: number;
+  blocks: number;
+  turnovers: number;
+  fouls: number;
+  fgMade: number;
+  fgAttempted: number;
+  fg3Made: number;
+  fg3Attempted: number;
+  ftMade: number;
+  ftAttempted: number;
+}
+
+export interface GameDetail {
+  id: string;
+  homeTeamId: string;
+  awayTeamId: string;
+  homeTeam: { id: string; slug: string; name: string; logo: string | null; program?: { logo: string | null } | null };
+  awayTeam: { id: string; slug: string; name: string; logo: string | null; program?: { logo: string | null } | null };
+  homeScore: number;
+  awayScore: number;
+  status: string;
+  scheduledAt: string;
+  startedAt: string | null;
+  endedAt: string | null;
+  currentPeriod: number;
+  division: string | null;
+  gameType: string;
+  court: string | null;
+  event: { id: string; slug: string; name: string } | null;
+  homeStats: BoxScorePlayer[];
+  awayStats: BoxScorePlayer[];
+  homeTotals: TeamTotals;
+  awayTotals: TeamTotals;
+}
+
 export interface RecruitingLog {
   id: string;
   playerId: string;

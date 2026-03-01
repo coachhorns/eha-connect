@@ -34,7 +34,8 @@ import { recruitingApi } from '@/api/recruiting';
 import { subscriptionApi } from '@/api/subscription';
 import { guardiansApi } from '@/api/guardians';
 import { Loading } from '@/components/ui/Loading';
-import type { GuardedPlayer, Player, RecruitingEmailLog } from '@/types';
+import { GameCard } from '@/components/GameCard';
+import type { GuardedPlayer, Player, RecruitingEmailLog, ResultGame } from '@/types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HEADER_HEIGHT = Platform.OS === 'ios' ? 100 : 80;
@@ -160,6 +161,27 @@ export function ParentDashboard() {
     retry: false,
   });
 
+  // Fetch live & recent results (public, all roles)
+  const { data: recentResults, refetch: refetchResults } = useQuery({
+    queryKey: ['recentResults'],
+    queryFn: () => eventsApi.getRecentResults(10),
+    refetchInterval: (query) => {
+      const games = query.state.data?.games;
+      if (games?.some((g: ResultGame) => g.status === 'IN_PROGRESS' || g.status === 'HALFTIME')) {
+        return 15000;
+      }
+      return 60000;
+    },
+  });
+
+  const liveGames = (recentResults?.games ?? []).filter(
+    (g: ResultGame) => g.status === 'IN_PROGRESS' || g.status === 'HALFTIME',
+  );
+  const finalGames = (recentResults?.games ?? []).filter(
+    (g: ResultGame) => g.status === 'FINAL',
+  ).slice(0, 5);
+  const scoreGames = [...liveGames, ...finalGames];
+
   // Aggregate upcoming games across all players
   const allUpcomingGames = players.flatMap((p, idx) => {
     const games = upcomingGamesQueries[idx]?.data ?? [];
@@ -181,6 +203,7 @@ export function ParentDashboard() {
       refetchEmailLog(),
       refetchSubscription(),
       refetchInvites(),
+      refetchResults(),
       ...playerDetailQueries.map((q) => q.refetch()),
       ...upcomingGamesQueries.map((q) => q.refetch()),
     ]);
@@ -290,13 +313,52 @@ export function ParentDashboard() {
           </View>
         )}
 
+        {/* ── LIVE & RECENT SCORES ──────────────────────────── */}
+        {scoreGames.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.liveHeader}>
+              {liveGames.length > 0 && <View style={[styles.liveHeaderDot, { backgroundColor: colors.error }]} />}
+              <Text style={[styles.sectionTitle, { color: colors.textMuted, marginBottom: 0 }]}>
+                {liveGames.length > 0 ? 'LIVE SCORES' : 'RECENT RESULTS'}
+              </Text>
+            </View>
+            <View style={styles.gamesList}>
+              {scoreGames.map((game: ResultGame) => (
+                <GameCard
+                  key={game.id}
+                  game={{
+                    id: game.id,
+                    eventId: game.event?.id ?? '',
+                    homeTeamId: game.homeTeamId,
+                    awayTeamId: game.awayTeamId,
+                    homeTeam: { ...game.homeTeam, organization: null, ageGroup: null, logoUrl: game.homeTeam.logo },
+                    awayTeam: { ...game.awayTeam, organization: null, ageGroup: null, logoUrl: game.awayTeam.logo },
+                    homeScore: game.homeScore,
+                    awayScore: game.awayScore,
+                    status: game.status === 'IN_PROGRESS' || game.status === 'HALFTIME' ? 'LIVE' : game.status as any,
+                    scheduledTime: game.scheduledAt,
+                    court: game.court,
+                    period: game.currentPeriod,
+                  }}
+                  onPress={() => router.push(`/games/${game.id}`)}
+                />
+              ))}
+            </View>
+          </View>
+        )}
+
         {/* ── UPCOMING GAMES ─────────────────────────────────── */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>UPCOMING GAMES</Text>
           {allUpcomingGames.length > 0 ? (
             <View style={styles.gamesList}>
               {allUpcomingGames.map((game: any, idx: number) => (
-                <View key={game.id ?? idx} style={[styles.gameCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <TouchableOpacity
+                  key={game.id ?? idx}
+                  style={[styles.gameCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                  onPress={() => router.push(`/games/${game.id}`)}
+                  activeOpacity={0.7}
+                >
                   <View style={styles.gameCardLeft}>
                     {game.scheduledTime && (
                       <>
@@ -321,7 +383,7 @@ export function ParentDashboard() {
                     )}
                   </View>
                   <Text style={[styles.chevron, { color: colors.textMuted }]}>›</Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           ) : (
@@ -449,11 +511,11 @@ export function ParentDashboard() {
                 )}
               </View>
               <TouchableOpacity
-                style={[styles.manageBtn, { backgroundColor: colors.red }]}
-                onPress={() => router.push('/(tabs)/more')}
+                style={[styles.manageBtn, { backgroundColor: colors.surfaceLight, borderWidth: 1, borderColor: colors.border }]}
+                onPress={() => Alert.alert('Coming Soon', 'Subscription management will be available soon.')}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.manageBtnText, { color: '#fff' }]}>Manage</Text>
+                <Text style={[styles.manageBtnText, { color: colors.textPrimary }]}>Manage</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -890,6 +952,8 @@ const styles = StyleSheet.create({
   // Section
   section: { marginBottom: Spacing.xxl },
   sectionTitle: { fontSize: FontSize.xs, fontFamily: Fonts.headingBlack, letterSpacing: 1.5, marginBottom: Spacing.lg, textTransform: 'uppercase' },
+  liveHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.lg },
+  liveHeaderDot: { width: 8, height: 8, borderRadius: 4 },
 
   // Player Card
   playerCard: { borderRadius: BorderRadius.lg, borderWidth: 1, overflow: 'hidden' },

@@ -327,6 +327,7 @@ function ExpandedPanel({
   actions,
   isCustomizable,
   onCustomize,
+  onSettings,
 }: {
   expandProgress: Animated.SharedValue<number>;
   onClose: () => void;
@@ -334,6 +335,7 @@ function ExpandedPanel({
   actions: QuickAction[];
   isCustomizable: boolean;
   onCustomize: () => void;
+  onSettings: () => void;
 }) {
   const { isDark, toggleTheme } = useTheme();
   const dismissTranslateY = useSharedValue(0);
@@ -402,28 +404,35 @@ function ExpandedPanel({
         <View style={styles.expandedHeader}>
           <Text style={styles.expandedTitle}>QUICK ACTIONS</Text>
           <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-            {/* Sun/Moon theme toggle */}
+            {/* Theme toggle — filled crescent moon */}
             <TouchableOpacity
               onPress={toggleTheme}
               style={styles.editButton}
               activeOpacity={0.7}
             >
-              {isDark ? (
-                // Sun icon (switch to light)
-                <View style={{ width: 14, height: 14, alignItems: 'center', justifyContent: 'center' }}>
-                  <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: Colors.textSecondary }} />
-                  {/* Rays */}
-                  {[0, 45, 90, 135].map((deg) => (
-                    <View key={deg} style={{ position: 'absolute', width: 14, height: 1.5, borderRadius: 1, backgroundColor: Colors.textSecondary, transform: [{ rotate: `${deg}deg` }] }} />
-                  ))}
-                </View>
-              ) : (
-                // Moon icon (switch to dark)
-                <View style={{ width: 12, height: 12, alignItems: 'center', justifyContent: 'center' }}>
-                  <View style={{ width: 10, height: 10, borderRadius: 5, borderWidth: 1.5, borderColor: Colors.textSecondary, backgroundColor: 'transparent' }} />
-                  <View style={{ position: 'absolute', top: -1, right: -1, width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.navySurface }} />
-                </View>
-              )}
+              <View style={{ width: 14, height: 14, alignItems: 'center', justifyContent: 'center' }}>
+                {/* Filled moon circle */}
+                <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: Colors.textSecondary }} />
+                {/* Shadow bite — offset circle in background color to create crescent */}
+                <View style={{ position: 'absolute', top: -1, right: -1, width: 9, height: 9, borderRadius: 4.5, backgroundColor: Colors.navySurface }} />
+              </View>
+            </TouchableOpacity>
+            {/* Settings button — cog icon */}
+            <TouchableOpacity
+              onPress={onSettings}
+              style={styles.editButton}
+              activeOpacity={0.7}
+            >
+              <View style={{ width: 14, height: 14, alignItems: 'center', justifyContent: 'center' }}>
+                {/* Outer ring */}
+                <View style={{ width: 10, height: 10, borderRadius: 5, borderWidth: 1.5, borderColor: Colors.textSecondary }} />
+                {/* Center dot */}
+                <View style={{ position: 'absolute', width: 3, height: 3, borderRadius: 1.5, backgroundColor: Colors.textSecondary }} />
+                {/* Square teeth at N/S/E/W + diagonals */}
+                {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+                  <View key={deg} style={{ position: 'absolute', width: 3, height: 3, borderRadius: 0.5, backgroundColor: Colors.textSecondary, transform: [{ rotate: `${deg}deg` }, { translateY: -6.5 }] }} />
+                ))}
+              </View>
             </TouchableOpacity>
             {isCustomizable && (
               <TouchableOpacity
@@ -828,6 +837,10 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             actions={quickActions}
             isCustomizable={true}
             onCustomize={() => setShowCustomize(true)}
+            onSettings={() => {
+              toggleExpand();
+              setTimeout(() => navigateToTab(MORE_TAB_INDEX), 300);
+            }}
           />
         </Animated.View>
       </GestureHandlerRootView>
@@ -901,8 +914,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="more"
         options={{
-          title: 'More',
-          headerTitle: 'More',
+          title: 'Settings',
+          headerTitle: 'Settings',
         }}
       />
     </Tabs>

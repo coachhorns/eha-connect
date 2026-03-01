@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -13,23 +13,23 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import { Image } from 'expo-image';
 import { BlurView } from 'expo-blur';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as Notifications from 'expo-notifications';
 import * as SecureStore from 'expo-secure-store';
 import { Spacing, FontSize, BorderRadius, Fonts } from '@/constants/colors';
 import { useColors } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
-import { eventsApi } from '@/api/events';
 import { playersApi } from '@/api/players';
+import { eventsApi } from '@/api/events';
 import { recruitingApi } from '@/api/recruiting';
 import { Loading } from '@/components/ui/Loading';
+import { GameCard } from '@/components/GameCard';
 import { ParentDashboard } from '@/components/ParentDashboard';
-import type { Player, Event, Game, RecruitingEmailLog } from '@/types';
+import type { Player, RecruitingEmailLog, ResultGame } from '@/types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -45,17 +45,20 @@ export default function HomeScreen() {
 }
 
 function PlayerDashboard() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const colors = useColors();
   const router = useRouter();
+  const navigation = useNavigation();
+  const scrollRef = useRef<ScrollView>(null);
   const firstName = user?.name?.split(' ')[0] ?? 'Player';
 
-  const handleSignOut = () => {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: signOut },
-    ]);
-  };
+  // ── Tab Press Reset ───────────────────────────────────────
+  useEffect(() => {
+    const unsub = navigation.addListener('tabPress' as any, () => {
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+    });
+    return unsub;
+  }, [navigation]);
 
   // ── Notification Preferences ─────────────────────────────
   const [showNotifPanel, setShowNotifPanel] = React.useState(false);
@@ -107,22 +110,9 @@ function PlayerDashboard() {
     queryFn: playersApi.getGuardedPlayers,
   });
 
-  const { data: events, isLoading: eventsLoading, refetch: refetchEvents } = useQuery({
-    queryKey: ['events'],
-    queryFn: eventsApi.list,
-  });
-
   const { data: emailLog, refetch: refetchEmailLog } = useQuery({
     queryKey: ['emailLog'],
     queryFn: recruitingApi.getEmailLog,
-  });
-
-  // Fetch first player's full profile (for career stats)
-  const firstPlayerSlug = [...(myPlayers ?? []), ...(guardedPlayers ?? [])][0]?.slug;
-  const { data: firstPlayerFull, refetch: refetchPlayerFull } = useQuery({
-    queryKey: ['playerFull', firstPlayerSlug],
-    queryFn: () => playersApi.getBySlug(firstPlayerSlug!),
-    enabled: !!firstPlayerSlug,
   });
 
   // Deduplicate players
@@ -134,43 +124,62 @@ function PlayerDashboard() {
     return true;
   });
 
-  // Upcoming events (next 3)
-  const upcomingEvents = events
-    ?.filter((e: Event) => {
-      return e.isPublished && new Date(e.startDate) > new Date();
-    })
-    ?.sort((a: Event, b: Event) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-    ?.slice(0, 3) ?? [];
+  const firstPlayer = allPlayers[0];
 
-  // Fetch games for the first upcoming event (for "Up Next" section)
-  const nextEventId = upcomingEvents[0]?.id;
-  const { data: upcomingGames } = useQuery({
-    queryKey: ['upcomingGames', nextEventId],
-    queryFn: () => eventsApi.getGames(nextEventId!),
-    enabled: !!nextEventId,
+  // Fetch first player's full profile (for career stats)
+  const { data: firstPlayerFull, refetch: refetchPlayerFull, isLoading: playerLoading } = useQuery({
+    queryKey: ['playerFull', firstPlayer?.slug],
+    queryFn: () => playersApi.getBySlug(firstPlayer!.slug),
+    enabled: !!firstPlayer?.slug,
   });
 
-  const scheduledGames = (upcomingGames ?? [])
-    .filter((g: Game) => g.status === 'SCHEDULED')
-    .sort((a: Game, b: Game) => {
-      if (!a.scheduledTime || !b.scheduledTime) return 0;
-      return new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime();
-    })
-    .slice(0, 3);
+  // Fetch upcoming games for the player
+  const { data: upcomingGames, refetch: refetchGames } = useQuery({
+    queryKey: ['upcomingGames', firstPlayer?.id],
+    queryFn: () => playersApi.getUpcomingGames(firstPlayer!.id),
+    enabled: !!firstPlayer?.id,
+  });
+
+  const scheduledGames = (upcomingGames ?? []).slice(0, 5);
+
+  // Fetch live & recent results (public, all roles)
+  const { data: recentResults, refetch: refetchResults } = useQuery({
+    queryKey: ['recentResults'],
+    queryFn: () => eventsApi.getRecentResults(10),
+    refetchInterval: (query) => {
+      const games = query.state.data?.games;
+      if (games?.some((g: ResultGame) => g.status === 'IN_PROGRESS' || g.status === 'HALFTIME')) {
+        return 15000;
+      }
+      return 60000;
+    },
+  });
+
+  const liveGames = (recentResults?.games ?? []).filter(
+    (g: ResultGame) => g.status === 'IN_PROGRESS' || g.status === 'HALFTIME',
+  );
+  const finalGames = (recentResults?.games ?? []).filter(
+    (g: ResultGame) => g.status === 'FINAL',
+  ).slice(0, 5);
+  const scoreGames = [...liveGames, ...finalGames];
 
   // ── Pull to Refresh ────────────────────────────────────────
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([refetchEvents(), refetchPlayers(), refetchGuarded(), refetchEmailLog(), refetchPlayerFull()]);
+    await Promise.all([refetchPlayers(), refetchGuarded(), refetchEmailLog(), refetchPlayerFull(), refetchGames(), refetchResults()]);
     setRefreshing(false);
   };
 
-  if (eventsLoading) {
+  if (playerLoading && !firstPlayerFull) {
     return <Loading message="Loading..." />;
   }
 
   const HEADER_HEIGHT = Platform.OS === 'ios' ? 100 : 80;
+  const player = firstPlayer;
+  const stats = firstPlayerFull?.careerStats;
+  const photoUri = player?.profilePhoto ?? player?.profileImageUrl;
+  const pos = player?.primaryPosition ?? player?.position;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -199,6 +208,7 @@ function PlayerDashboard() {
       </View>
 
       <ScrollView
+        ref={scrollRef}
         style={styles.scrollView}
         contentContainerStyle={[styles.content, { paddingTop: HEADER_HEIGHT + 16 }]}
         showsVerticalScrollIndicator={false}
@@ -207,228 +217,150 @@ function PlayerDashboard() {
         }
       >
 
-      {/* ── PLAYER HERO ──────────────────────────────────── */}
-      {/* Hero section overlays text on an image — keep hardcoded dark styling */}
-      {allPlayers.length > 0 ? (() => {
-        const player = allPlayers[0];
-        const photoUri = player.profilePhoto ?? player.profileImageUrl;
-        const pos = player.primaryPosition ?? player.position;
-        const parentGuardians = (player.guardians ?? []).filter(
-          (g) => g.role !== 'PLAYER'
-        );
+      {/* ── WELCOME ──────────────────────────────────────── */}
+      <View style={styles.welcomeSection}>
+        <Text style={[styles.welcomeText, { color: colors.textPrimary }]}>Hi, {firstName}</Text>
+        {player && (
+          <Text style={[styles.welcomeSubtext, { color: colors.textMuted }]}>
+            {[player.school, player.graduationYear ? `Class of ${player.graduationYear}` : null, pos].filter(Boolean).join(' · ')}
+          </Text>
+        )}
+      </View>
 
-        return (
-          <TouchableOpacity
-            style={styles.heroContainer}
-            onPress={() => router.push('/(tabs)/profile')}
-            activeOpacity={0.9}
-          >
+      {/* ── PLAYER CARD ──────────────────────────────────── */}
+      {player ? (
+        <View style={[styles.playerCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.playerCardTop}>
             {photoUri ? (
-              <Image
-                source={{ uri: photoUri }}
-                style={styles.heroImage}
-                contentFit="cover"
-              />
+              <Image source={{ uri: photoUri }} style={styles.playerPhoto} contentFit="cover" />
             ) : (
-              <View style={[styles.heroFallback, { backgroundColor: colors.navyLight }]}>
-                <Text style={styles.heroFallbackInitial}>
+              <View style={[styles.playerPhotoFallback, { backgroundColor: colors.surfaceLight }]}>
+                <Text style={[styles.playerInitials, { color: colors.textPrimary }]}>
                   {(player.firstName?.[0] ?? '').toUpperCase()}
                   {(player.lastName?.[0] ?? '').toUpperCase()}
                 </Text>
               </View>
             )}
-
-            {/* Gradient overlay — hardcoded dark for image readability */}
-            <LinearGradient
-              colors={['transparent', 'rgba(15, 23, 42, 0.6)', 'rgba(15, 23, 42, 0.92)', colors.background]}
-              locations={[0, 0.4, 0.75, 1]}
-              style={styles.heroGradient}
-            />
-
-            {/* Player info overlay — hardcoded white text on image */}
-            <View style={styles.heroInfoOverlay}>
-              <Text style={styles.heroName}>
+            <View style={styles.playerInfo}>
+              <Text style={[styles.playerName, { color: colors.textPrimary }]}>
                 {player.firstName} {player.lastName}
               </Text>
               {player.school && (
-                <Text style={styles.heroSchool}>{player.school}</Text>
+                <Text style={[styles.playerMeta, { color: colors.textMuted }]}>{player.school}</Text>
               )}
-              <View style={styles.heroMetaRow}>
-                {player.graduationYear && (
-                  <Text style={styles.heroMetaText}>Class of {player.graduationYear}</Text>
-                )}
-                {player.graduationYear && pos && (
-                  <View style={styles.heroDot} />
-                )}
-                {pos && (
-                  <Text style={styles.heroMetaText}>{pos}</Text>
-                )}
-              </View>
-              {parentGuardians.length > 0 && (
-                <View style={styles.heroParentRow}>
-                  <Text style={styles.heroParentLabel}>Parent Access</Text>
-                  <Text style={styles.heroParentNames}>
-                    {parentGuardians.map((g) =>
-                      g.user.name?.split(' ')[0] ?? g.user.email?.split('@')[0]
-                    ).join(', ')}
-                  </Text>
-                </View>
-              )}
+              <Text style={[styles.playerMeta, { color: colors.textMuted }]}>
+                {[player.graduationYear ? `Class of ${player.graduationYear}` : null, pos].filter(Boolean).join(' · ')}
+              </Text>
             </View>
+          </View>
+
+          {/* Stats row */}
+          <View style={[styles.statsRow, { borderTopColor: colors.border }]}>
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: colors.textPrimary }]}>
+                {stats?.averages?.ppg?.toFixed(1) ?? '—'}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textMuted }]}>PPG</Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: colors.textPrimary }]}>
+                {stats?.averages?.rpg?.toFixed(1) ?? '—'}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textMuted }]}>RPG</Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: colors.textPrimary }]}>
+                {stats?.averages?.apg?.toFixed(1) ?? '—'}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.textMuted }]}>APG</Text>
+            </View>
+          </View>
+
+          {/* View Profile button */}
+          <TouchableOpacity
+            style={[styles.viewProfileBtn, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}
+            onPress={() => router.push('/(tabs)/profile')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.viewProfileBtnText, { color: colors.textPrimary }]}>View Profile</Text>
           </TouchableOpacity>
-        );
-      })() : (
+        </View>
+      ) : (
+        <View style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.emptyCardTitle, { color: colors.textPrimary }]}>No Player Profile</Text>
+          <Text style={[styles.emptyCardDesc, { color: colors.textMuted }]}>
+            Your player profile will appear here once linked to your account.
+          </Text>
+        </View>
+      )}
+
+      {/* ── LIVE & RECENT SCORES ──────────────────────────── */}
+      {scoreGames.length > 0 && (
         <View style={styles.section}>
-          <View style={[styles.emptyPlayersCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.emptyPlayersTitle, { color: colors.textPrimary }]}>No Players Yet</Text>
-            <Text style={[styles.emptyPlayersDesc, { color: colors.textMuted }]}>
-              Your player profiles will appear here once linked to your account.
+          <View style={styles.liveHeader}>
+            {liveGames.length > 0 && <View style={[styles.liveHeaderDot, { backgroundColor: colors.error }]} />}
+            <Text style={[styles.sectionTitle, { color: colors.textMuted, marginBottom: 0 }]}>
+              {liveGames.length > 0 ? 'LIVE SCORES' : 'RECENT RESULTS'}
             </Text>
+          </View>
+          <View style={styles.gamesList}>
+            {scoreGames.map((game: ResultGame) => (
+              <GameCard
+                key={game.id}
+                game={{
+                  id: game.id,
+                  eventId: game.event?.id ?? '',
+                  homeTeamId: game.homeTeamId,
+                  awayTeamId: game.awayTeamId,
+                  homeTeam: { ...game.homeTeam, organization: null, ageGroup: null, logoUrl: game.homeTeam.logo },
+                  awayTeam: { ...game.awayTeam, organization: null, ageGroup: null, logoUrl: game.awayTeam.logo },
+                  homeScore: game.homeScore,
+                  awayScore: game.awayScore,
+                  status: game.status === 'IN_PROGRESS' || game.status === 'HALFTIME' ? 'LIVE' : game.status as any,
+                  scheduledTime: game.scheduledAt,
+                  court: game.court,
+                  period: game.currentPeriod,
+                }}
+                onPress={() => router.push(`/games/${game.id}`)}
+              />
+            ))}
           </View>
         </View>
       )}
 
-      {/* ── PLAYER STATS ──────────────────────────────────── */}
-      {allPlayers.length > 0 && (
-        firstPlayerFull?.careerStats ? (
-          <TouchableOpacity
-            style={[styles.statsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-            onPress={() => router.push({
-              pathname: '/players/game-log',
-              params: {
-                slug: allPlayers[0].slug,
-                playerName: `${allPlayers[0].firstName} ${allPlayers[0].lastName}`,
-              },
-            })}
-            activeOpacity={0.7}
-          >
-            <View style={styles.statsHeader}>
-              <Text style={[styles.statsSectionTitle, { color: colors.textMuted }]}>SEASON AVERAGES</Text>
-              <Text style={[styles.statsViewAll, { color: colors.textMuted }]}>Game Log ›</Text>
-            </View>
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.textPrimary }]}>
-                  {firstPlayerFull.careerStats.averages.ppg.toFixed(1)}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.textMuted }]}>PPG</Text>
-              </View>
-              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.textPrimary }]}>
-                  {firstPlayerFull.careerStats.averages.rpg.toFixed(1)}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.textMuted }]}>RPG</Text>
-              </View>
-              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.textPrimary }]}>
-                  {firstPlayerFull.careerStats.averages.apg.toFixed(1)}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.textMuted }]}>APG</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={[styles.statsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-            onPress={() => router.push({
-              pathname: '/players/game-log',
-              params: {
-                slug: allPlayers[0].slug,
-                playerName: `${allPlayers[0].firstName} ${allPlayers[0].lastName}`,
-              },
-            })}
-            activeOpacity={0.7}
-          >
-            <View style={styles.statsHeader}>
-              <Text style={[styles.statsSectionTitle, { color: colors.textMuted }]}>SEASON AVERAGES</Text>
-              <Text style={[styles.statsViewAll, { color: colors.textMuted }]}>Game Log ›</Text>
-            </View>
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValueEmpty, { color: colors.textMuted }]}>—</Text>
-                <Text style={[styles.statLabel, { color: colors.textMuted }]}>PPG</Text>
-              </View>
-              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-              <View style={styles.statItem}>
-                <Text style={[styles.statValueEmpty, { color: colors.textMuted }]}>—</Text>
-                <Text style={[styles.statLabel, { color: colors.textMuted }]}>RPG</Text>
-              </View>
-              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-              <View style={styles.statItem}>
-                <Text style={[styles.statValueEmpty, { color: colors.textMuted }]}>—</Text>
-                <Text style={[styles.statLabel, { color: colors.textMuted }]}>APG</Text>
-              </View>
-            </View>
-            <Text style={[styles.statsEmptyText, { color: colors.textMuted }]}>
-              Stats will populate once games have been recorded
-            </Text>
-          </TouchableOpacity>
-        )
-      )}
-
-      {/* ── UP NEXT ───────────────────────────────────────── */}
-      <TouchableOpacity
-        style={styles.section}
-        onPress={() => router.push('/(tabs)/events')}
-        activeOpacity={0.7}
-      >
-        <Text style={[styles.sectionTitle, { marginBottom: Spacing.lg, color: colors.textPrimary }]}>UP NEXT</Text>
+      {/* ── UPCOMING GAMES ───────────────────────────────── */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>UPCOMING GAMES</Text>
 
         {scheduledGames.length > 0 ? (
           <View style={styles.gamesList}>
-            {scheduledGames.map((game: Game) => (
-              <View key={game.id} style={[styles.gameCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            {scheduledGames.map((game: any) => (
+              <TouchableOpacity
+                key={game.id}
+                style={[styles.gameCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={() => router.push(`/games/${game.id}`)}
+                activeOpacity={0.7}
+              >
                 <View style={styles.gameCardLeft}>
-                  {game.scheduledTime && (
-                    <Text style={[styles.gameDate, { color: colors.red }]}>
-                      {format(new Date(game.scheduledTime), 'MMM d')}
-                    </Text>
-                  )}
-                  {game.scheduledTime && (
-                    <Text style={[styles.gameTime, { color: colors.textMuted }]}>
-                      {format(new Date(game.scheduledTime), 'h:mm a')}
-                    </Text>
+                  {game.scheduledAt && (
+                    <>
+                      <Text style={[styles.gameDate, { color: colors.red }]}>
+                        {format(new Date(game.scheduledAt), 'MMM d')}
+                      </Text>
+                      <Text style={[styles.gameTime, { color: colors.textMuted }]}>
+                        {format(new Date(game.scheduledAt), 'h:mm a')}
+                      </Text>
+                    </>
                   )}
                 </View>
                 <View style={styles.gameCardCenter}>
                   <Text style={[styles.gameTeams, { color: colors.textPrimary }]} numberOfLines={1}>
                     {game.homeTeam?.name ?? 'TBD'} vs {game.awayTeam?.name ?? 'TBD'}
                   </Text>
-                  {game.court && (
-                    <Text style={[styles.gameCourt, { color: colors.textMuted }]}>{game.court}</Text>
-                  )}
-                </View>
-                <View style={styles.gameCardChevron}>
-                  <Text style={[styles.chevron, { color: colors.textMuted }]}>›</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        ) : upcomingEvents.length > 0 ? (
-          <View style={styles.gamesList}>
-            {upcomingEvents.map((event: Event) => (
-              <TouchableOpacity
-                key={event.id}
-                style={[styles.gameCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                onPress={() => router.push(`/(tabs)/events/${event.id}`)}
-                activeOpacity={0.7}
-              >
-                <View style={styles.gameCardLeft}>
-                  <Text style={[styles.gameDate, { color: colors.red }]}>
-                    {format(new Date(event.startDate), 'MMM d')}
-                  </Text>
-                  <Text style={[styles.gameTime, { color: colors.textMuted }]}>
-                    {format(new Date(event.startDate), 'yyyy')}
-                  </Text>
-                </View>
-                <View style={styles.gameCardCenter}>
-                  <Text style={[styles.gameTeams, { color: colors.textPrimary }]} numberOfLines={1}>
-                    {event.name}
-                  </Text>
-                  {event.city && event.state && (
-                    <Text style={[styles.gameCourt, { color: colors.textMuted }]}>{event.city}, {event.state}</Text>
+                  {game.event?.name && (
+                    <Text style={[styles.gameCourt, { color: colors.textMuted }]}>{game.event.name}</Text>
                   )}
                 </View>
                 <View style={styles.gameCardChevron}>
@@ -439,10 +371,10 @@ function PlayerDashboard() {
           </View>
         ) : (
           <View style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.emptyCardText, { color: colors.textMuted }]}>No upcoming games scheduled</Text>
+            <Text style={[styles.emptyCardDesc, { color: colors.textMuted }]}>No upcoming games scheduled</Text>
           </View>
         )}
-      </TouchableOpacity>
+      </View>
 
       {/* ── COLLEGE RECRUITING ──────────────────────────────── */}
       {allPlayers.length > 0 && (
@@ -465,28 +397,28 @@ function PlayerDashboard() {
             </View>
 
             {/* Player rows with Email Coaches button */}
-            {allPlayers.map((player) => (
-              <View key={player.id} style={[styles.recruitingPlayerRow, { borderBottomColor: colors.border }]}>
+            {allPlayers.map((p) => (
+              <View key={p.id} style={[styles.recruitingPlayerRow, { borderBottomColor: colors.border }]}>
                 <View style={styles.recruitingPlayerInfo}>
-                  {(player.profilePhoto ?? player.profileImageUrl) ? (
+                  {(p.profilePhoto ?? p.profileImageUrl) ? (
                     <Image
-                      source={{ uri: (player.profilePhoto ?? player.profileImageUrl)! }}
+                      source={{ uri: (p.profilePhoto ?? p.profileImageUrl)! }}
                       style={[styles.recruitingPlayerAvatar, { backgroundColor: colors.surfaceLight }]}
                       contentFit="cover"
                     />
                   ) : (
                     <View style={[styles.recruitingPlayerAvatarFallback, { backgroundColor: colors.surfaceLight }]}>
                       <Text style={[styles.recruitingPlayerInitial, { color: colors.textPrimary }]}>
-                        {(player.firstName?.[0] ?? '').toUpperCase()}
+                        {(p.firstName?.[0] ?? '').toUpperCase()}
                       </Text>
                     </View>
                   )}
                   <View>
                     <Text style={[styles.recruitingPlayerName, { color: colors.textPrimary }]}>
-                      {player.firstName} {player.lastName}
+                      {p.firstName} {p.lastName}
                     </Text>
                     <Text style={[styles.recruitingPlayerMeta, { color: colors.textMuted }]}>
-                      {player.graduationYear ? `Class of ${player.graduationYear}` : 'No grad year'}
+                      {p.graduationYear ? `Class of ${p.graduationYear}` : 'No grad year'}
                     </Text>
                   </View>
                 </View>
@@ -496,8 +428,8 @@ function PlayerDashboard() {
                     router.push({
                       pathname: '/recruiting',
                       params: {
-                        playerSlugs: player.slug,
-                        playerName: `${player.firstName} ${player.lastName}`,
+                        playerSlugs: p.slug,
+                        playerName: `${p.firstName} ${p.lastName}`,
                       },
                     })
                   }
@@ -538,15 +470,6 @@ function PlayerDashboard() {
           </View>
         </View>
       )}
-
-      {/* ── SIGN OUT ─────────────────────────────────────── */}
-      <TouchableOpacity
-        style={styles.signOutButton}
-        onPress={handleSignOut}
-        activeOpacity={0.6}
-      >
-        <Text style={[styles.signOutText, { color: colors.textMuted }]}>Sign Out</Text>
-      </TouchableOpacity>
 
       {/* Bottom spacer for tab bar */}
       <View style={{ height: 100 }} />
@@ -675,10 +598,6 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
   },
-  headerSubtitle: {
-    fontSize: FontSize.xs,
-    fontFamily: Fonts.bodyMedium,
-  },
   headerName: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.headingBlack,
@@ -692,186 +611,147 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
   },
-  // Notification Panel
-  notifOverlay: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingTop: Platform.OS === 'ios' ? 100 : 80,
-    paddingRight: Spacing.lg,
+
+  // Welcome
+  welcomeSection: {
+    marginBottom: Spacing.xl,
   },
-  notifPanel: {
-    width: 260,
+  welcomeText: {
+    fontSize: FontSize.xxxl,
+    fontFamily: Fonts.headingBlack,
+  },
+  welcomeSubtext: {
+    fontSize: FontSize.md,
+    fontFamily: Fonts.body,
+    marginTop: Spacing.xs,
+  },
+
+  // Player Card
+  playerCard: {
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     overflow: 'hidden',
+    marginBottom: Spacing.xxl,
   },
-  notifHeader: {
+  playerCardTop: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
+    padding: Spacing.lg,
+    gap: Spacing.lg,
   },
-  notifTitle: {
-    fontSize: FontSize.xs,
-    fontFamily: Fonts.headingBlack,
-    letterSpacing: 1.5,
+  playerPhoto: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
   },
-  notifClose: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+  playerPhotoFallback: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  notifRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
+  playerInitials: {
+    fontSize: FontSize.xl,
+    fontFamily: Fonts.headingBlack,
   },
-  notifLabel: {
+  playerInfo: {
+    flex: 1,
+  },
+  playerName: {
+    fontSize: FontSize.lg,
+    fontFamily: Fonts.heading,
+  },
+  playerMeta: {
     fontSize: FontSize.sm,
-    fontFamily: Fonts.bodySemiBold,
-  },
-  notifDesc: {
-    fontSize: 10,
     fontFamily: Fonts.body,
     marginTop: 2,
   },
 
-  // Sections
+  // Stats row inside player card
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingVertical: Spacing.lg,
+    borderTopWidth: 1,
+    marginHorizontal: Spacing.lg,
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 24,
+    fontFamily: Fonts.headingBlack,
+  },
+  statLabel: {
+    fontSize: FontSize.xs,
+    fontFamily: Fonts.bodySemiBold,
+    marginTop: 4,
+    letterSpacing: 1,
+  },
+  statDivider: {
+    width: 1,
+    height: 32,
+  },
+
+  // View Profile
+  viewProfileBtn: {
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  viewProfileBtnText: {
+    fontSize: FontSize.sm,
+    fontFamily: Fonts.bodySemiBold,
+  },
+
+  // Section
   section: {
     marginBottom: Spacing.xxl,
   },
   sectionTitle: {
-    fontSize: FontSize.md,
+    fontSize: FontSize.xs,
     fontFamily: Fonts.heading,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
+    letterSpacing: 2,
+    marginBottom: Spacing.md,
   },
-
-  // Hero Profile Image — text on image, keep hardcoded dark
-  heroContainer: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_WIDTH * 1.1,
-    marginHorizontal: -Spacing.xl,
-    marginBottom: Spacing.xxl,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    overflow: 'hidden',
-  },
-  heroImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: '100%',
-    height: '100%',
-  },
-  heroFallback: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroFallbackInitial: {
-    fontSize: 72,
-    fontFamily: Fonts.headingBlack,
-    color: 'rgba(255, 255, 255, 0.15)',
-  },
-  heroGradient: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '55%',
-  },
-  heroInfoOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing.xl,
-  },
-  heroName: {
-    fontSize: 26,
-    fontFamily: Fonts.headingBlack,
-    color: '#FFFFFF',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
-  heroSchool: {
-    fontSize: FontSize.md,
-    fontFamily: Fonts.bodySemiBold,
-    color: 'rgba(255, 255, 255, 0.85)',
-    marginTop: 4,
-    textShadowColor: 'rgba(0, 0, 0, 0.4)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
-  },
-  heroMetaRow: {
+  liveHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginTop: 6,
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
   },
-  heroMetaText: {
-    fontSize: FontSize.sm,
-    fontFamily: Fonts.bodyMedium,
-    color: 'rgba(255, 255, 255, 0.7)',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  heroDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-  },
-  heroParentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  heroParentLabel: {
-    fontSize: FontSize.xs,
-    fontFamily: Fonts.bodySemiBold,
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
-  heroParentNames: {
-    fontSize: FontSize.xs,
-    fontFamily: Fonts.bodyMedium,
-    color: 'rgba(255, 255, 255, 0.7)',
+  liveHeaderDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 
-  // Empty players
-  emptyPlayersCard: {
+  // Empty card
+  emptyCard: {
     borderRadius: BorderRadius.lg,
     padding: Spacing.xxl,
     alignItems: 'center',
     borderWidth: 1,
   },
-  emptyPlayersTitle: {
+  emptyCardTitle: {
     fontSize: FontSize.lg,
     fontFamily: Fonts.heading,
     marginBottom: Spacing.sm,
   },
-  emptyPlayersDesc: {
+  emptyCardDesc: {
     fontSize: FontSize.sm,
     fontFamily: Fonts.body,
     textAlign: 'center',
     lineHeight: 20,
   },
 
-  // Game Cards (Up Next)
+  // Game Cards
   gamesList: {
     gap: Spacing.sm,
   },
@@ -913,75 +793,6 @@ const styles = StyleSheet.create({
   },
   chevron: {
     fontSize: FontSize.xxl,
-    fontWeight: '300',
-  },
-
-  // Player Stats
-  statsCard: {
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    borderWidth: 1,
-    marginBottom: Spacing.xxl,
-  },
-  statsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
-  },
-  statsSectionTitle: {
-    fontSize: FontSize.xs,
-    fontFamily: Fonts.headingBlack,
-    letterSpacing: 1.5,
-  },
-  statsViewAll: {
-    fontSize: FontSize.xs,
-    fontFamily: Fonts.bodySemiBold,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 28,
-    fontFamily: Fonts.headingBlack,
-  },
-  statLabel: {
-    fontSize: FontSize.xs,
-    fontFamily: Fonts.bodySemiBold,
-    marginTop: 4,
-    letterSpacing: 1,
-  },
-  statValueEmpty: {
-    fontSize: 28,
-    fontFamily: Fonts.headingBlack,
-  },
-  statsEmptyText: {
-    fontSize: FontSize.xs,
-    fontFamily: Fonts.body,
-    textAlign: 'center',
-    marginTop: Spacing.md,
-  },
-  statDivider: {
-    width: 1,
-    height: 36,
-  },
-
-  // Empty state
-  emptyCard: {
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.xxl,
-    alignItems: 'center',
-    borderWidth: 1,
-  },
-  emptyCardText: {
-    fontSize: FontSize.sm,
-    fontFamily: Fonts.body,
   },
 
   // Recruiting Card
@@ -1113,16 +924,55 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.body,
   },
 
-  // Sign Out
-  signOutButton: {
-    alignSelf: 'center',
+  // Notification Panel
+  notifOverlay: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingTop: Platform.OS === 'ios' ? 100 : 80,
+    paddingRight: Spacing.lg,
+  },
+  notifPanel: {
+    width: 260,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  notifHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-    marginTop: Spacing.md,
+    borderBottomWidth: 1,
   },
-  signOutText: {
+  notifTitle: {
     fontSize: FontSize.xs,
-    fontFamily: Fonts.body,
+    fontFamily: Fonts.headingBlack,
+    letterSpacing: 1.5,
   },
-
+  notifClose: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notifRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+  },
+  notifLabel: {
+    fontSize: FontSize.sm,
+    fontFamily: Fonts.bodySemiBold,
+  },
+  notifDesc: {
+    fontSize: 10,
+    fontFamily: Fonts.body,
+    marginTop: 2,
+  },
 });
